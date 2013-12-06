@@ -11,7 +11,7 @@
  
   <listener>
     <listener-class>
-      org.apache.usergrid.perftest.PerftestServletConfig
+      org.safehaus.perftest.PerftestServletConfig
     </listener-class>
   </listener>
 
