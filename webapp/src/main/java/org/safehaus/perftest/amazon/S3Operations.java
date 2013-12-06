@@ -30,32 +30,19 @@ public class S3Operations {
     }
 
 
+    /**
+     * Registers this runner's instance by adding it's instance information into
+     * S3 as a properties file into the bucket using the following key format:
+     *
+     *      "runners/formationName-publicHostname.properties"
+     *
+     * @param metadata the runner's instance metadata to be registered
+     */
     public void register( Ec2Metadata metadata ) {
         StringBuilder sb = new StringBuilder();
-        sb.append( PropSettings.getFormation() ).append('-').append( metadata.getPublicHostname() );
+        sb.append( PropSettings.getFormation() ).append('-')
+          .append( metadata.getPublicHostname() ).append( ".properties" );
         String blobName = sb.toString();
-
-        S3Object s3Object = null;
-
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getRunners() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get object failed ... might not exist.", e );
-        }
-
-        if ( s3Object == null ) {
-            LOG.info( "The runners container was not present: creating it ..." );
-            createContainer( PropSettings.getRunners() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
@@ -71,42 +58,7 @@ public class S3Operations {
     }
 
 
-    public void createContainer( String name ) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength( 0 );
-
-        InputStream emptyContent = new ByteArrayInputStream( new byte[0] );
-        PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(), name + "/",
-                emptyContent, objectMetadata );
-        client.putObject( putRequest );
-
-        LOG.info( "Successfully created container {}", name );
-    }
-
-
     public Set<String> getTests() {
-        S3Object s3Object = null;
-
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getTests() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get tests container object failed ... might not exist.", e );
-        }
-
-        if ( s3Object == null ) {
-            LOG.info( "The tests container was not present: creating it ..." );
-            createContainer( PropSettings.getTests() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
-
         Set<String> tests = new HashSet<String>();
         ObjectListing listing = client.listObjects( PropSettings.getBucket(), PropSettings.getTests() + "/" );
 
@@ -129,28 +81,6 @@ public class S3Operations {
 
 
     public Map<String,Ec2Metadata> getRunners() {
-        S3Object s3Object = null;
-
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getRunners() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get runners container object failed ... might not exist.", e );
-        }
-
-        if ( s3Object == null ) {
-            LOG.info( "The runners container was not present: creating it ..." );
-            createContainer( PropSettings.getRunners() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
-
         Map<String,Ec2Metadata> runners = new HashMap<String, Ec2Metadata>();
         ObjectListing listing = client.listObjects( PropSettings.getBucket(),
                 PropSettings.getRunners() + "/" + PropSettings.getFormation() );
@@ -161,7 +91,7 @@ public class S3Operations {
 
                 LOG.debug( "Got key {} while scanning under runners container", key );
 
-                s3Object = client.getObject( PropSettings.getBucket(), key );
+                S3Object s3Object = client.getObject( PropSettings.getBucket(), key );
 
                 try {
                     runners.put( key, new Ec2Metadata( s3Object.getObjectContent() ) );
