@@ -19,6 +19,7 @@
     <module>webapp</module>
     <module>plugin</module>
     <module>api</module>
+    <module>client</module>
     <module>dummy</module>
   </modules>
 

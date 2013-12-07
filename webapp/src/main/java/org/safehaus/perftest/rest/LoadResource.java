@@ -26,10 +26,13 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+
+import org.safehaus.perftest.BaseResult;
 import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.PropagatedResult;
+import org.safehaus.perftest.Result;
 import org.safehaus.perftest.amazon.AmazonS3Service;
 import org.safehaus.perftest.settings.PropSettings;
-import org.safehaus.perftest.settings.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,11 +81,12 @@ public class LoadResource extends PropagatingResource {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {
-            return new BaseResult( getEndpointUrl(), false, "still running stop and reset before loading a new test" );
+            return new BaseResult( getEndpointUrl(), false, "still running stop and reset before loading a new test",
+                    runner.getState() );
         }
 
         if ( runner.needsReset() ) {
-            return new BaseResult( getEndpointUrl(), false, "reset before loading a new test" );
+            return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", runner.getState() );
         }
 
         // Handle loading the war here first for the peers we will propagate to since
@@ -92,7 +96,7 @@ public class LoadResource extends PropagatingResource {
 
         if ( propagate == Boolean.TRUE )
         {
-            PropagatedResult result = propagate( true, "reload started", params );
+            PropagatedResult result = propagate( runner.getState(), true, "reload started", params );
 
             try {
                 deploy( perftest );
@@ -109,18 +113,18 @@ public class LoadResource extends PropagatingResource {
 
         try {
             deploy(perftest);
-            return new BaseResult( getEndpointUrl(), true, "reload started" );
+            return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState() );
         }
         catch ( Exception e ) {
             LOG.error( "Encountered failure while reloading perftest", e );
-            return new BaseResult( getEndpointUrl(), false, e.getMessage() );
+            return new BaseResult( getEndpointUrl(), false, e.getMessage(), runner.getState() );
         }
     }
 
 
     private void deploy( String perftest ) throws Exception {
         // @Todo if the admin app reload does not work, do not store in app's temp are but in /tmp instead
-        File tempDir = new File( getService().getMyMetadata().getProperty( Props.CONTEXT_TEMPDIR_KEY, "/tmp" ) );
+        File tempDir = new File( getService().getMyMetadata().getTempDir() );
         File tempFile = getService().download( tempDir, perftest );
         final BlockingDeployTask uploadTask = new BlockingDeployTask( tempFile );
         new Thread( uploadTask ).start();
@@ -253,15 +257,15 @@ public class LoadResource extends PropagatingResource {
 
             if ( response.contains( "FAIL" ) ) {
                 LOG.error( "FAILED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), false, response );
+                result = new BaseResult( getEndpointUrl(), false, response, runner.getState() );
             }
             else if ( response.contains( "OK" ) ) {
                 LOG.info( "SUCCEEDED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), true, response );
+                result = new BaseResult( getEndpointUrl(), true, response, runner.getState() );
             }
 
             LOG.warn( "Got back unknown response from the manager: {}", response );
-            result = new BaseResult( getEndpointUrl(), false, response );
+            result = new BaseResult( getEndpointUrl(), false, response, runner.getState() );
         }
     }
 }

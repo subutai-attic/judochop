@@ -20,9 +20,12 @@
 package org.safehaus.perftest.rest;
 
 
+import org.safehaus.perftest.BaseResult;
 import org.safehaus.perftest.PerftestRunner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.safehaus.perftest.Result;
 import org.safehaus.perftest.amazon.AmazonS3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,19 +68,19 @@ public class ResetResource extends PropagatingResource {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {
-            return new BaseResult( getEndpointUrl(), false, "still running stop before resetting" );
+            return new BaseResult( getEndpointUrl(), false, "still running stop before resetting", runner.getState() );
         }
 
         if ( runner.needsReset() ) {
-            runner.setup();
+            runner.reset();
 
             if ( propagate == Boolean.FALSE ) {
-                return new BaseResult( getEndpointUrl(), true, "reset complete" );
+                return new BaseResult( getEndpointUrl(), true, "reset complete", runner.getState() );
             }
 
-            return propagate( true, "reset complete" );
+            return propagate( runner.getState(), true, "reset complete" );
         }
 
-        return new BaseResult( getEndpointUrl(), false, "reset not required" );
+        return new BaseResult( getEndpointUrl(), false, "reset not required", runner.getState() );
     }
 }

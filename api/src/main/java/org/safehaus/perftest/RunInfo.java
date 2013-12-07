@@ -1,8 +1,8 @@
-package org.safehaus.perftest.settings;
+package org.safehaus.perftest;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.safehaus.perftest.rest.CallStatsSnapshot;
+import org.safehaus.perftest.CallStatsSnapshot;
 
 import java.util.Date;
 

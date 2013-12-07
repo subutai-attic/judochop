@@ -1,4 +1,4 @@
-package org.safehaus.perftest.rest;
+package org.safehaus.perftest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,6 +16,14 @@ public interface Result {
     boolean getStatus();
 
     /**
+     * Gets the present state of the runner after an operation.
+     *
+     * @return the current state of the runner
+     */
+    @JsonProperty
+    State getState();
+
+    /**
      * Optional message response.
      *
      * @return a message if required, otherwise null
@@ -23,6 +31,11 @@ public interface Result {
     @JsonProperty
     String getMessage();
 
+    /**
+     * The full URL for the end point of the operation performed.
+     *
+     * @return the full URL for the end point
+     */
     @JsonProperty
     String getEndpoint();
 }

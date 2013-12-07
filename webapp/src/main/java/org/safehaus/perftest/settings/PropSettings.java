@@ -10,6 +10,9 @@ import com.netflix.config.DynamicPropertyFactory;
 public class PropSettings implements Props {
 
 
+    private static long sleepToStop;
+
+
     /**
      * Gets the dynamic property for the AWS S3 key.
      *
@@ -152,5 +155,10 @@ public class PropSettings implements Props {
     public static String getTestModuleFqcn() {
         return DynamicPropertyFactory.getInstance().getStringProperty( TEST_MODULE_FQCN_KEY,
                 DEFAULT_TEST_MODULE ).get();
+    }
+
+
+    public static long getSleepToStop() {
+        return DynamicPropertyFactory.getInstance().getLongProperty( "sleep.to.stop", 100 ).get();
     }
 }

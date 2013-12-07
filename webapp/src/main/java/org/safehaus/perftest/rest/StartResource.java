@@ -19,10 +19,15 @@
  */
 package org.safehaus.perftest.rest;
 
+import org.safehaus.perftest.BaseResult;
 import org.safehaus.perftest.PerftestRunner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.safehaus.perftest.Result;
 import org.safehaus.perftest.amazon.AmazonS3Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( "/start" )
 public class StartResource extends PropagatingResource {
+    private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
     private final PerftestRunner runner;
 
 
@@ -52,18 +58,19 @@ public class StartResource extends PropagatingResource {
     {
         if ( runner.isRunning() )
         {
-            return new BaseResult( getEndpointUrl(), false, "already running" );
+            return new BaseResult( getEndpointUrl(), false, "already running", runner.getState() );
         }
 
         if ( runner.needsReset() )
         {
-            return new BaseResult( getEndpointUrl(), false, "reset needed - but save the last run data first!" );
+            return new BaseResult( getEndpointUrl(), false, "reset needed - but save the last run data first!",
+                    runner.getState() );
         }
 
         if ( propagate == Boolean.FALSE )
         {
             runner.start();
-            return new BaseResult( getEndpointUrl(), true, "successfully started" );
+            return new BaseResult( getEndpointUrl(), true, "successfully started", runner.getState() );
         }
 
         new Thread( new Runnable() {
@@ -71,11 +78,14 @@ public class StartResource extends PropagatingResource {
             public void run() {
                 try {
                     Thread.sleep( 500L );
-                } catch (InterruptedException e) { }
+                }
+                catch ( InterruptedException e ) {
+                    LOG.error( "Awe dang someone broke my sleep!", e );
+                }
                 runner.start();
             }
         }).start();
 
-        return propagate( true, "successfully started" );
+        return propagate( runner.getState(), true, "successfully started" );
     }
 }
