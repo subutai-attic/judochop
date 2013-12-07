@@ -20,9 +20,12 @@
 package org.safehaus.perftest.rest;
 
 
+import org.safehaus.perftest.BaseResult;
 import org.safehaus.perftest.PerftestRunner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.safehaus.perftest.Result;
 import org.safehaus.perftest.amazon.AmazonS3Service;
 
 import javax.ws.rs.POST;
@@ -59,12 +62,12 @@ public class StopResource extends PropagatingResource {
 
             if ( propagate == Boolean.FALSE )
             {
-                return new BaseResult( getEndpointUrl(), true, "stopped" );
+                return new BaseResult( getEndpointUrl(), true, "stopped", runner.getState() );
             }
 
-            return propagate( true, "stopped" );
+            return propagate( runner.getState(), true, "stopped" );
         }
 
-        return new BaseResult( getEndpointUrl(), false, "already stopped" );
+        return new BaseResult( getEndpointUrl(), false, "must be running to stop", runner.getState() );
     }
 }

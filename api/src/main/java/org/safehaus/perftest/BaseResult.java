@@ -1,6 +1,8 @@
-package org.safehaus.perftest.rest;
+package org.safehaus.perftest;
+
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * ...
@@ -9,13 +11,14 @@ public class BaseResult implements Result {
     private String endpoint;
     private String message;
     private boolean status;
+    private State state;
 
 
-    public BaseResult( String endpoint, boolean status, String message ) {
+    public BaseResult( String endpoint, boolean status, String message, State state ) {
         this.endpoint = endpoint;
         this.status = status;
         this.message = message;
-    }
+        this.state = state;    }
 
 
     @SuppressWarnings( "UnusedDeclaration" )
@@ -46,6 +49,12 @@ public class BaseResult implements Result {
     @Override
     public boolean getStatus() {
         return status;
+    }
+
+
+    @Override
+    public State getState() {
+        return state;
     }
 
 

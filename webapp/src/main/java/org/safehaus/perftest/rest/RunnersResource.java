@@ -23,7 +23,7 @@ package org.safehaus.perftest.rest;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.safehaus.perftest.amazon.AmazonS3Service;
-import org.safehaus.perftest.amazon.Ec2Metadata;
+import org.safehaus.perftest.RunnerInfo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,7 +50,7 @@ public class RunnersResource {
 
 
     @GET
-    public Map<String,Ec2Metadata> getRunners() throws IOException {
+    public Map<String,RunnerInfo> getRunners() throws IOException {
         return service.getRunners();
     }
 }

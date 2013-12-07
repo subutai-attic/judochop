@@ -21,6 +21,11 @@ package org.safehaus.perftest.rest;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.safehaus.perftest.BaseResult;
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.Result;
+import org.safehaus.perftest.State;
 import org.safehaus.perftest.amazon.AmazonS3Service;
 
 import javax.ws.rs.POST;
@@ -36,12 +41,13 @@ import javax.ws.rs.core.MediaType;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( "/scan" )
 public class ScanResource extends PropagatingResource {
-
+    private final PerftestRunner runner;
 
     @Inject
-    public ScanResource( AmazonS3Service service )
+    public ScanResource( PerftestRunner runner, AmazonS3Service service )
     {
         super( "/scan", service );
+        this.runner = runner;
     }
 
 
@@ -52,9 +58,9 @@ public class ScanResource extends PropagatingResource {
 
         if ( propagate == Boolean.FALSE )
         {
-            return new BaseResult( getEndpointUrl(), true, "scan triggered" );
+            return new BaseResult( getEndpointUrl(), true, "scan triggered", runner.getState() );
         }
 
-        return propagate( true, "scan triggered" );
+        return propagate( runner.getState(), true, "scan triggered" );
     }
 }

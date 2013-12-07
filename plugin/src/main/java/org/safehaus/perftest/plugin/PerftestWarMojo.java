@@ -133,7 +133,7 @@ public class PerftestWarMojo extends PerftestMojo {
         }
 
         try {
-            // Check and setup plugin configuration parameters
+            // Check and reset plugin configuration parameters
 
             SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.hh.mm.ss" );
             String timeStamp = dateFormat.format( new Date() );

@@ -5,6 +5,8 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+
+import org.safehaus.perftest.RunnerInfo;
 import org.safehaus.perftest.settings.PropSettings;
 import org.safehaus.perftest.settings.Props;
 
@@ -14,6 +16,7 @@ public class AmazonS3Module extends AbstractModule implements Props {
 
 
     protected void configure() {
+        bind( RunnerInfo.class ).to( Ec2RunnerInfo.class );
         bind( S3Operations.class );
         bind( AmazonS3Service.class ).to( AmazonS3ServiceAwsImpl.class );
     }

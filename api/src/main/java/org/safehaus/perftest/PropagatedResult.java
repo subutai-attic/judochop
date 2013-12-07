@@ -1,4 +1,4 @@
-package org.safehaus.perftest.rest;
+package org.safehaus.perftest;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,12 +14,12 @@ public class PropagatedResult extends BaseResult {
     private List<Result> remoteResults = new ArrayList<Result>();
 
 
-    public PropagatedResult(String endpoint, boolean status, String message) {
-        super( endpoint, status, message );
+    public PropagatedResult( String endpoint, boolean status, String message, State state ) {
+        super( endpoint, status, message, state );
     }
 
 
-    void add( Result result ) {
+    public void add( Result result ) {
         remoteResults.add( result );
     }
 

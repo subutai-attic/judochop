@@ -6,9 +6,11 @@ import com.amazonaws.services.s3.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+
+import org.safehaus.perftest.RunnerInfo;
 import org.safehaus.perftest.settings.PropSettings;
-import org.safehaus.perftest.settings.RunInfo;
-import org.safehaus.perftest.settings.TestInfo;
+import org.safehaus.perftest.RunInfo;
+import org.safehaus.perftest.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +57,8 @@ public class S3Operations {
      *
      * @param metadata the runner's instance metadata to be registered
      */
-    public void register( Ec2Metadata metadata ) {
-        String blobName = getRunnerKey( metadata.getPublicHostname() );
+    public void register( Ec2RunnerInfo metadata ) {
+        String blobName = getRunnerKey( metadata.getHostname() );
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
@@ -107,8 +109,8 @@ public class S3Operations {
      * @param formation the formation to get the runners for
      * @return the keys mapped to runner instance properties
      */
-    public Map<String,Ec2Metadata> getRunners( String formation ) {
-        Map<String,Ec2Metadata> runners = new HashMap<String, Ec2Metadata>();
+    public Map<String,RunnerInfo> getRunners( String formation ) {
+        Map<String,RunnerInfo> runners = new HashMap<String, RunnerInfo>();
         ObjectListing listing = client.listObjects( PropSettings.getBucket(),
                 PropSettings.getRunners() + "/" + formation );
 
@@ -121,7 +123,7 @@ public class S3Operations {
                 S3Object s3Object = client.getObject( PropSettings.getBucket(), key );
 
                 try {
-                    runners.put( key, new Ec2Metadata( s3Object.getObjectContent() ) );
+                    runners.put( key, new Ec2RunnerInfo( s3Object.getObjectContent() ) );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runner {}", key, e );
@@ -242,7 +244,7 @@ public class S3Operations {
      * @param runInfo the run information to also upload into S3 besides the results
      * @param results the results to upload
      */
-    public void uploadInfoAndResults( Ec2Metadata metadata, TestInfo testInfo, RunInfo runInfo, File results ) {
+    public void uploadInfoAndResults( RunnerInfo metadata, TestInfo testInfo, RunInfo runInfo, File results ) {
         uploadRunInfo( testInfo, runInfo );
 
         String loadKey = testInfo.getLoadKey();
@@ -253,7 +255,7 @@ public class S3Operations {
                 .append( "results/" )
                 .append( runInfo.getRunNumber() )
                 .append( '/' )
-                .append( metadata.getPublicHostname() )
+                .append( metadata.getHostname() )
                 .append( "-results.log" );
 
         String blobName = sb.toString();
@@ -290,9 +292,7 @@ public class S3Operations {
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey )
-                .append( "results/" )
-                .append( "test-info.json" );
+        sb.append( loadKey ).append( "results/test-info.json" );
 
         if ( hasKey( sb.toString() ) ) {
             LOG.warn( "The key {} already exists for TestInfo - not updating!", sb.toString() );

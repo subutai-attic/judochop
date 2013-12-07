@@ -19,6 +19,7 @@
  */
 package org.safehaus.perftest.rest;
 
+import org.safehaus.perftest.CallStatsSnapshot;
 import org.safehaus.perftest.PerftestRunner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

@@ -1,23 +1,32 @@
 package org.safehaus.perftest.amazon;
 
-import com.amazonaws.util.StringInputStream;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.safehaus.perftest.RunnerInfo;
 import org.safehaus.perftest.settings.Props;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.Properties;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import com.amazonaws.util.StringInputStream;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /**
- * Information about the Amazon EC2 Instance we run on.
+ * Created with IntelliJ IDEA. User: akarasulu Date: 12/7/13 Time: 12:26 AM To change this template use File | Settings
+ * | File Templates.
  */
-public class Ec2Metadata extends Properties implements Props {
-    private static final Logger LOG = LoggerFactory.getLogger( Ec2Metadata.class );
+public class Ec2RunnerInfo extends Properties implements RunnerInfo {
+    private static final Logger LOG = LoggerFactory.getLogger( Ec2RunnerInfo.class );
 
     private static final String EC2METADATA_PROCESS = "/usr/bin/ec2metadata";
     private static final String PUBLIC_HOSTNAME_KEY = "public-hostname";
@@ -29,7 +38,14 @@ public class Ec2Metadata extends Properties implements Props {
     private boolean isRunningOnEc2 = false;
 
 
-    public Ec2Metadata() {
+    public Ec2RunnerInfo( InputStream in ) throws IOException {
+        super();
+        load( in );
+    }
+
+
+    public Ec2RunnerInfo()
+    {
         super();
 
         if ( new File( EC2METADATA_PROCESS ).exists() ) {
@@ -59,20 +75,13 @@ public class Ec2Metadata extends Properties implements Props {
             {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 store( out, null );
-                LOG.debug( "Contents of Ec2Metadata =\n{}", new String( out.toByteArray() ) );
+                LOG.debug( "Contents of RunnerInfo =\n{}", new String( out.toByteArray() ) );
             }
         }
         catch ( IOException e ) {
             LOG.error( "Failed to execute process {}", EC2METADATA_PROCESS, e );
         }
     }
-
-
-    public Ec2Metadata( InputStream in ) throws IOException {
-        super();
-        load( in );
-    }
-
 
     @SuppressWarnings( "UnusedDeclaration" )
     @JsonProperty
@@ -116,30 +125,45 @@ public class Ec2Metadata extends Properties implements Props {
     }
 
 
+    @Override
     @SuppressWarnings( "UnusedDeclaration" )
     @JsonProperty
-    public String getPublicIpv4() {
+    public String getIpv4() {
         return getProperty( "public-ipv4" );
     }
 
 
+    @Override
     @JsonProperty
-    public String getPublicHostname() {
+    public String getHostname() {
         return getProperty( PUBLIC_HOSTNAME_KEY );
     }
 
 
+    @Override
     @JsonProperty
     public int getServerPort() {
-        String portStr = getProperty( SERVER_PORT_KEY, "8080" );
+        String portStr = getProperty( Props.SERVER_PORT_KEY, "8080" );
         return new Integer( portStr );
+    }
+
+
+    @Override
+    public String getFormation() {
+        return getProperty( Props.FORMATION_KEY );
+    }
+
+
+    @Override
+    public void setFormation( final String formation ) {
+        setProperty( Props.FORMATION_KEY, formation );
     }
 
 
     /**
      * Gets the properties listing as an input stream.
      * @return the properties listing as an input stream
-     * @throws IOException there are io failures
+     * @throws java.io.IOException there are io failures
      */
     public InputStream getPropertiesAsStream() throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -162,8 +186,14 @@ public class Ec2Metadata extends Properties implements Props {
 
     public String getUrl() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "http://" ).append( getPublicHostname() ).append( ':' ).append( getServerPort() );
+        sb.append( "http://" ).append( getHostname() ).append( ':' ).append( getServerPort() );
         return sb.toString();
+    }
+
+
+    @Override
+    public String getTempDir() {
+        return getProperty( Props.CONTEXT_TEMPDIR_KEY, "/tmp" );
     }
 
 
