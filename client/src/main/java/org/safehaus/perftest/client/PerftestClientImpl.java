@@ -4,7 +4,6 @@ package org.safehaus.perftest.client;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
