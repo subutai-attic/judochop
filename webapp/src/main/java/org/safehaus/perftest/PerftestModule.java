@@ -7,7 +7,6 @@
 package org.safehaus.perftest;
 
 import org.safehaus.perftest.api.PerftestApiModule;
-import org.safehaus.perftest.api.store.amazon.AmazonStoreModule;
 import org.safehaus.perftest.server.rest.ResetResource;
 import org.safehaus.perftest.server.rest.StartResource;
 import org.safehaus.perftest.server.rest.StatsResource;

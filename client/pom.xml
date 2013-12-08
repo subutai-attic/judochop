@@ -15,11 +15,34 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jersey.version>1.9.1</jersey.version>
     <jackson.version>2.1.5</jackson.version>
     <archaius.version>0.5.12</archaius.version>
     <guice.version>3.0</guice.version>
     <junit.version>4.11</junit.version>
   </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
 
   <dependencies>
     <dependency>
@@ -32,6 +55,12 @@
       <groupId>${pom.groupId}</groupId>
       <artifactId>perftest-amazon</artifactId>
       <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>${jersey.version}</version>
     </dependency>
 
     <dependency>
