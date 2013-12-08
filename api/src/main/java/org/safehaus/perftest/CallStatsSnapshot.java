@@ -17,7 +17,7 @@
  *  under the License. 
  *  
  */
-package org.safehaus.perftest.rest;
+package org.safehaus.perftest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

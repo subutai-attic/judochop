@@ -2,15 +2,13 @@ package org.safehaus.perftest;
 
 
 import org.safehaus.perftest.amazon.AmazonS3Service;
-import org.safehaus.perftest.rest.CallStatsSnapshot;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
-import com.netflix.config.DynamicLongProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import org.safehaus.perftest.settings.RunInfo;
-import org.safehaus.perftest.settings.TestInfo;
 
+import org.safehaus.perftest.settings.PropSettings;
+import org.safehaus.perftest.settings.TestInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Invokes a Perftest based on a CallSpec.
+ * A Perftest runner.
  */
 @Singleton
 public class PerftestRunner implements Runnable {
@@ -31,14 +29,11 @@ public class PerftestRunner implements Runnable {
     private final AmazonS3Service service;
     private final Injector injector;
     private final Object lock = new Object();
-    private DynamicLongProperty sleepToStop =
-            DynamicPropertyFactory.getInstance().getLongProperty( "sleep.to.stop", 100 );
+    private long sleepToStop = PropSettings.getSleepToStop();
     private CallStats stats;
     private Perftest test;
     private ExecutorService executorService;
-    private boolean stopSignal = false;
-    private boolean running = false;
-    private boolean needsReset = false;
+    private State state = State.READY;
     private long startTime;
     private long stopTime;
 
@@ -52,18 +47,19 @@ public class PerftestRunner implements Runnable {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
-        testInfo = new TestInfo( test, loader.getTestModule() );
+        testInfo = new TestInfoImpl( test, loader.getTestModule() );
         testInfo.setLoadTime( new Date().toString() );
         service.uploadTestInfo( testInfo );
 
-        setup();
+        stats = injector.getInstance( CallStats.class );
+        executorService = Executors.newFixedThreadPool( test.getThreadCount() );
+        runInfo = new RunInfo( 0 );
     }
 
 
-    public void setup() {
+    public void reset() {
         synchronized ( lock ) {
-            stopSignal = false;
-            running = false;
+            state = State.READY;
             startTime = 0;
             stopTime = 0;
 
@@ -73,8 +69,6 @@ public class PerftestRunner implements Runnable {
             }
 
             stats = injector.getInstance( CallStats.class );
-            executorService = Executors.newFixedThreadPool( test.getThreadCount() );
-            needsReset = false;
 
             if ( runInfo == null ) {
                 runInfo = new RunInfo( 0 );
@@ -91,6 +85,10 @@ public class PerftestRunner implements Runnable {
     }
 
 
+    public State getState() {
+        return state;
+    }
+
     public RunInfo getRunInfo() {
         return runInfo;
     }
@@ -98,7 +96,7 @@ public class PerftestRunner implements Runnable {
 
     public boolean isRunning() {
         synchronized ( lock ) {
-            return running;
+            return state == State.RUNNING;
         }
     }
 
@@ -106,7 +104,7 @@ public class PerftestRunner implements Runnable {
     public boolean needsReset() {
         synchronized ( lock )
         {
-            return needsReset;
+            return state == State.STOPPED;
         }
     }
 
@@ -123,9 +121,8 @@ public class PerftestRunner implements Runnable {
 
     public void start() {
         synchronized ( lock ) {
-            stopSignal = false;
+            state = State.RUNNING;
             startTime = System.nanoTime();
-            running = true;
 
             for ( int ii = 0; ii < test.getThreadCount(); ii++) {
                 executorService.execute( this );
@@ -137,8 +134,8 @@ public class PerftestRunner implements Runnable {
             @Override
             public void run() {
                 try {
-                    while ( executorService.awaitTermination( sleepToStop.get(), TimeUnit.MILLISECONDS ) ) {
-                        LOG.info( "woke up running = {}", PerftestRunner.this.running );
+                    while ( executorService.awaitTermination( sleepToStop, TimeUnit.MILLISECONDS ) ) {
+                        LOG.info( "woke up state = {}", state );
                     }
                 }
                 catch ( InterruptedException e ) {
@@ -148,8 +145,7 @@ public class PerftestRunner implements Runnable {
                 stats.stop();
 
                 LOG.info( "COORDINATOR THREAD: all threads have died." );
-                PerftestRunner.this.running = false;
-                PerftestRunner.this.needsReset = true;
+                PerftestRunner.this.state = State.READY;
                 stopTime = System.nanoTime();
 
                 service.uploadResults( testInfo, runInfo, stats.getResultsFile() );
@@ -161,21 +157,20 @@ public class PerftestRunner implements Runnable {
 
     public void stop() {
         synchronized ( lock ) {
-            stopSignal = true;
+            state = State.STOPPED;
 
             try {
-                while ( executorService.awaitTermination( sleepToStop.get(), TimeUnit.MILLISECONDS ) ) {
-                    LOG.info( "woke up: running = {}", PerftestRunner.this.running );
+                while ( executorService.awaitTermination( sleepToStop, TimeUnit.MILLISECONDS ) ) {
+                    LOG.info( "woke up: state = {}", state );
                 }
             }
             catch ( InterruptedException e ) {
                 LOG.error( "Got interrupted while monitoring executor service.", e );
             }
 
-            running = false;
             stats.stop();
             stopTime = System.nanoTime();
-            needsReset = true;
+            state = State.STOPPED;
         }
     }
 
@@ -183,7 +178,7 @@ public class PerftestRunner implements Runnable {
     public void run() {
         long delay = test.getDelayBetweenCalls();
 
-        while( ( ! stopSignal ) && ( stats.getCallCount() < test.getCallCount() ) ) {
+        while( state == State.RUNNING && ( stats.getCallCount() < test.getCallCount() ) ) {
             long startTime = System.nanoTime();
             test.call();
             long endTime = System.nanoTime();

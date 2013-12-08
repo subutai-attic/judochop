@@ -6,9 +6,11 @@ import com.amazonaws.services.s3.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+
+import org.safehaus.perftest.RunnerInfo;
 import org.safehaus.perftest.settings.PropSettings;
-import org.safehaus.perftest.settings.RunInfo;
-import org.safehaus.perftest.settings.TestInfo;
+import org.safehaus.perftest.RunInfo;
+import org.safehaus.perftest.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,32 +32,33 @@ public class S3Operations {
     }
 
 
-    public void register( Ec2Metadata metadata ) {
+    /**
+     * Registers this runner's instance by adding it's instance information into
+     * S3 as a properties file into the bucket using the following key format:
+     *
+     *      "runners/formationName-publicHostname.properties"
+     *
+     * @param publicHostname the runner's instance publicHostname
+     */
+    public String getRunnerKey( String publicHostname ) {
         StringBuilder sb = new StringBuilder();
-        sb.append( PropSettings.getFormation() ).append('-').append( metadata.getPublicHostname() );
-        String blobName = sb.toString();
+        sb.append( PropSettings.getFormation() ).append('-')
+          .append( publicHostname ).append( ".properties" );
+        return sb.toString();
+    }
 
-        S3Object s3Object = null;
 
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getRunners() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get object failed ... might not exist.", e );
-        }
 
-        if ( s3Object == null ) {
-            LOG.info( "The runners container was not present: creating it ..." );
-            createContainer( PropSettings.getRunners() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
+    /**
+     * Registers this runner's instance by adding it's instance information into
+     * S3 as a properties file into the bucket using the following key format:
+     *
+     *      "runners/formationName-publicHostname.properties"
+     *
+     * @param metadata the runner's instance metadata to be registered
+     */
+    public void register( Ec2RunnerInfo metadata ) {
+        String blobName = getRunnerKey( metadata.getHostname() );
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
@@ -71,48 +74,20 @@ public class S3Operations {
     }
 
 
-    public void createContainer( String name ) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength( 0 );
-
-        InputStream emptyContent = new ByteArrayInputStream( new byte[0] );
-        PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(), name + "/",
-                emptyContent, objectMetadata );
-        client.putObject( putRequest );
-
-        LOG.info( "Successfully created container {}", name );
-    }
-
-
+    /**
+     * Scans tests under the bucket as "tests/.*\/test-info.json
+     *
+     * @return a set of keys as Strings for test information
+     */
     public Set<String> getTests() {
-        S3Object s3Object = null;
-
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getTests() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get tests container object failed ... might not exist.", e );
-        }
-
-        if ( s3Object == null ) {
-            LOG.info( "The tests container was not present: creating it ..." );
-            createContainer( PropSettings.getTests() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
-
         Set<String> tests = new HashSet<String>();
         ObjectListing listing = client.listObjects( PropSettings.getBucket(), PropSettings.getTests() + "/" );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
-                if ( summary.getKey().equals( PropSettings.getTests() + "/" ) )
+                String key = summary.getKey();
+
+                if ( key.startsWith( PropSettings.getTests() + "/" ) && key.endsWith( "/test-info.json" ) )
                 {
                     continue;
                 }
@@ -128,32 +103,16 @@ public class S3Operations {
     }
 
 
-    public Map<String,Ec2Metadata> getRunners() {
-        S3Object s3Object = null;
-
-        try {
-            s3Object = client.getObject( PropSettings.getBucket(), PropSettings.getRunners() + "/" );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Attempt to get runners container object failed ... might not exist.", e );
-        }
-
-        if ( s3Object == null ) {
-            LOG.info( "The runners container was not present: creating it ..." );
-            createContainer( PropSettings.getRunners() );
-        }
-        else {
-            try {
-                s3Object.getObjectContent().close();
-            }
-            catch ( IOException e ) {
-                LOG.error( "Failed to close object content stream.", e );
-            }
-        }
-
-        Map<String,Ec2Metadata> runners = new HashMap<String, Ec2Metadata>();
+    /**
+     * Gets the runner instance information from S3 as a map of keys to their properties.
+     *
+     * @param formation the formation to get the runners for
+     * @return the keys mapped to runner instance properties
+     */
+    public Map<String,RunnerInfo> getRunners( String formation ) {
+        Map<String,RunnerInfo> runners = new HashMap<String, RunnerInfo>();
         ObjectListing listing = client.listObjects( PropSettings.getBucket(),
-                PropSettings.getRunners() + "/" + PropSettings.getFormation() );
+                PropSettings.getRunners() + "/" + formation );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
@@ -161,10 +120,10 @@ public class S3Operations {
 
                 LOG.debug( "Got key {} while scanning under runners container", key );
 
-                s3Object = client.getObject( PropSettings.getBucket(), key );
+                S3Object s3Object = client.getObject( PropSettings.getBucket(), key );
 
                 try {
-                    runners.put( key, new Ec2Metadata( s3Object.getObjectContent() ) );
+                    runners.put( key, new Ec2RunnerInfo( s3Object.getObjectContent() ) );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runner {}", key, e );
@@ -179,11 +138,20 @@ public class S3Operations {
     }
 
 
-    public File download( File tempDir, String perftest ) throws IOException, InterruptedException {
-        File tempFile = File.createTempFile( "perftest", "war", tempDir );
+    /**
+     * Downloads a blob in the S3 store by key, and places it in a temporary file returning the file.
+     * Use this to download big things like war files or results.
+     *
+     * @param tempDir the temporary directory to use
+     * @param key the blobs key
+     * @return the File object referencing the temporary file
+     * @throws IOException if there's a problem accessing the stream
+     */
+    public File download( File tempDir, String key ) throws IOException {
+        File tempFile = File.createTempFile( "download", "file", tempDir );
         LOG.debug( "Created temporary file {} for new war download.", tempFile.getAbsolutePath() );
 
-        S3Object s3Object = client.getObject( PropSettings.getBucket(), perftest );
+        S3Object s3Object = client.getObject( PropSettings.getBucket(), key );
         LOG.debug( "Got S3Object:\n{}", s3Object.toString() );
 
         // Download war file contents into temporary file
@@ -199,42 +167,84 @@ public class S3Operations {
         out.flush();
         out.close();
         in.close();
-        LOG.info( "Successfully downloaded {} from S3 to {}.", perftest, tempFile.getAbsoluteFile() );
+        LOG.info( "Successfully downloaded {} from S3 to {}.", key, tempFile.getAbsoluteFile() );
         return tempFile;
     }
 
 
+    public <T> T putJsonObject( String key, Object obj )
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        ByteArrayInputStream in = null;
+
+        try {
+            byte[] json = mapper.writeValueAsBytes( obj );
+            in = new ByteArrayInputStream( json );
+        }
+        catch ( JsonProcessingException e ) {
+            LOG.error("Failed to serialize to JSON TestInfo object {}", obj, e);
+        }
+
+        PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
+                key, in, new ObjectMetadata() );
+        client.putObject( putRequest );
+
+        return null;
+    }
+
+
+    /**
+     * Serializes a RunInfo object into Json and stores it in S3.
+     *
+     * @param testInfo the test the RunInfo object is associated with
+     * @param runInfo the RunInfo object to store in S3
+     */
     public void uploadRunInfo( TestInfo testInfo, RunInfo runInfo ) {
         String loadKey = testInfo.getLoadKey();
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( '/' )
+        sb.append( loadKey )
                 .append( "results/" )
                 .append( runInfo.getRunNumber() )
                 .append( "/run-info.json" );
 
         String blobName = sb.toString();
-        ObjectMapper mapper = new ObjectMapper();
-        ByteArrayInputStream in = null;
-
-        try {
-            byte[] json = mapper.writeValueAsBytes(testInfo);
-            in = new ByteArrayInputStream( json );
-        }
-        catch ( JsonProcessingException e ) {
-            LOG.error("Failed to serialize to JSON TestInfo object {}", testInfo, e);
-        }
-
-        PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
-                blobName, in, new ObjectMetadata() );
-        client.putObject( putRequest );
-
+        putJsonObject( blobName, runInfo );
         LOG.info( "Successfully registered {}", blobName );
     }
 
 
-    public void uploadResults( Ec2Metadata metadata, TestInfo testInfo, RunInfo runInfo, File results ) {
+    /**
+     * Uploads a file into S3 using the supplied key.
+     *
+     * @param key the supplied key
+     * @param file the file to upload
+     */
+    public void putFile( String key, File file ) {
+        PutObjectRequest putRequest = null;
+        try {
+            putRequest = new PutObjectRequest( PropSettings.getBucket(),
+                    key, new FileInputStream( file ), new ObjectMetadata() );
+        }
+        catch ( FileNotFoundException e ) {
+            LOG.error( "Failed to upload the results {} file", file, e );
+        }
+
+        client.putObject( putRequest );
+        LOG.info( "Successfully put file {} into S3 with key {}", file, key );
+    }
+
+
+    /**
+     * Uploads results to be archived in S3 for analysis later.
+     *
+     * @param metadata the metadata associated with the runner instance
+     * @param testInfo the test information associated with the test the results ran on
+     * @param runInfo the run information to also upload into S3 besides the results
+     * @param results the results to upload
+     */
+    public void uploadInfoAndResults( RunnerInfo metadata, TestInfo testInfo, RunInfo runInfo, File results ) {
         uploadRunInfo( testInfo, runInfo );
 
         String loadKey = testInfo.getLoadKey();
@@ -245,25 +255,20 @@ public class S3Operations {
                 .append( "results/" )
                 .append( runInfo.getRunNumber() )
                 .append( '/' )
-                .append( metadata.getPublicHostname() )
+                .append( metadata.getHostname() )
                 .append( "-results.log" );
 
         String blobName = sb.toString();
-
-        PutObjectRequest putRequest = null;
-        try {
-            putRequest = new PutObjectRequest( PropSettings.getBucket(),
-                    blobName, new FileInputStream( results ), new ObjectMetadata() );
-        }
-        catch ( FileNotFoundException e ) {
-            LOG.error( "Failed to upload the results {} file", results, e );
-        }
-        client.putObject( putRequest );
-
-        LOG.info( "Successfully registered {}", blobName );
+        putFile( blobName, results );
     }
 
 
+    /**
+     * Checks if a key is present in S3.
+     *
+     * @param key the key to be checked for
+     * @return true if it exists, false otherwise
+     */
     private boolean hasKey( String key ) {
         ObjectListing listing = client.listObjects( PropSettings.getBucket(), key );
 
@@ -277,14 +282,17 @@ public class S3Operations {
     }
 
 
+    /**
+     * Uploads the information associated with a test in a TestInfo object into S3 as Json.
+     *
+     * @param testInfo the TestInfo object to be serialized and stored in S3
+     */
     public void uploadTestInfo( TestInfo testInfo ) {
         String loadKey = testInfo.getLoadKey();
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append('/')
-                .append( "results/" )
-                .append( "test-info.json" );
+        sb.append( loadKey ).append( "results/test-info.json" );
 
         if ( hasKey( sb.toString() ) ) {
             LOG.warn( "The key {} already exists for TestInfo - not updating!", sb.toString() );
@@ -292,21 +300,7 @@ public class S3Operations {
         }
 
         String blobName = sb.toString();
-        ObjectMapper mapper = new ObjectMapper();
-        ByteArrayInputStream in = null;
-
-        try {
-            byte[] json = mapper.writeValueAsBytes(testInfo);
-            in = new ByteArrayInputStream( json );
-        }
-        catch ( JsonProcessingException e ) {
-            LOG.error("Failed to serialize to JSON TestInfo object {}", testInfo, e);
-        }
-
-        PutObjectRequest putRequest = new PutObjectRequest( PropSettings.getBucket(),
-                blobName, in, new ObjectMetadata() );
-        client.putObject( putRequest );
-
+        putJsonObject( blobName, testInfo );
         LOG.info( "Successfully saved TestInfo with key {}", blobName );
     }
 }

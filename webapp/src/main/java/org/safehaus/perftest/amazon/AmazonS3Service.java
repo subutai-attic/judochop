@@ -6,8 +6,9 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.perftest.settings.RunInfo;
-import org.safehaus.perftest.settings.TestInfo;
+import org.safehaus.perftest.RunnerInfo;
+import org.safehaus.perftest.RunInfo;
+import org.safehaus.perftest.TestInfo;
 
 
 /**
@@ -28,13 +29,13 @@ public interface AmazonS3Service {
 
     Set<String> listTests();
 
-    Ec2Metadata getRunner( String key );
+    RunnerInfo getRunner( String key );
 
-    Map<String, Ec2Metadata> getRunners();
+    Map<String, RunnerInfo> getRunners();
 
     void setServletContext( ServletContext context );
 
-    Ec2Metadata getMyMetadata();
+    RunnerInfo getMyMetadata();
 
     File download( File tempDir, String perftest ) throws Exception;
 

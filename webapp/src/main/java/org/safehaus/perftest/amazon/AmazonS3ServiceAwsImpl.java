@@ -23,10 +23,12 @@ package org.safehaus.perftest.amazon;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import org.safehaus.perftest.RunnerInfo;
 import org.safehaus.perftest.settings.PropSettings;
 import org.safehaus.perftest.settings.Props;
-import org.safehaus.perftest.settings.RunInfo;
-import org.safehaus.perftest.settings.TestInfo;
+import org.safehaus.perftest.RunInfo;
+import org.safehaus.perftest.TestInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,19 +49,19 @@ public class AmazonS3ServiceAwsImpl implements AmazonS3Service, Runnable, Props 
 
     private boolean started = false;
     private S3Operations operations;
-    private Ec2Metadata metadata;
-    private Map<String, Ec2Metadata> runners = new HashMap<String, Ec2Metadata>();
+    private Ec2RunnerInfo metadata;
+    private Map<String, RunnerInfo> runners = new HashMap<String, RunnerInfo>();
     private final Object lock = new Object();
     private final AmazonS3Client client;
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client ) {
+    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Ec2RunnerInfo metadata ) {
         this.client = client;
 
-        metadata = new Ec2Metadata();
+        this.metadata = metadata;
         operations = new S3Operations( client );
-        metadata.setProperty(FORMATION_KEY, PropSettings.getFormation());
+        metadata.setFormation( PropSettings.getFormation() );
     }
 
 
@@ -105,14 +107,14 @@ public class AmazonS3ServiceAwsImpl implements AmazonS3Service, Runnable, Props 
 
 
     @Override
-    public Ec2Metadata getRunner( String key )
+    public RunnerInfo getRunner( String key )
     {
         return runners.get( key );
     }
 
 
     @Override
-    public Map<String, Ec2Metadata> getRunners() {
+    public Map<String, RunnerInfo> getRunners() {
         return runners;
     }
 
@@ -127,7 +129,7 @@ public class AmazonS3ServiceAwsImpl implements AmazonS3Service, Runnable, Props 
 
 
     @Override
-    public Ec2Metadata getMyMetadata() {
+    public RunnerInfo getMyMetadata() {
         return metadata;
     }
 
@@ -146,7 +148,7 @@ public class AmazonS3ServiceAwsImpl implements AmazonS3Service, Runnable, Props 
 
     @Override
     public void uploadResults( final TestInfo testInfo, final RunInfo runInfo, final File resultsFile ) {
-        operations.uploadResults( metadata, testInfo, runInfo, resultsFile );
+        operations.uploadInfoAndResults( metadata, testInfo, runInfo, resultsFile );
     }
 
 
@@ -167,7 +169,7 @@ public class AmazonS3ServiceAwsImpl implements AmazonS3Service, Runnable, Props 
         while ( started ) {
             try {
                 synchronized ( lock ) {
-                    runners = operations.getRunners();
+                    runners = operations.getRunners( metadata.getHostname() );
 
                     LOG.info( "Runners updated" );
                     for ( String runner : runners.keySet() )

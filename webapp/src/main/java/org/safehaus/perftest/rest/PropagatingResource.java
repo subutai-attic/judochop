@@ -4,8 +4,13 @@ package org.safehaus.perftest.rest;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+
+import org.safehaus.perftest.BaseResult;
+import org.safehaus.perftest.PropagatedResult;
+import org.safehaus.perftest.Result;
+import org.safehaus.perftest.State;
 import org.safehaus.perftest.amazon.AmazonS3Service;
-import org.safehaus.perftest.amazon.Ec2Metadata;
+import org.safehaus.perftest.RunnerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,8 +98,8 @@ public class PropagatingResource {
      * @param message the optional message to use if any
      * @return the results from the initiating peer and the remote peers.
      */
-    protected PropagatedResult propagate( boolean status, String message ) {
-        return propagate( status, message, Collections.<String,String>emptyMap() );
+    protected PropagatedResult propagate( State state, boolean status, String message ) {
+        return propagate( state, status, message, Collections.<String,String>emptyMap() );
     }
 
 
@@ -107,18 +112,18 @@ public class PropagatingResource {
      * @param params additional query parameters to pass-through to peers being propagated to
      * @return the results from the initiating peer and the remote peers.
      */
-    protected PropagatedResult propagate( boolean status, String message, final Map<String,String> params ) {
-        PropagatedResult result = new PropagatedResult( getEndpointUrl(), status, message );
+    protected PropagatedResult propagate( State state, boolean status, String message, final Map<String,String> params ) {
+        PropagatedResult result = new PropagatedResult( getEndpointUrl(), status, message, state );
         BlockingQueue<Future<Result>> completionQueue = new LinkedBlockingQueue<Future<Result>>();
         ExecutorCompletionService<Result> completionService =
                 new ExecutorCompletionService<Result>( executorService, completionQueue );
 
         for ( String runner : getService().listRunners() )
         {
-            final Ec2Metadata metadata = getService().getRunner( runner );
+            final RunnerInfo metadata = getService().getRunner( runner );
 
             // skip if the runner is myself
-            if ( getService().getMyMetadata().getPublicHostname().equals( metadata.getPublicHostname() ) ) {
+            if ( getService().getMyMetadata().getHostname().equals( metadata.getHostname() ) ) {
                 continue;
             }
 
@@ -147,16 +152,16 @@ public class PropagatingResource {
 
     class PropagatingCall implements Callable<Result>
     {
-        private final Ec2Metadata metadata;
+        private final RunnerInfo metadata;
         private final Map<String,String> params;
 
-        PropagatingCall( Ec2Metadata metadata, Map<String,String> params ) {
+        PropagatingCall( RunnerInfo metadata, Map<String,String> params ) {
             this.metadata = metadata;
             this.params = params;
         }
 
         @SuppressWarnings( "UnusedDeclaration" )
-        Ec2Metadata getMetadata() {
+        RunnerInfo getMetadata() {
             return metadata;
         }
 
@@ -187,7 +192,7 @@ public class PropagatingResource {
                 remoteResult = resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
             }
             catch ( Exception e ) {
-                LOG.error( "Failure on post to peer {}.", metadata.getPublicHostname() );
+                LOG.error( "Failure on post to peer {}.", metadata.getHostname() );
 
                 Callable<Result> recoveryOp = getRecoveryOperation( this );
 
@@ -203,7 +208,7 @@ public class PropagatingResource {
                     LOG.error( "Failures encountered on recovery operation. Considering " +
                             "this propagating call to be a failure." );
                     return new BaseResult( getEndpointUrl(), false,
-                            "Multiple failures encountered including on recovery operation!" );
+                            "Multiple failures encountered including on recovery operation!", null );
                 }
             }
 
