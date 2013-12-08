@@ -16,6 +16,7 @@
   </properties>
 
   <modules>
+    <module>amazon</module>
     <module>webapp</module>
     <module>plugin</module>
     <module>api</module>

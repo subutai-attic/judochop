@@ -19,6 +19,7 @@
  */
 package org.safehaus.perftest;
 
+import org.safehaus.perftest.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

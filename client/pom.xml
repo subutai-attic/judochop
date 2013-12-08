@@ -29,8 +29,20 @@
     </dependency>
 
     <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>perftest-amazon</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.netflix.archaius</groupId>
       <artifactId>archaius-core</artifactId>
+      <version>${archaius.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-aws</artifactId>
       <version>${archaius.version}</version>
     </dependency>
 

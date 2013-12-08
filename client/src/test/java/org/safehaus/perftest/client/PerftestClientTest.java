@@ -15,11 +15,15 @@ import static junit.framework.Assert.assertNotNull;
 public class PerftestClientTest {
 
     @Test
-    public void testClient() throws Exception {
+    public void testClientGuice() throws Exception {
         Injector injector = Guice.createInjector( new PertestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
         assertNotNull( client );
     }
 
+
+    @Test
+    public void testClientDirect() throws Exception {
+    }
 }

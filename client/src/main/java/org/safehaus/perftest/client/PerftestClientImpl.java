@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.safehaus.perftest.BaseResult;
-import org.safehaus.perftest.Result;
-import org.safehaus.perftest.RunInfo;
-import org.safehaus.perftest.RunnerInfo;
-import org.safehaus.perftest.State;
-import org.safehaus.perftest.TestInfo;
+import org.safehaus.perftest.api.BaseResult;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.State;
+import org.safehaus.perftest.api.TestInfo;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -23,8 +23,11 @@ import com.netflix.config.DynamicStringProperty;
  * An implementation of the PerftestClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient {
-    // @Inject @Named( "formation" ) DynamicStringProperty formation;
+public class PerftestClientImpl implements PerftestClient, ConfigKeys {
+    @Inject @Named( AWSKEY_KEY ) private DynamicStringProperty awsKey;
+    @Inject @Named( AWS_SECRET_KEY ) private DynamicStringProperty awsSecret;
+    @Inject @Named( AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
+
 
 
     @Override

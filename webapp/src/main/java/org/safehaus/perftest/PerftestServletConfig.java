@@ -19,13 +19,19 @@
  */
 package org.safehaus.perftest;
 
+import java.io.File;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.blitz4j.LoggingConfiguration;
-import org.safehaus.perftest.amazon.AmazonS3Module;
-import org.safehaus.perftest.amazon.AmazonS3Service;
+import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.store.StoreService;
+import org.safehaus.perftest.api.store.amazon.Ec2RunnerInfo;
+import org.safehaus.perftest.server.settings.ConfigKeys;
+import org.safehaus.perftest.server.settings.PropSettings;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 /**
@@ -33,7 +39,8 @@ import javax.servlet.ServletContextEvent;
  */
 public class PerftestServletConfig extends GuiceServletContextListener {
     private Injector injector;
-    private AmazonS3Service s3Service;
+    private StoreService storeService;
+
 
 
     @Override
@@ -43,7 +50,7 @@ public class PerftestServletConfig extends GuiceServletContextListener {
             return injector;
         }
 
-        injector = Guice.createInjector( new PerftestModule(), new AmazonS3Module() );
+        injector = Guice.createInjector( new PerftestModule() );
         return injector;
     }
 
@@ -52,18 +59,26 @@ public class PerftestServletConfig extends GuiceServletContextListener {
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
         super.contextInitialized( servletContextEvent );
         LoggingConfiguration.getInstance().configure();
-        s3Service = getInjector().getInstance( AmazonS3Service.class );
-        s3Service.setServletContext( servletContextEvent.getServletContext() );
-        s3Service.start();
+        storeService = getInjector().getInstance( StoreService.class );
+        RunnerInfo runner = storeService.getMyMetadata();
+
+        ServletContext context = servletContextEvent.getServletContext();
+        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );
+        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.SERVER_INFO_KEY, context.getServerInfo() );
+        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
+        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_TEMPDIR_KEY,
+                ( ( File ) context.getAttribute( ConfigKeys.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
+
+        storeService.start();
     }
 
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
         LoggingConfiguration.getInstance().stop();
 
-        if ( s3Service != null )
+        if ( storeService != null )
         {
-            s3Service.stop();
+            storeService.stop();
         }
         super.contextDestroyed( servletContextEvent );
     }

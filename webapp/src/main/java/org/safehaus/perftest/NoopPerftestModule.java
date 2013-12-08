@@ -20,6 +20,8 @@
 package org.safehaus.perftest;
 
 
+import org.safehaus.perftest.api.Perftest;
+
 import com.google.inject.AbstractModule;
 
 

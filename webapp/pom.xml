@@ -92,6 +92,18 @@
     </dependency>
 
     <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>perftest-client</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>perftest-amazon</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
       <version>${jetty.version}</version>

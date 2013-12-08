@@ -1,14 +1,18 @@
 package org.safehaus.perftest;
 
 
-import org.safehaus.perftest.amazon.AmazonS3Service;
+import org.safehaus.perftest.api.CallStatsSnapshot;
+import org.safehaus.perftest.api.Perftest;
+import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.State;
+import org.safehaus.perftest.api.store.StoreService;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
-import org.safehaus.perftest.settings.PropSettings;
-import org.safehaus.perftest.settings.TestInfoImpl;
+import org.safehaus.perftest.server.settings.PropSettings;
+import org.safehaus.perftest.api.TestInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +30,7 @@ public class PerftestRunner implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestRunner.class );
 
 
-    private final AmazonS3Service service;
+    private final StoreService service;
     private final Injector injector;
     private final Object lock = new Object();
     private long sleepToStop = PropSettings.getSleepToStop();
@@ -37,17 +41,18 @@ public class PerftestRunner implements Runnable {
     private long startTime;
     private long stopTime;
 
-    private final TestInfo testInfo;
+    private final TestInfoImpl testInfo;
     private RunInfo runInfo;
 
 
     @Inject
-    public PerftestRunner( Injector injector, TestModuleLoader loader, AmazonS3Service service )
+    public PerftestRunner( Injector injector, TestModuleLoader loader, StoreService service )
     {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
-        testInfo = new TestInfoImpl( test, loader.getTestModule() );
+        testInfo = new TestInfoImpl();
+        testInfo.setTestModuleFQCN( loader.getTestModule().getClass().getCanonicalName() );
         testInfo.setLoadTime( new Date().toString() );
         service.uploadTestInfo( testInfo );
 
