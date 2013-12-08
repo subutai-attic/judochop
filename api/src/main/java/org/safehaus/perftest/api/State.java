@@ -10,14 +10,19 @@ import java.util.Map;
  * The runner States and its possible state transitions: hence its state machine.
  */
 public enum State {
+    // inactive ==> (load signal) ==> ready
+    INACTIVE( 3, new Signal[] { Signal.LOAD                   }, new Integer[] { 0 } ),
+
     // stopped ==> (reset signal) ==> ready
-    STOPPED( 2, new Signal[] { Signal.RESET                  }, new Integer[] { 0 } ),
+    STOPPED ( 2, new Signal[] { Signal.RESET                  }, new Integer[] { 0 } ),
+
     // running ==> (stop signal) ==> stopped
     // running ==> (completed signal) ==> ready
-    RUNNING( 1, new Signal[] { Signal.STOP, Signal.COMPLETED }, new Integer[] { 2, 0 } ),
+    RUNNING ( 1, new Signal[] { Signal.STOP, Signal.COMPLETED }, new Integer[] { 2, 0 } ),
+
     // ready ==> (load signal) ==> ready
     // ready ==> (start signal) ==> running
-    READY  ( 0, new Signal[] { Signal.LOAD, Signal.START     }, new Integer[] { 0, 1 } );
+    READY   ( 0, new Signal[] { Signal.LOAD, Signal.START     }, new Integer[] { 0, 1 } );
 
 
     private final int id;
@@ -47,6 +52,8 @@ public enum State {
                 return RUNNING;
             case 2:
                 return STOPPED;
+            case 3:
+                return INACTIVE;
         }
 
         throw new RuntimeException( "Should never get here!" );

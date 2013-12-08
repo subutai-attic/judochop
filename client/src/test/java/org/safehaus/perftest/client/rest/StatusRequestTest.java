@@ -1,7 +1,7 @@
 package org.safehaus.perftest.client.rest;
 
 
-import java.util.Collection;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.jukito.JukitoRunner;
@@ -17,8 +17,7 @@ import org.safehaus.perftest.client.PerftestClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.Inject;
 
 
 /**
@@ -28,13 +27,11 @@ import com.google.inject.Injector;
 @UseModules( PerftestClientModule.class )
 public class StatusRequestTest {
     private static final Logger LOG = LoggerFactory.getLogger( StatusRequestTest.class );
-    StoreService service;
+    @Inject StoreService service;
 
 
     @Before
     public void setup() {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        service = injector.getInstance( StoreService.class );
         service.start();
     }
 
@@ -46,13 +43,29 @@ public class StatusRequestTest {
 
 
     @Test
-    public void testStatus() throws Exception {
+    public void testStatus() {
         StatusRequest request;
         Map<String,RunnerInfo> runners = service.getRunners();
 
         for ( RunnerInfo runner : runners.values() ) {
             request = new StatusRequest();
-            Result result = request.status( runner );
+            Result result = null;
+
+            if ( runner == null || runner.getHostname() == null ) {
+                continue;
+            }
+
+            try
+            {
+                result = request.status( runner );
+            }
+            catch ( UnknownHostException e ) {
+                LOG.warn( "Seems {} is not a valid hostname", runner.getHostname() );
+            }
+            catch ( Exception e ) {
+                e.printStackTrace();
+            }
+
 
             if ( runner.getHostname() != null )
             {

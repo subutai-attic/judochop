@@ -31,15 +31,30 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
     private static final String PUBLIC_IPV4_KEY = "public-ipv4";
     private static final String LOCAL_IPV4_KEY = "local-ipv4";
     private static final String INSTANCE_URL = "http://169.254.169.254/latest/meta-data";
+    private static final String SERVLET_TEMP_DIR = "javax.servlet.context.tempdir";
 
     private boolean isRunningOnEc2 = false;
+
+
+    private void normalizeProperties() {
+        if ( containsKey( PUBLIC_HOSTNAME_KEY ) ) {
+            setProperty( HOSTNAME_KEY, getProperty( PUBLIC_HOSTNAME_KEY ) );
+        }
+
+        if ( containsKey( PUBLIC_IPV4_KEY ) ) {
+            setProperty( IPV4_KEY, getProperty( PUBLIC_IPV4_KEY ) );
+        }
+
+        if ( containsKey( SERVLET_TEMP_DIR ) ) {
+            setProperty( RUNNER_TEMP_DIR_KEY, getProperty( SERVLET_TEMP_DIR ) );
+        }
+    }
 
 
     @SuppressWarnings( "UnusedDeclaration" )
     public Ec2RunnerInfo( InputStream in ) throws IOException {
         super( in );
     }
-
 
     public Ec2RunnerInfo()
     {
@@ -78,6 +93,8 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
         catch ( IOException e ) {
             LOG.error( "Failed to execute process {}", EC2METADATA_PROCESS, e );
         }
+
+        normalizeProperties();
     }
 
     @SuppressWarnings( "UnusedDeclaration" )
