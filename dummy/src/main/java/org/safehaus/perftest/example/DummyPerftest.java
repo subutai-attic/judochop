@@ -1,7 +1,7 @@
 package org.safehaus.perftest.example;
 
 
-import org.safehaus.perftest.Perftest;
+import org.safehaus.perftest.api.Perftest;
 
 
 /**

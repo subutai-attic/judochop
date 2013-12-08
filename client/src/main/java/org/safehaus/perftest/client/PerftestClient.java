@@ -5,10 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import org.safehaus.perftest.Result;
-import org.safehaus.perftest.RunInfo;
-import org.safehaus.perftest.RunnerInfo;
-import org.safehaus.perftest.TestInfo;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.TestInfo;
 
 
 /**

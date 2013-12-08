@@ -22,6 +22,8 @@ package org.safehaus.perftest;
 
 import com.google.inject.Inject;
 
+import org.safehaus.perftest.api.CallStatsSnapshot;
+import org.safehaus.perftest.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

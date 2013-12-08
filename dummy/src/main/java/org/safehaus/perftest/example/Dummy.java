@@ -4,7 +4,7 @@ package org.safehaus.perftest.example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.safehaus.perftest.annotations.PerftestParams;
+import org.safehaus.perftest.api.annotations.PerftestParams;
 
 
 /**
