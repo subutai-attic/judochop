@@ -72,6 +72,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
     public void start() {
         operations.register( metadata );
         started = true;
+        runners = operations.getRunners( metadata );
         new Thread( this ).start();
     }
 
@@ -161,6 +162,9 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
         while ( started ) {
             try {
                 synchronized ( lock ) {
+                    // wait first since we scan on start()
+                    lock.wait( scanPeriod.get() );
+
                     runners = operations.getRunners( metadata );
 
                     LOG.info( "Runners updated" );
@@ -168,8 +172,6 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
                     {
                         LOG.info( "Found runner: {}", runner );
                     }
-
-                    lock.wait( scanPeriod.get() );
                 }
             }
             catch ( InterruptedException e ) {
