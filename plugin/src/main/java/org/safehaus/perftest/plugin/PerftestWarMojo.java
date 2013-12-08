@@ -37,8 +37,7 @@ public class PerftestWarMojo extends PerftestMojo {
 
         try {
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.hh.mm.ss" );
-            String timeStamp = dateFormat.format( new Date() );
+            String timeStamp = PerftestUtils.getTimestamp( new Date() );
 
             // Extract the war file
             String webappWarPath = getWebappWarPath();
@@ -95,6 +94,7 @@ public class PerftestWarMojo extends PerftestMojo {
             prop.setProperty( "aws.s3.secret", secretKey );
             prop.setProperty( "manager.app.username", managerAppUsername );
             prop.setProperty( "manager.app.password", managerAppPassword );
+            prop.setProperty( "war.md5", PerftestUtils.getMD5( timeStamp, commitId ) );
 
             // Save the newly formed properties file under WEB-INF/classes/config.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf('/') ) );
