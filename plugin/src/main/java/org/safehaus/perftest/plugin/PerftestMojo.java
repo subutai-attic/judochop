@@ -1,105 +1,155 @@
 package org.safehaus.perftest.plugin;
 
 
-import java.io.File;
-
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
+import org.apache.maven.project.MavenProject;
 
 
-@Mojo(name = "perftest")
-public class PerftestMojo extends AbstractMojo {
-    /** Access key for S3. */
-    @Parameter(property = "perftest.accessKey")
-    protected String accessKey;
+/**
+ * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
+ * module's pom and provides extended get methods for several file paths that will be used by extended classes
+ */
+public abstract class PerftestMojo extends AbstractMojo {
 
-    /** Secret key for S3. */
-    @Parameter(property = "perftest.secretKey")
-    protected String secretKey;
 
-    /** Execute all steps up except the upload to the S3.  This can be set to true to perform a "dryRun" execution. */
-    @Parameter(property = "s3repo.doNotUpload", defaultValue = "false")
-    protected boolean doNotUpload;
+    @Parameter( defaultValue = "${project}", readonly = true )
+    protected MavenProject project;
 
-    /** The file to upload. */
-    @Parameter(property = "perftest.sourceFile", required = true)
-    protected String sourceFile;
 
-    /** The bucket to upload into. */
-    @Parameter(property = "perftest.bucketName", required = true)
+    @Parameter( defaultValue = "${plugin}", readonly = true )
+    protected PluginDescriptor plugin;
+
+
+    @Parameter(  defaultValue = "${settings.localRepository}" )
+    protected String localRepository;
+
+
+    /**
+     * Leaving this parameter with the default 'true' value causes the plugin goal to fail when there are modified
+     * sources in the local git repository.
+     */
+    @Parameter( property = "failIfCommitNecessary", defaultValue = "true" )
+    protected boolean failIfCommitNecessary;
+
+
+    /**
+     * This parameter is written to the config.properties file in the created WAR and used by the runner at runtime
+     */
+    @Parameter( property = "perftestFormation", required = true )
+    protected String perftestFormation;
+
+
+    /**
+     * Fully qualified CN property of the app once it's deployed to its container. This parameter will be put to the
+     * config.properties file inside the WAR to be uploaded
+     */
+    @Parameter( property = "testModuleFQCN", required = true )
+    protected String testModuleFQCN;
+
+
+    /**
+     * The bucket to upload into
+     */
+    @Parameter( property = "bucketName", required = true )
     protected String bucketName;
 
-    /** The file (in the bucket) to create. */
-    @Parameter(property = "perftest.destinationFile")
-    protected String destinationFile;
 
-    /** Force override of endpoint for S3 regions such as EU. */
-    @Parameter(property = "perftest.endpoint")
-    protected String endpoint;
+    /**
+     * Access key for S3
+     */
+    @Parameter( property = "accessKey", required = true )
+    protected String accessKey;
+
+
+    /**
+     * Secret key for S3
+     */
+    @Parameter( property = "secretKey", required = true)
+    protected String secretKey;
+
+
+    /**
+     * sourceFile will be uploaded as $destinationParentDir$commitUUID/perftest.war in S3 bucket
+     *
+     * defaultValue is "tests/"
+     */
+    @Parameter( property = "destinationParentDir", defaultValue = "tests/" )
+    protected String destinationParentDir;
+
+
+    /**
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * the WAR to be uploaded
+     */
+    @Parameter( property = "managerAppUsername", required = true )
+    protected String managerAppUsername;
+
+
+    /**
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * the WAR to be uploaded
+     */
+    @Parameter( property = "managerAppPassword", required = true )
+    protected String managerAppPassword;
 
 
     @Override
-    public void execute() throws MojoExecutionException {
-        File source = new File( sourceFile );
-        if ( !source.exists() ) {
-            throw new MojoExecutionException( "File doesn't exist: " + sourceFile );
-        }
+    public abstract void execute() throws MojoExecutionException;
 
-        AmazonS3 s3 = getS3Client( accessKey, secretKey );
-        if ( endpoint != null ) {
-            s3.setEndpoint( endpoint );
-        }
 
-        if ( !s3.doesBucketExist( bucketName ) ) {
-            throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
-        }
-
-        boolean success = upload( s3, bucketName, destinationFile, source );
-        if ( !success ) {
-            throw new MojoExecutionException( "Unable to upload file to S3." );
-        }
-
-        getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );
+    /**
+     * @return Returns the project base directory with a '/' at the end
+     */
+    public String getProjectBaseDirectory() {
+        return PerftestUtils.forceSlashOnDir( project.getBasedir().getParent() );
     }
 
 
-    protected static AmazonS3 getS3Client( String accessKey, String secretKey ) {
-        AWSCredentialsProvider provider;
-        if ( accessKey != null && secretKey != null ) {
-            AWSCredentials credentials = new BasicAWSCredentials( accessKey, secretKey );
-            provider = new StaticCredentialsProvider( credentials );
-        }
-        else {
-            provider = new DefaultAWSCredentialsProviderChain();
-        }
-
-        return new AmazonS3Client( provider );
+    /**
+     * @return Returns the extracted path of perftest-webapp.war file with a '/' at the end
+     */
+    public String getExtractedWarRootPath() {
+        return getProjectBaseDirectory() + "target/perftest/";
     }
 
 
-    protected static boolean upload( AmazonS3 s3, String bucketName, String destinationFile, File source ) {
-        TransferManager mgr = new TransferManager( s3 );
-        Upload upload = mgr.upload( bucketName, destinationFile, source );
+    /**
+     * @return Returns the full path of created perftest.war file
+     */
+    public String getWarToUploadPath() {
+        String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        try {
-            upload.waitForUploadResult();
-        }
-        catch ( InterruptedException e ) {
-            return false;
-        }
-
-        return true;
+        return projectBaseDirectory + "/target/perftest.war";
     }
+
+
+    /**
+     * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid;
+     *         S3 bucketName is not included in the returned String
+     * @throws MojoExecutionException
+     */
+    public String getWarOnS3Path() throws MojoExecutionException {
+        return destinationParentDir + PerftestUtils.getLastCommitUuid( PerftestUtils
+                .getGitConfigFolder( project.getBasedir().getParent() ) ) + "/perftest.war";
+    }
+
+
+    /**
+     * @return Returns the full path of the original perftest-webapp war file inside the local maven repository
+     */
+    public String getWebappWarPath() {
+        String path = localRepository;
+        Artifact perftestArtifact = plugin.getPluginArtifact();
+
+        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/perftest-webapp/" +
+                perftestArtifact.getVersion() + "/perftest-webapp-" + perftestArtifact.getVersion() + ".war";
+
+        return path;
+    }
+
+
 }

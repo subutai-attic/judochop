@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.usergrid.perftest</groupId>
+    <groupId>org.safehaus.perftest</groupId>
     <artifactId>perftest-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
@@ -40,14 +40,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.usergrid.perftest</groupId>
+        <groupId>org.safehaus.perftest</groupId>
         <artifactId>perftest-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
           <accessKey>${aws.s3.key}</accessKey>
           <secretKey>${aws.s3.secret}</secretKey>
           <bucketName>perftest-bucket</bucketName>
-          <gitConfigDirectory>${project.parent.basedir}../../../../.git</gitConfigDirectory>
           <perftestFormation>${perftest.formation}</perftestFormation>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
