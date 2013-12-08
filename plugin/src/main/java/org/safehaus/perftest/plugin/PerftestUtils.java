@@ -3,6 +3,11 @@ package org.safehaus.perftest.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -246,6 +251,45 @@ public class PerftestUtils {
         catch ( Exception e ) {
             throw new MojoExecutionException( "Error trying to find out if git commit is needed", e );
         }
+    }
+
+
+    /**
+     * Concatenates provided timestamp and commitUUID strings and returns their calculated MD5 in hexadecimal format
+     * @param timestamp
+     * @param commitUUID
+     * @return Returns the hexadecimal representation of calculated MD5
+     * @throws MojoExecutionException This will probably never thrown, cause UTF-8 encoding and MD5 is defined in
+     * each system
+     */
+    public static String getMD5 ( String timestamp, String commitUUID ) throws MojoExecutionException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance( "MD5" );
+            byte[] hash = digest.digest( ( timestamp + commitUUID ).getBytes( "UTF-8" ) );
+
+            StringBuilder result = new StringBuilder( hash.length * 2 );
+            for ( int i = 0; i < hash.length; i++ ) {
+                result.append( String.format( "%02x", hash[i] & 0xff ) );
+            }
+
+            return result.toString();
+
+        } catch ( NoSuchAlgorithmException e ) {
+            throw new MojoExecutionException( "MD5 algorithm could not be found", e );
+        }
+        catch ( UnsupportedEncodingException e ) {
+            throw new MojoExecutionException( "UTF-8 encoding is not supported", e );
+        }
+    }
+
+
+    /**
+     * @param date
+     * @return Returns the given date in a 'yyyy.MM.dd.hh.mm.ss' format
+     */
+    public static String getTimestamp ( Date date ) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.hh.mm.ss" );
+        return dateFormat.format( date );
     }
 
 
