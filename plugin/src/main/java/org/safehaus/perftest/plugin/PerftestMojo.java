@@ -101,6 +101,12 @@ public abstract class PerftestMojo extends AbstractMojo {
     public abstract void execute() throws MojoExecutionException;
 
 
+    public String getProjectOutputJarPath() {
+        return PerftestUtils.forceSlashOnDir( project.getBuild().getDirectory() ) + project.getBuild().getFinalName() +
+                "." + project.getPackaging();
+    }
+
+
     /**
      * @return Returns the project base directory with a '/' at the end
      */
