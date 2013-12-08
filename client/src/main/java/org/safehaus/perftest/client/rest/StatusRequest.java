@@ -1,10 +1,11 @@
 package org.safehaus.perftest.client.rest;
 
 
+import java.net.UnknownHostException;
+
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
 
@@ -18,10 +19,10 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
  * | File Templates.
  */
 public class StatusRequest {
-    public Result status( RunnerInfo runner ) throws Exception {
+    public Result status( RunnerInfo runner ) throws UnknownHostException {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/status" );
-        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( BaseResult.class );
     }
 }

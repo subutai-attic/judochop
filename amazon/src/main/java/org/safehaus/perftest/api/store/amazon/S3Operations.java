@@ -149,7 +149,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 }
 
                 try {
-                    runners.put( key, new RunnerInfo( s3Object.getObjectContent() ) {} );
+                    runners.put( key, new Ec2RunnerInfo( s3Object.getObjectContent() ) {} );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runner {}", key, e );

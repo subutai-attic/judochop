@@ -6,24 +6,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-
 import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
+import org.safehaus.perftest.client.rest.LoadRequest;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicStringProperty;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 
 /**
@@ -80,16 +75,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
     @Override
     public Result load( RunnerInfo runner, String testKey ) {
-        Result result;
-        DefaultClientConfig clientConfig = new DefaultClientConfig();
-        Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/load" );
-        result = resource
-                .queryParam( "propagate", "true" )
-                .queryParam( "perftest", testKey )
-                .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
-
-        return result;
+        return new LoadRequest().load( runner, testKey );
     }
 
 
