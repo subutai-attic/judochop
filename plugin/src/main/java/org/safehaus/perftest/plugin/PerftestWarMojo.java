@@ -52,7 +52,7 @@ public class PerftestWarMojo extends PerftestMojo {
 
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
-            FileUtils.copyFileToDirectory( project.getFile(), new File( libPath ) );
+            FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), new File( libPath ) );
             PerftestUtils.copyArtifactsTo( project, libPath, true );
 
             // Create config.properties file
