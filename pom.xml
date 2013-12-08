@@ -13,6 +13,7 @@
   <properties>
     <slf4j.version>1.6.1</slf4j.version>
     <junit.version>4.11</junit.version>
+    <jukito.version>1.3</jukito.version>
   </properties>
 
   <modules>
@@ -47,6 +48,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jukito</groupId>
+      <artifactId>jukito</artifactId>
+      <version>${jukito.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
 

@@ -1,8 +1,11 @@
 package org.safehaus.perftest.api.store.amazon;
 
 
+import java.util.Map;
+
 import com.google.inject.Guice;
 import org.junit.Test;
+import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,12 @@ public class S3OperationsTest {
 
     @Test
     public void testRunnersListing() {
-        operations.getRunners( new Ec2RunnerInfo() );
+        Map<String,RunnerInfo> runners = operations.getRunners( new Ec2RunnerInfo() );
+
+        for ( RunnerInfo runnerInfo : runners.values() )
+        {
+            LOG.debug( "Got runner {}", runnerInfo );
+        }
     }
 
 
