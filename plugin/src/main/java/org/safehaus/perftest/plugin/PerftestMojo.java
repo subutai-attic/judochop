@@ -105,7 +105,7 @@ public abstract class PerftestMojo extends AbstractMojo {
      * @return Returns the project base directory with a '/' at the end
      */
     public String getProjectBaseDirectory() {
-        return PerftestUtils.forceSlashOnDir( project.getBasedir().getParent() );
+        return PerftestUtils.forceSlashOnDir( project.getBasedir().getAbsolutePath() );
     }
 
 
