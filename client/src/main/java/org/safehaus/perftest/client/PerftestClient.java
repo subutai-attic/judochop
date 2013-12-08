@@ -22,7 +22,6 @@ import org.safehaus.perftest.api.TestInfo;
  * </ul>
  */
 public interface PerftestClient extends ConfigKeys {
-    String FORMATION_KEY = "perftest.formation";
 
     /**
      * Gets the set of runners involved in a perftest cluster formation.
@@ -80,10 +79,11 @@ public interface PerftestClient extends ConfigKeys {
      * in the State.READY state to start running tests. It will block until the
      * verification is found to fail or until the cluster is consistent.
      *
-     * @param test the test information associated with the test to load
+     * @param runner the runner to use for propagating the load request
+     * @param testKey the test information associated with the test to load
      * @return the results associated with the operation
      */
-    Result load( TestInfo test );
+    Result load( RunnerInfo runner, String testKey );
 
 
     /**

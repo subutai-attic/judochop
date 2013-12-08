@@ -112,7 +112,7 @@ public class LoadResource extends PropagatingResource {
         }
 
         try {
-            deploy(perftest);
+            deploy( perftest );
             return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState() );
         }
         catch ( Exception e ) {

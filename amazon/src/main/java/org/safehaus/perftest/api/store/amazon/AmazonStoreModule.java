@@ -10,6 +10,8 @@ package org.safehaus.perftest.api.store.amazon;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.safehaus.perftest.api.store.StoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -22,6 +24,7 @@ import com.netflix.config.DynamicStringProperty;
 
 
 public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
+    private static final Logger LOG = LoggerFactory.getLogger( AmazonStoreModule.class );
     private DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
 
     protected void configure() {
@@ -54,14 +57,18 @@ public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
     @Provides
     @Named( AWSKEY_KEY )
     DynamicStringProperty getAwsKeyProperty() {
-        return propertyFactory.getStringProperty( AWSKEY_KEY, "AWS_KEY_NOT_SET" );
+        DynamicStringProperty prop = propertyFactory.getStringProperty( AWSKEY_KEY, "AWS_KEY_NOT_SET" );
+        LOG.debug( "{} = {} ", AWSKEY_KEY, prop.get() );
+        return prop;
     }
 
 
     @Provides
     @Named( AWS_SECRET_KEY )
     DynamicStringProperty getAwsSecretProperty() {
-        return propertyFactory.getStringProperty( AWS_SECRET_KEY, "AWS_SECRET_NOT_SET" );
+        DynamicStringProperty prop = propertyFactory.getStringProperty( AWS_SECRET_KEY, "AWS_SECRET_NOT_SET" );
+        LOG.debug( "{} = {}", AWS_SECRET_KEY, prop.get() );
+        return prop;
     }
 
 
