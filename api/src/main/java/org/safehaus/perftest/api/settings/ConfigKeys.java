@@ -28,4 +28,15 @@ public interface ConfigKeys {
     String LOAD_TIME_KEY = "load.time.key";
 
     String LOAD_KEY = "load.key";
+
+    String IPV4_KEY = "public-ipv4";
+
+    String HOSTNAME_KEY = "public-hostname";
+
+    String SERVER_PORT_KEY = "server.port";
+
+    String URL_KEY = "url.key";
+
+    String RUNNER_TEMP_DIR_KEY = "runner.temp.dir";
+
 }

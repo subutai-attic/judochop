@@ -13,7 +13,7 @@ import com.google.inject.AbstractModule;
 import com.netflix.config.DynamicPropertyFactory;
 
 
-public class PertestClientModule extends AbstractModule implements ConfigKeys {
+public class PerftestClientModule extends AbstractModule implements ConfigKeys {
     private DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
 
 

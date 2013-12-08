@@ -143,7 +143,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
                 S3Object s3Object = client.getObject( awsBucket.get(), key );
 
-                if ( runner != null && s3Object.getKey().contains( runner.getHostname() ))
+                if ( runner != null && runner.getHostname() != null && s3Object.getKey().contains( runner.getHostname() ))
                 {
                     continue;
                 }

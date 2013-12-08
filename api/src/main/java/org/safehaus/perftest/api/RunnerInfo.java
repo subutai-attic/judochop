@@ -7,42 +7,43 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.safehaus.perftest.api.settings.ConfigKeys;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Minimal requirements for runner information.
  */
-public class RunnerInfo extends Properties {
+public class RunnerInfo extends Properties implements ConfigKeys {
 
 
     @JsonProperty
     public String getIpv4() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        return getProperty( IPV4_KEY );
     }
 
 
     @JsonProperty
     public String getHostname() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        return getProperty( HOSTNAME_KEY );
     }
 
 
     @JsonProperty
     public int getServerPort() {
-        return 0;  //To change body of created methods use File | Settings | File Templates.
+        return Integer.getInteger( getProperty( SERVER_PORT_KEY ) );
     }
 
 
     @JsonProperty
     public String getUrl() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        return getProperty( URL_KEY );
     }
 
 
     @JsonProperty
     public String getRunnerTempDir() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        return getProperty( RUNNER_TEMP_DIR_KEY );
     }
 
 

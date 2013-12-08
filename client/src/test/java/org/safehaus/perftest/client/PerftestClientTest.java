@@ -24,7 +24,7 @@ public class PerftestClientTest {
 
     @Before
     public void setup() {
-        Injector injector = Guice.createInjector( new PertestClientModule() );
+        Injector injector = Guice.createInjector( new PerftestClientModule() );
         client = injector.getInstance( PerftestClient.class );
     }
 
