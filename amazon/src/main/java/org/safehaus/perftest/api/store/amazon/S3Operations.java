@@ -12,6 +12,7 @@ import com.netflix.config.DynamicStringProperty;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.perftest.api.TestInfoImpl;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +89,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return a set of keys as Strings for test information
      */
     @Override
-    public Set<String> getTests() {
-        Set<String> tests = new HashSet<String>();
+    public Set<TestInfo> getTests() throws IOException {
+        Set<TestInfo> tests = new HashSet<TestInfo>();
         ObjectListing listing = client.listObjects( awsBucket.get(), TESTS_PATH + "/" );
 
         do {
@@ -101,7 +102,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                     continue;
                 }
 
-                tests.add( summary.getKey() );
+                tests.add( getJsonObject( key, TestInfoImpl.class ) );
             }
 
             listing = client.listNextBatchOfObjects( listing );
@@ -115,14 +116,24 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     /**
      * Gets the runner instance information from S3 as a map of keys to their properties.
      *
-     * @param formation the formation to get the runners for
      * @return the keys mapped to runner instance properties
      */
     @Override
-    public Map<String,RunnerInfo> getRunners( String formation ) {
+    public Map<String,RunnerInfo> getRunners() {
+        return getRunners( null );
+    }
+
+
+    /**
+     * Gets the runner instance information from S3 as a map of keys to their properties.
+     *
+     * @param runner a runner to exclude from results (none if null)
+     * @return the keys mapped to runner instance properties
+     */
+    @Override
+    public Map<String,RunnerInfo> getRunners( RunnerInfo runner ) {
         Map<String,RunnerInfo> runners = new HashMap<String, RunnerInfo>();
-        ObjectListing listing = client.listObjects( awsBucket.get(),
-                RUNNERS_PATH + "/" + formation );
+        ObjectListing listing = client.listObjects( awsBucket.get(), RUNNERS_PATH );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
@@ -131,6 +142,11 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 LOG.debug( "Got key {} while scanning under runners container", key );
 
                 S3Object s3Object = client.getObject( awsBucket.get(), key );
+
+                if ( runner != null && s3Object.getKey().contains( runner.getHostname() ))
+                {
+                    continue;
+                }
 
                 try {
                     runners.put( key, new RunnerInfo( s3Object.getObjectContent() ) {} );
@@ -180,6 +196,27 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         in.close();
         LOG.info( "Successfully downloaded {} from S3 to {}.", key, tempFile.getAbsoluteFile() );
         return tempFile;
+    }
+
+
+    private <T> T getJsonObject( String key, Class<T> clazz ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        S3Object s3Object = client.getObject( awsBucket.get(), key );
+        S3ObjectInputStream in = s3Object.getObjectContent();
+
+        try {
+            return mapper.readValue( in, clazz );
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to marshall {} into a valid object.", key, e );
+            throw e;
+        }
+        finally {
+            if ( in != null )
+            {
+                in.close();
+            }
+        }
     }
 
 

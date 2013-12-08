@@ -3,6 +3,7 @@ package org.safehaus.perftest.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.perftest.api.store.StoreOperations;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -23,22 +25,27 @@ import com.netflix.config.DynamicStringProperty;
  * An implementation of the PerftestClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient, ConfigKeys {
-    @Inject @Named( AWSKEY_KEY ) private DynamicStringProperty awsKey;
-    @Inject @Named( AWS_SECRET_KEY ) private DynamicStringProperty awsSecret;
+public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest.api.store.amazon.ConfigKeys {
+    private final StoreOperations operations;
     @Inject @Named( AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
 
 
-
-    @Override
-    public Set<RunnerInfo> getRunners( final String formation ) {
-        return new HashSet<RunnerInfo>();
+    @Inject
+    public PerftestClientImpl( StoreOperations operations )
+    {
+        this.operations = operations;
     }
 
 
     @Override
-    public Set<TestInfo> getTests( final String formation ) {
-        return new HashSet<TestInfo>();
+    public Collection<RunnerInfo> getRunners() {
+        return operations.getRunners().values();
+    }
+
+
+    @Override
+    public Set<TestInfo> getTests() throws IOException {
+        return operations.getTests();
     }
 
 
@@ -91,7 +98,7 @@ public class PerftestClientImpl implements PerftestClient, ConfigKeys {
 
 
     @Override
-    public Result verify( final String formation ) {
+    public Result verify() {
         return new BaseResult( "http://localhost:8080", true, "verification triggered", State.READY );
     }
 }

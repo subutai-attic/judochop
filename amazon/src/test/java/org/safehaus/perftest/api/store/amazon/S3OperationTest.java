@@ -14,7 +14,7 @@ public class S3OperationTest {
 
     @Test @Ignore
     public void testRunnersListing() {
-        operations.getRunners( new Ec2RunnerInfo().getHostname() );
+        operations.getRunners( new Ec2RunnerInfo() );
     }
 
 

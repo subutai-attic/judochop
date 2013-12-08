@@ -20,6 +20,7 @@
 package org.safehaus.perftest.server.rest;
 
 
+import java.io.IOException;
 import java.util.Set;
 
 import javax.ws.rs.GET;
@@ -27,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.api.store.StoreService;
 
 import com.google.inject.Inject;
@@ -50,7 +52,7 @@ public class TestsResource {
 
 
     @GET
-    public Set<String> listTests() {
+    public Set<TestInfo> listTests() throws IOException {
         return service.listTests();
     }
 }

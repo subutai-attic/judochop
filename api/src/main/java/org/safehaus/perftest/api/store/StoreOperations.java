@@ -20,9 +20,11 @@ public interface StoreOperations {
 
     void register( RunnerInfo metadata );
 
-    Set<String> getTests();
+    Set<TestInfo> getTests() throws IOException;
 
-    Map<String,RunnerInfo> getRunners( String formation );
+    Map<String,RunnerInfo> getRunners( RunnerInfo runner );
+
+    Map<String,RunnerInfo> getRunners();
 
     File download( File tempDir, String key ) throws IOException;
 
