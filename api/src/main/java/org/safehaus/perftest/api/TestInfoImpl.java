@@ -3,9 +3,7 @@ package org.safehaus.perftest.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
-import com.google.inject.Module;
 import com.google.inject.name.Named;
-import com.netflix.config.DynamicStringProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,55 +15,34 @@ import org.safehaus.perftest.api.settings.ConfigKeys;
  * Test specific information.
  */
 public class TestInfoImpl implements TestInfo, ConfigKeys {
-    private final Perftest userPerftest;
-    private final Module userModule;
-
-    @Inject @Named( PERFTEST_VERSION_KEY ) private DynamicStringProperty perftestVersion;
-    @Inject @Named( CREATE_TIMESTAMP_KEY ) private DynamicStringProperty createTimestamp;
-    @Inject @Named( GIT_UUID_KEY ) private DynamicStringProperty gitUuid;
-    @Inject @Named( GIT_URL_KEY ) private DynamicStringProperty getGitRepoUrl;
-    @Inject @Named( GROUP_ID_KEY ) private DynamicStringProperty getGroupId;
-    @Inject @Named( ARTIFACT_ID_KEY ) private DynamicStringProperty getArtifactId;
-
+    private String testModuleFQCN;
+    private String perftestVersion;
+    private String createTimestamp;
+    private String gitUuid;
+    private String getGitRepoUrl;
+    private String getGroupId;
+    private String getArtifactId;
     private final List<RunInfo> runInfos = new ArrayList<RunInfo>();
-    private final String loadKey;
+    private String loadKey;
     private String loadTime;
 
 
     @Inject
-    public TestInfoImpl( Perftest userPerftest, Module userModule ) {
-        this.userPerftest = userPerftest;
-        this.userModule = userModule;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( "tests/" )
-                .append(gitUuid)
-                .append('-')
-                .append( createTimestamp )
-                .append( '/' )
-                .append( "perftest.war" );
-        loadKey = sb.toString();
+    public TestInfoImpl() {
     }
 
 
     @Override
     @JsonProperty
-    public Perftest getUserPerftest() {
-        return userPerftest;
-    }
-
-
-    @Override
-    @JsonProperty
-    public String getUserModuleFQCN() {
-        return userModule.getClass().getCanonicalName();
+    public String getTestModuleFQCN() {
+        return testModuleFQCN;
     }
 
 
     @Override
     @JsonProperty
     public String getPerftestVersion() {
-        return perftestVersion.get();
+        return perftestVersion;
     }
 
 
@@ -85,35 +62,35 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     @Override
     @JsonProperty
     public String getCreateTimestamp() {
-        return createTimestamp.get();
+        return createTimestamp;
     }
 
 
     @Override
     @JsonProperty
     public String getGitUuid() {
-        return gitUuid.get();
+        return gitUuid;
     }
 
 
     @Override
     @JsonProperty
     public String getGetGitRepoUrl() {
-        return getGitRepoUrl.get();
+        return getGitRepoUrl;
     }
 
 
     @Override
     @JsonProperty
     public String getGetGroupId() {
-        return getGroupId.get();
+        return getGroupId;
     }
 
 
     @Override
     @JsonProperty
     public String getGetArtifactId() {
-        return getArtifactId.get();
+        return getArtifactId;
     }
 
 
@@ -132,8 +109,56 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
 
 
     @Override
-    @SuppressWarnings("UnusedDeclaration")
-    public void setLoadTime( String loadTime ) {
+    @Inject
+    public void setLoadTime( @Named( LOAD_TIME_KEY ) String loadTime ) {
         this.loadTime = loadTime;
+    }
+
+
+    @Inject
+    public void setPerftestVersion( @Named( PERFTEST_VERSION_KEY ) String perftestVersion ) {
+        this.perftestVersion = perftestVersion;
+    }
+
+
+    @Inject
+    public void setCreateTimestamp( @Named( CREATE_TIMESTAMP_KEY ) String createTimestamp ) {
+        this.createTimestamp = createTimestamp;
+    }
+
+
+    @Inject
+    public void setGitUuid( @Named( GIT_UUID_KEY ) String gitUuid ) {
+        this.gitUuid = gitUuid;
+    }
+
+
+    @Inject
+    public void setGetGitRepoUrl( @Named( GIT_URL_KEY ) String getGitRepoUrl ) {
+        this.getGitRepoUrl = getGitRepoUrl;
+    }
+
+
+    @Inject
+    public void setGetGroupId( @Named( GROUP_ID_KEY ) String getGroupId ) {
+        this.getGroupId = getGroupId;
+    }
+
+
+    @Inject
+    public void setGetArtifactId( @Named( ARTIFACT_ID_KEY ) String getArtifactId ) {
+        this.getArtifactId = getArtifactId;
+    }
+
+
+    @Inject
+    public void setTestModuleFQCN( @Named( TEST_MODULE_FQCN_KEY ) String testModuleFQCN ) {
+        this.testModuleFQCN = testModuleFQCN;
+    }
+
+
+    @Inject
+    public void setLoadKey( @Named( LOAD_KEY ) String loadKey ) {
+        this.loadKey = loadKey;
     }
 }

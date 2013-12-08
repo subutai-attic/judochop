@@ -5,7 +5,6 @@ import org.safehaus.perftest.api.CallStatsSnapshot;
 import org.safehaus.perftest.api.Perftest;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.State;
-import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.api.store.StoreService;
 
 import com.google.inject.Inject;
@@ -42,7 +41,7 @@ public class PerftestRunner implements Runnable {
     private long startTime;
     private long stopTime;
 
-    private final TestInfo testInfo;
+    private final TestInfoImpl testInfo;
     private RunInfo runInfo;
 
 
@@ -52,7 +51,8 @@ public class PerftestRunner implements Runnable {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
-        testInfo = new TestInfoImpl( test, loader.getTestModule() );
+        testInfo = new TestInfoImpl();
+        testInfo.setTestModuleFQCN( loader.getTestModule().getClass().getCanonicalName() );
         testInfo.setLoadTime( new Date().toString() );
         service.uploadTestInfo( testInfo );
 

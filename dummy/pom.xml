@@ -50,7 +50,7 @@
           <perftestFormation>${perftest.formation}</perftestFormation>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
-          <testModuleFQCN>org.safehaus.perftest.example.DummyModule</testModuleFQCN>
+          <testModuleFQCN>org.safehaus.perftest.api.example.DummyModule</testModuleFQCN>
           <failIfCommitNecessary>false</failIfCommitNecessary>
         </configuration>
       </plugin>

@@ -14,8 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class PerftestRunnerTest {
     @Test
     public void testPerftestRunner() throws InterruptedException {
-        PerftestRunner runner = Guice.createInjector( new PerftestModule(),
-                new AmazonStoreModule() ).getInstance( PerftestRunner.class );
+        PerftestRunner runner = Guice.createInjector( new PerftestModule() ).getInstance( PerftestRunner.class );
         assertFalse( runner.isRunning() );
 
         runner.start();

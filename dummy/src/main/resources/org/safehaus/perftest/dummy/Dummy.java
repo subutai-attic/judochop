@@ -1,10 +1,9 @@
-package org.safehaus.perftest.example;
+package org.safehaus.perftest.dummy;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.safehaus.perftest.api.annotations.PerftestParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**

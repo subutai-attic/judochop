@@ -1,4 +1,4 @@
-package org.safehaus.perftest.example;
+package org.safehaus.perftest.api.example;
 
 
 import org.safehaus.perftest.api.Perftest;

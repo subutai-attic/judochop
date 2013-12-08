@@ -214,6 +214,12 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     @Override
     public void uploadRunInfo( TestInfo testInfo, RunInfo runInfo ) {
         String loadKey = testInfo.getLoadKey();
+
+        if ( loadKey == null ) {
+            LOG.error( "testInfo.getLoadKey() was null. Abandoning runInfo upload." );
+            return;
+        }
+
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
@@ -263,6 +269,12 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         uploadRunInfo( testInfo, runInfo );
 
         String loadKey = testInfo.getLoadKey();
+
+        if ( loadKey == null ) {
+            LOG.error( "testInfo.getLoadKey() was null. Abandoning info and results upload." );
+            return;
+        }
+
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
@@ -305,6 +317,12 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     @Override
     public void uploadTestInfo( TestInfo testInfo ) {
         String loadKey = testInfo.getLoadKey();
+
+        if ( loadKey == null ) {
+            LOG.error( "testInfo.loadKey() was null. Abandoning upload." );
+            return;
+        }
+
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();

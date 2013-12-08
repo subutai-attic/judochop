@@ -24,4 +24,8 @@ public interface ConfigKeys {
     String TEST_MODULE_FQCN_KEY = "test.module.fqcn";
 
     String DEFAULT_TEST_MODULE = "org.safehaus.perftest.NoopPerftestModule";
+
+    String LOAD_TIME_KEY = "load.time.key";
+
+    String LOAD_KEY = "load.key";
 }

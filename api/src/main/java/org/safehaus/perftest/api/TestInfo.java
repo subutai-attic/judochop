@@ -15,10 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public interface TestInfo {
     @JsonProperty
-    Perftest getUserPerftest();
-
-    @JsonProperty
-    String getUserModuleFQCN();
+    String getTestModuleFQCN();
 
     @JsonProperty
     String getPerftestVersion();

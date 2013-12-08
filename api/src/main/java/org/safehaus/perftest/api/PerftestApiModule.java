@@ -13,7 +13,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 
 public class PerftestApiModule extends AbstractModule implements ConfigKeys {
@@ -27,49 +26,63 @@ public class PerftestApiModule extends AbstractModule implements ConfigKeys {
 
     @Provides
     @Named( PERFTEST_VERSION_KEY )
-    DynamicStringProperty getPerftestVersion() {
-        return propertyFactory.getStringProperty( PERFTEST_VERSION_KEY, "1.0" );
+    String getPerftestVersion() {
+        return propertyFactory.getStringProperty( PERFTEST_VERSION_KEY, "1.0" ).get();
     }
 
 
     @Provides
     @Named( CREATE_TIMESTAMP_KEY )
-    DynamicStringProperty getCreateTimestamp() {
-        return propertyFactory.getStringProperty( CREATE_TIMESTAMP_KEY,  "none" );
+    String getCreateTimestamp() {
+        return propertyFactory.getStringProperty( CREATE_TIMESTAMP_KEY,  "none" ).get();
     }
 
 
     @Provides
     @Named( GIT_UUID_KEY )
-    DynamicStringProperty getGitUuid() {
-        return propertyFactory.getStringProperty( GIT_UUID_KEY, "none" );
+    String getGitUuid() {
+        return propertyFactory.getStringProperty( GIT_UUID_KEY, "none" ).get();
     }
 
 
     @Provides
     @Named( GIT_URL_KEY )
-    DynamicStringProperty getGitUrl() {
-        return propertyFactory.getStringProperty( GIT_URL_KEY, "none" );
+    String getGitUrl() {
+        return propertyFactory.getStringProperty( GIT_URL_KEY, "none" ).get();
     }
 
 
     @Provides
     @Named( GROUP_ID_KEY )
-    DynamicStringProperty getGroupId() {
-        return propertyFactory.getStringProperty( GROUP_ID_KEY, "none" );
+    String getGroupId() {
+        return propertyFactory.getStringProperty( GROUP_ID_KEY, "none" ).get();
     }
 
 
     @Provides
     @Named( ARTIFACT_ID_KEY )
-    DynamicStringProperty getArtifactId() {
-        return propertyFactory.getStringProperty( ARTIFACT_ID_KEY, "none" );
+    String getArtifactId() {
+        return propertyFactory.getStringProperty( ARTIFACT_ID_KEY, "none" ).get();
     }
 
 
     @Provides
     @Named( TEST_MODULE_FQCN_KEY )
-    DynamicStringProperty getTestModuleFqcn() {
-        return propertyFactory.getStringProperty( TEST_MODULE_FQCN_KEY, DEFAULT_TEST_MODULE );
+    String getTestModuleFqcn() {
+        return propertyFactory.getStringProperty( TEST_MODULE_FQCN_KEY, DEFAULT_TEST_MODULE ).get();
+    }
+
+
+    @Provides
+    @Named( LOAD_KEY )
+    String getLoadKey() {
+        return propertyFactory.getStringProperty( LOAD_KEY, "none" ).get();
+    }
+
+
+    @Provides
+    @Named( LOAD_TIME_KEY )
+    String getLoadTimeKey() {
+        return propertyFactory.getStringProperty( LOAD_TIME_KEY, "none" ).get();
     }
 }

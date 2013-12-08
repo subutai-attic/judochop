@@ -29,7 +29,6 @@ public class PerftestModule extends ServletModule {
 
     protected void configureServlets() {
         install( new PerftestApiModule() );
-        install( new AmazonStoreModule() );
         install( new PertestClientModule() );
 
         // Hook Jersey into Guice Servlet

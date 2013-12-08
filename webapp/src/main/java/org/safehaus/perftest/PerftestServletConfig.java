@@ -27,7 +27,6 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.blitz4j.LoggingConfiguration;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreService;
-import org.safehaus.perftest.api.store.amazon.AmazonStoreModule;
 import org.safehaus.perftest.api.store.amazon.Ec2RunnerInfo;
 import org.safehaus.perftest.server.settings.ConfigKeys;
 import org.safehaus.perftest.server.settings.PropSettings;
@@ -51,7 +50,7 @@ public class PerftestServletConfig extends GuiceServletContextListener {
             return injector;
         }
 
-        injector = Guice.createInjector( new PerftestModule(), new AmazonStoreModule() );
+        injector = Guice.createInjector( new PerftestModule() );
         return injector;
     }
 

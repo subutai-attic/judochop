@@ -41,9 +41,9 @@ public class TestModuleLoader implements ConfigKeys {
 
 
     @Inject
-    public TestModuleLoader( Injector injector, @Named( TEST_MODULE_FQCN_KEY ) DynamicStringProperty testModuleFCQN ) throws Exception
+    public TestModuleLoader( Injector injector, @Named( TEST_MODULE_FQCN_KEY ) String testModuleFCQN ) throws Exception
     {
-        testModuleFqcn = testModuleFCQN.get();
+        testModuleFqcn = testModuleFCQN;
 
         if ( testModuleFqcn.equals( NoopPerftestModule.class.getCanonicalName() ) ) {
             testModule = new NoopPerftestModule();
