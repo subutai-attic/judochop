@@ -3,6 +3,7 @@ package org.safehaus.perftest.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 import org.safehaus.perftest.api.Result;
@@ -26,19 +27,17 @@ public interface PerftestClient extends ConfigKeys {
     /**
      * Gets the set of runners involved in a perftest cluster formation.
      *
-     * @param formation the perftest cluster formation
      * @return the set of Perftest runner nodes
      */
-    Set<RunnerInfo> getRunners( String formation );
+    Collection<RunnerInfo> getRunners();
 
 
     /**
      * Gets the set of tests that have been created.
      *
-     * @param formation the perftest cluster formation
      * @return the set of performance tests
      */
-    Set<TestInfo> getTests( String formation );
+    Set<TestInfo> getTests() throws IOException;
 
 
     /**
@@ -117,8 +116,7 @@ public interface PerftestClient extends ConfigKeys {
      *     <li>all registered peers are in the READY state to start the test</li>
      * </ul>
      *
-     * @param formation the formation to verify the consistency of
      * @return the results of the verification
      */
-    Result verify ( String formation );
+    Result verify ();
 }

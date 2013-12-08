@@ -25,7 +25,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicLongProperty;
-import com.netflix.config.DynamicPropertyFactory;
 
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.RunInfo;
@@ -37,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -152,8 +152,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public Set<String> listTests()
-    {
+    public Set<TestInfo> listTests() throws IOException {
         return operations.getTests();
     }
 
@@ -162,7 +161,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
         while ( started ) {
             try {
                 synchronized ( lock ) {
-                    runners = operations.getRunners( metadata.getHostname() );
+                    runners = operations.getRunners( metadata );
 
                     LOG.info( "Runners updated" );
                     for ( String runner : runners.keySet() )

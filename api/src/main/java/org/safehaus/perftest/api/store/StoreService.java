@@ -2,6 +2,7 @@ package org.safehaus.perftest.api.store;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public interface StoreService {
 
     Set<String> listRunners();
 
-    Set<String> listTests();
+    Set<TestInfo> listTests() throws IOException;
 
     RunnerInfo getRunner( String key );
 
