@@ -7,12 +7,12 @@
 package org.safehaus.perftest;
 
 import org.safehaus.perftest.api.PerftestApiModule;
+import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.perftest.server.rest.ResetResource;
 import org.safehaus.perftest.server.rest.StartResource;
 import org.safehaus.perftest.server.rest.StatsResource;
 import org.safehaus.perftest.server.rest.StatusResource;
 import org.safehaus.perftest.server.rest.StopResource;
-import org.safehaus.perftest.client.PertestClientModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.servlet.ServletModule;
@@ -28,7 +28,7 @@ public class PerftestModule extends ServletModule {
 
     protected void configureServlets() {
         install( new PerftestApiModule() );
-        install( new PertestClientModule() );
+        install( new PerftestClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );

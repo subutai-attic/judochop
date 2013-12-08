@@ -31,6 +31,7 @@ import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.PerftestRunner;
 import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreService;
 import org.safehaus.perftest.server.settings.PropSettings;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.io.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -89,6 +91,8 @@ public class LoadResource extends PropagatingResource {
             return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", runner.getState() );
         }
 
+        Map<String,RunnerInfo> peers = getService().getRunners();
+
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other runners.
 
@@ -109,6 +113,11 @@ public class LoadResource extends PropagatingResource {
                 result.setMessage( e.getMessage() );
                 return result;
             }
+        }
+
+        for ( RunnerInfo runner : peers.values() )
+        {
+
         }
 
         try {
