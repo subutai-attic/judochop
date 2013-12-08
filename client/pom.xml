@@ -16,6 +16,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.1.5</jackson.version>
+    <archaius.version>0.5.12</archaius.version>
     <guice.version>3.0</guice.version>
     <junit.version>4.11</junit.version>
   </properties>
@@ -25,6 +26,12 @@
       <groupId>${pom.groupId}</groupId>
       <artifactId>perftest-api</artifactId>
       <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-core</artifactId>
+      <version>${archaius.version}</version>
     </dependency>
 
     <dependency>

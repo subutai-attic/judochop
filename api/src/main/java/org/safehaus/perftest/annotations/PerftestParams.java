@@ -1,4 +1,4 @@
-package org.safehaus.perftest;
+package org.safehaus.perftest.annotations;
 
 
 import java.lang.annotation.ElementType;
