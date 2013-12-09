@@ -134,6 +134,16 @@ public abstract class PerftestMojo extends AbstractMojo {
 
 
     /**
+     * @return Returns the full path of created perftest.war file
+     */
+    public String getTestInfoToUploadPath() {
+        String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
+
+        return projectBaseDirectory + "/target/test-info.json";
+    }
+
+
+    /**
      * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid;
      *         S3 bucketName is not included in the returned String
      * @throws MojoExecutionException
@@ -141,6 +151,17 @@ public abstract class PerftestMojo extends AbstractMojo {
     public String getWarOnS3Path() throws MojoExecutionException {
         return destinationParentDir + PerftestUtils.getLastCommitUuid( PerftestUtils
                 .getGitConfigFolder( project.getBasedir().getParent() ) ) + "/perftest.war";
+    }
+
+
+    /**
+     * @return Returns the file path of test-info.json file inside the S3 bucket, using the current last commit uuid;
+     *         S3 bucketName is not included in the returned String
+     * @throws MojoExecutionException
+     */
+    public String getTestInfoOnS3Path() throws MojoExecutionException {
+        return destinationParentDir + PerftestUtils.getLastCommitUuid( PerftestUtils
+                .getGitConfigFolder( project.getBasedir().getParent() ) ) + "/test-info.json";
     }
 
 
