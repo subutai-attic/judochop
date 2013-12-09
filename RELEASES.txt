@@ -1,0 +1,4 @@
+When releasing use the following property value to activate the release profile:
+
+   -DsafehausRelease=true
+

@@ -2,6 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <artifactId>perftest-parent</artifactId>
   <groupId>org.safehaus.perftest</groupId>
   <version>1.0-SNAPSHOT</version>
@@ -38,6 +45,16 @@
     </developer>
   </developers>
 
+  <scm>
+    <url>http://stash.safehaus.org/projects/PERFTEST/repos/main/browse</url>
+    <connection>
+      scm:git:http://stash.safehaus.org/scm/perftest/main.git
+    </connection>
+    <developerConnection>
+scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/perftest/main.git
+    </developerConnection>
+  </scm>
+
   <properties>
     <slf4j.version>1.6.1</slf4j.version>
     <junit.version>4.11</junit.version>
@@ -52,6 +69,53 @@
     <module>client</module>
     <module>dummy</module>
   </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.4.2</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>${arguments} -Psonatype-oss-release</arguments>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>safehausRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
