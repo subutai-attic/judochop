@@ -19,7 +19,10 @@ public class PerftestDeployMojo extends PerftestMojo {
     public void execute() throws MojoExecutionException {
         String sourceFile = getWarToUploadPath();
         String destinationFile = getWarOnS3Path();
+        String testinfoKey = getTestInfoOnS3Path();
         File source = new File( sourceFile );
+        File testInfo = new File( source.getParent(), "test-info.json" );
+
         if ( !source.exists() ) {
             // TODO call 'war' goal instead of throwing exception, then continue
             throw new MojoExecutionException( "File doesn't exist: " + sourceFile );
@@ -27,13 +30,18 @@ public class PerftestDeployMojo extends PerftestMojo {
 
         AmazonS3 s3 = PerftestUtils.getS3Client( accessKey, secretKey );
 
-        if ( !s3.doesBucketExist( bucketName ) ) {
+        if ( ! s3.doesBucketExist( bucketName ) ) {
             throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
         }
 
         boolean success = PerftestUtils.uploadToS3( s3, bucketName, destinationFile, source );
-        if ( !success ) {
-            throw new MojoExecutionException( "Unable to upload file to S3." );
+        if ( ! success ) {
+            throw new MojoExecutionException( "Unable to upload war file to S3." );
+        }
+
+        success = PerftestUtils.uploadToS3( s3, bucketName, testinfoKey, testInfo );
+        if ( ! success ) {
+            throw new MojoExecutionException( "Unable to upload test-info.json file to S3." );
         }
 
         getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );

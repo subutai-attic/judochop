@@ -32,19 +32,25 @@ public interface TestInfo {
     String getGitUuid();
 
     @JsonProperty
-    String getGetGitRepoUrl();
+    String getGitRepoUrl();
 
     @JsonProperty
-    String getGetGroupId();
+    String getGroupId();
 
     @JsonProperty
-    String getGetArtifactId();
+    String getProjectVersion();
+
+    @JsonProperty
+    String getArtifactId();
 
     @JsonProperty
     String getLoadKey();
 
     @JsonProperty
     String getLoadTime();
+
+    @JsonProperty
+    String getWarMd5();
 
     @SuppressWarnings("UnusedDeclaration")
     void setLoadTime( String loadTime );

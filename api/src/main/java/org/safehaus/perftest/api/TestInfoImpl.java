@@ -19,9 +19,11 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     private String perftestVersion;
     private String createTimestamp;
     private String gitUuid;
-    private String getGitRepoUrl;
-    private String getGroupId;
-    private String getArtifactId;
+    private String gitRepoUrl;
+    private String groupId;
+    private String artifactId;
+    private String projectVersion;
+    private String warMd5;
     private final List<RunInfo> runInfos = new ArrayList<RunInfo>();
     private String loadKey;
     private String loadTime;
@@ -75,22 +77,22 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
 
     @Override
     @JsonProperty
-    public String getGetGitRepoUrl() {
-        return getGitRepoUrl;
+    public String getGitRepoUrl() {
+        return gitRepoUrl;
     }
 
 
     @Override
     @JsonProperty
-    public String getGetGroupId() {
-        return getGroupId;
+    public String getGroupId() {
+        return groupId;
     }
 
 
     @Override
     @JsonProperty
-    public String getGetArtifactId() {
-        return getArtifactId;
+    public String getArtifactId() {
+        return artifactId;
     }
 
 
@@ -134,20 +136,20 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
 
 
     @Inject
-    public void setGetGitRepoUrl( @Named( GIT_URL_KEY ) String getGitRepoUrl ) {
-        this.getGitRepoUrl = getGitRepoUrl;
+    public void setGitRepoUrl( @Named( GIT_URL_KEY ) String getGitRepoUrl ) {
+        this.gitRepoUrl = getGitRepoUrl;
     }
 
 
     @Inject
-    public void setGetGroupId( @Named( GROUP_ID_KEY ) String getGroupId ) {
-        this.getGroupId = getGroupId;
+    public void setGroupId( @Named( GROUP_ID_KEY ) String getGroupId ) {
+        this.groupId = getGroupId;
     }
 
 
     @Inject
-    public void setGetArtifactId( @Named( ARTIFACT_ID_KEY ) String getArtifactId ) {
-        this.getArtifactId = getArtifactId;
+    public void setArtifactId( @Named( ARTIFACT_ID_KEY ) String getArtifactId ) {
+        this.artifactId = getArtifactId;
     }
 
 
@@ -160,5 +162,29 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     @Inject
     public void setLoadKey( @Named( LOAD_KEY ) String loadKey ) {
         this.loadKey = loadKey;
+    }
+
+
+    @Override
+    @JsonProperty
+    public String getProjectVersion() {
+        return projectVersion;
+    }
+
+
+    public void setProjectVersion( final String projectVersion ) {
+        this.projectVersion = projectVersion;
+    }
+
+
+    @Override
+    @JsonProperty
+    public String getWarMd5() {
+        return warMd5;
+    }
+
+
+    public void setWarMd5( final String warMd5 ) {
+        this.warMd5 = warMd5;
     }
 }
