@@ -173,7 +173,9 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     public Result start( RunnerInfo runner, final boolean propagate ) {
         if ( ! verify() ) {
             LOG.warn( "Cluster is not ready to start the tests" );
-            return status( runner ); // Returning this state is not ideal here
+            Result r = status( runner );
+            // Returning this state is not ideal here
+            return new BaseResult( r.getEndpoint(), false, "Cluster is not ready to start the tests", State.READY );
         }
 
         return RestRequests.start( runner, propagate );
