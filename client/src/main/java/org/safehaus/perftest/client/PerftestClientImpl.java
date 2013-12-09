@@ -88,6 +88,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     public Result load( RunnerInfo runner, String testKey, Boolean propagate ) {
         TestInfo testInfo = getTest( testKey );
         String md5 = testInfo.getWarMd5();
+
         Result result = RestRequests.load( runner, testKey, propagate );
 
         if ( ! result.getStatus() )

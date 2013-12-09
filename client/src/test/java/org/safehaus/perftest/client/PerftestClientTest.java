@@ -43,11 +43,11 @@ public class PerftestClientTest {
     }
 
 
-//    @Test
-//    public void testLoad() throws IOException {
-//        RunnerInfo liveRunner = client.getLiveRunner();
-//        client.load( liveRunner, "tests/bace8793f7583d2320dc8ae2025b606fed065417/perftest.war", true );
-//    }
+    @Test
+    public void testLoad() throws IOException {
+        RunnerInfo liveRunner = client.getLiveRunner();
+        client.load( liveRunner, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true );
+    }
 
 
     @Test
