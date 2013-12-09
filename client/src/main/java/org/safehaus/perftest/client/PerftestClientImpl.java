@@ -163,27 +163,95 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     }
 
 
+    /**
+     * Verifies the cluster and sends the start rest request if verification succeeds
+     * @param runner
+     * @param propagate
+     * @return
+     */
     @Override
     public Result start( RunnerInfo runner, final boolean propagate ) {
         if ( ! verify() ) {
             LOG.warn( "Cluster is not ready to start the tests" );
-            // TODO fix next line
-            return new BaseResult( runner.getUrl(), true, "verification failed", State.INACTIVE );
+            return status( runner ); // Returning this state is not ideal here
         }
 
         return RestRequests.start( runner, propagate );
     }
 
 
+    /**
+     * If propagate is true, checks if there is at least one runner in cluster in RUNNING state; if not, checks
+     * if the given runner is in RUNNING state. If that check succeeds, sends the stop rest request
+     * @param runner
+     * @param propagate
+     * @return
+     */
     @Override
     public Result stop( final RunnerInfo runner, final boolean propagate ) {
-        return new BaseResult( "http://localhost:8080", true, "test stopped", State.STOPPED );
+        Result status = null;
+        boolean stoppable = false;
+        // if request is wished to be propagated, then we check if there is at least one runner in RUNNING state
+        if ( propagate ) {
+            Collection<RunnerInfo> runners = getRunners();
+            for ( RunnerInfo r : runners ) {
+                status = status( r );
+                if ( status.getStatus() && status.getState() == State.RUNNING ) {
+                    stoppable = true;
+                    break;
+                }
+            }
+        }
+        else {
+            status = status( runner );
+            if ( status.getStatus() && status.getState() == State.RUNNING ) {
+                stoppable = true;
+            }
+        }
+
+        if ( ! stoppable ) {
+            LOG.info( "Cluster is not in a stoppable state" );
+            return new BaseResult( status.getEndpoint(), true, "Cannot stop", status.getState() );
+        }
+
+        LOG.info( "Sending stop request to runner at {}", runner.getHostname() );
+        return RestRequests.stop( runner, propagate );
     }
 
 
+    /**
+     * If propagate is true, checks if there is at least one runner in cluster in STOPPED state; if not, checks
+     * if the given runner is in STOPPED state. If that check succeeds, sends the reset rest request
+     * @param runner
+     * @param propagate
+     * @return
+     */
     @Override
     public Result reset( final RunnerInfo runner, final boolean propagate ) {
-        return new BaseResult( "http://localhost:8080", true, "test reset", State.READY );
+        Result status = status( runner );
+        boolean resettable = false;
+        // if request is wished to be propagated, then we check if there is at least one runner in STOPPED state
+        if ( propagate ) {
+            Collection<RunnerInfo> runners = getRunners();
+            for ( RunnerInfo r : runners ) {
+                status = status( r );
+                if ( status.getStatus() && status.getState() == State.STOPPED ) {
+                    resettable = true;
+                    break;
+                }
+            }
+        }
+        else {
+            resettable = ( status.getStatus() && status.getState() == State.STOPPED );
+        }
+
+        if ( ! resettable ) {
+            LOG.info( "Cluster is not in a resettable state" );
+            return new BaseResult( status.getEndpoint(), true, "Cannot reset", status.getState() );
+        }
+
+        LOG.info( "Sending reset request to runner at {}", runner.getHostname() );
+        return RestRequests.reset( runner, propagate );
     }
 
 
@@ -193,6 +261,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     }
 
 
+    /**
+     * Checks whether all the runners in the cluster are reachable, in a READY state
+     * and has the latest test with matching MD5 checksum fields.
+     * @return Returns true if all instances on the cluster is ready to start the test
+     */
     @Override
     public boolean verify() {
         // Get the latest test info
@@ -253,10 +326,10 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
     /**
      * Compares to timestamps and returns -1 if ts1 < ts2, 0 if ts1 == ts2, 1 otherwise
-     * @param ts1
-     * @param ts2
-     * @return
-     * @throws NumberFormatException
+     * @param ts1 format is 'yyyy.MM.dd.hh.mm.ss'
+     * @param ts2 format is 'yyyy.MM.dd.hh.mm.ss'
+     * @return returns -1 if ts1 < ts2, 0 if ts1 == ts2, 1 otherwise
+     * @throws NumberFormatException Invalid formatting in given timestamps
      */
     private int compareTimestamps ( String ts1, String ts2 ) throws NumberFormatException {
 
