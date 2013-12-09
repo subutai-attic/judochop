@@ -44,6 +44,27 @@ public class RestRequestsTest {
 
 
     @Test
+    public void testStart() {
+        Map<String,RunnerInfo> runners = service.getRunners();
+
+        if ( runners.size() == 0 ) {
+            LOG.debug( "No runners found, cannot start test" );
+            return;
+        }
+
+        RunnerInfo firstRunner = runners.values().iterator().next();
+        Result result = RestRequests.start( firstRunner, true );
+
+        if ( !result.getStatus() ) {
+            LOG.debug( "Could not get the result of start request" );
+        }
+        else {
+            LOG.debug( "Result: " + result.getMessage() );
+        }
+    }
+
+
+    @Test
     public void testStatus() {
         Map<String,RunnerInfo> runners = service.getRunners();
 

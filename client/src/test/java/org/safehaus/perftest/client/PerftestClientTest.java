@@ -9,6 +9,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.TestInfo;
 import org.slf4j.Logger;
@@ -63,6 +64,15 @@ public class PerftestClientTest {
     @Test
     public void testVerify() throws Exception {
         boolean verified = client.verify();
-        LOG.debug( "Verified: " + verified );
+        LOG.debug( "Verified: {}", verified );
     }
+
+
+    @Test
+    public void testStart() throws Exception {
+        Result result = client.start( client.getLiveRunner(), true );
+        LOG.debug( "Start result is {}", result.getMessage() );
+    }
+
+
 }
