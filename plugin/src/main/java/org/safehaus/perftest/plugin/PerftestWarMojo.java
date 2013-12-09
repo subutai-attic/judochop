@@ -18,7 +18,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/** Creates perftest.war using perftest-webapp module and caller module */
+/** Creates perftest.war using perftest-server module and caller module */
 @Mojo(name = "war", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST)
 public class PerftestWarMojo extends PerftestMojo {
@@ -42,7 +42,7 @@ public class PerftestWarMojo extends PerftestMojo {
             String timeStamp = PerftestUtils.getTimestamp( new Date() );
 
             // Extract the war file
-            String webappWarPath = getWebappWarPath();
+            String serverWarPath = getServerWarPath();
             String extractedWarRoot = getExtractedWarRootPath();
             if ( FileUtils.fileExists( extractedWarRoot ) ) {
                 FileUtils.cleanDirectory( extractedWarRoot );
@@ -50,7 +50,7 @@ public class PerftestWarMojo extends PerftestMojo {
             else {
                 FileUtils.mkdir( extractedWarRoot );
             }
-            PerftestUtils.extractWar( new File( webappWarPath ), extractedWarRoot );
+            PerftestUtils.extractWar( new File( serverWarPath ), extractedWarRoot );
 
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
@@ -62,13 +62,13 @@ public class PerftestWarMojo extends PerftestMojo {
             Properties prop = new Properties();
             String configPropertiesFilePath = extractedWarRoot + "WEB-INF/classes/config.properties";
             if ( FileUtils.fileExists( configPropertiesFilePath ) ) {
-                // Existing config.properties of webapp-perftest
+                // Existing config.properties of perftest-server
                 inputStream = new FileInputStream( configPropertiesFilePath );
                 prop.load( inputStream );
                 inputStream.close();
             }
 
-            // If exists, properties in this file can overwrite the ones from webapp-perftest
+            // If exists, properties in this file can overwrite the ones from perftest-server
             if ( getClass().getResource( "config.properties" ) != null ) {
                 inputStream = getClass().getResourceAsStream( "config.properties" );
                 Properties propCurrent = new Properties();
