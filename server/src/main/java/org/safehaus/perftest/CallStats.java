@@ -20,22 +20,20 @@
 package org.safehaus.perftest;
 
 
-import com.google.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.safehaus.perftest.api.CallStatsSnapshot;
 import org.safehaus.perftest.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.google.inject.Inject;
 
 
-/**
- * Atomically stores and updates call statistics on tests.
- */
+/** Atomically stores and updates call statistics on tests. */
 public class CallStats {
     private static final Logger LOG = LoggerFactory.getLogger( CallStats.class );
 
@@ -70,17 +68,15 @@ public class CallStats {
 
 
     public CallStatsSnapshot getStatsSnapshot( boolean isRunning, long startTime, long stopTime ) {
-        synchronized ( lock )
-        {
+        synchronized ( lock ) {
             return new CallStatsSnapshot( callCount.get(), maxTime, minTime, meanTime, isRunning, startTime, stopTime );
         }
     }
 
 
-    public int callOccurred( Perftest test, long startTime, long endTime, TimeUnit units )
-    {
+    public int callOccurred( Perftest test, long startTime, long endTime, TimeUnit units ) {
         synchronized ( lock ) {
-            if ( callCount.get() >  test.getCallCount() - 1 ) {
+            if ( callCount.get() > test.getCallCount() - 1 ) {
                 return callCount.get();
             }
 
@@ -93,7 +89,7 @@ public class CallStats {
                 int numCalls = callCount.incrementAndGet();
                 StringBuilder sb = new StringBuilder();
                 sb.append( numCalls ).append( " " ).append( startTime ).append( " " ).append( endTime );
-                log.write(sb.toString());
+                log.write( sb.toString() );
                 meanTime = totalTime / numCalls;
                 return numCalls;
             }
@@ -107,6 +103,7 @@ public class CallStats {
     public File getResultsFile() {
         return new File( log.getPath() );
     }
+
 
     public void stop() {
         log.close();

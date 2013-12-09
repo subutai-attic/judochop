@@ -1,8 +1,31 @@
 package org.safehaus.perftest.api.store.amazon;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.perftest.api.store.StoreOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -10,20 +33,8 @@ import com.google.inject.name.Named;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.store.StoreOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.*;
-
-
-/**
- * Used to encapsulate the various S3 operations to perform.
- */
+/** Used to encapsulate the various S3 operations to perform. */
 public class S3Operations implements StoreOperations, ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( S3Operations.class );
 
@@ -35,19 +46,17 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     @Inject
-    public S3Operations( AmazonS3Client client,
-                         @Named( AWS_BUCKET_KEY ) DynamicStringProperty awsBucket )
-    {
+    public S3Operations( AmazonS3Client client, @Named( AWS_BUCKET_KEY ) DynamicStringProperty awsBucket ) {
         this.client = client;
         this.awsBucket = awsBucket;
     }
 
 
     /**
-     * Registers this runner's instance by adding it's instance information into
-     * S3 as a properties file into the bucket using the following key format:
+     * Registers this runner's instance by adding it's instance information into S3 as a properties file into the bucket
+     * using the following key format:
      *
-     *      "runners/formationName-publicHostname.properties"
+     * "runners/formationName-publicHostname.properties"
      *
      * @param publicHostname the runner's instance publicHostname
      */
@@ -59,12 +68,11 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     }
 
 
-
     /**
-     * Registers this runner's instance by adding it's instance information into
-     * S3 as a properties file into the bucket using the following key format:
+     * Registers this runner's instance by adding it's instance information into S3 as a properties file into the bucket
+     * using the following key format:
      *
-     *      "runners/formationName-publicHostname.properties"
+     * "runners/formationName-publicHostname.properties"
      *
      * @param runner the runner's instance metadata to be registered
      */
@@ -79,8 +87,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         String blobName = getRunnerKey( runner.getHostname() );
 
         try {
-            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(),
-                    RUNNERS_PATH + "/" + blobName,
+            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), RUNNERS_PATH + "/" + blobName,
                     runner.getPropertiesAsStream(), new ObjectMetadata() );
             client.putObject( putRequest );
         }
@@ -106,8 +113,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
 
-                if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/test-info.json" ) )
-                {
+                if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/test-info.json" ) ) {
                     tests.add( getJsonObject( key, TestInfo.class ) );
                 }
             }
@@ -126,7 +132,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return the keys mapped to runner instance properties
      */
     @Override
-    public Map<String,RunnerInfo> getRunners() {
+    public Map<String, RunnerInfo> getRunners() {
         return getRunners( null );
     }
 
@@ -135,11 +141,12 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * Gets the runner instance information from S3 as a map of keys to their properties.
      *
      * @param runner a runner to exclude from results (none if null)
+     *
      * @return the keys mapped to runner instance properties
      */
     @Override
-    public Map<String,RunnerInfo> getRunners( RunnerInfo runner ) {
-        Map<String,RunnerInfo> runners = new HashMap<String, RunnerInfo>();
+    public Map<String, RunnerInfo> getRunners( RunnerInfo runner ) {
+        Map<String, RunnerInfo> runners = new HashMap<String, RunnerInfo>();
         ObjectListing listing = client.listObjects( awsBucket.get(), RUNNERS_PATH );
 
         do {
@@ -151,8 +158,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 S3Object s3Object = client.getObject( awsBucket.get(), key );
 
                 if ( runner != null && runner.getHostname() != null &&
-                        s3Object.getKey().contains( runner.getHostname() ))
-                {
+                        s3Object.getKey().contains( runner.getHostname() ) ) {
                     continue;
                 }
 
@@ -173,12 +179,14 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Downloads a blob in the S3 store by key, and places it in a temporary file returning the file.
-     * Use this to download big things like war files or results.
+     * Downloads a blob in the S3 store by key, and places it in a temporary file returning the file. Use this to
+     * download big things like war files or results.
      *
      * @param tempDir the temporary directory to use
      * @param key the blobs key
+     *
      * @return the File object referencing the temporary file
+     *
      * @throws IOException if there's a problem accessing the stream
      */
     @Override
@@ -228,8 +236,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     @Override
-    public <T> T putJsonObject( String key, Object obj )
-    {
+    public <T> T putJsonObject( String key, Object obj ) {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayInputStream in = null;
 
@@ -238,11 +245,10 @@ public class S3Operations implements StoreOperations, ConfigKeys {
             in = new ByteArrayInputStream( json );
         }
         catch ( JsonProcessingException e ) {
-            LOG.error("Failed to serialize to JSON TestInfo object {}", obj, e);
+            LOG.error( "Failed to serialize to JSON TestInfo object {}", obj, e );
         }
 
-        PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(),
-                key, in, new ObjectMetadata() );
+        PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), key, in, new ObjectMetadata() );
         client.putObject( putRequest );
 
         return null;
@@ -267,10 +273,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey )
-                .append( "results/" )
-                .append( runInfo.getRunNumber() )
-                .append( "/run-info.json" );
+        sb.append( loadKey ).append( "results/" ).append( runInfo.getRunNumber() ).append( "/run-info.json" );
 
         String blobName = sb.toString();
         putJsonObject( blobName, runInfo );
@@ -288,8 +291,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     public void putFile( String key, File file ) {
         PutObjectRequest putRequest = null;
         try {
-            putRequest = new PutObjectRequest( awsBucket.get(),
-                    key, new FileInputStream( file ), new ObjectMetadata() );
+            putRequest =
+                    new PutObjectRequest( awsBucket.get(), key, new FileInputStream( file ), new ObjectMetadata() );
         }
         catch ( FileNotFoundException e ) {
             LOG.error( "Failed to upload the results {} file", file, e );
@@ -322,12 +325,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey )
-                .append( "results/" )
-                .append( runInfo.getRunNumber() )
-                .append( '/' )
-                .append( metadata.getHostname() )
-                .append( "-results.log" );
+        sb.append( loadKey ).append( "results/" ).append( runInfo.getRunNumber() ).append( '/' )
+          .append( metadata.getHostname() ).append( "-results.log" );
 
         String blobName = sb.toString();
         putFile( blobName, results );
@@ -338,6 +337,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * Checks if a key is present in S3.
      *
      * @param key the key to be checked for
+     *
      * @return true if it exists, false otherwise
      */
     private boolean hasKey( String key ) {
@@ -384,8 +384,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot
-     * find it then null is returned.
+     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot find it then null is returned.
      *
      * @return the TestInfo object if it exists in the store or null if it does not
      */
@@ -412,8 +411,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot
-     * find it then null is returned.
+     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot find it then null is returned.
      *
      * @return the TestInfo object if it exists in the store or null if it does not
      */

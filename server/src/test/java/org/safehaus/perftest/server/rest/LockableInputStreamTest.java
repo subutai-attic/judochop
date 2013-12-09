@@ -1,20 +1,21 @@
 package org.safehaus.perftest.server.rest;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Testing the LockableInputStream.
- */
+
+/** Testing the LockableInputStream. */
 public class LockableInputStreamTest {
     private static final Logger LOG = LoggerFactory.getLogger( LockableInputStreamTest.class );
+
 
     @Test
     public void testBlockage() throws Exception {
@@ -24,8 +25,7 @@ public class LockableInputStreamTest {
         final byte[] buf = new byte[1000];
 
         // write out about ~100M to the temp file
-        for ( int ii = 0; ii < 100000; ii++ )
-        {
+        for ( int ii = 0; ii < 100000; ii++ ) {
             out.write( buf );
         }
         out.flush();
@@ -49,8 +49,7 @@ public class LockableInputStreamTest {
                     LOG.info( "before call to read" );
                     while ( ( readCount = in.read( buf ) ) != -1 ) {
                         total += readCount;
-                        if ( total % 10000000 == 0 )
-                        {
+                        if ( total % 10000000 == 0 ) {
                             LOG.info( "Read {} bytes so far.", total );
                         }
                     }
@@ -59,7 +58,7 @@ public class LockableInputStreamTest {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        } ).start();
 
 
         in.returnOnLimit();
@@ -68,6 +67,6 @@ public class LockableInputStreamTest {
 
         in.deactivateLimit();
         Thread.sleep( 200 );
-        assertEquals( total-1, in.getReadCount() );
+        assertEquals( total - 1, in.getReadCount() );
     }
 }

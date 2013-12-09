@@ -20,29 +20,28 @@
 package org.safehaus.perftest.api.store.amazon;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.perftest.api.store.StoreOperations;
+import org.safehaus.perftest.api.store.StoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicLongProperty;
 
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.TestInfo;
 
-import org.safehaus.perftest.api.store.StoreOperations;
-import org.safehaus.perftest.api.store.StoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-
-/**
- * Handles S3 interactions to interface with other test runners.
- */
+/** Handles S3 interactions to interface with other test runners. */
 @Singleton
 public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKeys {
 
@@ -70,8 +69,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     @Override
     public void start() {
-        if ( metadata.getHostname() != null )
-        {
+        if ( metadata.getHostname() != null ) {
             operations.register( metadata );
         }
 
@@ -89,33 +87,28 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     @Override
     public void stop() {
-        if ( isStarted() && client != null )
-        {
+        if ( isStarted() && client != null ) {
             client.shutdown();
         }
     }
 
 
     @Override
-    public void triggerScan()
-    {
-        synchronized ( lock )
-        {
+    public void triggerScan() {
+        synchronized ( lock ) {
             lock.notifyAll();
         }
     }
 
 
     @Override
-    public Set<String> listRunners()
-    {
+    public Set<String> listRunners() {
         return runners.keySet();
     }
 
 
     @Override
-    public RunnerInfo getRunner( String key )
-    {
+    public RunnerInfo getRunner( String key ) {
         return runners.get( key );
     }
 
@@ -178,8 +171,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
                     runners = operations.getRunners( metadata );
 
                     LOG.info( "Runners updated" );
-                    for ( String runner : runners.keySet() )
-                    {
+                    for ( String runner : runners.keySet() ) {
                         LOG.info( "Found runner: {}", runner );
                     }
                 }

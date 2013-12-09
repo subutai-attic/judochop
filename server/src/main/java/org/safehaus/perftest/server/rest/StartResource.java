@@ -19,15 +19,6 @@
  */
 package org.safehaus.perftest.server.rest;
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.PerftestRunner;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.store.StoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -35,12 +26,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-/**
- * ...
- */
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.BaseResult;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.store.StoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+
+/** ... */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/start" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/start")
 public class StartResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
     private final PerftestRunner runner;
@@ -54,21 +54,17 @@ public class StartResource extends PropagatingResource {
 
 
     @POST
-    public Result start( @QueryParam( "propagate" ) Boolean propagate )
-    {
-        if ( runner.isRunning() )
-        {
+    public Result start( @QueryParam("propagate") Boolean propagate ) {
+        if ( runner.isRunning() ) {
             return new BaseResult( getEndpointUrl(), false, "already running", runner.getState() );
         }
 
-        if ( runner.needsReset() )
-        {
+        if ( runner.needsReset() ) {
             return new BaseResult( getEndpointUrl(), false, "reset needed - but save the last run data first!",
                     runner.getState() );
         }
 
-        if ( propagate == Boolean.FALSE )
-        {
+        if ( propagate == Boolean.FALSE ) {
             runner.start();
             return new BaseResult( getEndpointUrl(), true, "successfully started", runner.getState() );
         }
@@ -84,7 +80,7 @@ public class StartResource extends PropagatingResource {
                 }
                 runner.start();
             }
-        }).start();
+        } ).start();
 
         return propagate( runner.getState(), true, "successfully started" );
     }

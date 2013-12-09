@@ -20,29 +20,27 @@
 package org.safehaus.perftest.server.rest;
 
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.PerftestRunner;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.store.StoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.BaseResult;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.store.StoreService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * ...
- */
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+
+/** ... */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/reset" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/reset")
 public class ResetResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
     private final PerftestRunner runner;
@@ -56,15 +54,15 @@ public class ResetResource extends PropagatingResource {
 
 
     /**
-     * By default the propagate parameter is considered to be false unless set
-     * to true. To propagate this call to all the other runners this parameter
-     * will be set to true.
+     * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
+     * the other runners this parameter will be set to true.
      *
      * @param propagate when true call the same function on other runners
+     *
      * @return a summary message
      */
     @POST
-    public Result reset( @QueryParam( "propagate" ) Boolean propagate ) {
+    public Result reset( @QueryParam("propagate") Boolean propagate ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {

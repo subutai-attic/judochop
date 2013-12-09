@@ -1,5 +1,6 @@
 package org.safehaus.perftest.server.settings;
 
+
 /**
  *
  */
@@ -25,6 +26,4 @@ public interface ConfigKeys extends org.safehaus.perftest.api.settings.ConfigKey
     String DELAY_RETRY_KEY = "recovery.retry.delay";
     /** default for the time to wait in milliseconds between retry recovery operations */
     long DEFAULT_DELAY_RETRY = 10000;
-
-
 }

@@ -4,7 +4,6 @@ package org.safehaus.perftest.api.store.amazon;
 import java.util.Map;
 
 import org.jukito.JukitoRunner;
-import org.jukito.TestModule;
 import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Before;
@@ -20,14 +19,13 @@ import com.google.inject.Inject;
 import static junit.framework.TestCase.assertNotNull;
 
 
-/**
- * Tests the Amazon based PerftestStore implementation.
- */
+/** Tests the Amazon based PerftestStore implementation. */
 @RunWith( JukitoRunner.class )
 @UseModules( AmazonStoreModule.class )
 public class AmazonS3ServiceAwsImplTest {
     private static final Logger LOG = LoggerFactory.getLogger( AmazonS3ServiceAwsImplTest.class );
-    @Inject StoreService service;
+    @Inject
+    StoreService service;
 
 
     @Before
@@ -44,18 +42,16 @@ public class AmazonS3ServiceAwsImplTest {
 
     @Test
     public void testGetRunners() {
-        Map<String,RunnerInfo> runners = service.getRunners();
+        Map<String, RunnerInfo> runners = service.getRunners();
         assertNotNull( runners );
         int runnerCount = 0;
 
-        for ( RunnerInfo runner : runners.values() )
-        {
+        for ( RunnerInfo runner : runners.values() ) {
             runnerCount++;
             LOG.debug( "Got runner {}", runner );
         }
 
-        if ( runnerCount == 0 )
-        {
+        if ( runnerCount == 0 ) {
             LOG.warn( "Not much of a test if we got no runners" );
         }
     }

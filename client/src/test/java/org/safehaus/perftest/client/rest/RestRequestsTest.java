@@ -24,11 +24,12 @@ import static org.safehaus.perftest.client.rest.RestRequests.status;
 /**
  *
  */
-@RunWith( JukitoRunner.class )
-@UseModules( PerftestClientModule.class )
+@RunWith(JukitoRunner.class)
+@UseModules(PerftestClientModule.class)
 public class RestRequestsTest {
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
-    @Inject StoreService service;
+    @Inject
+    StoreService service;
 
 
     @Before
@@ -45,7 +46,7 @@ public class RestRequestsTest {
 
     @Test
     public void testStart() {
-        Map<String,RunnerInfo> runners = service.getRunners();
+        Map<String, RunnerInfo> runners = service.getRunners();
 
         if ( runners.size() == 0 ) {
             LOG.debug( "No runners found, cannot start test" );
@@ -66,11 +67,10 @@ public class RestRequestsTest {
 
     @Test
     public void testStatus() {
-        Map<String,RunnerInfo> runners = service.getRunners();
+        Map<String, RunnerInfo> runners = service.getRunners();
 
         for ( RunnerInfo runner : runners.values() ) {
-            if ( runner.getHostname() != null )
-            {
+            if ( runner.getHostname() != null ) {
                 Result result = status( runner );
                 LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );
             }

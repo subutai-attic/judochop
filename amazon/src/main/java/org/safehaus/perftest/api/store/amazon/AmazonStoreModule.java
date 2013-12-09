@@ -7,7 +7,6 @@
 package org.safehaus.perftest.api.store.amazon;
 
 
-import org.safehaus.perftest.api.PerftestApiModule;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.safehaus.perftest.api.store.StoreService;
@@ -28,11 +27,13 @@ public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( AmazonStoreModule.class );
     private DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
 
+
     protected void configure() {
         bind( RunnerInfo.class ).to( Ec2RunnerInfo.class );
         bind( StoreOperations.class ).to( S3Operations.class );
         bind( StoreService.class ).to( AmazonS3ServiceAwsImpl.class );
     }
+
 
     @Provides
     AmazonS3Client provideAmazonS3Client() {
@@ -43,6 +44,7 @@ public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
             public String getAWSAccessKeyId() {
                 return getAwsKeyProperty().get();
             }
+
 
             @Override
             public String getAWSSecretKey() {

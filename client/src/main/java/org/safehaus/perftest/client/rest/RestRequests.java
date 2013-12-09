@@ -1,8 +1,6 @@
 package org.safehaus.perftest.client.rest;
 
 
-import java.net.UnknownHostException;
-
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.perftest.api.BaseResult;
@@ -21,66 +19,72 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
  */
 public class RestRequests {
     /**
-     * Performs a POST HTTP operation against the /load endpoint with the perftest query
-     * parameter, and propagate query parameter.
+     * Performs a POST HTTP operation against the /load endpoint with the perftest query parameter, and propagate query
+     * parameter.
      *
      * @param runner the runner to perform the load operation on
      * @param perftest the perftest query parameter value
      * @param propagate whether or not to enable propagation
+     *
      * @return the result of the operation
      */
     public static Result load( RunnerInfo runner, String perftest, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/load" );
-        return resource.queryParam( "propagate", propagate.toString() )
-                .queryParam( "perftest", perftest )
-                .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        return resource.queryParam( "propagate", propagate.toString() ).queryParam( "perftest", perftest )
+                       .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
     }
 
 
     /**
      * Performs a POST HTTP operation against the /start endpoint with a propagate query parameter.
+     *
      * @param runner the runner which will perform the start operation
      * @param propagate whether or not to enable propagation
+     *
      * @return the result of the operation
      */
     public static Result start( RunnerInfo runner, Boolean propagate ) {
-       DefaultClientConfig clientConfig = new DefaultClientConfig();
+        DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/start" );
-        return resource.queryParam( "propagate", propagate.toString() )
-                .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+                       .post( PropagatedResult.class );
     }
 
 
     /**
      * Performs a POST HTTP operation against the /reset endpoint with a propagate query parameter.
+     *
      * @param runner the runner to perform the reset operation on
      * @param propagate whether or not to enable propagation
+     *
      * @return the result of the operation
      */
     public static Result reset( RunnerInfo runner, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/reset" );
-        return resource.queryParam( "propagate", propagate.toString() )
-                .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+                       .post( PropagatedResult.class );
     }
 
 
     /**
      * Performs a POST HTTP operation against the /stop endpoint with a propagate query parameter.
+     *
      * @param runner the runner which will perform the stop operation
      * @param propagate whether or not to enable propagation
+     *
      * @return the result of the operation
      */
     public static Result stop( RunnerInfo runner, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/stop" );
-        return resource.queryParam( "propagate", propagate.toString() )
-                .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+                       .post( PropagatedResult.class );
     }
 
 
@@ -88,6 +92,7 @@ public class RestRequests {
      * Performs a GET HTTP operation against the /status endpoint.
      *
      * @param runner the runner to perform the status operation on
+     *
      * @return the result of the operation
      */
     public static Result status( RunnerInfo runner ) {

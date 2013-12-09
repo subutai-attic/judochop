@@ -1,10 +1,5 @@
 package org.safehaus.perftest;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +8,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-/**
- * Tests the ResultsLogImpl.
- */
+/** Tests the ResultsLogImpl. */
 public class ResultsLogImplTest {
     private static final Logger LOG = LoggerFactory.getLogger( ResultsLogImplTest.class );
     private final AtomicLong resultCount = new AtomicLong();
@@ -47,8 +46,7 @@ public class ResultsLogImplTest {
 
     @After
     public void tearDown() throws InterruptedException {
-        if ( ! executorService.isShutdown() || ! executorService.isTerminated() )
-        {
+        if ( !executorService.isShutdown() || !executorService.isTerminated() ) {
             executorService.shutdown();
             executorService.awaitTermination( 1000, TimeUnit.MILLISECONDS );
             executorService = null;
@@ -61,8 +59,7 @@ public class ResultsLogImplTest {
 
     @Test
     public void testLog() throws InterruptedException, IOException {
-        for ( int ii = 0; ii < 100; ii++ )
-        {
+        for ( int ii = 0; ii < 100; ii++ ) {
             executorService.execute( runnable );
         }
 
@@ -76,7 +73,7 @@ public class ResultsLogImplTest {
 
         resultsLog.truncate();
         file = new File( resultsLog.getPath() );
-        LOG.info("The length of the result file after truncating is {} bytes.", file.length());
+        LOG.info( "The length of the result file after truncating is {} bytes.", file.length() );
         assertTrue( file.length() == 0 );
     }
 }

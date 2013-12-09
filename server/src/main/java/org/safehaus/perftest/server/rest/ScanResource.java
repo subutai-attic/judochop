@@ -19,13 +19,6 @@
  */
 package org.safehaus.perftest.server.rest;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.PerftestRunner;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.store.StoreService;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,30 +26,35 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-/**
- * ...
- */
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.BaseResult;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.store.StoreService;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+
+/** ... */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/scan" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/scan")
 public class ScanResource extends PropagatingResource {
     private final PerftestRunner runner;
 
+
     @Inject
-    public ScanResource( PerftestRunner runner, StoreService service )
-    {
+    public ScanResource( PerftestRunner runner, StoreService service ) {
         super( "/scan", service );
         this.runner = runner;
     }
 
 
     @POST
-    public Result triggerScan( @QueryParam( "propagate" ) Boolean propagate )
-    {
+    public Result triggerScan( @QueryParam("propagate") Boolean propagate ) {
         getService().triggerScan();
 
-        if ( propagate == Boolean.FALSE )
-        {
+        if ( propagate == Boolean.FALSE ) {
             return new BaseResult( getEndpointUrl(), true, "scan triggered", runner.getState() );
         }
 

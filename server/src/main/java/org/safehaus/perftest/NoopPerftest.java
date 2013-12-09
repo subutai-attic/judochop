@@ -19,13 +19,13 @@
  */
 package org.safehaus.perftest;
 
+
 import org.safehaus.perftest.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A performance test that does nothing.
- */
+
+/** A performance test that does nothing. */
 public class NoopPerftest implements Perftest {
     private static final Logger LOG = LoggerFactory.getLogger( NoopPerftest.class );
 

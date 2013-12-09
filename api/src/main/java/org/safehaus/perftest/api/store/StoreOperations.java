@@ -11,9 +11,7 @@ import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.TestInfo;
 
 
-/**
- * Operations performed against a perftest store.
- */
+/** Operations performed against a perftest store. */
 public interface StoreOperations {
     String getRunnerKey( String publicHostname );
 
@@ -21,9 +19,9 @@ public interface StoreOperations {
 
     Set<TestInfo> getTests() throws IOException;
 
-    Map<String,RunnerInfo> getRunners( RunnerInfo runner );
+    Map<String, RunnerInfo> getRunners( RunnerInfo runner );
 
-    Map<String,RunnerInfo> getRunners();
+    Map<String, RunnerInfo> getRunners();
 
     File download( File tempDir, String key ) throws IOException;
 

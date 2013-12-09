@@ -20,15 +20,20 @@
 package org.safehaus.perftest.server.rest;
 
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-import org.safehaus.perftest.api.BaseResult;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
@@ -39,24 +44,18 @@ import org.safehaus.perftest.server.settings.PropSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.io.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.Callable;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 
-/**
- * Loads a test configuration from the "tests" container.
- */
+/** Loads a test configuration from the "tests" container. */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/load" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/load")
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
     private final PerftestRunner runner;
@@ -70,18 +69,16 @@ public class LoadResource extends PropagatingResource {
 
 
     /**
-     * By default the propagate parameter is considered to be false unless set
-     * to true. To propagate this call to all the other runners this parameter
-     * will be set to true.
+     * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
+     * the other runners this parameter will be set to true.
      *
      * @param propagate when true call the same function on other runners
-     * @param perftest the perftest to use specified by the string containing the
-     *                 <git-uuid>-<deploy-timestamp>
+     * @param perftest the perftest to use specified by the string containing the <git-uuid>-<deploy-timestamp>
+     *
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam( "propagate" ) Boolean propagate,
-                        @QueryParam( "perftest" ) String perftest ) {
+    public Result load( @QueryParam("propagate") Boolean propagate, @QueryParam("perftest") String perftest ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {
@@ -93,17 +90,16 @@ public class LoadResource extends PropagatingResource {
             return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", runner.getState() );
         }
 
-        Map<String,RunnerInfo> peers = getService().getRunners();
+        Map<String, RunnerInfo> peers = getService().getRunners();
 
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other runners.
 
-        Map<String,String> params = Collections.singletonMap( "perftest", perftest );
+        Map<String, String> params = Collections.singletonMap( "perftest", perftest );
 
-        if ( propagate == Boolean.TRUE )
-        {
-            PropagatedResult result = propagate( runner.getState().next( Signal.LOAD ), true,
-                    "reload started", params );
+        if ( propagate == Boolean.TRUE ) {
+            PropagatedResult result =
+                    propagate( runner.getState().next( Signal.LOAD ), true, "reload started", params );
 
             try {
                 deploy( perftest );
@@ -118,8 +114,7 @@ public class LoadResource extends PropagatingResource {
             }
         }
 
-        for ( RunnerInfo runner : peers.values() )
-        {
+        for ( RunnerInfo runner : peers.values() ) {
 
         }
 
@@ -149,57 +144,55 @@ public class LoadResource extends PropagatingResource {
             public void run() {
                 try {
                     Thread.sleep( 2000L );
-                } catch ( InterruptedException e ) {
+                }
+                catch ( InterruptedException e ) {
                     LOG.error( "Interrupted from my sleep." );
                 }
 
                 uploadTask.unblock();
             }
-        }).start();
+        } ).start();
     }
 
 
     @Override
-    protected Callable<Result> getRecoveryOperation( final PropagatingCall failingCaller )
-    {
+    protected Callable<Result> getRecoveryOperation( final PropagatingCall failingCaller ) {
         return new RecoveryOperation( failingCaller );
     }
 
 
     /**
-     * Will try to recover by confirming that the peer is back up by attempting
-     * to contact the reloaded peer N number of times with X seconds delay in
-     * between on it's /status page. The version of the perftest will be checked
-     * against the perftest that was loaded in the /load operation that failed.
+     * Will try to recover by confirming that the peer is back up by attempting to contact the reloaded peer N number of
+     * times with X seconds delay in between on it's /status page. The version of the perftest will be checked against
+     * the perftest that was loaded in the /load operation that failed.
      */
-    class RecoveryOperation implements Callable<Result>
-    {
+    class RecoveryOperation implements Callable<Result> {
         private final PropagatingCall failingCaller;
+
 
         public RecoveryOperation( PropagatingCall failingCaller ) {
             this.failingCaller = failingCaller;
         }
 
+
         @Override
         public Result call() throws Exception {
             Exception lastException = null;
 
-            for ( int retryCount = 0; retryCount < PropSettings.getRecoveryRetryCount(); retryCount++ )
-            {
-                if ( PropSettings.getRecoveryRetryDelay() > 0 )
-                {
+            for ( int retryCount = 0; retryCount < PropSettings.getRecoveryRetryCount(); retryCount++ ) {
+                if ( PropSettings.getRecoveryRetryDelay() > 0 ) {
                     try {
                         Thread.sleep( PropSettings.getRecoveryRetryDelay() );
                     }
                     catch ( InterruptedException e ) {
-                        LOG.warn( "Got interrupted on recover retry sleep for delay. " +
-                           "Retry operation will happen less than expected delay" );
+                        LOG.warn( "Got interrupted on recover retry sleep for delay. "
+                                + "Retry operation will happen less than expected delay" );
                     }
                 }
 
                 try {
                     Result result = checkStatus();
-                    LOG.info("Retry SUCCESS! {}", result);
+                    LOG.info( "Retry SUCCESS! {}", result );
                     return result;
                 }
                 catch ( Exception e ) {
@@ -208,8 +201,7 @@ public class LoadResource extends PropagatingResource {
                 }
             }
 
-            if ( lastException != null )
-            {
+            if ( lastException != null ) {
                 throw lastException;
             }
 
@@ -233,22 +225,27 @@ public class LoadResource extends PropagatingResource {
         private final String contentDisposition;
         private Result result;
 
+
         BlockingDeployTask( File war ) throws IOException {
             in = new LockableInputStream( war, war.length() - 5000 );
             contentDisposition = "attachment; filename=\"" + war.getName() + "\"";
         }
 
+
         public Result getResult() {
             return result;
         }
+
 
         public void unblock() {
             in.deactivateLimit();
         }
 
+
         public void returnOnLimit() throws InterruptedException {
             in.returnOnLimit();
         }
+
 
         public void run() {
             DefaultClientConfig clientConfig = new DefaultClientConfig();
@@ -256,16 +253,13 @@ public class LoadResource extends PropagatingResource {
             client.addFilter( new HTTPBasicAuthFilter( PropSettings.getManagerAppUsername(),
                     PropSettings.getManagerAppPassword() ) );
 
-            WebResource resource = client.resource( PropSettings.getManagerEndpoint() )
-                    .path("/deploy")
-                    .queryParam( "update", "true" )
-                    .queryParam("path", "/");
+            WebResource resource = client.resource( PropSettings.getManagerEndpoint() ).path( "/deploy" )
+                                         .queryParam( "update", "true" ).queryParam( "path", "/" );
 
             // We will block on the put upload at just a little before the end
-            String response = resource
-                    .type( MediaType.APPLICATION_OCTET_STREAM_TYPE )
-                    .header( "Content-Disposition", contentDisposition )
-                    .accept( "text/plain" ).put( String.class, in );
+            String response = resource.type( MediaType.APPLICATION_OCTET_STREAM_TYPE )
+                                      .header( "Content-Disposition", contentDisposition ).accept( "text/plain" )
+                                      .put( String.class, in );
 
             if ( response.contains( "FAIL" ) ) {
                 LOG.error( "FAILED to deploy via tomcat manager: {}", response );

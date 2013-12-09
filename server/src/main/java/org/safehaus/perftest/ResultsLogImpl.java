@@ -1,10 +1,5 @@
 package org.safehaus.perftest;
 
-import com.netflix.config.DynamicLongProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,10 +11,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * An asynchronous results log implementation.
- */
+import com.netflix.config.DynamicLongProperty;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
+
+
+/** An asynchronous results log implementation. */
 public class ResultsLogImpl implements ResultsLog, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger( ResultsLogImpl.class );
 
@@ -110,10 +110,9 @@ public class ResultsLogImpl implements ResultsLog, Runnable {
 
     @Override
     public void run() {
-        synchronized ( isOpen )
-        {
+        synchronized ( isOpen ) {
             // Keep writing after closed until buffer is flushed (empty)
-            while ( isOpen.get() || ! buffer.isEmpty() ) {
+            while ( isOpen.get() || !buffer.isEmpty() ) {
                 try {
                     String result = buffer.pollLast( waitTime.get(), TimeUnit.MILLISECONDS );
 

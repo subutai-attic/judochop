@@ -4,9 +4,7 @@ package org.safehaus.perftest.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-/**
- * ...
- */
+/** ... */
 public class BaseResult implements Result {
     private String endpoint;
     private String message;
@@ -19,7 +17,8 @@ public class BaseResult implements Result {
         this.endpoint = endpoint;
         this.status = status;
         this.message = message;
-        this.state = state;    }
+        this.state = state;
+    }
 
 
     public BaseResult( String endpoint, boolean status, String message, State state, TestInfo testInfo ) {
@@ -31,25 +30,25 @@ public class BaseResult implements Result {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public BaseResult() {
         status = true;
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setEndpoint( String endpoint ) {
         this.endpoint = endpoint;
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setStatus( boolean status ) {
         this.status = status;
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setMessage( String message ) {
         this.message = message;
     }

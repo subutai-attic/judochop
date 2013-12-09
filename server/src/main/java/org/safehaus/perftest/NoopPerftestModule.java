@@ -25,9 +25,7 @@ import org.safehaus.perftest.api.Perftest;
 import com.google.inject.AbstractModule;
 
 
-/**
- * A performance test module that does nothing.
- */
+/** A performance test module that does nothing. */
 public class NoopPerftestModule extends AbstractModule {
     @Override
     protected void configure() {

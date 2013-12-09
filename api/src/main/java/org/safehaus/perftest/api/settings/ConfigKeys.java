@@ -1,9 +1,7 @@
 package org.safehaus.perftest.api.settings;
 
 
-/**
- * Configuration setting keys.
- */
+/** Configuration setting keys. */
 public interface ConfigKeys {
 
     String RUNNERS_PATH = "runners";
@@ -43,5 +41,4 @@ public interface ConfigKeys {
     String PROJECT_VERSION_KEY = "project.version";
 
     String WAR_MD5_KEY = "war.md5";
-
 }

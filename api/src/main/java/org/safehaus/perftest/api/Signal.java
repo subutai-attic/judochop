@@ -1,9 +1,7 @@
 package org.safehaus.perftest.api;
 
 
-/**
- * The state dependent and/or impacting signals sent to a runner.
- */
+/** The state dependent and/or impacting signals sent to a runner. */
 public enum Signal {
     START( 0 ), STOP( 1 ), RESET( 2 ), LOAD( 3 ), COMPLETED( 4 );
 

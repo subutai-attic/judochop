@@ -19,36 +19,35 @@
  */
 package org.safehaus.perftest.server.rest;
 
-import org.safehaus.perftest.api.CallStatsSnapshot;
-import org.safehaus.perftest.PerftestRunner;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-/**
- * ...
- */
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.CallStatsSnapshot;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+
+/** ... */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/stats" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/stats")
 public class StatsResource {
     private final PerftestRunner runner;
 
 
     @Inject
-    public StatsResource(PerftestRunner runner)
-    {
+    public StatsResource( PerftestRunner runner ) {
         this.runner = runner;
     }
 
 
     @GET
-    public CallStatsSnapshot getCallStatsSnapshot()
-    {
+    public CallStatsSnapshot getCallStatsSnapshot() {
         return runner.getCallStatsSnapshot();
     }
 }

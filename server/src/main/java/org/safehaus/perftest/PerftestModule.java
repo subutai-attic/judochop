@@ -6,6 +6,10 @@
  */
 package org.safehaus.perftest;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.safehaus.perftest.api.PerftestApiModule;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.perftest.server.rest.ResetResource;
@@ -17,9 +21,6 @@ import org.safehaus.perftest.server.rest.StopResource;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class PerftestModule extends ServletModule {
@@ -49,6 +50,6 @@ public class PerftestModule extends ServletModule {
 
         Map<String, String> params = new HashMap<String, String>();
         params.put( PACKAGES_KEY, getClass().getPackage().toString() );
-        serve("/*").with( GuiceContainer.class, params );
+        serve( "/*" ).with( GuiceContainer.class, params );
     }
 }

@@ -48,7 +48,8 @@ public class PerftestUtils {
 
     private final static Logger logger = Logger.getLogger( PerftestUtils.class.getName() );
 
-    public static AmazonS3 getS3Client ( String accessKey, String secretKey ) {
+
+    public static AmazonS3 getS3Client( String accessKey, String secretKey ) {
         AWSCredentialsProvider provider;
         if ( accessKey != null && secretKey != null ) {
             AWSCredentials credentials = new BasicAWSCredentials( accessKey, secretKey );
@@ -62,7 +63,7 @@ public class PerftestUtils {
     }
 
 
-    public static boolean uploadToS3 ( AmazonS3 s3, String bucketName, String destinationFile, File source ) {
+    public static boolean uploadToS3( AmazonS3 s3, String bucketName, String destinationFile, File source ) {
         TransferManager mgr = new TransferManager( s3 );
         Upload upload = mgr.upload( bucketName, destinationFile, source );
 
@@ -75,6 +76,7 @@ public class PerftestUtils {
 
         return true;
     }
+
 
     /**
      * @param warFile War file to be extracted
@@ -137,26 +139,26 @@ public class PerftestUtils {
             // Check already existing artifacts and replace them if they are of a lower version
             try {
 
-                List<String> existing = FileUtils
-                        .getFileNames( targetFolderFile, artifact.getArtifactId() + "-*.jar", null, false );
+                List<String> existing =
+                        FileUtils.getFileNames( targetFolderFile, artifact.getArtifactId() + "-*.jar", null, false );
 
                 if ( existing.size() != 0 ) {
-                    String version = existing.get(0).split("(" + artifact.getArtifactId() + "-)")[1]
-                            .split("(.jar)") [0];
+                    String version =
+                            existing.get( 0 ).split( "(" + artifact.getArtifactId() + "-)" )[1].split( "(.jar)" )[0];
                     DefaultArtifactVersion existingVersion = new DefaultArtifactVersion( version );
                     DefaultArtifactVersion artifactVersion = new DefaultArtifactVersion( artifact.getVersion() );
 
                     if ( existingVersion.compareTo( artifactVersion ) < 0 ) { // Remove existing version
-                        FileUtils.forceDelete( targetFolder + existing.get(0) );
+                        FileUtils.forceDelete( targetFolder + existing.get( 0 ) );
                     }
                     else {
-                        logger.log ( Level.INFO, "Artifact " + artifact.getArtifactId() + " with the same or higher " +
-                                "version already exists in lib folder, skipping copy");
+                        logger.log( Level.INFO, "Artifact " + artifact.getArtifactId() + " with the same or higher " +
+                                "version already exists in lib folder, skipping copy" );
                         continue;
                     }
                 }
 
-                logger.log ( Level.INFO, "Copying " + f.getName() + " to " + targetFolder );
+                logger.log( Level.INFO, "Copying " + f.getName() + " to " + targetFolder );
                 FileUtils.copyFileToDirectory( f.getAbsolutePath(), targetFolder );
             }
             catch ( IOException e ) {
@@ -175,12 +177,10 @@ public class PerftestUtils {
     public static String getGitConfigFolder( String projectPath ) throws MojoExecutionException {
         projectPath = forceNoSlashOnDir( projectPath );
 
-        while ( ! FileUtils.fileExists( projectPath + "/.git" ) )
-        {
+        while ( !FileUtils.fileExists( projectPath + "/.git" ) ) {
             int lastSlashIndex = projectPath.lastIndexOf( "/" );
-            if ( lastSlashIndex < 1 )
-            {
-                throw new MojoExecutionException( "There are no local git repository associated with this project") ;
+            if ( lastSlashIndex < 1 ) {
+                throw new MojoExecutionException( "There are no local git repository associated with this project" );
             }
             projectPath = projectPath.substring( 0, lastSlashIndex );
         }
@@ -256,13 +256,13 @@ public class PerftestUtils {
 
     /**
      * Concatenates provided timestamp and commitUUID strings and returns their calculated MD5 in hexadecimal format
-     * @param timestamp
-     * @param commitUUID
+     *
      * @return Returns the hexadecimal representation of calculated MD5
-     * @throws MojoExecutionException This will probably never thrown, cause UTF-8 encoding and MD5 is defined in
-     * each system
+     *
+     * @throws MojoExecutionException This will probably never thrown, cause UTF-8 encoding and MD5 is defined in each
+     * system
      */
-    public static String getMD5 ( String timestamp, String commitUUID ) throws MojoExecutionException {
+    public static String getMD5( String timestamp, String commitUUID ) throws MojoExecutionException {
         try {
             MessageDigest digest = MessageDigest.getInstance( "MD5" );
             byte[] hash = digest.digest( ( timestamp + commitUUID ).getBytes( "UTF-8" ) );
@@ -273,8 +273,8 @@ public class PerftestUtils {
             }
 
             return result.toString();
-
-        } catch ( NoSuchAlgorithmException e ) {
+        }
+        catch ( NoSuchAlgorithmException e ) {
             throw new MojoExecutionException( "MD5 algorithm could not be found", e );
         }
         catch ( UnsupportedEncodingException e ) {
@@ -283,11 +283,8 @@ public class PerftestUtils {
     }
 
 
-    /**
-     * @param date
-     * @return Returns the given date in a 'yyyy.MM.dd.hh.mm.ss' format
-     */
-    public static String getTimestamp ( Date date ) {
+    /** @return Returns the given date in a 'yyyy.MM.dd.hh.mm.ss' format */
+    public static String getTimestamp( Date date ) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.hh.mm.ss" );
         return dateFormat.format( date );
     }
@@ -297,7 +294,7 @@ public class PerftestUtils {
      * @param directory
      * @return
      */
-    public static String forceSlashOnDir ( String directory ) {
+    public static String forceSlashOnDir( String directory ) {
         return directory.endsWith( "/" ) ? directory : directory + "/";
     }
 
@@ -306,9 +303,7 @@ public class PerftestUtils {
      * @param directory
      * @return
      */
-    public static String forceNoSlashOnDir ( String directory ) {
+    public static String forceNoSlashOnDir( String directory ) {
         return directory.endsWith( "/" ) ? directory.substring( 0, directory.length() - 1 ) : directory;
     }
-
-
 }

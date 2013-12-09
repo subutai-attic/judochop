@@ -11,9 +11,8 @@ import org.safehaus.perftest.api.settings.ConfigKeys;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Minimal requirements for runner information.
- */
+
+/** Minimal requirements for runner information. */
 public class RunnerInfo extends Properties implements ConfigKeys {
 
 
@@ -53,14 +52,16 @@ public class RunnerInfo extends Properties implements ConfigKeys {
 
 
     public RunnerInfo( InputStream in ) throws IOException {
-            super();
-            load( in );
+        super();
+        load( in );
     }
 
 
     /**
      * Gets the properties listing as an input stream.
+     *
      * @return the properties listing as an input stream
+     *
      * @throws java.io.IOException there are io failures
      */
     public InputStream getPropertiesAsStream() throws IOException {

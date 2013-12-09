@@ -9,10 +9,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.amazonaws.services.s3.AmazonS3;
 
 
-/**
- * Deploys the perftest.war created by war goal to S3 bucket using supplied configuration parameters
- */
-@Mojo( name = "deploy" )
+/** Deploys the perftest.war created by war goal to S3 bucket using supplied configuration parameters */
+@Mojo(name = "deploy")
 public class PerftestDeployMojo extends PerftestMojo {
 
     @Override
@@ -30,21 +28,20 @@ public class PerftestDeployMojo extends PerftestMojo {
 
         AmazonS3 s3 = PerftestUtils.getS3Client( accessKey, secretKey );
 
-        if ( ! s3.doesBucketExist( bucketName ) ) {
+        if ( !s3.doesBucketExist( bucketName ) ) {
             throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
         }
 
         boolean success = PerftestUtils.uploadToS3( s3, bucketName, destinationFile, source );
-        if ( ! success ) {
+        if ( !success ) {
             throw new MojoExecutionException( "Unable to upload war file to S3." );
         }
 
         success = PerftestUtils.uploadToS3( s3, bucketName, testinfoKey, testInfo );
-        if ( ! success ) {
+        if ( !success ) {
             throw new MojoExecutionException( "Unable to upload test-info.json file to S3." );
         }
 
         getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );
     }
-
 }

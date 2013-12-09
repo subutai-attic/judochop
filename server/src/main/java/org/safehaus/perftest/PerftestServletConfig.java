@@ -19,34 +19,33 @@
  */
 package org.safehaus.perftest;
 
+
 import java.io.File;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceServletContextListener;
-import com.netflix.blitz4j.LoggingConfiguration;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreService;
 import org.safehaus.perftest.api.store.amazon.Ec2RunnerInfo;
 import org.safehaus.perftest.server.settings.ConfigKeys;
 import org.safehaus.perftest.server.settings.PropSettings;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceServletContextListener;
+import com.netflix.blitz4j.LoggingConfiguration;
 
-/**
- * ...
- */
+
+/** ... */
 public class PerftestServletConfig extends GuiceServletContextListener {
     private Injector injector;
     private StoreService storeService;
 
 
-
     @Override
     protected Injector getInjector() {
-        if ( injector != null )
-        {
+        if ( injector != null ) {
             return injector;
         }
 
@@ -65,19 +64,20 @@ public class PerftestServletConfig extends GuiceServletContextListener {
         ServletContext context = servletContextEvent.getServletContext();
         ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );
         ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.SERVER_INFO_KEY, context.getServerInfo() );
-        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
+        ( ( Ec2RunnerInfo ) runner )
+                .setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
         ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_TEMPDIR_KEY,
                 ( ( File ) context.getAttribute( ConfigKeys.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
 
         storeService.start();
     }
 
+
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
         LoggingConfiguration.getInstance().stop();
 
-        if ( storeService != null )
-        {
+        if ( storeService != null ) {
             storeService.stop();
         }
         super.contextDestroyed( servletContextEvent );

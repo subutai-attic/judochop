@@ -24,14 +24,14 @@ import org.safehaus.perftest.api.settings.ConfigKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.*;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.netflix.config.DynamicStringProperty;
 
 
-/**
- * Dynamically loads the Guice Module responsible for creating the Perftest.
- */
+/** Dynamically loads the Guice Module responsible for creating the Perftest. */
 @Singleton
 public class TestModuleLoader implements ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( TestModuleLoader.class );
@@ -41,8 +41,7 @@ public class TestModuleLoader implements ConfigKeys {
 
 
     @Inject
-    public TestModuleLoader( Injector injector, @Named( TEST_MODULE_FQCN_KEY ) String testModuleFCQN ) throws Exception
-    {
+    public TestModuleLoader( Injector injector, @Named(TEST_MODULE_FQCN_KEY) String testModuleFCQN ) throws Exception {
         testModuleFqcn = testModuleFCQN;
 
         if ( testModuleFqcn.equals( NoopPerftestModule.class.getCanonicalName() ) ) {
@@ -82,14 +81,12 @@ public class TestModuleLoader implements ConfigKeys {
     }
 
 
-    public Module getTestModule()
-    {
+    public Module getTestModule() {
         return testModule;
     }
 
 
-    public Injector getChildInjector()
-    {
+    public Injector getChildInjector() {
         return childInjector;
     }
 }

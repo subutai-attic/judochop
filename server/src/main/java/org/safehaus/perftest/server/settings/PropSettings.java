@@ -1,12 +1,10 @@
 package org.safehaus.perftest.server.settings;
 
+
 import com.netflix.config.DynamicPropertyFactory;
 
 
-/**
- * Easy access to dynamic properties. Make sure we do not cache values
- * and get every time.
- */
+/** Easy access to dynamic properties. Make sure we do not cache values and get every time. */
 public class PropSettings implements ConfigKeys {
     public static int getServerPort() {
         return DynamicPropertyFactory.getInstance().getIntProperty( SERVER_PORT_KEY, DEFAULT_SERVER_PORT ).get();
@@ -14,8 +12,8 @@ public class PropSettings implements ConfigKeys {
 
 
     public static String getManagerEndpoint() {
-        return DynamicPropertyFactory.getInstance().getStringProperty( MANAGER_ENDPOINT_KEY,
-                DEFAULT_MANAGER_ENDPOINT ).get();
+        return DynamicPropertyFactory.getInstance().getStringProperty( MANAGER_ENDPOINT_KEY, DEFAULT_MANAGER_ENDPOINT )
+                                     .get();
     }
 
 
@@ -30,8 +28,8 @@ public class PropSettings implements ConfigKeys {
 
 
     public static int getRecoveryRetryCount() {
-        return DynamicPropertyFactory.getInstance().getIntProperty(RECOVERY_RETRY_COUNT_KEY,
-                DEFAULT_RECOVERY_RETRY_COUNT ).get();
+        return DynamicPropertyFactory.getInstance()
+                                     .getIntProperty( RECOVERY_RETRY_COUNT_KEY, DEFAULT_RECOVERY_RETRY_COUNT ).get();
     }
 
 

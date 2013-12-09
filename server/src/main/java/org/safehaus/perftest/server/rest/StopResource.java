@@ -20,48 +20,42 @@
 package org.safehaus.perftest.server.rest;
 
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.PerftestRunner;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.store.StoreService;
-
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.api.BaseResult;
+import org.safehaus.perftest.api.Result;
+import org.safehaus.perftest.api.store.StoreService;
 
-/**
- * ...
- */
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+
+/** ... */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( "/stop" )
+@Produces(MediaType.APPLICATION_JSON)
+@Path("/stop")
 public class StopResource extends PropagatingResource {
     private final PerftestRunner runner;
 
 
     @Inject
-    public StopResource( PerftestRunner runner, StoreService service )
-    {
+    public StopResource( PerftestRunner runner, StoreService service ) {
         super( "/stop", service );
         this.runner = runner;
     }
 
 
     @POST
-    public Result stop( @QueryParam( "propagate" ) Boolean propagate )
-    {
-        if ( runner.isRunning() )
-        {
+    public Result stop( @QueryParam("propagate") Boolean propagate ) {
+        if ( runner.isRunning() ) {
             runner.stop();
 
-            if ( propagate == Boolean.FALSE )
-            {
+            if ( propagate == Boolean.FALSE ) {
                 return new BaseResult( getEndpointUrl(), true, "stopped", runner.getState() );
             }
 

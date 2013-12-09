@@ -1,30 +1,27 @@
 package org.safehaus.perftest;
 
 
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.safehaus.perftest.api.CallStatsSnapshot;
 import org.safehaus.perftest.api.Perftest;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.api.store.StoreService;
+import org.safehaus.perftest.server.settings.PropSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
-import org.safehaus.perftest.server.settings.PropSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-
-/**
- * A Perftest runner.
- */
+/** A Perftest runner. */
 @Singleton
 public class PerftestRunner implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestRunner.class );
@@ -46,8 +43,7 @@ public class PerftestRunner implements Runnable {
 
 
     @Inject
-    public PerftestRunner( Injector injector, TestModuleLoader loader, StoreService service )
-    {
+    public PerftestRunner( Injector injector, TestModuleLoader loader, StoreService service ) {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
@@ -64,8 +60,7 @@ public class PerftestRunner implements Runnable {
             if ( runInfo == null ) {
                 runInfo = new RunInfo( 0 );
             }
-            else
-            {
+            else {
                 runInfo = new RunInfo( runInfo.getRunNumber() + 1 );
             }
         }
@@ -82,8 +77,7 @@ public class PerftestRunner implements Runnable {
             startTime = 0;
             stopTime = 0;
 
-            if ( stats != null )
-            {
+            if ( stats != null ) {
                 stats.reset();
             }
 
@@ -108,6 +102,7 @@ public class PerftestRunner implements Runnable {
         return state;
     }
 
+
     public RunInfo getRunInfo() {
         return runInfo;
     }
@@ -121,8 +116,7 @@ public class PerftestRunner implements Runnable {
 
 
     public boolean needsReset() {
-        synchronized ( lock )
-        {
+        synchronized ( lock ) {
             return state == State.STOPPED;
         }
     }
@@ -148,7 +142,7 @@ public class PerftestRunner implements Runnable {
             state = State.RUNNING;
             startTime = System.nanoTime();
 
-            for ( int ii = 0; ii < test.getThreadCount(); ii++) {
+            for ( int ii = 0; ii < test.getThreadCount(); ii++ ) {
                 executorService.execute( this );
             }
         }
@@ -203,21 +197,22 @@ public class PerftestRunner implements Runnable {
         }
     }
 
+
     @Override
     public void run() {
         long delay = test.getDelayBetweenCalls();
 
-        while( state == State.RUNNING && ( stats.getCallCount() < test.getCallCount() ) ) {
+        while ( state == State.RUNNING && ( stats.getCallCount() < test.getCallCount() ) ) {
             long startTime = System.nanoTime();
             test.call();
             long endTime = System.nanoTime();
             stats.callOccurred( test, startTime, endTime, TimeUnit.NANOSECONDS );
 
-            if ( delay > 0 )
-            {
+            if ( delay > 0 ) {
                 try {
                     Thread.sleep( delay );
-                } catch ( InterruptedException e ) {
+                }
+                catch ( InterruptedException e ) {
                     LOG.error( "Thread was interrupted.", e );
                 }
             }

@@ -1,7 +1,5 @@
 package org.safehaus.perftest.server.rest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,14 +7,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
- * A FileInputStream subclass that wraps super calls with checks to see if we could
- * potentially hit some limit where we want to lock the stream: that is make it block
- * on subsequent reads. This class is used to stop just before transmitting a war
- * file to the Tomcat Manager on a /load REST operation. This allows us to schedule
- * unlocking this stream in a Runner after returning to the client from a REST call.
- * This helps us avoid a highly probable race condition between a load response and
- * the reload of the web application.
+ * A FileInputStream subclass that wraps super calls with checks to see if we could potentially hit some limit where we
+ * want to lock the stream: that is make it block on subsequent reads. This class is used to stop just before
+ * transmitting a war file to the Tomcat Manager on a /load REST operation. This allows us to schedule unlocking this
+ * stream in a Runner after returning to the client from a REST call. This helps us avoid a highly probable race
+ * condition between a load response and the reload of the web application.
  */
 class LockableInputStream extends FileInputStream {
     private static final Logger LOG = LoggerFactory.getLogger( LockableInputStream.class );
@@ -29,12 +29,11 @@ class LockableInputStream extends FileInputStream {
 
 
     /**
-     * Creates a FileInputStream that blocks near the specified byte count limit only
-     * to be unblocked after a call to deactivateLimit().
+     * Creates a FileInputStream that blocks near the specified byte count limit only to be unblocked after a call to
+     * deactivateLimit().
      *
      * @param file the file to read
      * @param limit the limit in bytes to block at
-     * @throws FileNotFoundException
      */
     public LockableInputStream( File file, long limit ) throws FileNotFoundException {
         super( file );
@@ -45,29 +44,29 @@ class LockableInputStream extends FileInputStream {
     /**
      * Used internally to block (trap) all read method calls.
      *
-     * @param nextAdvance the amount of bytes the read call was about to advance before
-     *                    getting trapped by this block call
+     * @param nextAdvance the amount of bytes the read call was about to advance before getting trapped by this block
+     * call
      */
     private void block( int nextAdvance ) {
         boolean nextAdvanceHitsLimit = ( readCount + nextAdvance ) >= limit;
         boolean overLimit = readCount > limit;
 
-        if ( overLimit && ( ! limitActive.get() ) ) {
+        if ( overLimit && ( !limitActive.get() ) ) {
             return;
         }
 
         // not blocks or over the limit yet but next advance will do so (toggle blocked here)
-        if ( nextAdvanceHitsLimit && ( ! overLimit ) && ( ! blocked.get() ) ) {
+        if ( nextAdvanceHitsLimit && ( !overLimit ) && ( !blocked.get() ) ) {
             synchronized ( lock ) {
                 blocked.compareAndSet( false, true );
                 lock.notify();
             }
 
-            LOG.info( "{} bytes have been read. About to hit the {} byte limit. " +
-                    "The stream will now block until unlocked.", readCount, limit );
+            LOG.info( "{} bytes have been read. About to hit the {} byte limit. "
+                    + "The stream will now block until unlocked.", readCount, limit );
         }
 
-        if ( nextAdvanceHitsLimit && ( ! overLimit ) && blocked.get() ) {
+        if ( nextAdvanceHitsLimit && ( !overLimit ) && blocked.get() ) {
             LOG.info( "Next advance will reach the limit: blocking the thread {}", Thread.currentThread() );
 
             while ( limitActive.get() ) {
@@ -87,15 +86,11 @@ class LockableInputStream extends FileInputStream {
 
 
     /**
-     * Any calling Thread will block on this method until this LockableInputStream reads
-     * to the limit where it must block. This is useful for having another thread join
-     * this point.
-     *
-     * @throws InterruptedException
+     * Any calling Thread will block on this method until this LockableInputStream reads to the limit where it must
+     * block. This is useful for having another thread join this point.
      */
     public void returnOnLimit() throws InterruptedException {
-        while ( ! blocked.get() )
-        {
+        while ( !blocked.get() ) {
             synchronized ( lock ) {
                 lock.wait( 250 );
                 lock.notify();
@@ -105,8 +100,7 @@ class LockableInputStream extends FileInputStream {
 
 
     /**
-     * Checks to see if this stream is currently blocked at it's limit which is still
-     * active.
+     * Checks to see if this stream is currently blocked at it's limit which is still active.
      *
      * @return true if blocked, false otherwise
      */
@@ -125,8 +119,7 @@ class LockableInputStream extends FileInputStream {
 
 
     /**
-     * Gets the current read count, meaning the number of bytes this stream has read
-     * since it was opened.
+     * Gets the current read count, meaning the number of bytes this stream has read since it was opened.
      *
      * @return the number of bytes currently read
      */
