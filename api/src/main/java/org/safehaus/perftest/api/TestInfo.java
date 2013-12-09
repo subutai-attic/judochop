@@ -20,7 +20,6 @@ public interface TestInfo {
     @JsonProperty
     String getPerftestVersion();
 
-    @JsonProperty
     List<RunInfo> getRunInfos();
 
     void addRunInfo( RunInfo runInfo );

@@ -27,6 +27,7 @@ public class BaseResult implements Result {
         this.status = status;
         this.message = message;
         this.state = state;
+        this.testInfo = testInfo;
     }
 
 

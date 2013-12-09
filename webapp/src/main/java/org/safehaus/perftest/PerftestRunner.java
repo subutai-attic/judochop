@@ -41,7 +41,7 @@ public class PerftestRunner implements Runnable {
     private long startTime;
     private long stopTime;
 
-    private final TestInfoImpl testInfo;
+    private TestInfoImpl testInfo;
     private RunInfo runInfo;
 
 
@@ -231,6 +231,13 @@ public class PerftestRunner implements Runnable {
 
 
     public TestInfoImpl getTestInfo() {
+        if ( testInfo == null ) {
+            LOG.error( "TestInfo seems to be null" );
+        }
+        else {
+            LOG.info( "TestInfo = {}", testInfo );
+        }
+
         return testInfo;
     }
 }

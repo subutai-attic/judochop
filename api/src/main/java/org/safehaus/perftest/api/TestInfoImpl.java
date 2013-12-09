@@ -49,7 +49,6 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
 
 
     @Override
-    @JsonProperty
     public List<RunInfo> getRunInfos() {
         return runInfos;
     }
