@@ -9,9 +9,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>perftest-webapp</artifactId>
+  <name>Perftest Server</name>
+  <artifactId>perftest-server</artifactId>
   <packaging>war</packaging>
-  <description>Simple PERFormance TESTing Framework</description>
+  <description>
+    A REST based web application that services requests to load, run, and
+    archive performance tests.
+  </description>
 
   <properties>
     <slf4j.version>1.6.1</slf4j.version>

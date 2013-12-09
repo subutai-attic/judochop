@@ -9,9 +9,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <name>Perftest Client</name>
   <artifactId>perftest-client</artifactId>
   <packaging>jar</packaging>
-  <description>Simple PERFormance TESTing Framework</description>
+  <description>
+    A client library for performing high level operations in the Perftest
+    system abstracting away complexity and environment specific details.
+  </description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

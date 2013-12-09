@@ -6,9 +6,10 @@
   <groupId>org.safehaus.perftest</groupId>
   <version>1.0-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
+  <name>Perftest Parent</name>
 
   <packaging>pom</packaging>
-  <description>Simple PERFormance TESTing Framework</description>
+  <description>A Simple PERFormance TESTing Framework</description>
 
   <properties>
     <slf4j.version>1.6.1</slf4j.version>
@@ -18,7 +19,7 @@
 
   <modules>
     <module>amazon</module>
-    <module>webapp</module>
+    <module>server</module>
     <module>plugin</module>
     <module>api</module>
     <module>client</module>
