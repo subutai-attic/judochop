@@ -20,6 +20,28 @@ import com.google.inject.Injector;
 @Mojo(name = "load")
 public class PerftestLoadMojo extends PerftestMojo {
 
+
+    protected PerftestLoadMojo( PerftestMojo mojo ) {
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.localRepository = mojo.localRepository;
+        this.accessKey = mojo.accessKey;
+        this.secretKey = mojo.secretKey;
+        this.bucketName = mojo.bucketName;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.managerAppUsername = mojo.managerAppUsername;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.perftestFormation = mojo.perftestFormation;
+        this.plugin = mojo.plugin;
+        this.project = mojo.project;
+    }
+
+
+    protected PerftestLoadMojo() {
+
+    }
+
+
     @Override
     public void execute() throws MojoExecutionException {
 
@@ -61,9 +83,9 @@ public class PerftestLoadMojo extends PerftestMojo {
         }
 
         if ( !warExists ) {
-            // TODO instead of throwing this here, trigger perftest:deploy goal and continue if that succeeds
-            throw new MojoExecutionException( "perftest.war on S3 bucket is not up to date, run perftest:war and "
-                    + "perftest:deploy goals before running perftest:load" );
+            getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
+            PerftestDeployMojo deployMojo = new PerftestDeployMojo( this );
+            deployMojo.execute();
         }
 
         Result result = client.load( info, getWarOnS3Path(), true );

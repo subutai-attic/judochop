@@ -164,20 +164,15 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     /**
-     * Verifies the cluster and sends the start rest request if verification succeeds
+     * Sends the start rest request to runner with given propagate value.
+     * Call verify() method first to make sure all runners are ready and up-to-date, call status() if you're not
+     * going to propagate.
      * @param runner
      * @param propagate
      * @return
      */
     @Override
     public Result start( RunnerInfo runner, final boolean propagate ) {
-        if ( ! verify() ) {
-            LOG.warn( "Cluster is not ready to start the tests" );
-            Result r = status( runner );
-            // Returning this state is not ideal here
-            return new BaseResult( r.getEndpoint(), false, "Cluster is not ready to start the tests", State.READY );
-        }
-
         return RestRequests.start( runner, propagate );
     }
 
@@ -270,7 +265,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
      */
     @Override
     public boolean verify() {
-        // Get the latest test info
+    // Get the latest test info
         TestInfo latestTest = null;
         try {
             Set<TestInfo> tests = getTests();
