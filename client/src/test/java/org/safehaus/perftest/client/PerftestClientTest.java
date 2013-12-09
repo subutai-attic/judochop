@@ -18,14 +18,13 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 
-/**
- * Tests the PerftestClient implementations.
- */
-@RunWith( JukitoRunner.class )
-@UseModules( PerftestClientModule.class )
+/** Tests the PerftestClient implementations. */
+@RunWith(JukitoRunner.class)
+@UseModules(PerftestClientModule.class)
 public class PerftestClientTest {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientTest.class );
-    @Inject PerftestClient client;
+    @Inject
+    PerftestClient client;
 
 
     @Test
@@ -73,6 +72,4 @@ public class PerftestClientTest {
         Result result = client.start( client.getLiveRunner(), true );
         LOG.debug( "Start result is {}", result.getMessage() );
     }
-
-
 }

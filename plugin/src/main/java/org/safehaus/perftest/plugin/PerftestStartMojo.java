@@ -1,8 +1,6 @@
 package org.safehaus.perftest.plugin;
 
 
-import java.util.Collection;
-
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
@@ -14,7 +12,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
-@Mojo ( name = "start" )
+@Mojo(name = "start")
 public class PerftestStartMojo extends PerftestMojo {
 
     @Override

@@ -17,7 +17,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
-@Mojo ( name = "load" )
+@Mojo(name = "load")
 public class PerftestLoadMojo extends PerftestMojo {
 
     @Override
@@ -60,26 +60,24 @@ public class PerftestLoadMojo extends PerftestMojo {
             }
         }
 
-        if ( ! warExists ) {
+        if ( !warExists ) {
             // TODO instead of throwing this here, trigger perftest:deploy goal and continue if that succeeds
-            throw new MojoExecutionException( "perftest.war on S3 bucket is not up to date, run perftest:war and " +
-                    "perftest:deploy goals before running perftest:load" );
+            throw new MojoExecutionException( "perftest.war on S3 bucket is not up to date, run perftest:war and "
+                    + "perftest:deploy goals before running perftest:load" );
         }
 
         Result result = client.load( info, getWarOnS3Path(), true );
 
-        if ( ! result.getStatus() ) {
+        if ( !result.getStatus() ) {
             throw new MojoExecutionException( "Could not get the status of runners, quitting..." );
         }
 
-        if ( ! result.getState().equals( State.READY ) ) {
-            throw new MojoExecutionException( "Something went wrong while trying to load the test, runners are not " +
-                    "in ready state" );
+        if ( !result.getState().equals( State.READY ) ) {
+            throw new MojoExecutionException(
+                    "Something went wrong while trying to load the test, runners are not " + "in ready state" );
         }
 
-        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now" +
-                " to start your tests" );
-
-
+        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"
+                + " to start your tests" );
     }
 }

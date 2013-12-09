@@ -3,32 +3,28 @@ package org.safehaus.perftest.api.store.amazon;
 
 import java.util.Map;
 
-import com.google.inject.Guice;
-
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.perftest.api.PerftestApiModule;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
 
-/**
- * Tests the S3Operations
- */
+
+/** Tests the S3Operations */
 public class S3OperationsTest {
     private static final Logger LOG = LoggerFactory.getLogger( S3Operations.class );
-    StoreOperations operations = Guice.createInjector( new AmazonStoreModule(), new PerftestApiModule() ).getInstance( S3Operations.class );
+    StoreOperations operations =
+            Guice.createInjector( new AmazonStoreModule(), new PerftestApiModule() ).getInstance( S3Operations.class );
+
 
     @Test
     public void testRunnersListing() {
-        Map<String,RunnerInfo> runners = operations.getRunners( new Ec2RunnerInfo() );
+        Map<String, RunnerInfo> runners = operations.getRunners( new Ec2RunnerInfo() );
 
-        for ( RunnerInfo runnerInfo : runners.values() )
-        {
+        for ( RunnerInfo runnerInfo : runners.values() ) {
             LOG.debug( "Got runner {}", runnerInfo );
         }
     }

@@ -19,11 +19,11 @@
  */
 package org.safehaus.perftest.api;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * ...
- */
+
+/** ... */
 public class CallStatsSnapshot {
     private final int callCount;
     private final long maxTime;
@@ -34,8 +34,8 @@ public class CallStatsSnapshot {
     private final long stopTime;
 
 
-    public CallStatsSnapshot( int callCount, long maxTime, long minTime, long meanTime,
-                              boolean running, long startTime, long stopTime ) {
+    public CallStatsSnapshot( int callCount, long maxTime, long minTime, long meanTime, boolean running, long startTime,
+                              long stopTime ) {
         this.callCount = callCount;
         this.maxTime = maxTime;
         this.minTime = minTime;
@@ -77,15 +77,13 @@ public class CallStatsSnapshot {
 
 
     @JsonProperty
-    public long getStartTime()
-    {
+    public long getStartTime() {
         return startTime;
     }
 
 
     @JsonProperty
-    public long getStopTime()
-    {
+    public long getStopTime() {
         return stopTime;
     }
 }

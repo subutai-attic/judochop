@@ -1,15 +1,13 @@
 package org.safehaus.perftest.api;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * ...
- */
+
+/** ... */
 public class PropagatedResult extends BaseResult {
     private List<Result> remoteResults = new ArrayList<Result>();
 
@@ -28,10 +26,9 @@ public class PropagatedResult extends BaseResult {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
-    public BaseResult[] getRemoteResults()
-    {
-        return remoteResults.toArray( new BaseResult[] {} );
+    public BaseResult[] getRemoteResults() {
+        return remoteResults.toArray( new BaseResult[] { } );
     }
 }
