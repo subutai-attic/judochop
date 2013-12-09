@@ -1,46 +1,54 @@
 package org.safehaus.perftest.client;
 
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
-import org.junit.Before;
+import org.jukito.JukitoRunner;
+import org.jukito.UseModules;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import static junit.framework.Assert.assertNotNull;
+import com.google.inject.Inject;
 
 
 /**
  * Tests the PerftestClient implementations.
  */
+@RunWith( JukitoRunner.class )
+@UseModules( PerftestClientModule.class )
 public class PerftestClientTest {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientTest.class );
-    private PerftestClient client;
-
-    @Before
-    public void setup() {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        client = injector.getInstance( PerftestClient.class );
-    }
+    @Inject PerftestClient client;
 
 
     @Test
-    public void testClientGuice() throws Exception {
-        assertNotNull( client );
+    public void testGetTests() throws IOException {
+        Set<TestInfo> tests = client.getTests();
+
+        for ( TestInfo test : tests ) {
+            LOG.debug( "Got a test: {}", test );
+        }
     }
+
+
+//    @Test
+//    public void testLoad() throws IOException {
+//        RunnerInfo liveRunner = client.getLiveRunner();
+//        client.load( liveRunner, "tests/bace8793f7583d2320dc8ae2025b606fed065417/perftest.war", true );
+//    }
 
 
     @Test
     public void testGetRunners() throws Exception {
         Collection<RunnerInfo> runners = client.getRunners();
 
-        for ( RunnerInfo info : runners )
-        {
+        for ( RunnerInfo info : runners ) {
             LOG.debug( "Got runner {}", info );
         }
     }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 import org.safehaus.perftest.api.RunnerInfo;
@@ -30,10 +31,13 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
     private final AmazonS3Client client;
     private final DynamicStringProperty awsBucket;
+    private final DynamicStringProperty gitUuid =
+            DynamicPropertyFactory.getInstance().getStringProperty( GIT_UUID_KEY, "none" );
 
 
     @Inject
-    public S3Operations( AmazonS3Client client, @Named( AWS_BUCKET_KEY ) DynamicStringProperty awsBucket )
+    public S3Operations( AmazonS3Client client,
+                         @Named( AWS_BUCKET_KEY ) DynamicStringProperty awsBucket )
     {
         this.client = client;
         this.awsBucket = awsBucket;
@@ -63,16 +67,22 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      *
      *      "runners/formationName-publicHostname.properties"
      *
-     * @param metadata the runner's instance metadata to be registered
+     * @param runner the runner's instance metadata to be registered
      */
     @Override
-    public void register( RunnerInfo metadata ) {
-        String blobName = getRunnerKey( metadata.getHostname() );
+    public void register( RunnerInfo runner ) {
+
+        if ( runner == null || runner.getHostname() == null ) {
+            LOG.warn( "Refusing to register null runner or one without a hostname." );
+            return;
+        }
+
+        String blobName = getRunnerKey( runner.getHostname() );
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(),
                     RUNNERS_PATH + "/" + blobName,
-                    metadata.getPropertiesAsStream(), new ObjectMetadata() );
+                    runner.getPropertiesAsStream(), new ObjectMetadata() );
             client.putObject( putRequest );
         }
         catch ( IOException e ) {
@@ -99,10 +109,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
                 if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/test-info.json" ) )
                 {
-                    continue;
+                    tests.add( getJsonObject( key, TestInfoImpl.class ) );
                 }
-
-                tests.add( getJsonObject( key, TestInfoImpl.class ) );
             }
 
             listing = client.listNextBatchOfObjects( listing );
@@ -143,7 +151,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
                 S3Object s3Object = client.getObject( awsBucket.get(), key );
 
-                if ( runner != null && runner.getHostname() != null && s3Object.getKey().contains( runner.getHostname() ))
+                if ( runner != null && runner.getHostname() != null &&
+                        s3Object.getKey().contains( runner.getHostname() ))
                 {
                     continue;
                 }
@@ -212,8 +221,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
             throw e;
         }
         finally {
-            if ( in != null )
-            {
+            if ( in != null ) {
                 in.close();
             }
         }
@@ -373,5 +381,33 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         String blobName = sb.toString();
         putJsonObject( blobName, testInfo );
         LOG.info( "Successfully saved TestInfo with key {}", blobName );
+    }
+
+
+    /**
+     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot
+     * find it then null is returned.
+     *
+     * @return the TestInfo object if it exists in the store or null if it does not
+     */
+    @Override
+    public TestInfo loadTestInfo() {
+        String gitUuid = this.gitUuid.get();
+
+        if ( gitUuid == null ) {
+            LOG.warn( "Could not find gitUuid: returning null TestInfo." );
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( TESTS_PATH ).append( '/' ).append( gitUuid ).append( "/test-info.json" );
+
+        try {
+            return getJsonObject( sb.toString(), TestInfoImpl.class );
+        }
+        catch ( IOException e ) {
+            LOG.warn( "Could not find test-info.json at {}: returning null TestInfo", sb.toString(), e );
+            return null;
+        }
     }
 }

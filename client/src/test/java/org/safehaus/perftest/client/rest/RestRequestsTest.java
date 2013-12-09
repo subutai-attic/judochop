@@ -1,7 +1,6 @@
 package org.safehaus.perftest.client.rest;
 
 
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.jukito.JukitoRunner;
@@ -19,14 +18,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+import static org.safehaus.perftest.client.rest.RestRequests.status;
+
 
 /**
  *
  */
 @RunWith( JukitoRunner.class )
 @UseModules( PerftestClientModule.class )
-public class StatusRequestTest {
-    private static final Logger LOG = LoggerFactory.getLogger( StatusRequestTest.class );
+public class RestRequestsTest {
+    private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject StoreService service;
 
 
@@ -44,31 +45,12 @@ public class StatusRequestTest {
 
     @Test
     public void testStatus() {
-        StatusRequest request;
         Map<String,RunnerInfo> runners = service.getRunners();
 
         for ( RunnerInfo runner : runners.values() ) {
-            request = new StatusRequest();
-            Result result = null;
-
-            if ( runner == null || runner.getHostname() == null ) {
-                continue;
-            }
-
-            try
-            {
-                result = request.status( runner );
-            }
-            catch ( UnknownHostException e ) {
-                LOG.warn( "Seems {} is not a valid hostname", runner.getHostname() );
-            }
-            catch ( Exception e ) {
-                e.printStackTrace();
-            }
-
-
             if ( runner.getHostname() != null )
             {
+                Result result = status( runner );
                 LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );
             }
         }

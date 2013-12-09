@@ -66,7 +66,7 @@ public class PerftestLoadMojo extends PerftestMojo {
                     "perftest:deploy goals before running perftest:load" );
         }
 
-        Result result = client.load( info, getWarOnS3Path() );
+        Result result = client.load( info, getWarOnS3Path(), true );
 
         if ( ! result.getStatus() ) {
             throw new MojoExecutionException( "Could not get the status of runners, quitting..." );

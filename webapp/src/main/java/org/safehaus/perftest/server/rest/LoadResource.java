@@ -32,6 +32,8 @@ import org.safehaus.perftest.PerftestRunner;
 import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.perftest.api.Signal;
+import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.store.StoreService;
 import org.safehaus.perftest.server.settings.PropSettings;
 import org.slf4j.Logger;
@@ -100,7 +102,8 @@ public class LoadResource extends PropagatingResource {
 
         if ( propagate == Boolean.TRUE )
         {
-            PropagatedResult result = propagate( runner.getState(), true, "reload started", params );
+            PropagatedResult result = propagate( runner.getState().next( Signal.LOAD ), true,
+                    "reload started", params );
 
             try {
                 deploy( perftest );
@@ -122,7 +125,7 @@ public class LoadResource extends PropagatingResource {
 
         try {
             deploy( perftest );
-            return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState() );
+            return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState().next( Signal.LOAD ) );
         }
         catch ( Exception e ) {
             LOG.error( "Encountered failure while reloading perftest", e );
@@ -220,7 +223,7 @@ public class LoadResource extends PropagatingResource {
             DefaultClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create( clientConfig );
             WebResource resource = client.resource( failingCaller.getMetadata().getUrl() ).path( "/status" );
-            return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
+            return resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( BaseResult.class );
         }
     }
 
@@ -270,11 +273,11 @@ public class LoadResource extends PropagatingResource {
             }
             else if ( response.contains( "OK" ) ) {
                 LOG.info( "SUCCEEDED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), true, response, runner.getState() );
+                result = new BaseResult( getEndpointUrl(), true, response, State.READY );
             }
 
             LOG.warn( "Got back unknown response from the manager: {}", response );
-            result = new BaseResult( getEndpointUrl(), false, response, runner.getState() );
+            result = new BaseResult( getEndpointUrl(), false, response, State.INACTIVE );
         }
     }
 }

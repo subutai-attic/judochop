@@ -9,11 +9,11 @@ import java.util.Set;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.perftest.api.TestInfoImpl;
 
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/8/13 Time: 5:23 PM To change this template use File | Settings |
- * File Templates.
+ * Operations performed against a perftest store.
  */
 public interface StoreOperations {
     String getRunnerKey( String publicHostname );
@@ -37,4 +37,6 @@ public interface StoreOperations {
     void uploadInfoAndResults( RunnerInfo metadata, TestInfo testInfo, RunInfo runInfo, File results );
 
     void uploadTestInfo( TestInfo testInfo );
+
+    TestInfo loadTestInfo();
 }

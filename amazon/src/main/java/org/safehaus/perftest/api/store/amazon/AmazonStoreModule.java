@@ -7,6 +7,7 @@
 package org.safehaus.perftest.api.store.amazon;
 
 
+import org.safehaus.perftest.api.PerftestApiModule;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.safehaus.perftest.api.store.StoreService;

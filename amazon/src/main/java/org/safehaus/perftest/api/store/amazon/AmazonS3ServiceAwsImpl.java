@@ -70,7 +70,11 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     @Override
     public void start() {
-        operations.register( metadata );
+        if ( metadata.getHostname() != null )
+        {
+            operations.register( metadata );
+        }
+
         started = true;
         runners = operations.getRunners( metadata );
         new Thread( this ).start();
@@ -149,6 +153,12 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
     @Override
     public void uploadTestInfo( final TestInfo testInfo ) {
         operations.uploadTestInfo( testInfo );
+    }
+
+
+    @Override
+    public TestInfo loadTestInfo() {
+        return operations.loadTestInfo();
     }
 
 

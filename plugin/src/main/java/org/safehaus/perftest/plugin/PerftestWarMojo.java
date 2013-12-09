@@ -1,7 +1,6 @@
 package org.safehaus.perftest.plugin;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -10,13 +9,11 @@ import java.util.*;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.safehaus.perftest.api.TestInfoImpl;
-import org.safehaus.perftest.api.settings.ConfigKeys;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -90,19 +87,19 @@ public class PerftestWarMojo extends PerftestMojo {
             // Insert all properties acquired in runtime and overwrite existing ones
             String gitUrl = PerftestUtils.getGitRemoteUrl( gitConfigDirectory );
             String warMd5 = PerftestUtils.getMD5( timeStamp, commitId );
-            prop.setProperty( "git.uuid", commitId );
-            prop.setProperty( "git.url", gitUrl );
-            prop.setProperty( "create.timestamp", timeStamp );
-            prop.setProperty( "group.id", project.getGroupId() );
-            prop.setProperty( "artifact.id", project.getArtifactId() );
-            prop.setProperty( "project.version", project.getVersion() );
-            prop.setProperty( "test.module.fqcn", testModuleFQCN );
-            prop.setProperty( "aws.s3.bucket", bucketName );
-            prop.setProperty( "aws.s3.key", accessKey );
-            prop.setProperty( "aws.s3.secret", secretKey );
+            prop.setProperty( GIT_UUID_KEY, commitId );
+            prop.setProperty( GIT_URL_KEY, gitUrl );
+            prop.setProperty( CREATE_TIMESTAMP_KEY, timeStamp );
+            prop.setProperty( GROUP_ID_KEY, project.getGroupId() );
+            prop.setProperty( ARTIFACT_ID_KEY, project.getArtifactId() );
+            prop.setProperty( PROJECT_VERSION_KEY, project.getVersion() );
+            prop.setProperty( TEST_MODULE_FQCN_KEY, testModuleFQCN );
+            prop.setProperty( AWS_BUCKET_KEY, bucketName );
+            prop.setProperty( AWSKEY_KEY, accessKey );
+            prop.setProperty( AWS_SECRET_KEY, secretKey );
             prop.setProperty( "manager.app.username", managerAppUsername );
             prop.setProperty( "manager.app.password", managerAppPassword );
-            prop.setProperty( "war.md5", warMd5 );
+            prop.setProperty( WAR_MD5_KEY, warMd5 );
 
             // Save the newly formed properties file under WEB-INF/classes/config.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf('/') ) );
@@ -124,7 +121,7 @@ public class PerftestWarMojo extends PerftestMojo {
             testInfo.setGitRepoUrl( gitUrl );
             testInfo.setGitUuid( commitId );
             testInfo.setLoadKey( "tests/" + commitId + "/perftest.war" );
-            testInfo.setPerftestVersion( prop.getProperty( ConfigKeys.PERFTEST_VERSION_KEY ) );
+            testInfo.setPerftestVersion( prop.getProperty( PERFTEST_VERSION_KEY ) );
             testInfo.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();

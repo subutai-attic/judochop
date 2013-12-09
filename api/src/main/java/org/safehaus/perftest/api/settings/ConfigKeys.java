@@ -2,11 +2,12 @@ package org.safehaus.perftest.api.settings;
 
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/8/13 Time: 5:29 PM To change this template use File | Settings |
- * File Templates.
+ * Configuration setting keys.
  */
 public interface ConfigKeys {
+
     String RUNNERS_PATH = "runners";
+
     String TESTS_PATH = "tests";
 
     String PERFTEST_VERSION_KEY = "perftest.version";
@@ -38,5 +39,9 @@ public interface ConfigKeys {
     String URL_KEY = "url.key";
 
     String RUNNER_TEMP_DIR_KEY = "runner.temp.dir";
+
+    String PROJECT_VERSION_KEY = "project.version";
+
+    String WAR_MD5_KEY = "war.md5";
 
 }

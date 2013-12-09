@@ -37,7 +37,7 @@ public class PerftestRunner implements Runnable {
     private CallStats stats;
     private Perftest test;
     private ExecutorService executorService;
-    private State state = State.READY;
+    private State state = State.INACTIVE;
     private long startTime;
     private long stopTime;
 
@@ -51,14 +51,21 @@ public class PerftestRunner implements Runnable {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
-        testInfo = new TestInfoImpl();
-        testInfo.setTestModuleFQCN( loader.getTestModule().getClass().getCanonicalName() );
-        testInfo.setLoadTime( new Date().toString() );
-        service.uploadTestInfo( testInfo );
+        testInfo = ( TestInfoImpl ) service.loadTestInfo();
 
-        stats = injector.getInstance( CallStats.class );
-        executorService = Executors.newFixedThreadPool( test.getThreadCount() );
-        runInfo = new RunInfo( 0 );
+        if ( testInfo != null ) {
+            testInfo.setTestModuleFQCN( loader.getTestModule().getClass().getCanonicalName() );
+            testInfo.setLoadTime( new Date().toString() );
+            state = State.READY;
+            LOG.info( "Loaded valid testInfo = {}: state set to READY.", testInfo );
+            stats = injector.getInstance( CallStats.class );
+            executorService = Executors.newFixedThreadPool( test.getThreadCount() );
+            runInfo = new RunInfo( 0 );
+        }
+        else {
+            state = State.INACTIVE;
+            LOG.warn( "Could not find valid testInfo. State set to INACTIVE." );
+        }
     }
 
 
@@ -126,6 +133,11 @@ public class PerftestRunner implements Runnable {
 
     public void start() {
         synchronized ( lock ) {
+            if ( state != State.READY ) {
+                LOG.error( "Attempt to start runner when state is not READY." );
+                return;
+            }
+
             state = State.RUNNING;
             startTime = System.nanoTime();
 
@@ -162,6 +174,11 @@ public class PerftestRunner implements Runnable {
 
     public void stop() {
         synchronized ( lock ) {
+            if ( state != State.RUNNING ) {
+                LOG.error( "Attempt to stop the runner when the state is not RUNNING." );
+                return;
+            }
+
             state = State.STOPPED;
 
             try {

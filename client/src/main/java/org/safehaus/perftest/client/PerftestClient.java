@@ -73,17 +73,19 @@ public interface PerftestClient extends ConfigKeys {
 
 
     /**
-     * Loads a new test to be run by the perftest cluster formation. This call will
-     * automatically propagated to all peers in the cluster and will automatically
-     * handle verification to make sure the cluster formation is consistent and
-     * in the State.READY state to start running tests. It will block until the
-     * verification is found to fail or until the cluster is consistent.
+     * Loads a new test to be run by the perftest cluster formation. When called
+     * will propagation enabled, all peers in the cluster should load the new
+     * test. The call will automatically handle verification to make sure the
+     * cluster formation is consistent and each node is in the State.READY state
+     * to start running tests. It will block until the verification is found to
+     * fail or until the cluster is consistent.
      *
      * @param runner the runner to use for propagating the load request
      * @param testKey the test information associated with the test to load
+     * @param propagate whether or not to make the call propagate
      * @return the results associated with the operation
      */
-    Result load( RunnerInfo runner, String testKey );
+    Result load( RunnerInfo runner, String testKey, Boolean propagate );
 
 
     /**
@@ -93,6 +95,9 @@ public interface PerftestClient extends ConfigKeys {
      * @return
      */
     Result stop( RunnerInfo runner, boolean propagate );
+
+
+    Result status( RunnerInfo runner );
 
 
     Result reset( RunnerInfo runner, boolean propagate );
@@ -120,4 +125,11 @@ public interface PerftestClient extends ConfigKeys {
      */
     Result verify ();
 
+
+    /**
+     * Gets the first available live runner.
+     *
+     * @return the first available live runner
+     */
+    RunnerInfo getLiveRunner();
 }

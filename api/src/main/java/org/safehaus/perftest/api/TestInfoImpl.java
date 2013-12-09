@@ -187,4 +187,60 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     public void setWarMd5( final String warMd5 ) {
         this.warMd5 = warMd5;
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append( "\nTestInfo {\n\n\t" );
+
+        if ( testModuleFQCN != null ) {
+            sb.append( TEST_MODULE_FQCN_KEY ).append( ": " ).append( testModuleFQCN ).append( "\n\t" );
+        }
+
+        if ( perftestVersion != null ) {
+            sb.append( PERFTEST_VERSION_KEY ).append( ": " ).append( perftestVersion ).append( "\n\t" );
+        }
+
+        if ( createTimestamp != null ) {
+            sb.append( CREATE_TIMESTAMP_KEY ).append( ": " ).append( createTimestamp ).append( "\n\t" );
+        }
+
+        if ( gitUuid != null ) {
+            sb.append( GIT_UUID_KEY ).append( ": " ).append( gitUuid ).append( "\n\t" );
+        }
+
+        if ( gitRepoUrl != null ) {
+            sb.append( GIT_URL_KEY ).append( ": " ).append( gitRepoUrl ).append( "\n\t" );
+        }
+
+        if ( groupId != null ) {
+            sb.append( GROUP_ID_KEY ).append( ": " ).append( groupId ).append( "\n\t" );
+        }
+
+        if ( artifactId != null ) {
+            sb.append( ARTIFACT_ID_KEY ).append( ": " ).append( artifactId ).append( "\n\t" );
+        }
+
+        if ( projectVersion != null ) {
+            sb.append( PROJECT_VERSION_KEY ).append( ": " ).append( projectVersion ).append( "\n\t" );
+        }
+
+        if ( warMd5 != null ) {
+            sb.append( WAR_MD5_KEY ).append( ": " ).append( warMd5 ).append( "\n\t" );
+        }
+
+        if ( loadKey != null ) {
+            sb.append( LOAD_KEY ).append( ": " ).append( loadKey ).append( "\n\t" );
+        }
+
+        if ( loadTime != null ) {
+            sb.append( LOAD_TIME_KEY ).append( ": " ).append( loadTime ).append( "\n" );
+        }
+
+        sb.append( "\n}" );
+
+        return sb.toString();
+    }
 }
