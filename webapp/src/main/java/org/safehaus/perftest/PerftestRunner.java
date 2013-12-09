@@ -174,6 +174,7 @@ public class PerftestRunner implements Runnable {
 
                 service.uploadResults( testInfo, runInfo, stats.getResultsFile() );
                 testInfo.addRunInfo( runInfo );
+                reset();
             }
         } ).start();
     }
