@@ -107,7 +107,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the extracted path of perftest-webapp.war file with a '/' at the end */
+    /** @return Returns the extracted path of perftest-server.war file with a '/' at the end */
     public String getExtractedWarRootPath() {
         return getProjectBaseDirectory() + "target/perftest/";
     }
@@ -151,13 +151,13 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the full path of the original perftest-webapp war file inside the local maven repository */
-    public String getWebappWarPath() {
+    /** @return Returns the full path of the original perftest-server war file inside the local maven repository */
+    public String getServerWarPath() {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();
 
-        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/perftest-webapp/" +
-                perftestArtifact.getVersion() + "/perftest-webapp-" + perftestArtifact.getVersion() + ".war";
+        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/perftest-server/" +
+                perftestArtifact.getVersion() + "/perftest-server-" + perftestArtifact.getVersion() + ".war";
 
         return path;
     }
