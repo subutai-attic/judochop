@@ -182,8 +182,91 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     @Override
-    public Result verify() {
-        return new BaseResult( "http://localhost:8080", true, "verification triggered", State.READY );
+    public boolean verify() {
+        // Get the latest test info
+        TestInfo latestTest = null;
+        try {
+            Set<TestInfo> tests = getTests();
+
+            for ( TestInfo test : tests ) {
+                if ( latestTest == null ) {
+                    latestTest = test;
+                }
+                else if ( compareTimestamps( test.getCreateTimestamp(), latestTest.getCreateTimestamp() ) > 0 ) {
+                    latestTest = test;
+                }
+            }
+
+        } catch ( Exception e ) {
+            LOG.warn( "Error while getting test information from store", e );
+            return false;
+        }
+
+        if ( latestTest == null ) {
+            LOG.info( "No tests found on store" );
+            return false;
+        }
+
+        Collection<RunnerInfo> runners = getRunners();
+        for ( RunnerInfo runner : runners ) {
+            try {
+                Result result = status( runner );
+                if ( ! result.getStatus() ) {
+                    LOG.info( "State of runner could not be retrieved" );
+                    LOG.info( "Runner hostname: " + runner.getHostname() );
+                    return false;
+                }
+                if ( result.getState().next( Signal.LOAD ) != State.READY )
+                {
+                    LOG.info( "Runner is not in a ready state, State: " + result.getState() );
+                    LOG.info( "Runner hostname: " + runner.getHostname() );
+                    return false;
+                }
+                if ( ! result.getTestInfo().getWarMd5().equals( latestTest.getWarMd5() ) ) {
+                    LOG.info( "Runner doesn't have the latest test loaded" );
+                    LOG.info( "Runner hostname: " + runner.getHostname() );
+                    LOG.info( "Latest test MD5: " + latestTest.getWarMd5() );
+                    LOG.info( " runner's installed MD5: " + result.getTestInfo().getWarMd5() );
+                    return false;
+                }
+                // LOG runner info
+                LOG.info( "Runner at " + runner.getHostname() + " is READY" );
+            } catch ( Exception e ) {
+                LOG.warn( "Error while getting runner states", e );
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Compares to timestamps and returns -1 if ts1 < ts2, 0 if ts1 == ts2, 1 otherwise
+     * @param ts1
+     * @param ts2
+     * @return
+     * @throws NumberFormatException
+     */
+    private int compareTimestamps ( String ts1, String ts2 ) throws NumberFormatException {
+
+        String[] rawFields1 = ts1.split( "." );
+        String[] rawFields2 = ts2.split( "." );
+
+        if ( rawFields1.length != rawFields2.length ) {
+            throw new NumberFormatException( "Timestamp format is wrong" );
+        }
+
+        int field1, field2;
+        for ( int i = 0; i < rawFields1.length; i++ ) {
+            field1 = Integer.parseInt( rawFields1[i] );
+            field2 = Integer.parseInt( rawFields2[i] );
+
+            if ( field1 != field2 ) {
+                return Integer.signum( field1 - field1 );
+            }
+        }
+
+        return 0;
     }
 
 

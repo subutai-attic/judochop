@@ -125,7 +125,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the results of the verification
      */
-    Result verify ();
+    boolean verify ();
 
 
     /**
