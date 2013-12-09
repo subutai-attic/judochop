@@ -9,7 +9,6 @@ import java.util.Set;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.TestInfoImpl;
 
 
 /**
@@ -39,4 +38,8 @@ public interface StoreOperations {
     void uploadTestInfo( TestInfo testInfo );
 
     TestInfo loadTestInfo();
+
+    TestInfo getTestInfo( String testKey );
+
+    void deleteTests();
 }

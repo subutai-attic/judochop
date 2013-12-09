@@ -9,7 +9,6 @@ import java.util.Set;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.TestInfoImpl;
 
 
 /**

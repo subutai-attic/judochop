@@ -13,7 +13,6 @@ import com.netflix.config.DynamicStringProperty;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.TestInfoImpl;
 import org.safehaus.perftest.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +108,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
                 if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/test-info.json" ) )
                 {
-                    tests.add( getJsonObject( key, TestInfoImpl.class ) );
+                    tests.add( getJsonObject( key, TestInfo.class ) );
                 }
             }
 
@@ -403,11 +402,46 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         sb.append( TESTS_PATH ).append( '/' ).append( gitUuid ).append( "/test-info.json" );
 
         try {
-            return getJsonObject( sb.toString(), TestInfoImpl.class );
+            return getJsonObject( sb.toString(), TestInfo.class );
         }
         catch ( Exception e ) {
             LOG.error( "Could not find test-info.json at {}: returning null TestInfo", sb.toString(), e );
             return null;
         }
+    }
+
+
+    /**
+     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot
+     * find it then null is returned.
+     *
+     * @return the TestInfo object if it exists in the store or null if it does not
+     */
+    @Override
+    public TestInfo getTestInfo( String key ) {
+        try {
+            return getJsonObject( key, TestInfo.class );
+        }
+        catch ( Exception e ) {
+            LOG.error( "Could not find test-info.json at {}: returning null TestInfo", key, e );
+            return null;
+        }
+    }
+
+
+    @Override
+    public void deleteTests() {
+        Set<TestInfo> tests = new HashSet<TestInfo>();
+        ObjectListing listing = client.listObjects( awsBucket.get(), TESTS_PATH + "/" );
+
+        do {
+            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
+                String key = summary.getKey();
+                client.deleteObject( awsBucket.get(), key );
+            }
+
+            listing = client.listNextBatchOfObjects( listing );
+        }
+        while ( listing.isTruncated() );
     }
 }

@@ -12,6 +12,7 @@ public class BaseResult implements Result {
     private String message;
     private boolean status;
     private State state;
+    private TestInfo testInfo;
 
 
     public BaseResult( String endpoint, boolean status, String message, State state ) {
@@ -19,6 +20,15 @@ public class BaseResult implements Result {
         this.status = status;
         this.message = message;
         this.state = state;    }
+
+
+    public BaseResult( String endpoint, boolean status, String message, State state, TestInfo testInfo ) {
+        this.endpoint = endpoint;
+        this.status = status;
+        this.message = message;
+        this.state = state;
+        this.testInfo = testInfo;
+    }
 
 
     @SuppressWarnings( "UnusedDeclaration" )
@@ -69,5 +79,17 @@ public class BaseResult implements Result {
     @Override
     public String getEndpoint() {
         return endpoint;
+    }
+
+
+    @Override
+    @JsonProperty
+    public TestInfo getTestInfo() {
+        return testInfo;
+    }
+
+
+    public void setTestInfo( final TestInfo testInfo ) {
+        this.testInfo = testInfo;
     }
 }

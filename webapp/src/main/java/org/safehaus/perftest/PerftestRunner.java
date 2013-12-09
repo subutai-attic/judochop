@@ -5,6 +5,7 @@ import org.safehaus.perftest.api.CallStatsSnapshot;
 import org.safehaus.perftest.api.Perftest;
 import org.safehaus.perftest.api.RunInfo;
 import org.safehaus.perftest.api.State;
+import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.api.store.StoreService;
 
 import com.google.inject.Inject;
@@ -12,7 +13,6 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 import org.safehaus.perftest.server.settings.PropSettings;
-import org.safehaus.perftest.api.TestInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class PerftestRunner implements Runnable {
     private long startTime;
     private long stopTime;
 
-    private final TestInfoImpl testInfo;
+    private TestInfo testInfo;
     private RunInfo runInfo;
 
 
@@ -51,7 +51,7 @@ public class PerftestRunner implements Runnable {
         this.injector = injector;
         this.service = service;
         test = loader.getChildInjector().getInstance( Perftest.class );
-        testInfo = ( TestInfoImpl ) service.loadTestInfo();
+        testInfo = service.loadTestInfo();
 
         if ( testInfo != null ) {
             testInfo.setTestModuleFQCN( loader.getTestModule().getClass().getCanonicalName() );
@@ -173,7 +173,6 @@ public class PerftestRunner implements Runnable {
                 stopTime = System.nanoTime();
 
                 service.uploadResults( testInfo, runInfo, stats.getResultsFile() );
-                testInfo.addRunInfo( runInfo );
                 reset();
             }
         } ).start();
@@ -227,5 +226,17 @@ public class PerftestRunner implements Runnable {
                 lock.notifyAll();
             }
         }
+    }
+
+
+    public TestInfo getTestInfo() {
+        if ( testInfo == null ) {
+            LOG.error( "TestInfo seems to be null" );
+        }
+        else {
+            LOG.info( "TestInfo = {}", testInfo );
+        }
+
+        return testInfo;
     }
 }
