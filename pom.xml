@@ -11,6 +11,33 @@
   <packaging>pom</packaging>
   <description>A Simple PERFormance TESTing Framework</description>
 
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>dmjohnson</id>
+      <name>Dave Johnson</name>
+    </developer>
+    <developer>
+      <id>todd</id>
+      <name>Todd Nine</name>
+    </developer>
+    <developer>
+      <id>jim.rybacki</id>
+      <name>Jim Rybacki</name>
+    </developer>
+    <developer>
+      <id>akarasulu</id>
+      <name>Alex Karasulu</name>
+    </developer>
+  </developers>
+
   <properties>
     <slf4j.version>1.6.1</slf4j.version>
     <junit.version>4.11</junit.version>
