@@ -419,8 +419,10 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      */
     @Override
     public TestInfo getTestInfo( String key ) {
+        key = key.substring( 0, key.length() - "perftest.war".length() );
+
         try {
-            return getJsonObject( key, TestInfo.class );
+            return getJsonObject( key + "test-info.json", TestInfo.class );
         }
         catch ( Exception e ) {
             LOG.error( "Could not find test-info.json at {}: returning null TestInfo", key, e );
