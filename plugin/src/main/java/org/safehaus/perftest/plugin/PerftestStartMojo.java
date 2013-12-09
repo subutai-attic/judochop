@@ -3,6 +3,7 @@ package org.safehaus.perftest.plugin;
 
 import java.util.Collection;
 
+import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
@@ -32,7 +33,13 @@ public class PerftestStartMojo extends PerftestMojo {
             throw new MojoExecutionException( "There is no runner found" );
         }
 
-        // TODO call client.start after it's implemented
+        Result result = client.start( info, true );
+
+        if ( ! result.getStatus() ) {
+            throw new MojoExecutionException( result.getMessage() );
+        }
+
+        getLog().info( "Start request resulted with: " + result.getMessage() );
 
     }
 }
