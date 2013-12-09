@@ -38,4 +38,8 @@ public interface Result {
      */
     @JsonProperty
     String getEndpoint();
+
+
+    @JsonProperty
+    TestInfo getTestInfo();
 }

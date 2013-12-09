@@ -228,4 +228,9 @@ public class PerftestRunner implements Runnable {
             }
         }
     }
+
+
+    public TestInfoImpl getTestInfo() {
+        return testInfo;
+    }
 }

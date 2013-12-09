@@ -53,6 +53,7 @@ public class StatusResource {
     @GET
     public Result status()
     {
-        return new BaseResult( storeService.getMyMetadata().getUrl(), true, null, runner.getState() );
+        return new BaseResult( storeService.getMyMetadata().getUrl(), true, null,
+                runner.getState(), runner.getTestInfo() );
     }
 }
