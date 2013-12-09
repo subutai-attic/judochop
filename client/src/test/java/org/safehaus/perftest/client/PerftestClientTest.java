@@ -28,6 +28,12 @@ public class PerftestClientTest {
 
 
     @Test
+    public void deleteTests() throws Exception {
+        client.deleteTests();
+    }
+
+
+    @Test
     public void testGetTests() throws IOException {
         Set<TestInfo> tests = client.getTests();
 

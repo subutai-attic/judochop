@@ -20,7 +20,7 @@ public class PerftestApiModule extends AbstractModule implements ConfigKeys {
 
 
     protected void configure() {
-        bind( TestInfo.class ).to( TestInfoImpl.class );
+        bind( TestInfo.class );
     }
 
 

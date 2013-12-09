@@ -23,6 +23,8 @@ import org.safehaus.perftest.api.TestInfo;
  */
 public interface PerftestClient extends ConfigKeys {
 
+    void deleteTests();
+
     /**
      * Gets the set of runners involved in a perftest cluster formation.
      *

@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.perftest.api.TestInfoImpl;
+import org.safehaus.perftest.api.TestInfo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -112,7 +112,7 @@ public class PerftestWarMojo extends PerftestMojo {
             PerftestUtils.archiveWar( finalWarFile, extractedWarRoot );
 
             // Generate the test-info.json file
-            TestInfoImpl testInfo = new TestInfoImpl();
+            TestInfo testInfo = new TestInfo();
             testInfo.setTestModuleFQCN( testModuleFQCN );
             testInfo.setCreateTimestamp( timeStamp );
             testInfo.setArtifactId( project.getArtifactId() );

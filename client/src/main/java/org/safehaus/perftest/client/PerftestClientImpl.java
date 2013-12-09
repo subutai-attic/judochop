@@ -43,6 +43,12 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     @Override
+    public void deleteTests() {
+        operations.deleteTests();
+    }
+
+
+    @Override
     public Collection<RunnerInfo> getRunners() {
         return operations.getRunners().values();
     }
@@ -80,13 +86,14 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
     @Override
     public Result load( RunnerInfo runner, String testKey, Boolean propagate ) {
+        TestInfo testInfo = getTest( testKey );
+        String md5 = testInfo.getWarMd5();
         Result result = RestRequests.load( runner, testKey, propagate );
 
         if ( ! result.getStatus() )
         {
             return result;
         }
-
 
         Collection<RunnerInfo> runners = getRunners();
         LinkedList<RunnerInfo> failed = new LinkedList<RunnerInfo>( runners );
@@ -113,6 +120,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
             try {
                 Result status = status( runnerInfo );
+                TestInfo remoteInfo = status.getTestInfo();
+
                 if ( ! status.getStatus() ) {
                     LOG.warn( "Runner {} failed on status call", runnerInfo );
                     failed.addFirst( runnerInfo );
@@ -121,6 +130,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
                 if ( status.getState() != State.READY ) {
                     LOG.warn( "Runner {} not yet in READY state", runnerInfo );
                     failed.addFirst( runnerInfo );
+                }
+
+                if ( remoteInfo != null && remoteInfo.getWarMd5() != null ) {
+                    if ( ! remoteInfo.getWarMd5().equals( md5 ) ) {
+                        LOG.warn( "Runner {} has wrong md5 ... was expecting {}", runnerInfo, md5 );
+                        failed.addFirst( runnerInfo );
+                    }
                 }
 
                 LOG.info( "Runner {} is backup and READY!", runnerInfo );
@@ -132,6 +148,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
         }
 
         return result;
+    }
+
+
+    private TestInfo getTest( final String testKey ) {
+        return operations.getTestInfo( testKey );
     }
 
 
