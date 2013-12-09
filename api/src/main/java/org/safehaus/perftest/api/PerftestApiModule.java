@@ -34,7 +34,7 @@ public class PerftestApiModule extends AbstractModule implements ConfigKeys {
     @Provides
     @Named( CREATE_TIMESTAMP_KEY )
     String getCreateTimestamp() {
-        return propertyFactory.getStringProperty( CREATE_TIMESTAMP_KEY,  "none" ).get();
+        return propertyFactory.getStringProperty( CREATE_TIMESTAMP_KEY, "none" ).get();
     }
 
 

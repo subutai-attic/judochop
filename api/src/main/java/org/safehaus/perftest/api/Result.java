@@ -1,10 +1,10 @@
 package org.safehaus.perftest.api;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Result interface from operations against runner API.
- */
+
+/** Result interface from operations against runner API. */
 public interface Result {
 
     /**

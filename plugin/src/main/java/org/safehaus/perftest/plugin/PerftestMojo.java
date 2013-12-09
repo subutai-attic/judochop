@@ -18,15 +18,15 @@ import org.apache.maven.project.MavenProject;
 public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
 
-    @Parameter( defaultValue = "${project}", readonly = true )
+    @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
 
 
-    @Parameter( defaultValue = "${plugin}", readonly = true )
+    @Parameter(defaultValue = "${plugin}", readonly = true)
     protected PluginDescriptor plugin;
 
 
-    @Parameter(  defaultValue = "${settings.localRepository}" )
+    @Parameter(defaultValue = "${settings.localRepository}")
     protected String localRepository;
 
 
@@ -34,14 +34,12 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Leaving this parameter with the default 'true' value causes the plugin goal to fail when there are modified
      * sources in the local git repository.
      */
-    @Parameter( property = "failIfCommitNecessary", defaultValue = "true" )
+    @Parameter(property = "failIfCommitNecessary", defaultValue = "true")
     protected boolean failIfCommitNecessary;
 
 
-    /**
-     * This parameter is written to the config.properties file in the created WAR and used by the runner at runtime
-     */
-    @Parameter( property = "perftestFormation", required = true )
+    /** This parameter is written to the config.properties file in the created WAR and used by the runner at runtime */
+    @Parameter(property = "perftestFormation", required = true)
     protected String perftestFormation;
 
 
@@ -49,28 +47,22 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Fully qualified CN property of the app once it's deployed to its container. This parameter will be put to the
      * config.properties file inside the WAR to be uploaded
      */
-    @Parameter( property = "testModuleFQCN", required = true )
+    @Parameter(property = "testModuleFQCN", required = true)
     protected String testModuleFQCN;
 
 
-    /**
-     * The bucket to upload into
-     */
-    @Parameter( property = "bucketName", required = true )
+    /** The bucket to upload into */
+    @Parameter(property = "bucketName", required = true)
     protected String bucketName;
 
 
-    /**
-     * Access key for S3
-     */
-    @Parameter( property = "accessKey", required = true )
+    /** Access key for S3 */
+    @Parameter(property = "accessKey", required = true)
     protected String accessKey;
 
 
-    /**
-     * Secret key for S3
-     */
-    @Parameter( property = "secretKey", required = true)
+    /** Secret key for S3 */
+    @Parameter(property = "secretKey", required = true)
     protected String secretKey;
 
 
@@ -79,7 +71,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      *
      * defaultValue is "tests/"
      */
-    @Parameter( property = "destinationParentDir", defaultValue = "tests/" )
+    @Parameter(property = "destinationParentDir", defaultValue = "tests/")
     protected String destinationParentDir;
 
 
@@ -87,7 +79,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
      * the WAR to be uploaded
      */
-    @Parameter( property = "managerAppUsername", required = true )
+    @Parameter(property = "managerAppUsername", required = true)
     protected String managerAppUsername;
 
 
@@ -95,7 +87,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
      * the WAR to be uploaded
      */
-    @Parameter( property = "managerAppPassword", required = true )
+    @Parameter(property = "managerAppPassword", required = true)
     protected String managerAppPassword;
 
 
@@ -109,25 +101,19 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /**
-     * @return Returns the project base directory with a '/' at the end
-     */
+    /** @return Returns the project base directory with a '/' at the end */
     public String getProjectBaseDirectory() {
         return PerftestUtils.forceSlashOnDir( project.getBasedir().getAbsolutePath() );
     }
 
 
-    /**
-     * @return Returns the extracted path of perftest-webapp.war file with a '/' at the end
-     */
+    /** @return Returns the extracted path of perftest-webapp.war file with a '/' at the end */
     public String getExtractedWarRootPath() {
         return getProjectBaseDirectory() + "target/perftest/";
     }
 
 
-    /**
-     * @return Returns the full path of created perftest.war file
-     */
+    /** @return Returns the full path of created perftest.war file */
     public String getWarToUploadPath() {
         String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
@@ -135,9 +121,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /**
-     * @return Returns the full path of created perftest.war file
-     */
+    /** @return Returns the full path of created perftest.war file */
     public String getTestInfoToUploadPath() {
         String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
@@ -146,30 +130,28 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
 
     /**
-     * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid;
-     *         S3 bucketName is not included in the returned String
-     * @throws MojoExecutionException
+     * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid; S3
+     *         bucketName is not included in the returned String
      */
     public String getWarOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + PerftestUtils.getLastCommitUuid( PerftestUtils
-                .getGitConfigFolder( project.getBasedir().getParent() ) ) + "/perftest.war";
+        return destinationParentDir + PerftestUtils
+                .getLastCommitUuid( PerftestUtils.getGitConfigFolder( project.getBasedir().getParent() ) )
+                + "/perftest.war";
     }
 
 
     /**
-     * @return Returns the file path of test-info.json file inside the S3 bucket, using the current last commit uuid;
-     *         S3 bucketName is not included in the returned String
-     * @throws MojoExecutionException
+     * @return Returns the file path of test-info.json file inside the S3 bucket, using the current last commit uuid; S3
+     *         bucketName is not included in the returned String
      */
     public String getTestInfoOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + PerftestUtils.getLastCommitUuid( PerftestUtils
-                .getGitConfigFolder( project.getBasedir().getParent() ) ) + "/test-info.json";
+        return destinationParentDir + PerftestUtils
+                .getLastCommitUuid( PerftestUtils.getGitConfigFolder( project.getBasedir().getParent() ) )
+                + "/test-info.json";
     }
 
 
-    /**
-     * @return Returns the full path of the original perftest-webapp war file inside the local maven repository
-     */
+    /** @return Returns the full path of the original perftest-webapp war file inside the local maven repository */
     public String getWebappWarPath() {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();
@@ -179,6 +161,4 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
         return path;
     }
-
-
 }

@@ -51,13 +51,13 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public Ec2RunnerInfo( InputStream in ) throws IOException {
         super( in );
     }
 
-    public Ec2RunnerInfo()
-    {
+
+    public Ec2RunnerInfo() {
         super();
 
         if ( new File( EC2METADATA_PROCESS ).exists() ) {
@@ -83,8 +83,7 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
 
             load( new FileInputStream( file ) );
 
-            if ( LOG.isDebugEnabled() )
-            {
+            if ( LOG.isDebugEnabled() ) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 store( out, null );
                 LOG.debug( "Contents of RunnerInfo =\n{}", new String( out.toByteArray() ) );
@@ -97,42 +96,43 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
         normalizeProperties();
     }
 
-    @SuppressWarnings( "UnusedDeclaration" )
+
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getAmiId() {
         return getProperty( "ami-id" );
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getAvailabilityZone() {
         return getProperty( "availability-zone" );
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getInstanceId() {
         return getProperty( "instance-id" );
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getInstanceType() {
         return getProperty( "instance-type" );
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getLocalHostname() {
         return getProperty( "local-hostname" );
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getLocalIpv4() {
         return getProperty( "local-ipv4" );
@@ -140,7 +140,7 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
 
 
     @Override
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     @JsonProperty
     public String getIpv4() {
         return getProperty( "public-ipv4" );
@@ -167,7 +167,7 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
      *
      * @return true if running on an EC2 instance, false otherwise
      */
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public boolean runningOnEc2() {
         return isRunningOnEc2;
     }
@@ -187,15 +187,13 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
 
 
     /**
-     * Pulls a number of properties from the EC2 instance metadata. Is fail fast
-     * to make sure we don't make a number of calls and block. This is the old way
-     * to do it which can block for a bit when not running on EC2.
+     * Pulls a number of properties from the EC2 instance metadata. Is fail fast to make sure we don't make a number of
+     * calls and block. This is the old way to do it which can block for a bit when not running on EC2.
      *
      * @return true if we succeed in getting all the information we need
      */
-    @SuppressWarnings( "UnusedDeclaration" )
-    private boolean populateEc2Metadata()
-    {
+    @SuppressWarnings("UnusedDeclaration")
+    private boolean populateEc2Metadata() {
         try {
             setProperty( PUBLIC_HOSTNAME_KEY, extractEc2Metadata( PUBLIC_HOSTNAME_KEY ) );
             setProperty( LOCAL_HOSTNAME_KEY, extractEc2Metadata( LOCAL_HOSTNAME_KEY ) );
@@ -210,15 +208,16 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
 
 
     /**
-     * Extracts instance meta data from the AmazonS3Service#INSTANCE_URL URL. This is
-     * the old way to do it that takes a bit of time timing out when not on EC2.
+     * Extracts instance meta data from the AmazonS3Service#INSTANCE_URL URL. This is the old way to do it that takes a
+     * bit of time timing out when not on EC2.
      *
      * @param data the information to get
+     *
      * @return the value of the information associated with the EC2 instance
+     *
      * @throws IOException if there's a failure accessing the EC2 instance
      */
-    private String extractEc2Metadata( String data ) throws IOException
-    {
+    private String extractEc2Metadata( String data ) throws IOException {
         StringBuilder url = new StringBuilder();
         url.append( INSTANCE_URL ).append( '/' ).append( data );
 

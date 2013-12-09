@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Date;
+import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.safehaus.perftest.api.TestInfo;
@@ -17,11 +18,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/**
- * Creates perftest.war using perftest-webapp module and caller module
- */
-@Mojo( name = "war", requiresDependencyResolution = ResolutionScope.TEST,
-        requiresDependencyCollection = ResolutionScope.TEST )
+/** Creates perftest.war using perftest-webapp module and caller module */
+@Mojo(name = "war", requiresDependencyResolution = ResolutionScope.TEST,
+        requiresDependencyCollection = ResolutionScope.TEST)
 public class PerftestWarMojo extends PerftestMojo {
 
 
@@ -80,7 +79,6 @@ public class PerftestWarMojo extends PerftestMojo {
                 while ( propCurrent.propertyNames().hasMoreElements() ) {
                     key = propCurrent.propertyNames().nextElement().toString();
                     prop.setProperty( key, propCurrent.getProperty( key ) );
-
                 }
             }
 
@@ -102,7 +100,7 @@ public class PerftestWarMojo extends PerftestMojo {
             prop.setProperty( WAR_MD5_KEY, warMd5 );
 
             // Save the newly formed properties file under WEB-INF/classes/config.properties
-            FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf('/') ) );
+            FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
             FileWriter writer = new FileWriter( configPropertiesFilePath );
             prop.store( writer, null );
 

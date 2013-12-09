@@ -1,15 +1,12 @@
 package org.safehaus.perftest.api;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.safehaus.perftest.api.CallStatsSnapshot;
-
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Information about a run.
- */
+
+/** Information about a run. */
 public class RunInfo {
     private final Date runtime;
     private long callCount;
@@ -21,8 +18,7 @@ public class RunInfo {
     private CallStatsSnapshot callStatsSnapshot;
 
 
-    public RunInfo( int runNumber )
-    {
+    public RunInfo( int runNumber ) {
         this.runNumber = runNumber;
         this.runtime = new Date();
     }
@@ -34,7 +30,7 @@ public class RunInfo {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setCallCount( long callCount ) {
         this.callCount = callCount;
     }
@@ -46,7 +42,7 @@ public class RunInfo {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setThreadCount( int threadCount ) {
         this.threadCount = threadCount;
     }
@@ -58,7 +54,7 @@ public class RunInfo {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setRunnerCount( int runnerCount ) {
         this.runnerCount = runnerCount;
     }
@@ -70,7 +66,7 @@ public class RunInfo {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setDelayBetweenCalls( long delayBetweenCalls ) {
         this.delayBetweenCalls = delayBetweenCalls;
     }
@@ -88,7 +84,7 @@ public class RunInfo {
     }
 
 
-    @SuppressWarnings( "UnusedDeclaration" )
+    @SuppressWarnings("UnusedDeclaration")
     public void setDuration( long duration ) {
         this.duration = duration;
     }

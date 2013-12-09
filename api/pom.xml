@@ -9,9 +9,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <name>Perftest API</name>
   <artifactId>perftest-api</artifactId>
   <packaging>jar</packaging>
-  <description>Simple PERFormance TESTing Framework</description>
+  <description>
+    Common API for Perftest entities shared across environments and across
+    various modules of the project.
+  </description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

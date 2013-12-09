@@ -6,15 +6,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.RunInfo;
+import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.TestInfo;
 
 
-/**
- * The S3 Service is used to register the node so other nodes in the same
- * perftest formation can access it.
- */
+/** The S3 Service is used to register the node so other nodes in the same perftest formation can access it. */
 public interface StoreService {
 
     void start();

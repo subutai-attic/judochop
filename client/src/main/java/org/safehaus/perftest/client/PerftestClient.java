@@ -15,11 +15,8 @@ import org.safehaus.perftest.api.TestInfo;
 /**
  * A client to interact with the perftest system and it's test results archive.
  *
- * <ul>
- *     <li>listing registered runners in the cluster</li>
- *     <li>listing and deleting uploaded test jars and their test information</li>
- *     <li>downloading and collating test run results from runners</li>
- * </ul>
+ * <ul> <li>listing registered runners in the cluster</li> <li>listing and deleting uploaded test jars and their test
+ * information</li> <li>downloading and collating test run results from runners</li> </ul>
  */
 public interface PerftestClient extends ConfigKeys {
 
@@ -53,6 +50,7 @@ public interface PerftestClient extends ConfigKeys {
      * Pulls down results of a test run and returns a File to a collated version of them.
      *
      * @param run the run to use to get the results from
+     *
      * @return a collated version of the results from each runner
      */
     File getResults( RunInfo run ) throws IOException;
@@ -75,16 +73,15 @@ public interface PerftestClient extends ConfigKeys {
 
 
     /**
-     * Loads a new test to be run by the perftest cluster formation. When called
-     * will propagation enabled, all peers in the cluster should load the new
-     * test. The call will automatically handle verification to make sure the
-     * cluster formation is consistent and each node is in the State.READY state
-     * to start running tests. It will block until the verification is found to
-     * fail or until the cluster is consistent.
+     * Loads a new test to be run by the perftest cluster formation. When called will propagation enabled, all peers in
+     * the cluster should load the new test. The call will automatically handle verification to make sure the cluster
+     * formation is consistent and each node is in the State.READY state to start running tests. It will block until the
+     * verification is found to fail or until the cluster is consistent.
      *
      * @param runner the runner to use for propagating the load request
      * @param testKey the test information associated with the test to load
      * @param propagate whether or not to make the call propagate
+     *
      * @return the results associated with the operation
      */
     Result load( RunnerInfo runner, String testKey, Boolean propagate );
@@ -114,21 +111,13 @@ public interface PerftestClient extends ConfigKeys {
     /**
      * Verifies perftest cluster formation consistency. This means that:
      *
-     * <ul>
-     *     <li>all registered peers are alive in the cluster</li>
-     *     <li>all registered peers are consistent:
-     *       <ul>
-     *           <li>have the same git version UUID</li>
-     *           <li>have the same load timestamp</li>
-     *           <li>have the same md5 checksum</li>
-     *       </ul>
-     *     </li>
-     *     <li>all registered peers are in the READY state to start the test</li>
-     * </ul>
+     * <ul> <li>all registered peers are alive in the cluster</li> <li>all registered peers are consistent: <ul>
+     * <li>have the same git version UUID</li> <li>have the same load timestamp</li> <li>have the same md5 checksum</li>
+     * </ul> </li> <li>all registered peers are in the READY state to start the test</li> </ul>
      *
      * @return the results of the verification
      */
-    boolean verify ();
+    boolean verify();
 
 
     /**
