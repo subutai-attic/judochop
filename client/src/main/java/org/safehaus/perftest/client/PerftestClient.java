@@ -90,6 +90,9 @@ public interface PerftestClient extends ConfigKeys {
     Result load( RunnerInfo runner, String testKey, Boolean propagate );
 
 
+    Result start( RunnerInfo runner, boolean propagate );
+
+
     /**
      *
      * @param runner

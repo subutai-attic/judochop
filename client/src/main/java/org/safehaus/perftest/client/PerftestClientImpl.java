@@ -164,6 +164,18 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     @Override
+    public Result start( RunnerInfo runner, final boolean propagate ) {
+        if ( ! verify() ) {
+            LOG.warn( "Cluster is not ready to start the tests" );
+            // TODO fix next line
+            return new BaseResult( runner.getUrl(), true, "verification failed", State.INACTIVE );
+        }
+
+        return RestRequests.start( runner, propagate );
+    }
+
+
+    @Override
     public Result stop( final RunnerInfo runner, final boolean propagate ) {
         return new BaseResult( "http://localhost:8080", true, "test stopped", State.STOPPED );
     }
@@ -213,24 +225,23 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
                 Result result = status( runner );
                 if ( ! result.getStatus() ) {
                     LOG.info( "State of runner could not be retrieved" );
-                    LOG.info( "Runner hostname: " + runner.getHostname() );
+                    LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
                 if ( result.getState().next( Signal.LOAD ) != State.READY )
                 {
-                    LOG.info( "Runner is not in a ready state, State: " + result.getState() );
-                    LOG.info( "Runner hostname: " + runner.getHostname() );
+                    LOG.info( "Runner is not in a ready state, State: {}", result.getState() );
+                    LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
                 if ( ! result.getTestInfo().getWarMd5().equals( latestTest.getWarMd5() ) ) {
                     LOG.info( "Runner doesn't have the latest test loaded" );
-                    LOG.info( "Runner hostname: " + runner.getHostname() );
-                    LOG.info( "Latest test MD5: " + latestTest.getWarMd5() );
-                    LOG.info( " runner's installed MD5: " + result.getTestInfo().getWarMd5() );
+                    LOG.info( "Runner hostname: {}", runner.getHostname() );
+                    LOG.info( "Latest test MD5 is {}", latestTest.getWarMd5() );
+                    LOG.info( "Runner's installed MD5 is {}", result.getTestInfo().getWarMd5() );
                     return false;
                 }
-                // LOG runner info
-                LOG.info( "Runner at " + runner.getHostname() + " is READY" );
+                LOG.info( "Runner is READY: {}", runner );
             } catch ( Exception e ) {
                 LOG.warn( "Error while getting runner states", e );
                 return false;
