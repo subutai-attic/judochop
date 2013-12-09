@@ -395,7 +395,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         String gitUuid = this.gitUuid.get();
 
         if ( gitUuid == null ) {
-            LOG.warn( "Could not find gitUuid: returning null TestInfo." );
+            LOG.error( "Could not find gitUuid: returning null TestInfo." );
             return null;
         }
 
@@ -405,8 +405,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         try {
             return getJsonObject( sb.toString(), TestInfoImpl.class );
         }
-        catch ( IOException e ) {
-            LOG.warn( "Could not find test-info.json at {}: returning null TestInfo", sb.toString(), e );
+        catch ( Exception e ) {
+            LOG.error( "Could not find test-info.json at {}: returning null TestInfo", sb.toString(), e );
             return null;
         }
     }

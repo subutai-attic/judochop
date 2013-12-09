@@ -8,8 +8,6 @@ package org.safehaus.perftest.dummy;
 
 
 import org.safehaus.perftest.api.Perftest;
-import org.safehaus.perftest.api.PerftestApiModule;
-
 import com.google.inject.AbstractModule;
 
 

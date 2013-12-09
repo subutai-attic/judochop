@@ -60,7 +60,14 @@ public class PerftestRunner implements Runnable {
             LOG.info( "Loaded valid testInfo = {}: state set to READY.", testInfo );
             stats = injector.getInstance( CallStats.class );
             executorService = Executors.newFixedThreadPool( test.getThreadCount() );
-            runInfo = new RunInfo( 0 );
+
+            if ( runInfo == null ) {
+                runInfo = new RunInfo( 0 );
+            }
+            else
+            {
+                runInfo = new RunInfo( runInfo.getRunNumber() + 1 );
+            }
         }
         else {
             state = State.INACTIVE;
@@ -86,7 +93,7 @@ public class PerftestRunner implements Runnable {
                 runInfo = new RunInfo( 0 );
             }
             else {
-                runInfo = new RunInfo( runInfo.getRunNumber() );
+                runInfo = new RunInfo( runInfo.getRunNumber() + 1 );
             }
         }
     }
