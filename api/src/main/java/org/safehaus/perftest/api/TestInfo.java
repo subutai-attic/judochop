@@ -1,11 +1,6 @@
 package org.safehaus.perftest.api;
 
 
-import java.util.List;
-
-import org.safehaus.perftest.api.Perftest;
-import org.safehaus.perftest.api.RunInfo;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -19,10 +14,6 @@ public interface TestInfo {
 
     @JsonProperty
     String getPerftestVersion();
-
-    List<RunInfo> getRunInfos();
-
-    void addRunInfo( RunInfo runInfo );
 
     @JsonProperty
     String getCreateTimestamp();

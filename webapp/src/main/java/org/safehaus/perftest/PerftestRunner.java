@@ -173,7 +173,6 @@ public class PerftestRunner implements Runnable {
                 stopTime = System.nanoTime();
 
                 service.uploadResults( testInfo, runInfo, stats.getResultsFile() );
-                testInfo.addRunInfo( runInfo );
                 reset();
             }
         } ).start();

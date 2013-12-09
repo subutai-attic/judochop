@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.safehaus.perftest.api.settings.ConfigKeys;
 
 
@@ -24,7 +21,6 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     private String artifactId;
     private String projectVersion;
     private String warMd5;
-    private final List<RunInfo> runInfos = new ArrayList<RunInfo>();
     private String loadKey;
     private String loadTime;
 
@@ -45,18 +41,6 @@ public class TestInfoImpl implements TestInfo, ConfigKeys {
     @JsonProperty
     public String getPerftestVersion() {
         return perftestVersion;
-    }
-
-
-    @Override
-    public List<RunInfo> getRunInfos() {
-        return runInfos;
-    }
-
-
-    @Override
-    public void addRunInfo( RunInfo runInfo ) {
-        runInfos.add( runInfo );
     }
 
 
