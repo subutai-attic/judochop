@@ -58,4 +58,11 @@ public class PerftestClientTest {
             LOG.debug( "Got runner {}", info );
         }
     }
+
+
+    @Test
+    public void testVerify() throws Exception {
+        boolean verified = client.verify();
+        LOG.debug( "Verified: " + verified );
+    }
 }
