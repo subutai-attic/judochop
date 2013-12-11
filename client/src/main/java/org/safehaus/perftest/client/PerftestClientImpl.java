@@ -265,7 +265,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
      */
     @Override
     public boolean verify() {
-    // Get the latest test info
+        // Get the latest test info
         TestInfo latestTest = null;
         try {
             Set<TestInfo> tests = getTests();

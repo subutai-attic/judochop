@@ -1,9 +1,13 @@
 package org.safehaus.perftest.plugin;
 
 
+import java.io.File;
+import java.util.Set;
+
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.State;
+import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 
@@ -13,6 +17,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -72,6 +77,24 @@ public class PerftestLoadMojo extends PerftestMojo {
             throw new MojoExecutionException( bucketName + " bucket is not found with given credentials" );
         }
 
+        // Check if the latest war is deployed on Store
+        boolean testUpToDate = false;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            TestInfo currentTestInfo = mapper.readValue( new File( getTestInfoToUploadPath() ), TestInfo.class );
+            Set<TestInfo> tests = client.getTests();
+
+            for ( TestInfo test : tests ) {
+                if ( currentTestInfo.getGitUuid().equals( test.getGitUuid() ) &&
+                        currentTestInfo.getWarMd5().equals( test.getWarMd5() ) ) {
+                    testUpToDate = true;
+                    break;
+                }
+            }
+        } catch ( Exception e ) {
+            getLog().warn( "Error while getting test information from store", e );
+        }
+
         String warOnS3Path = getWarOnS3Path();
         boolean warExists = false;
 
@@ -82,11 +105,13 @@ public class PerftestLoadMojo extends PerftestMojo {
             }
         }
 
-        if ( !warExists ) {
+        if ( ! warExists || ! testUpToDate ) {
             getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
             PerftestDeployMojo deployMojo = new PerftestDeployMojo( this );
             deployMojo.execute();
         }
+
+        getLog().info( "Loading the test on runners..." );
 
         Result result = client.load( info, getWarOnS3Path(), true );
 

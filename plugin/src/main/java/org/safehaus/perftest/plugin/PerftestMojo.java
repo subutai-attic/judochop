@@ -38,10 +38,6 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
     protected boolean failIfCommitNecessary;
 
 
-    @Parameter( property = "chainGoals", defaultValue = "true" )
-    protected boolean chainGoals;
-
-
     /** This parameter is written to the config.properties file in the created WAR and used by the runner at runtime */
     @Parameter( property = "perftestFormation", required = true )
     protected String perftestFormation;

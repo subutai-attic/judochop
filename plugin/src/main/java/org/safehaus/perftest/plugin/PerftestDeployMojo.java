@@ -61,6 +61,8 @@ public class PerftestDeployMojo extends PerftestMojo {
             throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
         }
 
+        getLog().info( "Uploading file to: " + destinationFile );
+
         boolean success = PerftestUtils.uploadToS3( s3, bucketName, destinationFile, source );
         if ( !success ) {
             throw new MojoExecutionException( "Unable to upload war file to S3." );
