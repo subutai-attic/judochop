@@ -10,6 +10,8 @@ import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
+import org.safehaus.perftest.client.ResponseInfo;
+import org.safehaus.perftest.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -37,6 +39,7 @@ public class PerftestLoadMojo extends PerftestMojo {
         this.managerAppPassword = mojo.managerAppPassword;
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -122,6 +125,30 @@ public class PerftestLoadMojo extends PerftestMojo {
         if ( !result.getState().equals( State.READY ) ) {
             throw new MojoExecutionException(
                     "Something went wrong while trying to load the test, runners are not " + "in ready state" );
+        }
+
+        getLog().info( "runnerSSHKeyfile: " + runnerSSHKeyFile );
+
+        // TODO This is ugly, might take forever if there are lots of instances
+        ResponseInfo response;
+        boolean failedRestart = false;
+        for ( RunnerInfo runner : client.getRunners() ) {
+            getLog().info( "runner hostname: " + runner.getHostname() );
+            response = SSHCommands.restartTomcatOnInstance( runnerSSHKeyFile, runner.getHostname() );
+            if ( ! response.isRequestSuccessful() || ! response.isOperationSuccessful() ) {
+                for ( String s : response.getMessages() ) {
+                    getLog().warn( s );
+                }
+                for ( String s : response.getErrorMessages() ) {
+                    getLog().warn( s );
+                }
+                failedRestart = true;
+            }
+        }
+
+        if ( failedRestart ) {
+            throw new MojoExecutionException( "There are instances that failed to restart properly, " +
+                    "verify the cluster before moving on" );
         }
 
         getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"

@@ -35,6 +35,7 @@ public class PerftestWarMojo extends PerftestMojo {
         this.managerAppPassword = mojo.managerAppPassword;
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
