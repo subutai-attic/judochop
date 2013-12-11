@@ -24,6 +24,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PerftestWarMojo extends PerftestMojo {
 
 
+    protected PerftestWarMojo( PerftestMojo mojo ) {
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.localRepository = mojo.localRepository;
+        this.accessKey = mojo.accessKey;
+        this.secretKey = mojo.secretKey;
+        this.bucketName = mojo.bucketName;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.managerAppUsername = mojo.managerAppUsername;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.perftestFormation = mojo.perftestFormation;
+        this.plugin = mojo.plugin;
+        this.project = mojo.project;
+    }
+
+
+    protected PerftestWarMojo() {
+
+    }
+
+
     @Override
     public void execute() throws MojoExecutionException {
 

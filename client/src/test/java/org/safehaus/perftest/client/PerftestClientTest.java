@@ -39,6 +39,7 @@ public class PerftestClientTest {
 
         for ( TestInfo test : tests ) {
             LOG.debug( "Got a test: {}", test );
+            LOG.debug( "Test md5: {}", test.getWarMd5() );
         }
     }
 

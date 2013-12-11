@@ -2,6 +2,10 @@ package org.safehaus.perftest.plugin;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
+
+import org.codehaus.plexus.util.FileUtils;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -10,8 +14,28 @@ import com.amazonaws.services.s3.AmazonS3;
 
 
 /** Deploys the perftest.war created by war goal to S3 bucket using supplied configuration parameters */
-@Mojo(name = "deploy")
+@Mojo(name = "deploy" )
 public class PerftestDeployMojo extends PerftestMojo {
+
+
+    protected PerftestDeployMojo( PerftestMojo mojo ) {
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.localRepository = mojo.localRepository;
+        this.accessKey = mojo.accessKey;
+        this.secretKey = mojo.secretKey;
+        this.bucketName = mojo.bucketName;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.managerAppUsername = mojo.managerAppUsername;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.perftestFormation = mojo.perftestFormation;
+        this.plugin = mojo.plugin;
+        this.project = mojo.project;
+    }
+
+    protected PerftestDeployMojo() {
+
+    }
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -21,9 +45,14 @@ public class PerftestDeployMojo extends PerftestMojo {
         File source = new File( sourceFile );
         File testInfo = new File( source.getParent(), "test-info.json" );
 
-        if ( !source.exists() ) {
-            // TODO call 'war' goal instead of throwing exception, then continue
-            throw new MojoExecutionException( "File doesn't exist: " + sourceFile );
+        if ( ! isReadyToDeploy() ) {
+            getLog().info( "War is not ready to upload to store, calling perftest:war goal now..." );
+            PerftestWarMojo warMojo = new PerftestWarMojo( this );
+            warMojo.execute();
+        }
+
+        if ( ! isReadyToDeploy() ) {
+            throw new MojoExecutionException( "Files to be deployed are not ready and perftest:war failed" );
         }
 
         AmazonS3 s3 = PerftestUtils.getS3Client( accessKey, secretKey );
@@ -31,6 +60,8 @@ public class PerftestDeployMojo extends PerftestMojo {
         if ( !s3.doesBucketExist( bucketName ) ) {
             throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
         }
+
+        getLog().info( "Uploading file to: " + destinationFile );
 
         boolean success = PerftestUtils.uploadToS3( s3, bucketName, destinationFile, source );
         if ( !success ) {
@@ -43,5 +74,30 @@ public class PerftestDeployMojo extends PerftestMojo {
         }
 
         getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );
+    }
+
+
+    private boolean isReadyToDeploy() {
+        File source = new File( getWarToUploadPath() );
+        try {
+            if ( ! source.exists() ) {
+                return false;
+            }
+
+            File extractedConfigPropFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/config.properties" );
+            if ( extractedConfigPropFile.exists() ) {
+                Properties props = new Properties();
+                FileInputStream inputStream = new FileInputStream( extractedConfigPropFile );
+                props.load( inputStream );
+                inputStream.close();
+
+                String commitId = PerftestUtils.getLastCommitUuid( PerftestUtils.getGitConfigFolder(
+                        getProjectBaseDirectory() ) );
+                return commitId.equals( props.getProperty( GIT_UUID_KEY ) );
+            }
+        } catch ( Exception e ) {
+            getLog().warn( e );
+        }
+        return false;
     }
 }

@@ -1,9 +1,13 @@
 package org.safehaus.perftest.plugin;
 
 
+import java.io.File;
+import java.util.Set;
+
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.State;
+import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 
@@ -13,12 +17,35 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
 @Mojo(name = "load")
 public class PerftestLoadMojo extends PerftestMojo {
+
+
+    protected PerftestLoadMojo( PerftestMojo mojo ) {
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.localRepository = mojo.localRepository;
+        this.accessKey = mojo.accessKey;
+        this.secretKey = mojo.secretKey;
+        this.bucketName = mojo.bucketName;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.managerAppUsername = mojo.managerAppUsername;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.perftestFormation = mojo.perftestFormation;
+        this.plugin = mojo.plugin;
+        this.project = mojo.project;
+    }
+
+
+    protected PerftestLoadMojo() {
+
+    }
+
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -50,6 +77,24 @@ public class PerftestLoadMojo extends PerftestMojo {
             throw new MojoExecutionException( bucketName + " bucket is not found with given credentials" );
         }
 
+        // Check if the latest war is deployed on Store
+        boolean testUpToDate = false;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            TestInfo currentTestInfo = mapper.readValue( new File( getTestInfoToUploadPath() ), TestInfo.class );
+            Set<TestInfo> tests = client.getTests();
+
+            for ( TestInfo test : tests ) {
+                if ( currentTestInfo.getGitUuid().equals( test.getGitUuid() ) &&
+                        currentTestInfo.getWarMd5().equals( test.getWarMd5() ) ) {
+                    testUpToDate = true;
+                    break;
+                }
+            }
+        } catch ( Exception e ) {
+            getLog().warn( "Error while getting test information from store", e );
+        }
+
         String warOnS3Path = getWarOnS3Path();
         boolean warExists = false;
 
@@ -60,11 +105,13 @@ public class PerftestLoadMojo extends PerftestMojo {
             }
         }
 
-        if ( !warExists ) {
-            // TODO instead of throwing this here, trigger perftest:deploy goal and continue if that succeeds
-            throw new MojoExecutionException( "perftest.war on S3 bucket is not up to date, run perftest:war and "
-                    + "perftest:deploy goals before running perftest:load" );
+        if ( ! warExists || ! testUpToDate ) {
+            getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
+            PerftestDeployMojo deployMojo = new PerftestDeployMojo( this );
+            deployMojo.execute();
         }
+
+        getLog().info( "Loading the test on runners..." );
 
         Result result = client.load( info, getWarOnS3Path(), true );
 

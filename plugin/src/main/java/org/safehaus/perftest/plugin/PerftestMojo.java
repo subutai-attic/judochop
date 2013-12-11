@@ -15,18 +15,18 @@ import org.apache.maven.project.MavenProject;
  * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
  * module's pom and provides extended get methods for several file paths that will be used by extended classes
  */
-public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
+public class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
 
-    @Parameter(defaultValue = "${project}", readonly = true)
+    @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
 
 
-    @Parameter(defaultValue = "${plugin}", readonly = true)
+    @Parameter( defaultValue = "${plugin}", readonly = true )
     protected PluginDescriptor plugin;
 
 
-    @Parameter(defaultValue = "${settings.localRepository}")
+    @Parameter( defaultValue = "${settings.localRepository}" )
     protected String localRepository;
 
 
@@ -34,12 +34,12 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Leaving this parameter with the default 'true' value causes the plugin goal to fail when there are modified
      * sources in the local git repository.
      */
-    @Parameter(property = "failIfCommitNecessary", defaultValue = "true")
+    @Parameter( property = "failIfCommitNecessary", defaultValue = "true" )
     protected boolean failIfCommitNecessary;
 
 
     /** This parameter is written to the config.properties file in the created WAR and used by the runner at runtime */
-    @Parameter(property = "perftestFormation", required = true)
+    @Parameter( property = "perftestFormation", required = true )
     protected String perftestFormation;
 
 
@@ -47,22 +47,22 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Fully qualified CN property of the app once it's deployed to its container. This parameter will be put to the
      * config.properties file inside the WAR to be uploaded
      */
-    @Parameter(property = "testModuleFQCN", required = true)
+    @Parameter( property = "testModuleFQCN", required = true )
     protected String testModuleFQCN;
 
 
     /** The bucket to upload into */
-    @Parameter(property = "bucketName", required = true)
+    @Parameter( property = "bucketName", required = true )
     protected String bucketName;
 
 
     /** Access key for S3 */
-    @Parameter(property = "accessKey", required = true)
+    @Parameter( property = "accessKey", required = true )
     protected String accessKey;
 
 
     /** Secret key for S3 */
-    @Parameter(property = "secretKey", required = true)
+    @Parameter( property = "secretKey", required = true )
     protected String secretKey;
 
 
@@ -71,7 +71,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      *
      * defaultValue is "tests/"
      */
-    @Parameter(property = "destinationParentDir", defaultValue = "tests/")
+    @Parameter( property = "destinationParentDir", defaultValue = "tests/" )
     protected String destinationParentDir;
 
 
@@ -79,7 +79,7 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
      * the WAR to be uploaded
      */
-    @Parameter(property = "managerAppUsername", required = true)
+    @Parameter( property = "managerAppUsername", required = true )
     protected String managerAppUsername;
 
 
@@ -87,12 +87,34 @@ public abstract class PerftestMojo extends AbstractMojo implements ConfigKeys {
      * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
      * the WAR to be uploaded
      */
-    @Parameter(property = "managerAppPassword", required = true)
+    @Parameter( property = "managerAppPassword", required = true )
     protected String managerAppPassword;
 
 
     @Override
-    public abstract void execute() throws MojoExecutionException;
+    public void execute() throws MojoExecutionException {
+    }
+
+
+    protected PerftestMojo( PerftestMojo mojo ) {
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.localRepository = mojo.localRepository;
+        this.accessKey = mojo.accessKey;
+        this.secretKey = mojo.secretKey;
+        this.bucketName = mojo.bucketName;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.managerAppUsername = mojo.managerAppUsername;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.perftestFormation = mojo.perftestFormation;
+        this.plugin = mojo.plugin;
+        this.project = mojo.project;
+    }
+
+
+    protected PerftestMojo() {
+
+    }
 
 
     public String getProjectOutputJarPath() {
