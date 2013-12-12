@@ -39,7 +39,13 @@ public class PerftestVerifyMojo extends PerftestMojo {
                 }
             }
 
-            result &= client.verify();
+            if ( result ) {
+                getLog().info( "Test on store is up-to-date, checking runners..." );
+                result &= client.verify();
+            }
+            else {
+                getLog().info( "Test on Store is not up-to-date" );
+            }
 
         }
         catch ( Exception e ) {

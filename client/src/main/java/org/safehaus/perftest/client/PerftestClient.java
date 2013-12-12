@@ -120,6 +120,9 @@ public interface PerftestClient extends ConfigKeys {
     boolean verify();
 
 
+    int compareTimestamps ( String ts1, String ts2 );
+
+
     /**
      * Gets the first available live runner.
      *
