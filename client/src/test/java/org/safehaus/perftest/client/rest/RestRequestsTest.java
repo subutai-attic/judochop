@@ -7,6 +7,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.perftest.api.Result;
@@ -44,7 +45,7 @@ public class RestRequestsTest {
     }
 
 
-    @Test
+    @Test @Ignore
     public void testStart() {
         Map<String, RunnerInfo> runners = service.getRunners();
 

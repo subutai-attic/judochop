@@ -283,9 +283,9 @@ public class PerftestUtils {
     }
 
 
-    /** @return Returns the given date in a 'yyyy.MM.dd.hh.mm.ss' format */
+    /** @return Returns the given date in a 'yyyy.MM.dd.HH.mm.ss' format */
     public static String getTimestamp( Date date ) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.hh.mm.ss" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.HH.mm.ss" );
         return dateFormat.format( date );
     }
 

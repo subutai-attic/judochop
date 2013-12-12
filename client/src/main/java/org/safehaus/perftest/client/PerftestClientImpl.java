@@ -89,6 +89,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
         TestInfo testInfo = getTest( testKey );
         String md5 = testInfo.getWarMd5();
 
+        LOG.warn( "Sending load request to " + runner.getHostname() );
+
         Result result = RestRequests.load( runner, testKey, propagate );
 
         if ( ! result.getStatus() )
@@ -265,6 +267,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
      */
     @Override
     public boolean verify() {
+        LOG.info( "Starting verify operation..." );
         // Get the latest test info
         TestInfo latestTest = null;
         try {
@@ -289,9 +292,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
             return false;
         }
 
+        LOG.info( "Got the latest test info from store" );
+        LOG.info( "Latest test: MD5: " + latestTest.getWarMd5() + " Create Time: " + latestTest.getCreateTimestamp() );
+
         Collection<RunnerInfo> runners = getRunners();
         for ( RunnerInfo runner : runners ) {
             try {
+                LOG.info( "Getting status of " + runner.getHostname() );
                 Result result = status( runner );
                 if ( ! result.getStatus() ) {
                     LOG.info( "State of runner could not be retrieved" );
@@ -317,21 +324,24 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
                 return false;
             }
         }
+
+        LOG.info( "Cluster is ready to start..." );
+
         return true;
     }
 
 
     /**
      * Compares to timestamps and returns -1 if ts1 < ts2, 0 if ts1 == ts2, 1 otherwise
-     * @param ts1 format is 'yyyy.MM.dd.hh.mm.ss'
-     * @param ts2 format is 'yyyy.MM.dd.hh.mm.ss'
+     * @param ts1 format is 'yyyy.MM.dd.HH.mm.ss'
+     * @param ts2 format is 'yyyy.MM.dd.HH.mm.ss'
      * @return returns -1 if ts1 < ts2, 0 if ts1 == ts2, 1 otherwise
      * @throws NumberFormatException Invalid formatting in given timestamps
      */
-    private int compareTimestamps ( String ts1, String ts2 ) throws NumberFormatException {
+     public int compareTimestamps ( String ts1, String ts2 ) throws NumberFormatException {
 
-        String[] rawFields1 = ts1.split( "." );
-        String[] rawFields2 = ts2.split( "." );
+        String[] rawFields1 = ts1.split( "\\." );
+        String[] rawFields2 = ts2.split( "\\." );
 
         if ( rawFields1.length != rawFields2.length ) {
             throw new NumberFormatException( "Timestamp format is wrong" );
@@ -343,7 +353,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
             field2 = Integer.parseInt( rawFields2[i] );
 
             if ( field1 != field2 ) {
-                return Integer.signum( field1 - field1 );
+                return Integer.signum( field1 - field2 );
             }
         }
 
