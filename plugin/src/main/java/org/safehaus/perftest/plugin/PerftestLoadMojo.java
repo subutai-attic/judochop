@@ -2,6 +2,7 @@ package org.safehaus.perftest.plugin;
 
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Set;
 
 import org.safehaus.perftest.api.Result;
@@ -56,8 +57,10 @@ public class PerftestLoadMojo extends PerftestMojo {
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
+        Collection<RunnerInfo> runnerCollection = client.getRunners();
+        RunnerInfo[] runners = runnerCollection.toArray( new RunnerInfo[ runnerCollection.size() ] ) ;
         RunnerInfo info = null;
-        for ( RunnerInfo runner : client.getRunners() ) {
+        for ( RunnerInfo runner : runners ) {
             info = runner;
             break;
         }
@@ -127,14 +130,33 @@ public class PerftestLoadMojo extends PerftestMojo {
                     "Something went wrong while trying to load the test, runners are not " + "in ready state" );
         }
 
-        getLog().info( "runnerSSHKeyfile: " + runnerSSHKeyFile );
+        // Restart tomcats on all instances
+        getLog().info( "Sending restart tomcat requests to all instances..." );
 
-        // TODO This is ugly, might take forever if there are lots of instances
+        Thread[] restarterThreads = new Thread[runners.length];
+        SSHRequestThread[] restarters = new SSHRequestThread[runners.length];
+
+        for ( int i = 0; i < runners.length; i++ ) {
+            restarters[i] = new SSHRequestThread();
+            restarters[i].setSshKeyFile( runnerSSHKeyFile );
+            restarters[i].setInstanceURL( runners[i].getHostname() );
+            restarterThreads[i] = new Thread( restarters[i] );
+            restarterThreads[i].start();
+        }
+
+        for ( int i = 0; i < runners.length; i++ ) {
+            try {
+                restarterThreads[i].join(30000); // Is this enough or too much, should this be an annotated parameter?
+            }
+            catch ( InterruptedException e ) {
+                getLog().warn( "Restart request on " + runners[i].getHostname() + " is interrupted before finish", e );
+            }
+        }
+
         ResponseInfo response;
         boolean failedRestart = false;
-        for ( RunnerInfo runner : client.getRunners() ) {
-            getLog().info( "runner hostname: " + runner.getHostname() );
-            response = SSHCommands.restartTomcatOnInstance( runnerSSHKeyFile, runner.getHostname() );
+        for ( int i = 0; i < runners.length; i++ ) {
+            response = restarters[i].getResult();
             if ( ! response.isRequestSuccessful() || ! response.isOperationSuccessful() ) {
                 for ( String s : response.getMessages() ) {
                     getLog().warn( s );
@@ -154,4 +176,47 @@ public class PerftestLoadMojo extends PerftestMojo {
         getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"
                 + " to start your tests" );
     }
+
+
+    private static class SSHRequestThread implements Runnable {
+
+
+        private String instanceURL;
+
+        private String sshKeyFile;
+
+        private ResponseInfo result;
+
+
+        public String getInstanceURL() {
+            return instanceURL;
+        }
+
+
+        public void setInstanceURL( final String instanceURL ) {
+            this.instanceURL = instanceURL;
+        }
+
+
+        private String getSshKeyFile() {
+            return sshKeyFile;
+        }
+
+
+        private void setSshKeyFile( final String sshKeyFile ) {
+            this.sshKeyFile = sshKeyFile;
+        }
+
+
+        public ResponseInfo getResult() {
+            return result;
+        }
+
+
+        @Override
+        public void run() {
+            result = SSHCommands.restartTomcatOnInstance( sshKeyFile, instanceURL );
+        }
+    }
+
 }
