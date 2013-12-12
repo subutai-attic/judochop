@@ -55,6 +55,7 @@
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testModuleFQCN>org.safehaus.perftest.dummy.DummyModule</testModuleFQCN>
+          <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
         </configuration>
       </plugin>

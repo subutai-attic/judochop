@@ -90,6 +90,12 @@
       <artifactId>guice</artifactId>
       <version>${guice.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.50</version>
+    </dependency>
   </dependencies>
 </project>
 

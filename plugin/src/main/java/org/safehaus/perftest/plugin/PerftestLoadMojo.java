@@ -2,6 +2,7 @@ package org.safehaus.perftest.plugin;
 
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Set;
 
 import org.safehaus.perftest.api.Result;
@@ -10,6 +11,8 @@ import org.safehaus.perftest.api.State;
 import org.safehaus.perftest.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
+import org.safehaus.perftest.client.ResponseInfo;
+import org.safehaus.perftest.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -37,6 +40,7 @@ public class PerftestLoadMojo extends PerftestMojo {
         this.managerAppPassword = mojo.managerAppPassword;
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -53,8 +57,10 @@ public class PerftestLoadMojo extends PerftestMojo {
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
+        Collection<RunnerInfo> runnerCollection = client.getRunners();
+        RunnerInfo[] runners = runnerCollection.toArray( new RunnerInfo[ runnerCollection.size() ] ) ;
         RunnerInfo info = null;
-        for ( RunnerInfo runner : client.getRunners() ) {
+        for ( RunnerInfo runner : runners ) {
             info = runner;
             break;
         }
@@ -124,7 +130,93 @@ public class PerftestLoadMojo extends PerftestMojo {
                     "Something went wrong while trying to load the test, runners are not " + "in ready state" );
         }
 
+        // Restart tomcats on all instances
+        getLog().info( "Sending restart tomcat requests to all instances..." );
+
+        Thread[] restarterThreads = new Thread[runners.length];
+        SSHRequestThread[] restarters = new SSHRequestThread[runners.length];
+
+        for ( int i = 0; i < runners.length; i++ ) {
+            restarters[i] = new SSHRequestThread();
+            restarters[i].setSshKeyFile( runnerSSHKeyFile );
+            restarters[i].setInstanceURL( runners[i].getHostname() );
+            restarterThreads[i] = new Thread( restarters[i] );
+            restarterThreads[i].start();
+        }
+
+        for ( int i = 0; i < runners.length; i++ ) {
+            try {
+                restarterThreads[i].join(30000); // Is this enough or too much, should this be an annotated parameter?
+            }
+            catch ( InterruptedException e ) {
+                getLog().warn( "Restart request on " + runners[i].getHostname() + " is interrupted before finish", e );
+            }
+        }
+
+        ResponseInfo response;
+        boolean failedRestart = false;
+        for ( int i = 0; i < runners.length; i++ ) {
+            response = restarters[i].getResult();
+            if ( ! response.isRequestSuccessful() || ! response.isOperationSuccessful() ) {
+                for ( String s : response.getMessages() ) {
+                    getLog().warn( s );
+                }
+                for ( String s : response.getErrorMessages() ) {
+                    getLog().warn( s );
+                }
+                failedRestart = true;
+            }
+        }
+
+        if ( failedRestart ) {
+            throw new MojoExecutionException( "There are instances that failed to restart properly, " +
+                    "verify the cluster before moving on" );
+        }
+
         getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"
                 + " to start your tests" );
     }
+
+
+    private static class SSHRequestThread implements Runnable {
+
+
+        private String instanceURL;
+
+        private String sshKeyFile;
+
+        private ResponseInfo result;
+
+
+        public String getInstanceURL() {
+            return instanceURL;
+        }
+
+
+        public void setInstanceURL( final String instanceURL ) {
+            this.instanceURL = instanceURL;
+        }
+
+
+        private String getSshKeyFile() {
+            return sshKeyFile;
+        }
+
+
+        private void setSshKeyFile( final String sshKeyFile ) {
+            this.sshKeyFile = sshKeyFile;
+        }
+
+
+        public ResponseInfo getResult() {
+            return result;
+        }
+
+
+        @Override
+        public void run() {
+            result = SSHCommands.restartTomcatOnInstance( sshKeyFile, instanceURL );
+        }
+    }
+
 }

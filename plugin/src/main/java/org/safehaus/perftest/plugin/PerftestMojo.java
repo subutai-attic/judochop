@@ -91,6 +91,10 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
     protected String managerAppPassword;
 
 
+    @Parameter( property = "runnerSSHKeyFile", required = true )
+    protected String runnerSSHKeyFile;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -107,6 +111,7 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
         this.managerAppPassword = mojo.managerAppPassword;
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
