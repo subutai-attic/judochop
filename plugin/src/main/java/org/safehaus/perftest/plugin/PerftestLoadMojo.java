@@ -41,6 +41,15 @@ public class PerftestLoadMojo extends PerftestMojo {
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+        this.amiID = mojo.amiID;
+        this.awsSecurityGroup = mojo.awsSecurityGroup;
+        this.runnerKeyPairName = mojo.runnerKeyPairName;
+        this.runnerName = mojo.runnerName;
+        this.instanceType = mojo.instanceType;
+        this.setupTimeout = mojo.setupTimeout;
+        this.minimumRunners = mojo.minimumRunners;
+        this.maximumRunners = mojo.maximumRunners;
+        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -53,6 +62,11 @@ public class PerftestLoadMojo extends PerftestMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+
+        getLog().info( "Calling setup goal first to ensure cluster is prepared" );
+        PerftestSetupMojo setupMojo = new PerftestSetupMojo( this );
+        setupMojo.execute();
+        getLog().info( "Cluster is prepared" );
 
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );

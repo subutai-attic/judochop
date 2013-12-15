@@ -3,6 +3,7 @@ package org.safehaus.perftest.api.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,4 +41,6 @@ public interface StoreOperations {
     TestInfo getTestInfo( String testKey );
 
     void deleteTests();
+
+    void deleteGhostRunners( Collection<String> activeRunners );
 }

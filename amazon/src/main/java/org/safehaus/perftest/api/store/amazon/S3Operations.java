@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Registers this runner's instance by adding it's instance information into S3 as a properties file into the bucket
+     * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
      * using the following key format:
      *
      * "runners/formationName-publicHostname.properties"
@@ -69,7 +70,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Registers this runner's instance by adding it's instance information into S3 as a properties file into the bucket
+     * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
      * using the following key format:
      *
      * "runners/formationName-publicHostname.properties"
@@ -443,5 +444,19 @@ public class S3Operations implements StoreOperations, ConfigKeys {
             listing = client.listNextBatchOfObjects( listing );
         }
         while ( listing.isTruncated() );
+    }
+
+
+    @Override
+    public void deleteGhostRunners( Collection<String> activeRunners ) {
+        Map<String, RunnerInfo> registeredRunners = getRunners();
+        RunnerInfo runner;
+        for( String key : registeredRunners.keySet() ) {
+            runner = registeredRunners.get( key );
+            if ( ! activeRunners.contains( runner.getHostname() ) ) {
+                String path = RUNNERS_PATH + "/" + runner.getHostname() + ".properties";
+                client.deleteObject( awsBucket.get(), path );
+            }
+        }
     }
 }

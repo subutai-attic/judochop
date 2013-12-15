@@ -26,6 +26,38 @@
   </properties>
 
   <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>accessKey</name>
+              <value>${aws.s3.key}</value>
+            </property>
+            <property>
+              <name>secretKey</name>
+              <value>${aws.s3.secret}</value>
+            </property>
+            <property>
+              <name>amiID</name>
+              <value>${ami.id}</value>
+            </property>
+            <property>
+              <name>keyName</name>
+              <value>${runner.keypair.name}</value>
+            </property>
+            <property>
+              <name>securityGroup</name>
+              <value>${security.group}</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -49,9 +81,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>perftest-api</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

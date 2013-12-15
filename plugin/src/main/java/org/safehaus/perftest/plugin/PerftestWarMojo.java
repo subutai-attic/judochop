@@ -36,6 +36,15 @@ public class PerftestWarMojo extends PerftestMojo {
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+        this.amiID = mojo.amiID;
+        this.awsSecurityGroup = mojo.awsSecurityGroup;
+        this.runnerKeyPairName = mojo.runnerKeyPairName;
+        this.runnerName = mojo.runnerName;
+        this.instanceType = mojo.instanceType;
+        this.setupTimeout = mojo.setupTimeout;
+        this.minimumRunners = mojo.minimumRunners;
+        this.maximumRunners = mojo.maximumRunners;
+        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
