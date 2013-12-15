@@ -71,6 +71,7 @@ public class PerftestUtils {
             upload.waitForUploadResult();
         }
         catch ( InterruptedException e ) {
+            logger.log( Level.WARNING, "Upload to S3 failed", e );
             return false;
         }
 

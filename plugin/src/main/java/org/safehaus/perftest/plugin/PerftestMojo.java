@@ -1,6 +1,10 @@
 package org.safehaus.perftest.plugin;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.safehaus.perftest.client.ConfigKeys;
 
 import org.apache.maven.artifact.Artifact;
@@ -95,6 +99,42 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
     protected String runnerSSHKeyFile;
 
 
+    @Parameter( property = "amiID", required = true )
+    protected String amiID;
+
+
+    @Parameter( property = "awsSecurityGroup", required = true )
+    protected String awsSecurityGroup;
+
+
+    @Parameter( property = "runnerKeyPairName", required = true )
+    protected String runnerKeyPairName;
+
+
+    @Parameter( property = "runnerName", defaultValue = "perftest-runner" )
+    protected String runnerName;
+
+
+    @Parameter( property = "instanceType" )
+    protected String instanceType;
+
+
+    @Parameter( property = "setupTimeout", defaultValue = "75000" )
+    protected Integer setupTimeout;
+
+
+    @Parameter( property = "minimumRunners", defaultValue = "1" )
+    protected Integer minimumRunners;
+
+
+    @Parameter( property = "maximumRunners", defaultValue = "10" )
+    protected Integer maximumRunners;
+
+
+    @Parameter( property = "securityGroupExceptions" )
+    protected List securityGroupExceptions;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -112,6 +152,15 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
         this.testModuleFQCN = mojo.testModuleFQCN;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+        this.amiID = mojo.amiID;
+        this.awsSecurityGroup = mojo.awsSecurityGroup;
+        this.runnerKeyPairName = mojo.runnerKeyPairName;
+        this.runnerName = mojo.runnerName;
+        this.instanceType = mojo.instanceType;
+        this.setupTimeout = mojo.setupTimeout;
+        this.minimumRunners = mojo.minimumRunners;
+        this.maximumRunners = mojo.maximumRunners;
+        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
