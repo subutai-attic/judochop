@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.JChopRunner;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.store.StoreService;
@@ -40,12 +40,12 @@ import com.google.inject.Singleton;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/status")
 public class StatusResource {
-    private final PerftestRunner runner;
+    private final JChopRunner runner;
     private final StoreService storeService;
 
 
     @Inject
-    public StatusResource( StoreService storeService, PerftestRunner runner ) {
+    public StatusResource( StoreService storeService, JChopRunner runner ) {
         this.runner = runner;
         this.storeService = storeService;
     }

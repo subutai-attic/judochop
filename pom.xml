@@ -147,5 +147,15 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/perftest/main.git
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+
+  <repositories>
+    <repository>
+      <id>local-dependencies</id>
+      <name>local-depedendencies</name>
+      <url>file://${project.basedir}/../m2/repository</url>
+    </repository>
+  </repositories>
+
 </project>
 

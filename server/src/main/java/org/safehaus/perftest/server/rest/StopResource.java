@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.JChopRunner;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.store.StoreService;
@@ -40,11 +40,11 @@ import com.google.inject.Singleton;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/stop")
 public class StopResource extends PropagatingResource {
-    private final PerftestRunner runner;
+    private final JChopRunner runner;
 
 
     @Inject
-    public StopResource( PerftestRunner runner, StoreService service ) {
+    public StopResource( JChopRunner runner, StoreService service ) {
         super( "/stop", service );
         this.runner = runner;
     }

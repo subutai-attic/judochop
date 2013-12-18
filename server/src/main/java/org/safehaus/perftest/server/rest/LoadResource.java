@@ -32,7 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.PerftestRunner;
+import org.safehaus.perftest.JChopRunner;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
@@ -58,11 +58,11 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 @Path("/load")
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
-    private final PerftestRunner runner;
+    private final JChopRunner runner;
 
 
     @Inject
-    public LoadResource( PerftestRunner runner, StoreService service ) {
+    public LoadResource( JChopRunner runner, StoreService service ) {
         super( "/load", service );
         this.runner = runner;
     }

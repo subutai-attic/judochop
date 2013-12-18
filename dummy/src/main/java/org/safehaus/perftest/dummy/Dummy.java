@@ -1,7 +1,7 @@
 package org.safehaus.perftest.dummy;
 
 
-import org.safehaus.perftest.api.annotations.PerftestParams;
+import org.safehaus.perftest.api.annotations.TimeChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class Dummy {
     private static final Logger LOG = LoggerFactory.getLogger( Dummy.class );
 
-    @PerftestParams(
+    @TimeChop(
         callCount = 1000,
         delayBetweenCalls = 0,
         threadCount = 10,
