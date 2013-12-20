@@ -7,7 +7,7 @@
 package org.safehaus.perftest.dummy;
 
 
-import org.safehaus.perftest.api.Perftest;
+import org.safehaus.chop.api.Perftest;
 import com.google.inject.AbstractModule;
 
 

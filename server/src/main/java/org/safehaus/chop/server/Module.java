@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.safehaus.chop.server.runners.Stats;
-import org.safehaus.perftest.api.PerftestApiModule;
+import org.safehaus.chop.api.PerftestApiModule;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.chop.server.rest.ResetResource;
 import org.safehaus.chop.server.rest.StartResource;

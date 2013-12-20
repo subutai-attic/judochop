@@ -7,14 +7,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.Signal;
-import org.safehaus.perftest.api.State;
-import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.store.StoreOperations;
+import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.RunInfo;
+import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Signal;
+import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.perftest.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import com.netflix.config.DynamicStringProperty;
  * An implementation of the PerftestClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest.api.store.amazon.ConfigKeys {
+public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api.store.amazon.ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
     private final StoreOperations operations;
     @Inject @Named( AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;

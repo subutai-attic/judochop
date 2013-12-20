@@ -4,7 +4,7 @@ package org.safehaus.chop.server;
 /**
  *
  */
-public interface ConfigKeys extends org.safehaus.perftest.api.settings.ConfigKeys {
+public interface ConfigKeys extends org.safehaus.chop.api.settings.ConfigKeys {
     String SERVER_PORT_KEY = "server.port";
     int DEFAULT_SERVER_PORT = 8080;
 

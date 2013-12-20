@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.safehaus.chop.server.IResultsLog;
-import org.safehaus.perftest.api.CallStatsSnapshot;
-import org.safehaus.perftest.api.Perftest;
+import org.safehaus.chop.api.CallStatsSnapshot;
+import org.safehaus.chop.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

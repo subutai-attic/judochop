@@ -27,9 +27,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.server.IController;
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.store.StoreService;
+import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.store.StoreService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

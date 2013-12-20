@@ -4,7 +4,7 @@ package org.safehaus.perftest.plugin;
 import java.io.File;
 import java.util.Set;
 
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 

@@ -1,7 +1,7 @@
 package org.safehaus.perftest.dummy;
 
 
-import org.safehaus.perftest.api.annotations.TimeChop;
+import org.safehaus.chop.api.annotations.TimeChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

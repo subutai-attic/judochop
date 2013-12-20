@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.TestInfo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

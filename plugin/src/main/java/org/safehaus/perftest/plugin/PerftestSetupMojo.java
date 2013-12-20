@@ -4,10 +4,10 @@ package org.safehaus.perftest.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.safehaus.perftest.api.store.StoreOperations;
-import org.safehaus.perftest.api.store.amazon.AmazonStoreModule;
-import org.safehaus.perftest.api.store.amazon.ConfigKeys;
-import org.safehaus.perftest.api.store.amazon.EC2Manager;
+import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.api.store.amazon.ConfigKeys;
+import org.safehaus.chop.api.store.amazon.EC2Manager;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -15,7 +15,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
-import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 

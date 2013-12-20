@@ -1,8 +1,8 @@
 package org.safehaus.chop.server.runners;
 
 
-import org.safehaus.perftest.api.State;
-import org.safehaus.perftest.api.annotations.IterationChop;
+import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.annotations.IterationChop;
 
 
 /**

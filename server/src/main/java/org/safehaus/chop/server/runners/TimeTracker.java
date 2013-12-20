@@ -1,7 +1,7 @@
 package org.safehaus.chop.server.runners;
 
 
-import org.safehaus.perftest.api.annotations.TimeChop;
+import org.safehaus.chop.api.annotations.TimeChop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

@@ -25,8 +25,8 @@ import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.store.StoreService;
+import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.store.StoreService;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

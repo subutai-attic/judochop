@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.server.IController;
-import org.safehaus.perftest.api.CallStatsSnapshot;
+import org.safehaus.chop.api.CallStatsSnapshot;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

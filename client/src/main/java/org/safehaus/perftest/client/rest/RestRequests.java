@@ -3,10 +3,10 @@ package org.safehaus.perftest.client.rest;
 
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.PropagatedResult;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunnerInfo;
+import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.PropagatedResult;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.RunnerInfo;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;

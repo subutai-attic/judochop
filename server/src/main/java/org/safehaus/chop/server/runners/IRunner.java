@@ -1,10 +1,10 @@
 package org.safehaus.chop.server.runners;
 
 
-import org.safehaus.perftest.api.CallStatsSnapshot;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.State;
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.CallStatsSnapshot;
+import org.safehaus.chop.api.RunInfo;
+import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.TestInfo;
 
 
 /**

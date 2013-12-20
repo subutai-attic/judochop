@@ -2,15 +2,13 @@ package org.safehaus.perftest.plugin;
 
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Set;
 
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.store.StoreOperations;
-import org.safehaus.perftest.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 

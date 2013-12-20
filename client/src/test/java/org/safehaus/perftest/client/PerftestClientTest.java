@@ -10,9 +10,9 @@ import org.jukito.UseModules;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
