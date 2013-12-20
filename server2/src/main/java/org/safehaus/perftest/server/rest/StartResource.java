@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.JChopRunner;
+import org.safehaus.perftest.IController;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.store.StoreService;
@@ -43,11 +43,11 @@ import com.google.inject.Singleton;
 @Path("/start")
 public class StartResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
-    private final JChopRunner runner;
+    private final IController runner;
 
 
     @Inject
-    public StartResource( JChopRunner runner, StoreService service ) {
+    public StartResource( IController runner, StoreService service ) {
         super( "/start", service );
         this.runner = runner;
     }

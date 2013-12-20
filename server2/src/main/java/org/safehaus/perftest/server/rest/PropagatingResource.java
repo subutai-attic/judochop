@@ -101,7 +101,7 @@ public class PropagatingResource {
      * the operation even if the initiating operation failed
      * @param message the optional message to use if any
      *
-     * @return the results from the initiating peer and the remote peers.
+     * @return the tracker from the initiating peer and the remote peers.
      */
     protected PropagatedResult propagate( State state, boolean status, String message ) {
         return propagate( state, status, message, Collections.<String, String>emptyMap() );
@@ -116,7 +116,7 @@ public class PropagatingResource {
      * @param message the optional message to use if any
      * @param params additional query parameters to pass-through to peers being propagated to
      *
-     * @return the results from the initiating peer and the remote peers.
+     * @return the tracker from the initiating peer and the remote peers.
      */
     protected PropagatedResult propagate( State state, boolean status, String message,
                                           final Map<String, String> params ) {

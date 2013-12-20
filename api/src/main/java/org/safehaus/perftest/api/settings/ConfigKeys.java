@@ -20,8 +20,14 @@ public interface ConfigKeys {
 
     String ARTIFACT_ID_KEY = "artifact.id";
 
+    // @TODO - this will become the package base to use for finding annotated tests
     String TEST_MODULE_FQCN_KEY = "test.module.fqcn";
 
+    String TEST_PACKAGE_BASE = "test.package.base";
+
+    String TEST_STOP_TIMEOUT = "test.stop.timeout";
+
+    // @TODO - this should go away
     String DEFAULT_TEST_MODULE = "org.safehaus.perftest.NoopPerftestModule";
 
     String LOAD_TIME_KEY = "load.time.key";

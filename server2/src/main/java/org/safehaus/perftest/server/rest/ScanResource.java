@@ -26,7 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.JChopRunner;
+import org.safehaus.perftest.IController;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.Result;
 import org.safehaus.perftest.api.store.StoreService;
@@ -40,11 +40,11 @@ import com.google.inject.Singleton;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/scan")
 public class ScanResource extends PropagatingResource {
-    private final JChopRunner runner;
+    private final IController runner;
 
 
     @Inject
-    public ScanResource( JChopRunner runner, StoreService service ) {
+    public ScanResource( IController runner, StoreService service ) {
         super( "/scan", service );
         this.runner = runner;
     }

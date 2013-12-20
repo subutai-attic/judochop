@@ -30,6 +30,6 @@ public class JChopRunnerTest {
         runner.stop();
         assertFalse( runner.isRunning() );
 
-        assertEquals( 1000, runner.getCallStatsSnapshot().getCallCount() );
+        assertEquals( 1000, runner.getCallStatsSnapshot().getTestClassRuns() );
     }
 }

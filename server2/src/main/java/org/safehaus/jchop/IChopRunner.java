@@ -1,4 +1,4 @@
-package org.safehaus.perftest;
+package org.safehaus.jchop;
 
 
 import org.safehaus.perftest.api.CallStatsSnapshot;
@@ -11,7 +11,7 @@ import org.safehaus.perftest.api.TestInfo;
  * Created with IntelliJ IDEA. User: akarasulu Date: 12/19/13 Time: 12:15 AM To change this template use File | Settings
  * | File Templates.
  */
-public interface JChopRunner {
+public interface IChopRunner {
     void reset();
 
     CallStatsSnapshot getCallStatsSnapshot();

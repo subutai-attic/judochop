@@ -27,7 +27,6 @@ import javax.servlet.ServletContextEvent;
 
 import org.safehaus.perftest.api.RunnerInfo;
 import org.safehaus.perftest.api.store.StoreService;
-import org.safehaus.perftest.api.store.amazon.Ec2RunnerInfo;
 import org.safehaus.perftest.server.settings.ConfigKeys;
 import org.safehaus.perftest.server.settings.PropSettings;
 
@@ -38,7 +37,7 @@ import com.netflix.blitz4j.LoggingConfiguration;
 
 
 /** ... */
-public class JChopServletConfig extends GuiceServletContextListener {
+public class ChopServletConfig extends GuiceServletContextListener {
     private Injector injector;
     private StoreService storeService;
 
@@ -49,7 +48,7 @@ public class JChopServletConfig extends GuiceServletContextListener {
             return injector;
         }
 
-        injector = Guice.createInjector( new JChopModule() );
+        injector = Guice.createInjector( new ChopModule() );
         return injector;
     }
 
@@ -62,11 +61,10 @@ public class JChopServletConfig extends GuiceServletContextListener {
         RunnerInfo runner = storeService.getMyMetadata();
 
         ServletContext context = servletContextEvent.getServletContext();
-        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );
-        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.SERVER_INFO_KEY, context.getServerInfo() );
-        ( ( Ec2RunnerInfo ) runner )
-                .setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
-        ( ( Ec2RunnerInfo ) runner ).setProperty( ConfigKeys.CONTEXT_TEMPDIR_KEY,
+        runner.setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );
+        runner.setProperty( ConfigKeys.SERVER_INFO_KEY, context.getServerInfo() );
+        runner.setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
+        runner.setProperty( ConfigKeys.CONTEXT_TEMPDIR_KEY,
                 ( ( File ) context.getAttribute( ConfigKeys.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
 
         storeService.start();

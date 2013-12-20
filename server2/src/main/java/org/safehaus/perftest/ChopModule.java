@@ -10,6 +10,7 @@ package org.safehaus.perftest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.safehaus.jchop.ChopController;
 import org.safehaus.perftest.api.PerftestApiModule;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.perftest.server.rest.ResetResource;
@@ -23,7 +24,7 @@ import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 
-public class JChopModule extends ServletModule {
+public class ChopModule extends ServletModule {
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
 
@@ -40,8 +41,9 @@ public class JChopModule extends ServletModule {
         bind( ResultsLog.class ).to( ResultsLogImpl.class );
 
         bind( CallStats.class );
-        bind( JChopRunner.class ).to( LegacyRunner.class );
-        bind( TestModuleLoader.class );
+
+        bind( ChopController.class );
+
         bind( ResetResource.class ).asEagerSingleton();
         bind( StopResource.class ).asEagerSingleton();
         bind( StartResource.class ).asEagerSingleton();

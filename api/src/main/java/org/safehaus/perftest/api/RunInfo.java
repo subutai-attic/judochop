@@ -1,14 +1,12 @@
 package org.safehaus.perftest.api;
 
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /** Information about a run. */
 public class RunInfo {
-    private final Date runtime;
+    private final long runtime;
     private long callCount;
     private int threadCount;
     private int runnerCount;
@@ -20,7 +18,7 @@ public class RunInfo {
 
     public RunInfo( int runNumber ) {
         this.runNumber = runNumber;
-        this.runtime = new Date();
+        this.runtime = System.currentTimeMillis();
     }
 
 
@@ -73,7 +71,7 @@ public class RunInfo {
 
 
     @JsonProperty
-    public Date getRuntime() {
+    public long getRuntime() {
         return runtime;
     }
 

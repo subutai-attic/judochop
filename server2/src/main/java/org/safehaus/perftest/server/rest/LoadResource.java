@@ -32,7 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.JChopRunner;
+import org.safehaus.perftest.IController;
 import org.safehaus.perftest.api.BaseResult;
 import org.safehaus.perftest.api.PropagatedResult;
 import org.safehaus.perftest.api.Result;
@@ -58,11 +58,11 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 @Path("/load")
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
-    private final JChopRunner runner;
+    private final IController runner;
 
 
     @Inject
-    public LoadResource( JChopRunner runner, StoreService service ) {
+    public LoadResource( IController runner, StoreService service ) {
         super( "/load", service );
         this.runner = runner;
     }
@@ -138,7 +138,7 @@ public class LoadResource extends PropagatingResource {
         uploadTask.returnOnLimit();   // ==> blocks until we hit the limit
 
         // Now we create and launch a thread that unblocks the task after
-        // we have long since responded back our results to the client
+        // we have long since responded back our tracker to the client
         new Thread( new Runnable() {
             @Override
             public void run() {

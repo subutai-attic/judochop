@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** ... */
 public class CallStatsSnapshot {
-    private final int callCount;
+    private final int testClassRuns;
     private final long maxTime;
     private final long minTime;
     private final long meanTime;
@@ -34,9 +34,9 @@ public class CallStatsSnapshot {
     private final long stopTime;
 
 
-    public CallStatsSnapshot( int callCount, long maxTime, long minTime, long meanTime, boolean running, long startTime,
+    public CallStatsSnapshot( int testClassRuns, long maxTime, long minTime, long meanTime, boolean running, long startTime,
                               long stopTime ) {
-        this.callCount = callCount;
+        this.testClassRuns = testClassRuns;
         this.maxTime = maxTime;
         this.minTime = minTime;
         this.meanTime = meanTime;
@@ -47,8 +47,8 @@ public class CallStatsSnapshot {
 
 
     @JsonProperty
-    public int getCallCount() {
-        return callCount;
+    public int getTestClassRuns() {
+        return testClassRuns;
     }
 
 

@@ -25,7 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.perftest.JChopRunner;
+import org.safehaus.perftest.IController;
 import org.safehaus.perftest.api.CallStatsSnapshot;
 
 import com.google.inject.Inject;
@@ -37,11 +37,11 @@ import com.google.inject.Singleton;
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/stats")
 public class StatsResource {
-    private final JChopRunner runner;
+    private final IController runner;
 
 
     @Inject
-    public StatsResource( JChopRunner runner ) {
+    public StatsResource( IController runner ) {
         this.runner = runner;
     }
 
