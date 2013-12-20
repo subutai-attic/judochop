@@ -9,8 +9,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Perftest Server2</name>
-  <artifactId>perftest-server2</artifactId>
+  <name>Perftest Server</name>
+  <artifactId>perftest-server</artifactId>
   <packaging>war</packaging>
   <description>
     A REST based web application that services requests to load, run, and

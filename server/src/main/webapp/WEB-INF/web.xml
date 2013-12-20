@@ -11,7 +11,7 @@
  
   <listener>
     <listener-class>
-      org.safehaus.perftest.ChopServletConfig
+      org.safehaus.chop.server.ServletConfig
     </listener-class>
   </listener>
 
