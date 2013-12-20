@@ -55,9 +55,9 @@ public class ResetResource extends PropagatingResource {
 
     /**
      * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
-     * the other runners this parameter will be set to true.
+     * the other drivers this parameter will be set to true.
      *
-     * @param propagate when true call the same function on other runners
+     * @param propagate when true call the same function on other drivers
      *
      * @return a summary message
      */

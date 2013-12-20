@@ -33,9 +33,9 @@ public @interface TimeChop {
 
 
     /**
-     * The number of distributed runners to use for the chop.
+     * The number of distributed drivers to use for the chop.
      *
-     * @return the number of distributed runners to use
+     * @return the number of distributed drivers to use
      */
     int runners() default AnnotationDefaults.DEFAULT_RUNNERS;
 

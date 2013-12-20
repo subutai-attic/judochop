@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Created with IntelliJ IDEA. User: akarasulu Date: 12/7/13 Time: 12:26 AM To change this template use File | Settings
  * | File Templates.
  */
-public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
-    private static final Logger LOG = LoggerFactory.getLogger( Ec2RunnerInfo.class );
+public class Ec2Runner extends Runner implements ConfigKeys {
+    private static final Logger LOG = LoggerFactory.getLogger( Ec2Runner.class );
 
     private static final String EC2METADATA_PROCESS = "/usr/bin/ec2metadata";
     private static final String PUBLIC_HOSTNAME_KEY = "public-hostname";
@@ -52,12 +52,12 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
 
 
     @SuppressWarnings("UnusedDeclaration")
-    public Ec2RunnerInfo( InputStream in ) throws IOException {
+    public Ec2Runner( InputStream in ) throws IOException {
         super( in );
     }
 
 
-    public Ec2RunnerInfo() {
+    public Ec2Runner() {
         super();
 
         if ( new File( EC2METADATA_PROCESS ).exists() ) {
@@ -86,7 +86,7 @@ public class Ec2RunnerInfo extends RunnerInfo implements ConfigKeys {
             if ( LOG.isDebugEnabled() ) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 store( out, null );
-                LOG.debug( "Contents of RunnerInfo =\n{}", new String( out.toByteArray() ) );
+                LOG.debug( "Contents of Runner =\n{}", new String( out.toByteArray() ) );
             }
         }
         catch ( IOException e ) {

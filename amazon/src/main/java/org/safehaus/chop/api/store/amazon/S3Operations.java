@@ -13,9 +13,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.chop.api.RunInfo;
-import org.safehaus.chop.api.RunnerInfo;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
      * using the following key format:
      *
-     * "runners/formationName-publicHostname.properties"
+     * "drivers/formationName-publicHostname.properties"
      *
      * @param publicHostname the runner's instance publicHostname
      */
@@ -73,12 +73,12 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
      * using the following key format:
      *
-     * "runners/formationName-publicHostname.properties"
+     * "drivers/formationName-publicHostname.properties"
      *
      * @param runner the runner's instance metadata to be registered
      */
     @Override
-    public void register( RunnerInfo runner ) {
+    public void register( Runner runner ) {
 
         if ( runner == null || runner.getHostname() == null ) {
             LOG.warn( "Refusing to register null runner or one without a hostname." );
@@ -106,16 +106,16 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return a set of keys as Strings for test information
      */
     @Override
-    public Set<TestInfo> getTests() throws IOException {
-        Set<TestInfo> tests = new HashSet<TestInfo>();
-        ObjectListing listing = client.listObjects( awsBucket.get(), TESTS_PATH + "/" );
+    public Set<Project> getTests() throws IOException {
+        Set<Project> tests = new HashSet<Project>();
+        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
 
-                if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/test-info.json" ) ) {
-                    tests.add( getJsonObject( key, TestInfo.class ) );
+                if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/test-info.json" ) ) {
+                    tests.add( getJsonObject( key, Project.class ) );
                 }
             }
 
@@ -133,7 +133,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return the keys mapped to runner instance properties
      */
     @Override
-    public Map<String, RunnerInfo> getRunners() {
+    public Map<String, Runner> getRunners() {
         return getRunners( null );
     }
 
@@ -146,15 +146,15 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return the keys mapped to runner instance properties
      */
     @Override
-    public Map<String, RunnerInfo> getRunners( RunnerInfo runner ) {
-        Map<String, RunnerInfo> runners = new HashMap<String, RunnerInfo>();
+    public Map<String, Runner> getRunners( Runner runner ) {
+        Map<String, Runner> runners = new HashMap<String, Runner>();
         ObjectListing listing = client.listObjects( awsBucket.get(), RUNNERS_PATH );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
 
-                LOG.debug( "Got key {} while scanning under runners container", key );
+                LOG.debug( "Got key {} while scanning under drivers container", key );
 
                 S3Object s3Object = client.getObject( awsBucket.get(), key );
 
@@ -164,7 +164,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 }
 
                 try {
-                    runners.put( key, new Ec2RunnerInfo( s3Object.getObjectContent() ) {} );
+                    runners.put( key, new Ec2Runner( s3Object.getObjectContent() ) {} );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runner {}", key, e );
@@ -246,7 +246,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
             in = new ByteArrayInputStream( json );
         }
         catch ( JsonProcessingException e ) {
-            LOG.error( "Failed to serialize to JSON TestInfo object {}", obj, e );
+            LOG.error( "Failed to serialize to JSON Project object {}", obj, e );
         }
 
         PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), key, in, new ObjectMetadata() );
@@ -257,27 +257,27 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Serializes a RunInfo object into Json and stores it in S3.
+     * Serializes a Summary object into Json and stores it in S3.
      *
-     * @param testInfo the test the RunInfo object is associated with
-     * @param runInfo the RunInfo object to store in S3
+     * @param project the test the Summary object is associated with
+     * @param summary the Summary object to store in S3
      */
     @Override
-    public void uploadRunInfo( TestInfo testInfo, RunInfo runInfo ) {
-        String loadKey = testInfo.getLoadKey();
+    public void uploadRunInfo( Project project, ISummary summary ) {
+        String loadKey = project.getLoadKey();
 
         if ( loadKey == null ) {
-            LOG.error( "testInfo.getLoadKey() was null. Abandoning runInfo upload." );
+            LOG.error( "project.getLoadKey() was null. Abandoning summary upload." );
             return;
         }
 
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( "results/" ).append( runInfo.getRunNumber() ).append( "/run-info.json" );
+        sb.append( loadKey ).append( "results/" ).append( summary.getRunNumber() ).append( "/run-info.json" );
 
         String blobName = sb.toString();
-        putJsonObject( blobName, runInfo );
+        putJsonObject( blobName, summary );
         LOG.info( "Successfully registered {}", blobName );
     }
 
@@ -308,25 +308,25 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * Uploads results to be archived in S3 for analysis later.
      *
      * @param metadata the metadata associated with the runner instance
-     * @param testInfo the test information associated with the test the results ran on
-     * @param runInfo the run information to also upload into S3 besides the results
+     * @param project the test information associated with the test the results ran on
+     * @param summary the run information to also upload into S3 besides the results
      * @param results the results to upload
      */
     @Override
-    public void uploadInfoAndResults( RunnerInfo metadata, TestInfo testInfo, RunInfo runInfo, File results ) {
-        uploadRunInfo( testInfo, runInfo );
+    public void uploadInfoAndResults( Runner metadata, Project project, ISummary summary, File results ) {
+        uploadRunInfo( project, summary );
 
-        String loadKey = testInfo.getLoadKey();
+        String loadKey = project.getLoadKey();
 
         if ( loadKey == null ) {
-            LOG.error( "testInfo.getLoadKey() was null. Abandoning info and results upload." );
+            LOG.error( "project.getLoadKey() was null. Abandoning info and results upload." );
             return;
         }
 
         loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
 
         StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( "results/" ).append( runInfo.getRunNumber() ).append( '/' )
+        sb.append( loadKey ).append( "results/" ).append( summary.getRunNumber() ).append( '/' )
           .append( metadata.getHostname() ).append( "-results.log" );
 
         String blobName = sb.toString();
@@ -355,16 +355,16 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Uploads the information associated with a test in a TestInfo object into S3 as Json.
+     * Uploads the information associated with a test in a Project object into S3 as Json.
      *
-     * @param testInfo the TestInfo object to be serialized and stored in S3
+     * @param project the Project object to be serialized and stored in S3
      */
     @Override
-    public void uploadTestInfo( TestInfo testInfo ) {
-        String loadKey = testInfo.getLoadKey();
+    public void uploadTestInfo( Project project ) {
+        String loadKey = project.getLoadKey();
 
         if ( loadKey == null ) {
-            LOG.error( "testInfo.loadKey() was null. Abandoning upload." );
+            LOG.error( "project.loadKey() was null. Abandoning upload." );
             return;
         }
 
@@ -374,57 +374,57 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         sb.append( loadKey ).append( "results/test-info.json" );
 
         if ( hasKey( sb.toString() ) ) {
-            LOG.warn( "The key {} already exists for TestInfo - not updating!", sb.toString() );
+            LOG.warn( "The key {} already exists for Project - not updating!", sb.toString() );
             return;
         }
 
         String blobName = sb.toString();
-        putJsonObject( blobName, testInfo );
-        LOG.info( "Successfully saved TestInfo with key {}", blobName );
+        putJsonObject( blobName, project );
+        LOG.info( "Successfully saved Project with key {}", blobName );
     }
 
 
     /**
-     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot find it then null is returned.
+     * Tries to load a Project file based on runner metadata prepackaged. If it cannot find it then null is returned.
      *
-     * @return the TestInfo object if it exists in the store or null if it does not
+     * @return the Project object if it exists in the store or null if it does not
      */
     @Override
-    public TestInfo loadTestInfo() {
+    public Project loadTestInfo() {
         String gitUuid = this.gitUuid.get();
 
         if ( gitUuid == null ) {
-            LOG.error( "Could not find gitUuid: returning null TestInfo." );
+            LOG.error( "Could not find gitUuid: returning null Project." );
             return null;
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append( TESTS_PATH ).append( '/' ).append( gitUuid ).append( "/test-info.json" );
+        sb.append( CONFIGS_PATH ).append( '/' ).append( gitUuid ).append( "/test-info.json" );
 
         try {
-            return getJsonObject( sb.toString(), TestInfo.class );
+            return getJsonObject( sb.toString(), Project.class );
         }
         catch ( Exception e ) {
-            LOG.error( "Could not find test-info.json at {}: returning null TestInfo", sb.toString(), e );
+            LOG.error( "Could not find test-info.json at {}: returning null Project", sb.toString(), e );
             return null;
         }
     }
 
 
     /**
-     * Tries to load a TestInfo file based on runner metadata prepackaged. If it cannot find it then null is returned.
+     * Tries to load a Project file based on runner metadata prepackaged. If it cannot find it then null is returned.
      *
-     * @return the TestInfo object if it exists in the store or null if it does not
+     * @return the Project object if it exists in the store or null if it does not
      */
     @Override
-    public TestInfo getTestInfo( String key ) {
+    public Project getTestInfo( String key ) {
         key = key.substring( 0, key.length() - "perftest.war".length() );
 
         try {
-            return getJsonObject( key + "test-info.json", TestInfo.class );
+            return getJsonObject( key + "test-info.json", Project.class );
         }
         catch ( Exception e ) {
-            LOG.error( "Could not find test-info.json at {}: returning null TestInfo", key, e );
+            LOG.error( "Could not find test-info.json at {}: returning null Project", key, e );
             return null;
         }
     }
@@ -432,8 +432,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
     @Override
     public void deleteTests() {
-        Set<TestInfo> tests = new HashSet<TestInfo>();
-        ObjectListing listing = client.listObjects( awsBucket.get(), TESTS_PATH + "/" );
+        Set<Project> tests = new HashSet<Project>();
+        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
@@ -449,8 +449,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
     @Override
     public void deleteGhostRunners( Collection<String> activeRunners ) {
-        Map<String, RunnerInfo> registeredRunners = getRunners();
-        RunnerInfo runner;
+        Map<String, Runner> registeredRunners = getRunners();
+        Runner runner;
         for( String key : registeredRunners.keySet() ) {
             runner = registeredRunners.get( key );
             if ( ! activeRunners.contains( runner.getHostname() ) ) {

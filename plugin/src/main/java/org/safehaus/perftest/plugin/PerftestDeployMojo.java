@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.codehaus.plexus.util.FileUtils;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
@@ -27,7 +25,7 @@ public class PerftestDeployMojo extends PerftestMojo {
         this.destinationParentDir = mojo.destinationParentDir;
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
-        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.testPackageBase = mojo.testPackageBase;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;

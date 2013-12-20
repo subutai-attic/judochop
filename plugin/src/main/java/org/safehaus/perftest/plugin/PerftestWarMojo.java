@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -33,7 +33,7 @@ public class PerftestWarMojo extends PerftestMojo {
         this.destinationParentDir = mojo.destinationParentDir;
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
-        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.testPackageBase = mojo.testPackageBase;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
@@ -86,7 +86,7 @@ public class PerftestWarMojo extends PerftestMojo {
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
             FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), new File( libPath ) );
-            PerftestUtils.copyArtifactsTo( project, libPath, true );
+            PerftestUtils.copyArtifactsTo( this.project, libPath, true );
 
             // Create config.properties file
             InputStream inputStream;
@@ -119,10 +119,10 @@ public class PerftestWarMojo extends PerftestMojo {
             prop.setProperty( GIT_UUID_KEY, commitId );
             prop.setProperty( GIT_URL_KEY, gitUrl );
             prop.setProperty( CREATE_TIMESTAMP_KEY, timeStamp );
-            prop.setProperty( GROUP_ID_KEY, project.getGroupId() );
-            prop.setProperty( ARTIFACT_ID_KEY, project.getArtifactId() );
-            prop.setProperty( PROJECT_VERSION_KEY, project.getVersion() );
-            prop.setProperty( TEST_MODULE_FQCN_KEY, testModuleFQCN );
+            prop.setProperty( GROUP_ID_KEY, this.project.getGroupId() );
+            prop.setProperty( ARTIFACT_ID_KEY, this.project.getArtifactId() );
+            prop.setProperty( PROJECT_VERSION_KEY, this.project.getVersion() );
+            prop.setProperty( TEST_PACKAGE_BASE, testPackageBase );
             prop.setProperty( AWS_BUCKET_KEY, bucketName );
             prop.setProperty( AWSKEY_KEY, accessKey );
             prop.setProperty( AWS_SECRET_KEY, secretKey );
@@ -141,21 +141,21 @@ public class PerftestWarMojo extends PerftestMojo {
             PerftestUtils.archiveWar( finalWarFile, extractedWarRoot );
 
             // Generate the test-info.json file
-            TestInfo testInfo = new TestInfo();
-            testInfo.setTestModuleFQCN( testModuleFQCN );
-            testInfo.setCreateTimestamp( timeStamp );
-            testInfo.setArtifactId( project.getArtifactId() );
-            testInfo.setProjectVersion( project.getVersion() );
-            testInfo.setGroupId( project.getGroupId() );
-            testInfo.setGitRepoUrl( gitUrl );
-            testInfo.setGitUuid( commitId );
-            testInfo.setLoadKey( "tests/" + commitId + "/perftest.war" );
-            testInfo.setPerftestVersion( prop.getProperty( PERFTEST_VERSION_KEY ) );
-            testInfo.setWarMd5( warMd5 );
+            Project project = new Project();
+            project.setTestPackageBase( testPackageBase );
+            project.setCreateTimestamp( timeStamp );
+            project.setArtifactId( this.project.getArtifactId() );
+            project.setProjectVersion( this.project.getVersion() );
+            project.setGroupId( this.project.getGroupId() );
+            project.setVcsRepoUrl( gitUrl );
+            project.setVcsVersion( commitId );
+            project.setLoadKey( "tests/" + commitId + "/perftest.war" );
+            project.setChopVersion( prop.getProperty( CHOP_VERSION_KEY ) );
+            project.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();
             File testInfoFile = new File( getTestInfoToUploadPath() );
-            mapper.writeValue( testInfoFile, testInfo );
+            mapper.writeValue( testInfoFile, project );
         }
         catch ( Exception e ) {
             throw new MojoExecutionException( "Error while executing plugin", e );

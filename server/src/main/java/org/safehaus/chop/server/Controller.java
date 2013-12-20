@@ -4,17 +4,18 @@ package org.safehaus.chop.server;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import org.safehaus.chop.server.runners.Stats;
-import org.safehaus.chop.server.runners.IterationRunner;
-import org.safehaus.chop.server.runners.Runner;
-import org.safehaus.chop.server.runners.TimeRunner;
-import org.safehaus.chop.api.CallStatsSnapshot;
-import org.safehaus.chop.api.RunInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.StatsSnapshot;
+import org.safehaus.chop.api.Summary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.server.drivers.Driver;
+import org.safehaus.chop.server.drivers.IterationDriver;
+import org.safehaus.chop.server.drivers.Stats;
+import org.safehaus.chop.server.drivers.TimeDriver;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.TestInfo;
 import org.safehaus.chop.api.annotations.IterationChop;
 import org.safehaus.chop.api.annotations.TimeChop;
-import org.safehaus.chop.api.settings.ConfigKeys;
+import org.safehaus.chop.api.ConfigKeys;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +40,12 @@ public class Controller implements IController, Runnable {
     private Set<Class<?>> iterationChopClasses;
     private State state = State.READY;
     private long timeout = TIMEOUT; // @TODO should be configurable
-    private Runner<?> currentRunner;
+    private Driver<?> currentRunner;
 
     private StoreService service;
     private Stats stats;
-    private TestInfo testInfo;
-    private RunInfo runInfo = new RunInfo( 0 );
+    private Project project;
+    private ISummary summary = new Summary( 0 );
 
     private long startTime;
     private long stopTime;
@@ -56,12 +57,12 @@ public class Controller implements IController, Runnable {
     }
 
     @Inject
-    private void setTestInfo( TestInfo testInfo ) {
-        if ( testInfo == null ) {
+    private void setProject( Project project ) {
+        if ( project == null ) {
             state = State.INACTIVE;
         }
 
-        this.testInfo = testInfo;
+        this.project = project;
     }
 
 
@@ -106,7 +107,7 @@ public class Controller implements IController, Runnable {
         synchronized ( lock ) {
             if ( state == State.STOPPED ) {
                 state = State.READY;
-                runInfo = new RunInfo( runInfo.getRunNumber() + 1 );
+                summary = new Summary( summary.getRunNumber() + 1 );
                 startTime = -1;
                 stopTime = -1;
                 currentRunner = null;
@@ -118,7 +119,7 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public CallStatsSnapshot getCallStatsSnapshot() {
+    public StatsSnapshot getCallStatsSnapshot() {
         return stats.getStatsSnapshot( isRunning(), getStartTime(), getStopTime() );
     }
 
@@ -131,8 +132,8 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public RunInfo getRunInfo() {
-        return runInfo;
+    public ISummary getSummary() {
+        return summary;
     }
 
 
@@ -165,8 +166,8 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public TestInfo getTestInfo() {
-        return testInfo;
+    public Project getProject() {
+        return project;
     }
 
 
@@ -204,7 +205,7 @@ public class Controller implements IController, Runnable {
     public void run() {
         for ( Class<?> iterationTest : iterationChopClasses ) {
             synchronized ( lock ) {
-                currentRunner = new IterationRunner( iterationTest );
+                currentRunner = new IterationDriver( iterationTest );
                 currentRunner.setTimeout( timeout );
                 currentRunner.start();
                 lock.notifyAll();
@@ -228,7 +229,7 @@ public class Controller implements IController, Runnable {
 
         for ( Class<?> timeTest : timeChopClasses ) {
             synchronized ( lock ) {
-                currentRunner = new TimeRunner( timeTest );
+                currentRunner = new TimeDriver( timeTest );
                 currentRunner.setTimeout( timeout );
                 currentRunner.start();
                 lock.notifyAll();
@@ -253,7 +254,7 @@ public class Controller implements IController, Runnable {
         LOG.info( "Test has stopped." );
         stopTime = System.currentTimeMillis();
         stats.stop();
-        service.uploadResults( testInfo, runInfo, stats.getResultsFile() );
+        service.uploadResults( project, summary, stats.getResultsFile() );
         reset();
     }
 }

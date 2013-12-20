@@ -25,7 +25,7 @@ import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreService;
 
 import com.google.inject.Guice;
@@ -56,7 +56,7 @@ public class ServletConfig extends GuiceServletContextListener {
         super.contextInitialized( servletContextEvent );
         LoggingConfiguration.getInstance().configure();
         storeService = getInjector().getInstance( StoreService.class );
-        RunnerInfo runner = storeService.getMyMetadata();
+        Runner runner = storeService.getMyMetadata();
 
         ServletContext context = servletContextEvent.getServletContext();
         runner.setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );

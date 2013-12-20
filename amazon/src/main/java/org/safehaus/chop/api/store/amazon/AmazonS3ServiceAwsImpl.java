@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.chop.api.RunInfo;
-import org.safehaus.chop.api.RunnerInfo;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import com.google.inject.name.Named;
 import com.netflix.config.DynamicLongProperty;
 
 
-/** Handles S3 interactions to interface with other test runners. */
+/** Handles S3 interactions to interface with other test drivers. */
 @Singleton
 public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKeys {
 
@@ -50,15 +50,15 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     private boolean started = false;
     private StoreOperations operations;
-    private Ec2RunnerInfo metadata;
-    private Map<String, RunnerInfo> runners = new HashMap<String, RunnerInfo>();
+    private Ec2Runner metadata;
+    private Map<String, Runner> runners = new HashMap<String, Runner>();
     private final Object lock = new Object();
     private final AmazonS3Client client;
     private final DynamicLongProperty scanPeriod;
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Ec2RunnerInfo metadata, S3Operations operations,
+    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Ec2Runner metadata, S3Operations operations,
                                    @Named( SCAN_PERIOD_KEY ) DynamicLongProperty scanPeriod ) {
         this.client = client;
         this.metadata = metadata;
@@ -108,19 +108,19 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public RunnerInfo getRunner( String key ) {
+    public Runner getRunner( String key ) {
         return runners.get( key );
     }
 
 
     @Override
-    public Map<String, RunnerInfo> getRunners() {
+    public Map<String, Runner> getRunners() {
         return runners;
     }
 
 
     @Override
-    public RunnerInfo getMyMetadata() {
+    public Runner getMyMetadata() {
         return metadata;
     }
 
@@ -138,25 +138,25 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public void uploadResults( final TestInfo testInfo, final RunInfo runInfo, final File resultsFile ) {
-        operations.uploadInfoAndResults( metadata, testInfo, runInfo, resultsFile );
+    public void uploadResults( final Project project, final ISummary summary, final File resultsFile ) {
+        operations.uploadInfoAndResults( metadata, project, summary, resultsFile );
     }
 
 
     @Override
-    public void uploadTestInfo( final TestInfo testInfo ) {
-        operations.uploadTestInfo( testInfo );
+    public void uploadTestInfo( final Project project ) {
+        operations.uploadTestInfo( project );
     }
 
 
     @Override
-    public TestInfo loadTestInfo() {
+    public Project loadTestInfo() {
         return operations.loadTestInfo();
     }
 
 
     @Override
-    public Set<TestInfo> listTests() throws IOException {
+    public Set<Project> listTests() throws IOException {
         return operations.getTests();
     }
 

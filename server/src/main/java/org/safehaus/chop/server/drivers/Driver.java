@@ -1,14 +1,14 @@
-package org.safehaus.chop.server.runners;
+package org.safehaus.chop.server.drivers;
 
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.safehaus.chop.api.CallStatsSnapshot;
-import org.safehaus.chop.api.RunInfo;
+import org.safehaus.chop.api.StatsSnapshot;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 /**
  * An abstract chop runner.
  */
-public abstract class Runner<T extends Tracker> implements IRunner {
+public abstract class Driver<T extends Tracker> implements IDriver {
     public static final long TIMEOUT = 1000L;
-    protected static final Logger LOG = LoggerFactory.getLogger( Runner.class );
+    protected static final Logger LOG = LoggerFactory.getLogger( Driver.class );
     protected final T tracker;
     protected final Object lock = new Object();
     protected ExecutorService executorService;
@@ -26,7 +26,7 @@ public abstract class Runner<T extends Tracker> implements IRunner {
     protected long timeout = TIMEOUT; // @TODO should be configurable
 
 
-    public Runner( T tracker ) {
+    public Driver( T tracker ) {
         this.tracker = tracker;
         executorService = Executors.newFixedThreadPool( tracker.getThreads() );
     }
@@ -51,7 +51,7 @@ public abstract class Runner<T extends Tracker> implements IRunner {
 
 
     @Override
-    public CallStatsSnapshot getCallStatsSnapshot() {
+    public StatsSnapshot getCallStatsSnapshot() {
         return null;
     }
 
@@ -64,7 +64,7 @@ public abstract class Runner<T extends Tracker> implements IRunner {
 
 
     @Override
-    public RunInfo getRunInfo() {
+    public ISummary getRun() {
         return null;
     }
 
@@ -98,7 +98,7 @@ public abstract class Runner<T extends Tracker> implements IRunner {
 
 
     @Override
-    public TestInfo getTestInfo() {
+    public Project getProjectConfig() {
         return null;
     }
 

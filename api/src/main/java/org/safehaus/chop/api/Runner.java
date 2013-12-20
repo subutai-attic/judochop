@@ -7,13 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.safehaus.chop.api.settings.ConfigKeys;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /** Minimal requirements for runner information. */
-public class RunnerInfo extends Properties implements ConfigKeys {
+public class Runner extends Properties implements ConfigKeys {
 
 
     @JsonProperty
@@ -46,12 +44,12 @@ public class RunnerInfo extends Properties implements ConfigKeys {
     }
 
 
-    public RunnerInfo() {
+    public Runner() {
         super();
     }
 
 
-    public RunnerInfo( InputStream in ) throws IOException {
+    public Runner( InputStream in ) throws IOException {
         super();
         load( in );
     }

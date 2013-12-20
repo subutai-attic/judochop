@@ -32,11 +32,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.server.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerInfo;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.StoreService;
@@ -70,9 +70,9 @@ public class LoadResource extends PropagatingResource {
 
     /**
      * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
-     * the other runners this parameter will be set to true.
+     * the other drivers this parameter will be set to true.
      *
-     * @param propagate when true call the same function on other runners
+     * @param propagate when true call the same function on other drivers
      * @param perftest the perftest to use specified by the string containing the <git-uuid>-<deploy-timestamp>
      *
      * @return a summary message
@@ -90,10 +90,10 @@ public class LoadResource extends PropagatingResource {
             return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", runner.getState() );
         }
 
-        Map<String, RunnerInfo> peers = getService().getRunners();
+        Map<String, Runner> peers = getService().getRunners();
 
         // Handle loading the war here first for the peers we will propagate to since
-        // we do not want to be reloaded before issuing this operation to the other runners.
+        // we do not want to be reloaded before issuing this operation to the other drivers.
 
         Map<String, String> params = Collections.singletonMap( "perftest", perftest );
 
@@ -114,7 +114,7 @@ public class LoadResource extends PropagatingResource {
             }
         }
 
-        for ( RunnerInfo runner : peers.values() ) {
+        for ( Runner runner : peers.values() ) {
 
         }
 

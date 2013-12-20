@@ -7,27 +7,25 @@
 package org.safehaus.chop.api;
 
 
-import org.safehaus.chop.api.settings.ConfigKeys;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicPropertyFactory;
 
 
-public class PerftestApiModule extends AbstractModule implements ConfigKeys {
+public class ApiModule extends AbstractModule implements ConfigKeys {
     private DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
 
 
     protected void configure() {
-        bind( TestInfo.class );
+        bind( Project.class );
     }
 
 
     @Provides
-    @Named( PERFTEST_VERSION_KEY )
-    String getPerftestVersion() {
-        return propertyFactory.getStringProperty( PERFTEST_VERSION_KEY, "1.0" ).get();
+    @Named( CHOP_VERSION_KEY )
+    String getChopVersion() {
+        return propertyFactory.getStringProperty( CHOP_VERSION_KEY, "1.0" ).get();
     }
 
 
@@ -67,9 +65,9 @@ public class PerftestApiModule extends AbstractModule implements ConfigKeys {
 
 
     @Provides
-    @Named( TEST_MODULE_FQCN_KEY )
-    String getTestModuleFqcn() {
-        return propertyFactory.getStringProperty( TEST_MODULE_FQCN_KEY, DEFAULT_TEST_MODULE ).get();
+    @Named( TEST_PACKAGE_BASE )
+    String getTestPackageBase() {
+        return propertyFactory.getStringProperty( TEST_PACKAGE_BASE, DEFAULT_PACKAGE_BASE ).get();
     }
 
 

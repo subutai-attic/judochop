@@ -17,7 +17,7 @@
  *  under the License. 
  *  
  */
-package org.safehaus.chop.server.runners;
+package org.safehaus.chop.server.drivers;
 
 
 import java.io.File;
@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.server.IResultsLog;
-import org.safehaus.chop.api.CallStatsSnapshot;
 import org.safehaus.chop.api.Perftest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +68,9 @@ public class Stats {
     }
 
 
-    public CallStatsSnapshot getStatsSnapshot( boolean isRunning, long startTime, long stopTime ) {
+    public StatsSnapshot getStatsSnapshot( boolean isRunning, long startTime, long stopTime ) {
         synchronized ( lock ) {
-            return new CallStatsSnapshot( callCount.get(), maxTime, minTime, meanTime, isRunning, startTime, stopTime );
+            return new StatsSnapshot( callCount.get(), maxTime, minTime, meanTime, isRunning, startTime, stopTime );
         }
     }
 

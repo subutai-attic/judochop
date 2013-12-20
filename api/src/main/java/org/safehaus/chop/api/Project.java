@@ -1,23 +1,20 @@
 package org.safehaus.chop.api;
 
 
-import org.safehaus.chop.api.settings.ConfigKeys;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/7/13 Time: 12:57 AM To change this template use File | Settings
- * | File Templates.
+ * Information about the project to be chopped up!
  */
-public class TestInfo implements ConfigKeys {
-    private String testModuleFQCN;
-    private String perftestVersion;
+public class Project implements ConfigKeys {
+    private String testPackageBase;
+    private String chopVersion;
     private String createTimestamp;
-    private String gitUuid;
-    private String gitRepoUrl;
+    private String vcsVersion;
+    private String vcsRepoUrl;
     private String groupId;
     private String artifactId;
     private String projectVersion;
@@ -27,19 +24,19 @@ public class TestInfo implements ConfigKeys {
 
 
     @Inject
-    public TestInfo() {
+    public Project() {
     }
 
 
     @JsonProperty
-    public String getTestModuleFQCN() {
-        return testModuleFQCN;
+    public String getTestPackageBase() {
+        return testPackageBase;
     }
 
 
     @JsonProperty
-    public String getPerftestVersion() {
-        return perftestVersion;
+    public String getChopVersion() {
+        return chopVersion;
     }
 
 
@@ -50,14 +47,14 @@ public class TestInfo implements ConfigKeys {
 
 
     @JsonProperty
-    public String getGitUuid() {
-        return gitUuid;
+    public String getVcsVersion() {
+        return vcsVersion;
     }
 
 
     @JsonProperty
-    public String getGitRepoUrl() {
-        return gitRepoUrl;
+    public String getVcsRepoUrl() {
+        return vcsRepoUrl;
     }
 
 
@@ -92,8 +89,8 @@ public class TestInfo implements ConfigKeys {
 
 
     @Inject
-    public void setPerftestVersion( @Named( PERFTEST_VERSION_KEY ) String perftestVersion ) {
-        this.perftestVersion = perftestVersion;
+    public void setChopVersion( @Named( CHOP_VERSION_KEY ) String chopVersion ) {
+        this.chopVersion = chopVersion;
     }
 
 
@@ -104,14 +101,14 @@ public class TestInfo implements ConfigKeys {
 
 
     @Inject
-    public void setGitUuid( @Named( GIT_UUID_KEY ) String gitUuid ) {
-        this.gitUuid = gitUuid;
+    public void setVcsVersion( @Named( GIT_UUID_KEY ) String vcsVersion ) {
+        this.vcsVersion = vcsVersion;
     }
 
 
     @Inject
-    public void setGitRepoUrl( @Named( GIT_URL_KEY ) String getGitRepoUrl ) {
-        this.gitRepoUrl = getGitRepoUrl;
+    public void setVcsRepoUrl( @Named( GIT_URL_KEY ) String getGitRepoUrl ) {
+        this.vcsRepoUrl = getGitRepoUrl;
     }
 
 
@@ -128,8 +125,8 @@ public class TestInfo implements ConfigKeys {
 
 
     @Inject
-    public void setTestModuleFQCN( @Named( TEST_MODULE_FQCN_KEY ) String testModuleFQCN ) {
-        this.testModuleFQCN = testModuleFQCN;
+    public void setTestPackageBase( @Named( TEST_PACKAGE_BASE ) String testPackageBase ) {
+        this.testPackageBase = testPackageBase;
     }
 
 
@@ -165,26 +162,26 @@ public class TestInfo implements ConfigKeys {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append( "\nTestInfo {\n\n\t" );
+        sb.append( "\nProject {\n\n\t" );
 
-        if ( testModuleFQCN != null ) {
-            sb.append( TEST_MODULE_FQCN_KEY ).append( ": " ).append( testModuleFQCN ).append( "\n\t" );
+        if ( testPackageBase != null ) {
+            sb.append( TEST_PACKAGE_BASE ).append( ": " ).append( testPackageBase ).append( "\n\t" );
         }
 
-        if ( perftestVersion != null ) {
-            sb.append( PERFTEST_VERSION_KEY ).append( ": " ).append( perftestVersion ).append( "\n\t" );
+        if ( chopVersion != null ) {
+            sb.append( CHOP_VERSION_KEY ).append( ": " ).append( chopVersion ).append( "\n\t" );
         }
 
         if ( createTimestamp != null ) {
             sb.append( CREATE_TIMESTAMP_KEY ).append( ": " ).append( createTimestamp ).append( "\n\t" );
         }
 
-        if ( gitUuid != null ) {
-            sb.append( GIT_UUID_KEY ).append( ": " ).append( gitUuid ).append( "\n\t" );
+        if ( vcsVersion != null ) {
+            sb.append( GIT_UUID_KEY ).append( ": " ).append( vcsVersion ).append( "\n\t" );
         }
 
-        if ( gitRepoUrl != null ) {
-            sb.append( GIT_URL_KEY ).append( ": " ).append( gitRepoUrl ).append( "\n\t" );
+        if ( vcsRepoUrl != null ) {
+            sb.append( GIT_URL_KEY ).append( ": " ).append( vcsRepoUrl ).append( "\n\t" );
         }
 
         if ( groupId != null ) {

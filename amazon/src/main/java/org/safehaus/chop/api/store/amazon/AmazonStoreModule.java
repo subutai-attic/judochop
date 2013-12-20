@@ -7,7 +7,7 @@
 package org.safehaus.chop.api.store.amazon;
 
 
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
 
 
     protected void configure() {
-        bind( RunnerInfo.class ).to( Ec2RunnerInfo.class );
+        bind( Runner.class ).to( Ec2Runner.class );
         bind( StoreOperations.class ).to( S3Operations.class );
         bind( StoreService.class ).to( AmazonS3ServiceAwsImpl.class );
     }

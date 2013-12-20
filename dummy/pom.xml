@@ -54,7 +54,7 @@
           <perftestFormation>${perftest.formation}</perftestFormation>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
-          <testModuleFQCN>org.safehaus.perftest.dummy.DummyModule</testModuleFQCN>
+          <testPackageBase>org.safehaus.perftest.dummy.DummyModule</testPackageBase>
           <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>

@@ -1,4 +1,4 @@
-package org.safehaus.chop.server.runners;
+package org.safehaus.chop.server.drivers;
 
 
 import org.safehaus.chop.api.State;
@@ -8,9 +8,9 @@ import org.safehaus.chop.api.annotations.IterationChop;
 /**
  * Runs an iteration based unit test.
  */
-public class IterationRunner extends Runner<IterationTracker> {
+public class IterationDriver extends Driver<IterationTracker> {
 
-    public IterationRunner( Class<?> testClass ) {
+    public IterationDriver( Class<?> testClass ) {
         super( new IterationTracker( testClass ) );
     }
 

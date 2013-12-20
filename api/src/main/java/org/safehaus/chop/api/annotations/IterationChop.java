@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * difference here is not the amount of time your test runs but the number of iterations
  * of your tests per thread. So the total iterations will be:
  * </p>
- * threads() * runners() * iterations()
+ * threads() * drivers() * iterations()
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -40,9 +40,9 @@ public @interface IterationChop {
 
 
     /**
-     * The number of distributed runners to use for the chop.
+     * The number of distributed drivers to use for the chop.
      *
-     * @return the number of distributed runners to use
+     * @return the number of distributed drivers to use
      */
     @JsonProperty
     int runners() default AnnotationDefaults.DEFAULT_RUNNERS;

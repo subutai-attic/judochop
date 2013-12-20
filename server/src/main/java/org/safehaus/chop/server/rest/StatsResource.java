@@ -25,8 +25,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.server.IController;
-import org.safehaus.chop.api.CallStatsSnapshot;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -47,7 +47,7 @@ public class StatsResource {
 
 
     @GET
-    public CallStatsSnapshot getCallStatsSnapshot() {
+    public StatsSnapshot getCallStatsSnapshot() {
         return runner.getCallStatsSnapshot();
     }
 }

@@ -5,10 +5,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.TestInfo;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.perftest.client.ResponseInfo;
@@ -38,7 +38,7 @@ public class PerftestLoadMojo extends PerftestMojo {
         this.destinationParentDir = mojo.destinationParentDir;
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
-        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.testPackageBase = mojo.testPackageBase;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
@@ -71,10 +71,10 @@ public class PerftestLoadMojo extends PerftestMojo {
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
-        Collection<RunnerInfo> runnerCollection = client.getRunners();
-        RunnerInfo[] runners = runnerCollection.toArray( new RunnerInfo[ runnerCollection.size() ] ) ;
-        RunnerInfo info = null;
-        for ( RunnerInfo runner : runners ) {
+        Collection<Runner> runnerCollection = client.getRunners();
+        Runner[] runners = runnerCollection.toArray( new Runner[ runnerCollection.size() ] ) ;
+        Runner info = null;
+        for ( Runner runner : runners ) {
             info = runner;
             break;
         }
@@ -101,12 +101,12 @@ public class PerftestLoadMojo extends PerftestMojo {
         boolean testUpToDate = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            TestInfo currentTestInfo = mapper.readValue( new File( getTestInfoToUploadPath() ), TestInfo.class );
-            Set<TestInfo> tests = client.getTests();
+            Project currentProject = mapper.readValue( new File( getTestInfoToUploadPath() ), Project.class );
+            Set<Project> tests = client.getProjectConfigs();
 
-            for ( TestInfo test : tests ) {
-                if ( currentTestInfo.getGitUuid().equals( test.getGitUuid() ) &&
-                        currentTestInfo.getWarMd5().equals( test.getWarMd5() ) ) {
+            for ( Project test : tests ) {
+                if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }
@@ -131,17 +131,17 @@ public class PerftestLoadMojo extends PerftestMojo {
             deployMojo.execute();
         }
 
-        getLog().info( "Loading the test on runners..." );
+        getLog().info( "Loading the test on drivers..." );
 
         Result result = client.load( info, getWarOnS3Path(), true );
 
         if ( !result.getStatus() ) {
-            throw new MojoExecutionException( "Could not get the status of runners, quitting..." );
+            throw new MojoExecutionException( "Could not get the status of drivers, quitting..." );
         }
 
         if ( !result.getState().equals( State.READY ) ) {
             throw new MojoExecutionException(
-                    "Something went wrong while trying to load the test, runners are not " + "in ready state" );
+                    "Something went wrong while trying to load the test, drivers are not " + "in ready state" );
         }
 
         // Restart tomcats on all instances

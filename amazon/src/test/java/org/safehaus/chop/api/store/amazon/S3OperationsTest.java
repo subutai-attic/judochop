@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.junit.Test;
-import org.safehaus.chop.api.PerftestApiModule;
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.ApiModule;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import com.google.inject.Guice;
 public class S3OperationsTest {
     private static final Logger LOG = LoggerFactory.getLogger( S3Operations.class );
     StoreOperations operations =
-            Guice.createInjector( new AmazonStoreModule(), new PerftestApiModule() ).getInstance( S3Operations.class );
+            Guice.createInjector( new AmazonStoreModule(), new ApiModule() ).getInstance( S3Operations.class );
 
     private String accessKey = System.getProperty( "accessKey" );
     private String secretKey = System.getProperty( "secretKey" );
@@ -32,17 +32,17 @@ public class S3OperationsTest {
 
     @Test
     public void testRunnersListing() {
-        Map<String, RunnerInfo> runners = operations.getRunners( new Ec2RunnerInfo() );
+        Map<String, Runner> runners = operations.getRunners( new Ec2Runner() );
 
-        for ( RunnerInfo runnerInfo : runners.values() ) {
-            LOG.debug( "Got runner {}", runnerInfo );
+        for ( Runner runner : runners.values() ) {
+            LOG.debug( "Got runner {}", runner );
         }
     }
 
 
     @Test
     public void testRegister() {
-        Ec2RunnerInfo metadata = new Ec2RunnerInfo();
+        Ec2Runner metadata = new Ec2Runner();
         metadata.setProperty( "foo", "bar" );
         operations.register( metadata );
     }

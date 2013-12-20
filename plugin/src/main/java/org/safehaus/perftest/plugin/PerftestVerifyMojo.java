@@ -4,7 +4,7 @@ package org.safehaus.perftest.plugin;
 import java.io.File;
 import java.util.Set;
 
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.Project;
 import org.safehaus.perftest.client.PerftestClient;
 import org.safehaus.perftest.client.PerftestClientModule;
 
@@ -28,19 +28,19 @@ public class PerftestVerifyMojo extends PerftestMojo {
         boolean result = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            TestInfo currentTestInfo = mapper.readValue( new File( getTestInfoToUploadPath() ), TestInfo.class );
-            Set<TestInfo> tests = client.getTests();
+            Project currentProject = mapper.readValue( new File( getTestInfoToUploadPath() ), Project.class );
+            Set<Project> tests = client.getProjectConfigs();
 
-            for ( TestInfo test : tests ) {
-                if ( currentTestInfo.getGitUuid().equals( test.getGitUuid() ) &&
-                        currentTestInfo.getWarMd5().equals( test.getWarMd5() ) ) {
+            for ( Project test : tests ) {
+                if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     result = true;
                     break;
                 }
             }
 
             if ( result ) {
-                getLog().info( "Test on store is up-to-date, checking runners..." );
+                getLog().info( "Test on store is up-to-date, checking drivers..." );
                 result &= client.verify();
             }
             else {

@@ -6,7 +6,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -28,7 +28,7 @@ public class RestRequests {
      *
      * @return the result of the operation
      */
-    public static Result load( RunnerInfo runner, String perftest, Boolean propagate ) {
+    public static Result load( Runner runner, String perftest, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/load" );
@@ -45,7 +45,7 @@ public class RestRequests {
      *
      * @return the result of the operation
      */
-    public static Result start( RunnerInfo runner, Boolean propagate ) {
+    public static Result start( Runner runner, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/start" );
@@ -62,7 +62,7 @@ public class RestRequests {
      *
      * @return the result of the operation
      */
-    public static Result reset( RunnerInfo runner, Boolean propagate ) {
+    public static Result reset( Runner runner, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/reset" );
@@ -79,7 +79,7 @@ public class RestRequests {
      *
      * @return the result of the operation
      */
-    public static Result stop( RunnerInfo runner, Boolean propagate ) {
+    public static Result stop( Runner runner, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/stop" );
@@ -95,7 +95,7 @@ public class RestRequests {
      *
      * @return the result of the operation
      */
-    public static Result status( RunnerInfo runner ) {
+    public static Result status( Runner runner ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/status" );

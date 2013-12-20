@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 
-/** A resource that optionally propagates its operation to peer runners. */
+/** A resource that optionally propagates its operation to peer drivers. */
 public class PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( PropagatingResource.class );
 
@@ -126,7 +126,7 @@ public class PropagatingResource {
                 new ExecutorCompletionService<Result>( executorService, completionQueue );
 
         for ( String runner : getService().listRunners() ) {
-            final RunnerInfo metadata = getService().getRunner( runner );
+            final Runner metadata = getService().getRunner( runner );
 
             // skip if the runner is myself
             if ( getService().getMyMetadata().getHostname().equals( metadata.getHostname() ) ) {
@@ -157,18 +157,18 @@ public class PropagatingResource {
 
 
     class PropagatingCall implements Callable<Result> {
-        private final RunnerInfo metadata;
+        private final Runner metadata;
         private final Map<String, String> params;
 
 
-        PropagatingCall( RunnerInfo metadata, Map<String, String> params ) {
+        PropagatingCall( Runner metadata, Map<String, String> params ) {
             this.metadata = metadata;
             this.params = params;
         }
 
 
         @SuppressWarnings("UnusedDeclaration")
-        RunnerInfo getMetadata() {
+        Runner getMetadata() {
             return metadata;
         }
 

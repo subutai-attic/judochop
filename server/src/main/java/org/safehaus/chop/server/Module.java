@@ -10,8 +10,8 @@ package org.safehaus.chop.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.safehaus.chop.server.runners.Stats;
-import org.safehaus.chop.api.PerftestApiModule;
+import org.safehaus.chop.api.ApiModule;
+import org.safehaus.chop.server.drivers.Stats;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.chop.server.rest.ResetResource;
 import org.safehaus.chop.server.rest.StartResource;
@@ -29,7 +29,7 @@ public class Module extends ServletModule {
 
 
     protected void configureServlets() {
-        install( new PerftestApiModule() );
+        install( new ApiModule() );
         install( new PerftestClientModule() );
 
         // Hook Jersey into Guice Servlet

@@ -5,7 +5,7 @@ package org.safehaus.chop.api.store.amazon;
  * Created with IntelliJ IDEA. User: akarasulu Date: 12/8/13 Time: 5:41 PM To change this template use File | Settings |
  * File Templates.
  */
-public interface ConfigKeys extends org.safehaus.chop.api.settings.ConfigKeys {
+public interface ConfigKeys extends org.safehaus.chop.api.ConfigKeys {
     String AWSKEY_KEY = "aws.s3.key";
     String AWS_SECRET_KEY = "aws.s3.secret";
     String AWS_BUCKET_KEY = "aws.s3.bucket";

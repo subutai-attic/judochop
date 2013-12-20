@@ -41,5 +41,5 @@ public interface Result {
 
 
     @JsonProperty
-    TestInfo getTestInfo();
+    Project getProject();
 }

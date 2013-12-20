@@ -4,9 +4,9 @@ package org.safehaus.perftest.plugin;
 import java.io.File;
 import java.util.Set;
 
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerInfo;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.perftest.client.PerftestClient;
@@ -42,12 +42,12 @@ public class PerftestStartMojo extends PerftestMojo {
         boolean testUpToDate = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            TestInfo currentTestInfo = mapper.readValue( new File( getTestInfoToUploadPath() ), TestInfo.class );
-            Set<TestInfo> tests = client.getTests();
+            Project currentProject = mapper.readValue( new File( getTestInfoToUploadPath() ), Project.class );
+            Set<Project> tests = client.getProjectConfigs();
 
-            for ( TestInfo test : tests ) {
-                if ( currentTestInfo.getGitUuid().equals( test.getGitUuid() ) &&
-                        currentTestInfo.getWarMd5().equals( test.getWarMd5() ) ) {
+            for ( Project test : tests ) {
+                if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }
@@ -57,8 +57,8 @@ public class PerftestStartMojo extends PerftestMojo {
             getLog().warn( "Error while getting test information from store", e );
         }
 
-        RunnerInfo info = null;
-        for ( RunnerInfo runner : client.getRunners() ) {
+        Runner info = null;
+        for ( Runner runner : client.getRunners() ) {
             info = runner;
             break;
         }

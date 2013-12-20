@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.chop.api.RunInfo;
-import org.safehaus.chop.api.RunnerInfo;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 
 
 /** The S3 Service is used to register the node so other nodes in the same perftest formation can access it. */
@@ -24,19 +24,19 @@ public interface StoreService {
 
     Set<String> listRunners();
 
-    Set<TestInfo> listTests() throws IOException;
+    Set<Project> listTests() throws IOException;
 
-    RunnerInfo getRunner( String key );
+    Runner getRunner( String key );
 
-    Map<String, RunnerInfo> getRunners();
+    Map<String, Runner> getRunners();
 
-    RunnerInfo getMyMetadata();
+    Runner getMyMetadata();
 
     File download( File tempDir, String perftest ) throws Exception;
 
-    void uploadResults( TestInfo testInfo, RunInfo runInfo, File resultsFile );
+    void uploadResults( Project project, ISummary summary, File resultsFile );
 
-    void uploadTestInfo( TestInfo testInfo );
+    void uploadTestInfo( Project project );
 
-    TestInfo loadTestInfo();
+    Project loadTestInfo();
 }

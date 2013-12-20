@@ -54,6 +54,6 @@ public class StatusResource {
     @GET
     public Result status() throws JsonProcessingException {
         return new BaseResult( storeService.getMyMetadata().getUrl(), true, null, runner.getState(),
-                runner.getTestInfo() );
+                runner.getProject() );
     }
 }

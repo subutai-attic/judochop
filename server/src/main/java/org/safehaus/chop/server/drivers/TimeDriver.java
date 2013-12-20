@@ -1,4 +1,4 @@
-package org.safehaus.chop.server.runners;
+package org.safehaus.chop.server.drivers;
 
 
 import org.safehaus.chop.api.State;
@@ -8,9 +8,9 @@ import org.safehaus.chop.api.annotations.TimeChop;
 /**
  * Runs a time based unit test.
  */
-public class TimeRunner extends Runner<TimeTracker> {
+public class TimeDriver extends Driver<TimeTracker> {
 
-    public TimeRunner( Class<?> testClass ) {
+    public TimeDriver( Class<?> testClass ) {
         super( new TimeTracker( testClass ) );
     }
 

@@ -1,4 +1,4 @@
-package org.safehaus.chop.server.runners;
+package org.safehaus.chop.server.drivers;
 
 
 import org.safehaus.chop.api.annotations.IterationChop;

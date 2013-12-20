@@ -32,7 +32,7 @@ public class PerftestSetupMojo extends PerftestMojo {
         this.destinationParentDir = mojo.destinationParentDir;
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
-        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.testPackageBase = mojo.testPackageBase;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;

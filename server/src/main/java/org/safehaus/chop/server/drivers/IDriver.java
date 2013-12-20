@@ -1,4 +1,4 @@
-package org.safehaus.chop.server;
+package org.safehaus.chop.server.drivers;
 
 
 import org.safehaus.chop.api.StatsSnapshot;
@@ -8,17 +8,16 @@ import org.safehaus.chop.api.State;
 
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/19/13 Time: 12:15 AM To change this template use File | Settings
- * | File Templates.
+ * A driver for a chop applied to a test class.
  */
-public interface IController {
+public interface IDriver {
     void reset();
 
     StatsSnapshot getCallStatsSnapshot();
 
     State getState();
 
-    ISummary getSummary();
+    ISummary getRun();
 
     boolean isRunning();
 
@@ -32,5 +31,5 @@ public interface IController {
 
     void stop();
 
-    Project getProject();
+    Project getProjectConfig();
 }

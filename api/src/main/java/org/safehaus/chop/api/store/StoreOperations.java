@@ -7,38 +7,38 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.chop.api.RunInfo;
-import org.safehaus.chop.api.RunnerInfo;
-import org.safehaus.chop.api.TestInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 
 
 /** Operations performed against a perftest store. */
 public interface StoreOperations {
     String getRunnerKey( String publicHostname );
 
-    void register( RunnerInfo metadata );
+    void register( Runner metadata );
 
-    Set<TestInfo> getTests() throws IOException;
+    Set<Project> getTests() throws IOException;
 
-    Map<String, RunnerInfo> getRunners( RunnerInfo runner );
+    Map<String, Runner> getRunners( Runner runner );
 
-    Map<String, RunnerInfo> getRunners();
+    Map<String, Runner> getRunners();
 
     File download( File tempDir, String key ) throws IOException;
 
     <T> T putJsonObject( String key, Object obj );
 
-    void uploadRunInfo( TestInfo testInfo, RunInfo runInfo );
+    void uploadRunInfo( Project project, ISummary summary );
 
     void putFile( String key, File file );
 
-    void uploadInfoAndResults( RunnerInfo metadata, TestInfo testInfo, RunInfo runInfo, File results );
+    void uploadInfoAndResults( Runner metadata, Project project, ISummary summary, File results );
 
-    void uploadTestInfo( TestInfo testInfo );
+    void uploadTestInfo( Project project );
 
-    TestInfo loadTestInfo();
+    Project loadTestInfo();
 
-    TestInfo getTestInfo( String testKey );
+    Project getTestInfo( String testKey );
 
     void deleteTests();
 

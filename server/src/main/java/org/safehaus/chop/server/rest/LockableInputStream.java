@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * A FileInputStream subclass that wraps super calls with checks to see if we could potentially hit some limit where we
  * want to lock the stream: that is make it block on subsequent reads. This class is used to stop just before
  * transmitting a war file to the Tomcat Manager on a /load REST operation. This allows us to schedule unlocking this
- * stream in a Runner after returning to the client from a REST call. This helps us avoid a highly probable race
+ * stream in a Driver after returning to the client from a REST call. This helps us avoid a highly probable race
  * condition between a load response and the reload of the web application.
  */
 class LockableInputStream extends FileInputStream {

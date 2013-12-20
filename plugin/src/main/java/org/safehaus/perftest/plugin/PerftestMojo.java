@@ -1,8 +1,6 @@
 package org.safehaus.perftest.plugin;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.safehaus.perftest.client.ConfigKeys;
@@ -48,11 +46,11 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
 
     /**
-     * Fully qualified CN property of the app once it's deployed to its container. This parameter will be put to the
+     * Fully qualified package base property of the app once it's deployed to its container. This parameter will be put to the
      * config.properties file inside the WAR to be uploaded
      */
-    @Parameter( property = "testModuleFQCN", required = true )
-    protected String testModuleFQCN;
+    @Parameter( property = "testPackageBase", required = true )
+    protected String testPackageBase;
 
 
     /** The bucket to upload into */
@@ -149,7 +147,7 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
         this.destinationParentDir = mojo.destinationParentDir;
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
-        this.testModuleFQCN = mojo.testModuleFQCN;
+        this.testPackageBase = mojo.testPackageBase;
         this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;

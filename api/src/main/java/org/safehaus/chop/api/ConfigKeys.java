@@ -1,14 +1,14 @@
-package org.safehaus.chop.api.settings;
+package org.safehaus.chop.api;
 
 
 /** Configuration setting keys. */
 public interface ConfigKeys {
 
-    String RUNNERS_PATH = "runners";
+    String RUNNERS_PATH = "drivers";
 
-    String TESTS_PATH = "tests";
+    String CONFIGS_PATH = "configs";
 
-    String PERFTEST_VERSION_KEY = "perftest.version";
+    String CHOP_VERSION_KEY = "chop.version";
 
     String CREATE_TIMESTAMP_KEY = "create.timestamp";
 
@@ -20,15 +20,11 @@ public interface ConfigKeys {
 
     String ARTIFACT_ID_KEY = "artifact.id";
 
-    // @TODO - this will become the package base to use for finding annotated tests
-    String TEST_MODULE_FQCN_KEY = "test.module.fqcn";
-
     String TEST_PACKAGE_BASE = "test.package.base";
 
     String TEST_STOP_TIMEOUT = "test.stop.timeout";
 
-    // @TODO - this should go away
-    String DEFAULT_TEST_MODULE = "org.safehaus.perftest.NoopPerftestModule";
+    String DEFAULT_PACKAGE_BASE = "org.safehaus.chop.examples";
 
     String LOAD_TIME_KEY = "load.time.key";
 

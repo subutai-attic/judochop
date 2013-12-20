@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.RunnerInfo;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +42,17 @@ public class AmazonS3ServiceAwsImplTest {
 
     @Test
     public void testGetRunners() {
-        Map<String, RunnerInfo> runners = service.getRunners();
+        Map<String, Runner> runners = service.getRunners();
         assertNotNull( runners );
         int runnerCount = 0;
 
-        for ( RunnerInfo runner : runners.values() ) {
+        for ( Runner runner : runners.values() ) {
             runnerCount++;
             LOG.debug( "Got runner {}", runner );
         }
 
         if ( runnerCount == 0 ) {
-            LOG.warn( "Not much of a test if we got no runners" );
+            LOG.warn( "Not much of a test if we got no drivers" );
         }
     }
 }
