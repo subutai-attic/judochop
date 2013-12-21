@@ -39,6 +39,12 @@ public class TimeTracker extends Tracker {
     }
 
 
+    @Override
+    public boolean getSaturate() {
+        return timeChop.saturate();
+    }
+
+
     @JsonProperty
     public TimeChop getTimeChop() {
         return timeChop;

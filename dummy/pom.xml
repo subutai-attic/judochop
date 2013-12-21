@@ -39,6 +39,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.6</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -54,7 +59,7 @@
           <perftestFormation>${perftest.formation}</perftestFormation>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
-          <testPackageBase>org.safehaus.perftest.dummy.DummyModule</testPackageBase>
+          <testPackageBase>org.safehaus.chop.dummy.DummyModule</testPackageBase>
           <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>

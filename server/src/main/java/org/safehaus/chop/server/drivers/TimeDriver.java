@@ -1,7 +1,7 @@
 package org.safehaus.chop.server.drivers;
 
 
-import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.annotations.TimeChop;
 
 
@@ -19,23 +19,21 @@ public class TimeDriver extends Driver<TimeTracker> {
     public void start() {
         synchronized ( lock ) {
             if ( state == State.READY ) {
-                state = State.RUNNING;
-                tracker.reset();
-                tracker.setStartTime( System.currentTimeMillis() );
+                state = state.next( Signal.START );
 
-                final TimeChop timeChop = tracker.getTimeChop();
-                for ( int ii = 0; ii < tracker.getThreads(); ii++ ) {
+                final TimeChop timeChop = getTracker().getTimeChop();
+                for ( int ii = 0; ii < getTracker().getThreads(); ii++ ) {
                     executorService.submit( new Runnable() {
                         @Override
                         public void run() {
                             long runTime;
 
                             do {
-                                runTime = System.currentTimeMillis() - tracker.getStartTime();
+                                runTime = System.currentTimeMillis() - getTracker().getStartTime();
                                 LOG.info( "Running for {} ms, will stop in {} ms", runTime, timeChop.time() - runTime );
 
                                 // execute the tests and capture tracker
-                                tracker.execute();
+                                getTracker().execute();
 
                                 // if a delay between runs is requested apply it
                                 if ( timeChop.delay() > 0 ) {
@@ -52,6 +50,8 @@ public class TimeDriver extends Driver<TimeTracker> {
                     } );
                 }
 
+                getTracker().stop();
+                state = state.next( Signal.COMPLETED );
                 lock.notifyAll();
             }
         }

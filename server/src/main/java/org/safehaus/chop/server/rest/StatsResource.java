@@ -48,6 +48,6 @@ public class StatsResource {
 
     @GET
     public StatsSnapshot getCallStatsSnapshot() {
-        return runner.getCallStatsSnapshot();
+        return runner.getCurrentChopStats();
     }
 }

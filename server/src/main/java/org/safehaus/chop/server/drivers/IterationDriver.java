@@ -1,7 +1,7 @@
 package org.safehaus.chop.server.drivers;
 
 
-import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.annotations.IterationChop;
 
 
@@ -19,12 +19,10 @@ public class IterationDriver extends Driver<IterationTracker> {
     public void start() {
         synchronized ( lock ) {
             if ( state == State.READY ) {
-                state = State.RUNNING;
-                tracker.reset();
-                tracker.setStartTime( System.currentTimeMillis() );
+                state = state.next( Signal.START );
 
-                final IterationChop iterationChop = tracker.getIterationChop();
-                for ( int ii = 0; ii < tracker.getThreads(); ii++ ) {
+                final IterationChop iterationChop = getTracker().getIterationChop();
+                for ( int ii = 0; ii < getTracker().getThreads(); ii++ ) {
                     executorService.submit( new Runnable() {
                         @Override
                         public void run() {
@@ -32,7 +30,7 @@ public class IterationDriver extends Driver<IterationTracker> {
                             LOG.info( "Starting {}-th iteration", ii );
 
                             // execute the tests and capture tracker
-                            tracker.execute();
+                            getTracker().execute();
 
                             // if a delay between runs is requested apply it
                             if ( iterationChop.delay() > 0 ) {
@@ -48,6 +46,8 @@ public class IterationDriver extends Driver<IterationTracker> {
                     } );
                 }
 
+                getTracker().stop();
+                state = state.next( Signal.COMPLETED );
                 lock.notifyAll();
             }
         }

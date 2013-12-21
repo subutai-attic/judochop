@@ -2,35 +2,64 @@ package org.safehaus.chop.server;
 
 
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.State;
 
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/19/13 Time: 12:15 AM To change this template use File | Settings
- * | File Templates.
+ * The controller is responsible for finding chop annotated test classes under
+ * a base package and running the suite of chops defined.
  */
 public interface IController {
+    /**
+     * Resets this IController if it has been prematurely stopped.
+     */
     void reset();
 
-    StatsSnapshot getCallStatsSnapshot();
-
-    State getState();
-
-    ISummary getSummary();
-
-    boolean isRunning();
-
+    /**
+     * If this IController was stopped prematurely and is in the State.STOPPED
+     * state then this call returns true.
+     *
+     * @return true if in the State.STOPPED state
+     */
     boolean needsReset();
 
-    long getStartTime();
+    /**
+     * Gets a snapshot of the statistics associated with the currently running chop.
+     *
+     * @return a snapshot of the statistics
+     */
+    StatsSnapshot getCurrentChopStats();
 
-    long getStopTime();
+    /**
+     * Gets the State of this IController.
+     *
+     * @return the current state
+     */
+    State getState();
 
+    /**
+     * Checks whether or not this IController is in the State.RUNNING state.
+     *
+     * @return true if in the State.RUNNING state
+     */
+    boolean isRunning();
+
+    /**
+     * Starts this IController which begins running the suite of chops.
+     */
     void start();
 
+    /**
+     * Prematurely stops this IController. The IController will naturally stop
+     * itself after running all chops to fall back into the State.READY state.
+     */
     void stop();
 
+    /**
+     * The project that is currently being run.
+     *
+     * @return the project being chopped up
+     */
     Project getProject();
 }

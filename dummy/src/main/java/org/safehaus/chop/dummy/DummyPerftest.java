@@ -1,4 +1,4 @@
-package org.safehaus.perftest.dummy;
+package org.safehaus.chop.dummy;
 
 
 import org.safehaus.chop.api.Perftest;

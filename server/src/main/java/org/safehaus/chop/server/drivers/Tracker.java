@@ -1,34 +1,65 @@
 package org.safehaus.chop.server.drivers;
 
 
-import java.util.LinkedList;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 
 
 /**
- * Tracks a Chop!
+ * Executes and tracks chop run statistics.
  */
 public abstract class Tracker {
+    private static final Logger LOG = LoggerFactory.getLogger( Tracker.class );
     public static final int INVALID_TIME = -1;
+
     protected final Class<?> testClass;
-    private final LinkedList<Result> results = new LinkedList<Result>();
-    private long startTime = INVALID_TIME;
+    private final IResultsLog resultsLog;
+
+    private long startTime = System.currentTimeMillis();
     private long stopTime = INVALID_TIME;
-    private AtomicInteger testClassRuns = new AtomicInteger( 0 );
-    private long maxTime;
-    private long minTime;
-    private long meanTime;
+
+    // the total number of test methods run (will be >= actualIterations)
+    private final AtomicInteger totalTestsRun = new AtomicInteger( 0 );
+    // the total number of failures that resulted
+    private final AtomicLong failures = new AtomicLong( 0 );
+    // the total number of run iterations on the test class
+    private final AtomicLong actualIterations = new AtomicLong( 0 );
+    // the total number of ignored test methods
+    private final AtomicLong ignores = new AtomicLong( 0 );
+    // the total run time of the tests minus setup time
+    private final AtomicLong totalRunTime = new AtomicLong( 0 );
+    // the max run time encountered for a test class run
+    private long maxTime = Long.MIN_VALUE;
+    // the min run time encountered for a test class run
+    private long minTime = Long.MAX_VALUE;
+    // the average run time encountered across all test class runs
+    private long meanTime = 0;
+    // by default we have started but we just want to detect a stop
+    private AtomicBoolean isStarted = new AtomicBoolean( true );
 
 
-
-    public Tracker( final Class<?> testClass ) {
+    protected Tracker( Class<?> testClass ) {
         this.testClass = testClass;
+        resultsLog = new ResultsLog( this );
+
+        try {
+            resultsLog.open();
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to open the results log.", e );
+            throw new RuntimeException( "Could not open results log.", e );
+        }
     }
 
 
@@ -38,16 +69,25 @@ public abstract class Tracker {
     }
 
 
-    @JsonProperty
-    public LinkedList<Result> getResults() {
-        return results;
-    }
-
-
     public Result execute() {
+        Preconditions.checkState( ! isStarted.get(), "Cannot execute a stopped tracker!" );
+
         Result result = new JUnitCore().run( testClass );
-        results.addFirst( result );
-        testClassRuns.incrementAndGet();
+        long runTime = result.getRunTime();
+
+        // collect some statistics
+        maxTime = Math.max( maxTime, runTime );
+        minTime = Math.min( minTime, runTime );
+        long timesRun = actualIterations.incrementAndGet();
+        long totalTime = totalRunTime.addAndGet( runTime );
+        totalTestsRun.addAndGet( result.getRunCount() );
+        meanTime = totalTime / timesRun;
+
+        if ( ! result.wasSuccessful() ) {
+            failures.addAndGet( result.getFailureCount() );
+            ignores.addAndGet( result.getIgnoreCount() );
+        }
+        resultsLog.write( result );
         return result;
     }
 
@@ -61,31 +101,16 @@ public abstract class Tracker {
     @JsonProperty
     public abstract int getRunners();
 
+    @JsonProperty
+    public abstract boolean getSaturate();
+
 
     @JsonProperty
     public long getDuration() {
-        Preconditions.checkState( startTime != INVALID_TIME,
-                "The startTime has not been set: check if the test was even started." );
         Preconditions.checkState( stopTime != INVALID_TIME,
                 "The stopTime has not been set: check that the test completed." );
 
         return stopTime - startTime;
-    }
-
-
-    // @TODO - need to dequeue and push to a file in a separate thread
-    private Result dequeue( long timeout ) throws InterruptedException {
-        synchronized ( results ) {
-            if ( results.isEmpty() ) {
-                results.wait( timeout );
-            }
-
-            if ( results.isEmpty() ) {
-                return null;
-            }
-
-            return results.removeLast();
-        }
     }
 
 
@@ -95,30 +120,30 @@ public abstract class Tracker {
     }
 
 
-    public void setStartTime( final long startTime ) {
-        this.startTime = startTime;
-    }
-
-
     @JsonProperty
     public long getStopTime() {
+        Preconditions.checkState( stopTime != INVALID_TIME,
+                "The stopTime has not been set: check that the test completed." );
+
         return stopTime;
     }
 
 
-    public void setStopTime( final long stopTime ) {
-        this.stopTime = stopTime;
+    void stop() {
+        Preconditions.checkState( ! isStarted.get(), "Cannot stop already stopped Tracker." );
+        stopTime = System.currentTimeMillis();
+
+        try {
+            resultsLog.close();
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to close the results log", e );
+        }
     }
 
 
-    public void reset() {
-        results.clear();
-        setStartTime( INVALID_TIME );
-        setStopTime( INVALID_TIME );
-        testClassRuns.set( 0 );
-        maxTime = 0;
-        minTime = 0;
-        meanTime = 0;
+    File getResultsFile() {
+        return new File( resultsLog.getPath() );
     }
 
 
@@ -137,5 +162,41 @@ public abstract class Tracker {
     @JsonProperty
     public long getMeanTime() {
         return meanTime;
+    }
+
+
+    @JsonProperty
+    public long getActualTime() {
+        return stopTime - startTime;
+    }
+
+
+    @JsonProperty
+    public long getActualIterations() {
+        return actualIterations.get();
+    }
+
+
+    @JsonProperty
+    public long getTotalTestsRun() {
+        return totalTestsRun.get();
+    }
+
+
+    @JsonProperty
+    public long getFailures() {
+        return failures.get();
+    }
+
+
+    @JsonProperty
+    public long getIgnores() {
+        return ignores.get();
+    }
+
+
+    @JsonProperty
+    public long getTotalRunTime() {
+        return totalRunTime.get();
     }
 }

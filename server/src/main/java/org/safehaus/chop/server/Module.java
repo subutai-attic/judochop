@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.safehaus.chop.api.ApiModule;
-import org.safehaus.chop.server.drivers.Stats;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.chop.server.rest.ResetResource;
 import org.safehaus.chop.server.rest.StartResource;
@@ -38,11 +37,7 @@ public class Module extends ServletModule {
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
-        bind( IResultsLog.class ).to( ResultsLog.class );
-
-        bind( Stats.class );
-
-        bind( Controller.class );
+        bind( IController.class ).to( Controller.class );
 
         bind( ResetResource.class ).asEagerSingleton();
         bind( StopResource.class ).asEagerSingleton();

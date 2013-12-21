@@ -4,13 +4,11 @@ package org.safehaus.chop.server;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.server.drivers.Driver;
 import org.safehaus.chop.server.drivers.IterationDriver;
-import org.safehaus.chop.server.drivers.Stats;
 import org.safehaus.chop.server.drivers.TimeDriver;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.annotations.IterationChop;
@@ -27,7 +25,7 @@ import com.google.inject.name.Named;
 
 
 /**
- * The Controller controls the process of executing JChop tests.
+ * The Controller controls the process of executing chops on test classes.
  */
 @Singleton
 public class Controller implements IController, Runnable {
@@ -39,22 +37,13 @@ public class Controller implements IController, Runnable {
     private Set<Class<?>> timeChopClasses;
     private Set<Class<?>> iterationChopClasses;
     private State state = State.READY;
-    private long timeout = TIMEOUT; // @TODO should be configurable
-    private Driver<?> currentRunner;
+    private long timeout = TIMEOUT;
+    private Driver<?> currentDriver;
 
     private StoreService service;
-    private Stats stats;
     private Project project;
-    private ISummary summary = new Summary( 0 );
+    private int runNumber;
 
-    private long startTime;
-    private long stopTime;
-
-
-    @Inject
-    private void setCallStats( Stats stats ) {
-        this.stats = stats;
-    }
 
     @Inject
     private void setProject( Project project ) {
@@ -68,6 +57,7 @@ public class Controller implements IController, Runnable {
 
     @Inject
     private void setStoreService( StoreService service ) {
+        Preconditions.checkNotNull( service, "The StoreService cannot be null." );
         this.service = service;
     }
 
@@ -103,37 +93,14 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public void reset() {
-        synchronized ( lock ) {
-            if ( state == State.STOPPED ) {
-                state = State.READY;
-                summary = new Summary( summary.getRunNumber() + 1 );
-                startTime = -1;
-                stopTime = -1;
-                currentRunner = null;
-                stats.stop();
-                stats.reset();
-            }
-        }
+    public StatsSnapshot getCurrentChopStats() {
+        return currentDriver.getChopStats();
     }
 
 
     @Override
-    public StatsSnapshot getCallStatsSnapshot() {
-        return stats.getStatsSnapshot( isRunning(), getStartTime(), getStopTime() );
-    }
-
-
-    @Override
-    // @TODO do not expose state to the outside (use isRunning() etc)
     public State getState() {
         return state;
-    }
-
-
-    @Override
-    public ISummary getSummary() {
-        return summary;
     }
 
 
@@ -154,31 +121,29 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public long getStartTime() {
-        return startTime;
-    }
-
-
-    @Override
-    public long getStopTime() {
-        return stopTime;
-    }
-
-
-    @Override
     public Project getProject() {
         return project;
     }
 
 
+    @Override
+    public void reset() {
+        synchronized ( lock ) {
+            Preconditions.checkState( state.accepts( Signal.RESET ), "Cannot reset the controller in state: " + state );
+            state = State.READY;
+            currentDriver = null;
+        }
+    }
+
+
+    @Override
     public void start() {
         synchronized ( lock ) {
-            if ( state == State.READY ) {
-                state = State.RUNNING;
-                startTime = System.currentTimeMillis();
-                new Thread( this ).start();
-                lock.notifyAll();
-            }
+            Preconditions.checkState( state.accepts( Signal.START ), "Cannot start the controller in state: " + state );
+            runNumber++;
+            state = state.next( Signal.START );
+            new Thread( this ).start();
+            lock.notifyAll();
         }
     }
 
@@ -186,75 +151,85 @@ public class Controller implements IController, Runnable {
     @Override
     public void stop() {
         synchronized ( lock ) {
-            if ( state == State.RUNNING ) {
-                currentRunner.stop();
-                if ( currentRunner.getState() != State.STOPPED ) {
-                    LOG.warn( "Could not properly stop the current runner!" );
-                }
-
-                state = State.STOPPED;
-                currentRunner = null;
-                stopTime = System.currentTimeMillis();
-                lock.notifyAll();
-            }
+            Preconditions.checkState( state.accepts( Signal.STOP ), "Cannot stop a controller in state: " + state );
+            state = state.next( Signal.STOP );
+            lock.notifyAll();
         }
     }
 
+
+    /*
+     * @TODO
+     *
+     * There is a potential for the distributed runners to fall out of synchronization where
+     * one runner may be running a different chop than the others because it is faster or
+     * slower. There needs to be a way to synchronize across runners so they can run the same
+     * chop together at the same time.
+     *
+     * Perhaps between chops we can make the runners stop and ask if they're ready to execute
+     * the next chop. Then they can start executing together synchronously. This will require
+     * an additional client call to determine if they're all ready to execute the same chop.
+     *
+     */
 
     @Override
     public void run() {
         for ( Class<?> iterationTest : iterationChopClasses ) {
             synchronized ( lock ) {
-                currentRunner = new IterationDriver( iterationTest );
-                currentRunner.setTimeout( timeout );
-                currentRunner.start();
+                currentDriver = new IterationDriver( iterationTest );
+                currentDriver.setTimeout( timeout );
+                currentDriver.start();
                 lock.notifyAll();
-            }
 
-            try {
-                synchronized ( lock ) {
-                    while ( currentRunner.blockTilDone( timeout ) ) {
-                        if ( state == State.STOPPED ) {
-                            currentRunner.stop();
-                        }
-
+                while ( currentDriver.blockTilDone( timeout ) ) {
+                    if ( state == State.STOPPED ) {
+                        LOG.info( "Got the signal to stop running." );
+                        currentDriver.stop();
+                        currentDriver = null;
                         lock.notifyAll();
+                        return;
                     }
+
+                    lock.notifyAll();
                 }
-            }
-            catch ( InterruptedException e ) {
-                LOG.warn( "Awe snap! Someone woke me up early!" );
+
+                if ( currentDriver.isComplete() ) {
+                    Summary summary = new Summary( runNumber );
+                    summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
+                    service.uploadResults( project, summary, currentDriver.getResultsFile() );
+                }
             }
         }
 
         for ( Class<?> timeTest : timeChopClasses ) {
             synchronized ( lock ) {
-                currentRunner = new TimeDriver( timeTest );
-                currentRunner.setTimeout( timeout );
-                currentRunner.start();
+                currentDriver = new TimeDriver( timeTest );
+                currentDriver.setTimeout( timeout );
+                currentDriver.start();
                 lock.notifyAll();
-            }
 
-            try {
-                synchronized ( lock ) {
-                    while ( currentRunner.blockTilDone( timeout ) ) {
-                        if ( state == State.STOPPED ) {
-                            currentRunner.stop();
-                        }
-
+                while ( currentDriver.blockTilDone( timeout ) ) {
+                    if ( state == State.STOPPED ) {
+                        LOG.info( "Got the signal to stop running." );
+                        currentDriver.stop();
+                        currentDriver = null;
                         lock.notifyAll();
+                        return;
                     }
+
+                    lock.notifyAll();
                 }
-            }
-            catch ( InterruptedException e ) {
-                LOG.warn( "Awe snap! Someone woke me up early!" );
+
+                if ( currentDriver.isComplete() ) {
+                    Summary summary = new Summary( runNumber );
+                    summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
+                    service.uploadResults( project, summary, currentDriver.getResultsFile() );
+                }
             }
         }
 
-        LOG.info( "Test has stopped." );
-        stopTime = System.currentTimeMillis();
-        stats.stop();
-        service.uploadResults( project, summary, stats.getResultsFile() );
-        reset();
+        LOG.info( "The controller has completed." );
+        currentDriver = null;
+        state = state.next( Signal.COMPLETED );
     }
 }

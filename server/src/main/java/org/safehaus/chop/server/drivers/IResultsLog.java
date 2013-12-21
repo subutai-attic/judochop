@@ -1,11 +1,14 @@
-package org.safehaus.chop.server;
+package org.safehaus.chop.server.drivers;
 
 
 import java.io.IOException;
 
+import org.junit.runner.Result;
+
 
 /** Logs results as they are produced asynchronously. */
 public interface IResultsLog {
+    String PRETTY_PRINT_RESULTS_LOG = "pretty.print.results.log";
     String RESULTS_FILE_KEY = "resultsLog.file";
     String WAIT_TIME_KEY = "resultsLog.waitTime";
 
@@ -18,7 +21,7 @@ public interface IResultsLog {
 
 
     /** Closes the result log which also causes a flush. */
-    void close();
+    void close() throws IOException;
 
 
     /**
@@ -30,11 +33,11 @@ public interface IResultsLog {
 
 
     /**
-     * Writes a result record into the log.
+     * Writes a JUnit run result record into the log.
      *
-     * @param result the result to log.
+     * @param result the result to write to the log.
      */
-    void write( String result );
+    void write( Result result );
 
 
     /**

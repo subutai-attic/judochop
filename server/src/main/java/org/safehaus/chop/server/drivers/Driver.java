@@ -1,71 +1,75 @@
 package org.safehaus.chop.server.drivers;
 
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 
 /**
  * An abstract chop runner.
  */
-public abstract class Driver<T extends Tracker> implements IDriver {
+public abstract class Driver<T extends Tracker> implements IDriver<T> {
     public static final long TIMEOUT = 1000L;
     protected static final Logger LOG = LoggerFactory.getLogger( Driver.class );
-    protected final T tracker;
+    private final T tracker;
     protected final Object lock = new Object();
     protected ExecutorService executorService;
     protected State state = State.READY;
-    protected long timeout = TIMEOUT; // @TODO should be configurable
+    private long timeout = TIMEOUT; // @TODO should be configurable
 
 
-    public Driver( T tracker ) {
+    protected Driver( T tracker ) {
         this.tracker = tracker;
         executorService = Executors.newFixedThreadPool( tracker.getThreads() );
     }
 
 
-    // @TODO should be configurable
+    // @TODO should be dynamically configurable
     public void setTimeout( long timeout ) {
         this.timeout = timeout;
     }
 
 
     @Override
-    public void reset() {
+    public T getTracker() {
+        return tracker;
+    }
+
+
+    @Override
+    public StatsSnapshot getChopStats() {
+        return new StatsSnapshot(
+                tracker.getActualIterations(),
+                tracker.getMaxTime(),
+                tracker.getMinTime(),
+                tracker.getMeanTime(),
+                isRunning(),
+                tracker.getStartTime()
+        );
+    }
+
+
+    @Override
+    public File getResultsFile() {
+        Preconditions.checkState( ! isRunning(), "Cannot provide complete results while still running." );
+        return tracker.getResultsFile();
+    }
+
+
+    @Override
+    public boolean isComplete() {
         synchronized ( lock ) {
-            if ( state == State.STOPPED ) {
-                state = State.READY;
-                tracker.reset();
-                executorService = Executors.newFixedThreadPool( tracker.getThreads() );
-            }
+            return state == State.COMPLETED;
         }
-    }
-
-
-    @Override
-    public StatsSnapshot getCallStatsSnapshot() {
-        return null;
-    }
-
-
-    @Override
-    // @TODO do not expose state to the outside (use isRunning() etc)
-    public State getState() {
-        return state;
-    }
-
-
-    @Override
-    public ISummary getRun() {
-        return null;
     }
 
 
@@ -78,28 +82,10 @@ public abstract class Driver<T extends Tracker> implements IDriver {
 
 
     @Override
-    public boolean needsReset() {
+    public boolean isStopped() {
         synchronized ( lock ) {
             return state == State.STOPPED;
         }
-    }
-
-
-    @Override
-    public long getStartTime() {
-        return tracker.getStartTime();
-    }
-
-
-    @Override
-    public long getStopTime() {
-        return tracker.getStopTime();
-    }
-
-
-    @Override
-    public Project getProjectConfig() {
-        return null;
     }
 
 
@@ -107,10 +93,17 @@ public abstract class Driver<T extends Tracker> implements IDriver {
      * Blocks until the runner is done or until the timeout amount. Returns true if
      * we need to keep blocking and this runner is not done yet.
      */
-    public boolean blockTilDone( long timeout ) throws InterruptedException {
+    public boolean blockTilDone( long timeout ) {
+        Preconditions.checkState( isRunning(), "Cannot block on a driver that is not running." );
+
         synchronized ( lock ) {
             if ( state == State.RUNNING ) {
-                lock.wait( timeout );
+                try {
+                    lock.wait( timeout );
+                }
+                catch ( InterruptedException e ) {
+                    LOG.warn( "Awe snap, someone woke me up early!" );
+                }
             }
 
             return state == State.RUNNING;
@@ -120,9 +113,11 @@ public abstract class Driver<T extends Tracker> implements IDriver {
 
     @Override
     public void stop() {
+        Preconditions.checkState( isRunning(), "Cannot stop driver that is not running." );
+
         synchronized ( lock ) {
             if ( state == State.RUNNING ) {
-                state = State.STOPPED;
+                state = state.next( Signal.STOP );
 
                 executorService.shutdown();
                 try {
@@ -133,8 +128,10 @@ public abstract class Driver<T extends Tracker> implements IDriver {
                 catch ( InterruptedException e ) {
                     LOG.warn( "Awe snap! Someone woke me up early!" );
                 }
-
-                lock.notifyAll();
+                finally {
+                    tracker.stop();
+                    lock.notifyAll();
+                }
             }
         }
     }

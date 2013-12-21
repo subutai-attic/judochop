@@ -39,6 +39,12 @@ public class IterationTracker extends Tracker {
     }
 
 
+    @Override
+    public boolean getSaturate() {
+        return iterationChop.saturate();
+    }
+
+
     @JsonProperty
     public IterationChop getIterationChop() {
         return iterationChop;

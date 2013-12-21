@@ -25,29 +25,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** ... */
 public class StatsSnapshot {
-    private final int testClassRuns;
+    private final long testClassRuns;
     private final long maxTime;
     private final long minTime;
     private final long meanTime;
     private final boolean running;
     private final long startTime;
-    private final long stopTime;
 
 
-    public StatsSnapshot( int testClassRuns, long maxTime, long minTime, long meanTime, boolean running, long startTime,
-                          long stopTime ) {
+    public StatsSnapshot( long testClassRuns, long maxTime, long minTime, long meanTime, boolean running, long startTime ) {
         this.testClassRuns = testClassRuns;
         this.maxTime = maxTime;
         this.minTime = minTime;
         this.meanTime = meanTime;
         this.running = running;
         this.startTime = startTime;
-        this.stopTime = stopTime;
     }
 
 
     @JsonProperty
-    public int getTestClassRuns() {
+    public long getTestClassRuns() {
         return testClassRuns;
     }
 
@@ -79,11 +76,5 @@ public class StatsSnapshot {
     @JsonProperty
     public long getStartTime() {
         return startTime;
-    }
-
-
-    @JsonProperty
-    public long getStopTime() {
-        return stopTime;
     }
 }
