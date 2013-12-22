@@ -36,7 +36,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 
-/** Used to encapsulate the various S3 operations to perform. */
+/** Used to encapsulate the various store operations to perform. */
 public class S3Operations implements StoreOperations, ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( S3Operations.class );
 
@@ -65,7 +65,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     public String getRunnerKey( String publicHostname ) {
         Preconditions.checkNotNull( publicHostname, "The publicHostname cannot be null." );
         StringBuilder sb = new StringBuilder();
-        sb.append( publicHostname ).append( ".properties" );
+        sb.append( RUNNERS_PATH ).append( '/' )
+          .append( publicHostname ).append( ".properties" );
         return sb.toString();
     }
 
@@ -150,18 +151,18 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
         Preconditions.checkNotNull( runner.getHostname(), "The runners public hostname cannot be null." );
 
-        String blobName = getRunnerKey( runner.getHostname() );
+        String key = getRunnerKey( runner.getHostname() );
 
         try {
-            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(),
-                    RUNNERS_PATH + "/" + blobName, runner.getPropertiesAsStream(), new ObjectMetadata() );
+            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), key,
+                    runner.getPropertiesAsStream(), new ObjectMetadata() );
             client.putObject( putRequest );
         }
         catch ( IOException e ) {
             LOG.error( "Failed to create input stream for object.", e );
         }
 
-        LOG.info( "Successfully registered {}", blobName );
+        LOG.info( "Successfully registered {}", key );
     }
 
 
@@ -173,19 +174,23 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      */
     @Override
     public Project getProject() {
-        String gitUuid = this.gitUuid.get();
         Preconditions.checkNotNull( gitUuid, "gitUuid cannot be null" );
+        String uuid = gitUuid.get();
+        Preconditions.checkNotNull( uuid, "gitUuid cannot be null" );
+
+        // take half of chars from the front and half from the back
+        uuid = uuid.substring( 0, CHARS_OF_UUID/2 ) + uuid.substring( uuid.length() - CHARS_OF_UUID/2 );
 
         StringBuilder sb = new StringBuilder();
         sb.append( CONFIGS_PATH ).append( '/' )
-          .append( gitUuid ).append( "/" )
+          .append( uuid ).append( "/" )
           .append( PROJECT_FILE );
 
         try {
             return getJsonObject( sb.toString(), Project.class );
         }
         catch ( Exception e ) {
-            LOG.error( "Could not find test-info.json at {}: returning null Project", sb.toString(), e );
+            LOG.error( "Could not find project file at {}: returning null Project", sb.toString(), e );
             return null;
         }
     }
