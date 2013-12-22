@@ -18,7 +18,7 @@ public interface StoreOperations {
 
     void register( Runner metadata );
 
-    Set<Project> getTests() throws IOException;
+    Set<Project> getProjects() throws IOException;
 
     Map<String, Runner> getRunners( Runner runner );
 
@@ -28,19 +28,19 @@ public interface StoreOperations {
 
     <T> T putJsonObject( String key, Object obj );
 
-    void uploadRunInfo( Project project, ISummary summary );
+    void store( Runner metadata, Project project, ISummary summary );
 
     void putFile( String key, File file );
 
-    void uploadInfoAndResults( Runner metadata, Project project, ISummary summary, File results );
+    void store( Runner metadata, Project project, ISummary summary, File results );
 
-    void uploadTestInfo( Project project );
+    void store( Project project );
 
-    Project loadTestInfo();
+    Project getProject();
 
-    Project getTestInfo( String testKey );
+    Project getProject( String testKey );
 
-    void deleteTests();
+    void deleteProjects();
 
     void deleteGhostRunners( Collection<String> activeRunners );
 }

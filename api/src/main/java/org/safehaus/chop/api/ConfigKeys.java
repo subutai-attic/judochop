@@ -4,9 +4,20 @@ package org.safehaus.chop.api;
 /** Configuration setting keys. */
 public interface ConfigKeys {
 
-    String RUNNERS_PATH = "drivers";
+    /** the default name to use for the runner's war file */
+    String RUNNER_WAR = "runner.war";
 
-    String CONFIGS_PATH = "configs";
+    int CHARS_OF_UUID = 8;
+
+    String PROJECT_FILE = "project.json";
+
+    String RUNNERS_PATH = "runners";
+
+    String CONFIGS_PATH = "tests";
+
+    String SUMMARY_SUFFIX = "-summary.json";
+
+    String RESULTS_SUFFIX = "-results.json";
 
     String CHOP_VERSION_KEY = "chop.version";
 
@@ -28,6 +39,7 @@ public interface ConfigKeys {
 
     String LOAD_TIME_KEY = "load.time.key";
 
+    /** Key used to locate the runner's war in the store. */
     String LOAD_KEY = "load.key";
 
     String IPV4_KEY = "public-ipv4";

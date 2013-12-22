@@ -29,6 +29,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.netflix.config.DynamicPropertyFactory;
@@ -54,15 +55,15 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
-     * using the following key format:
+     * Creates the key for a runner's properties file in the store.
      *
-     * "drivers/formationName-publicHostname.properties"
+     * "$RUNNERS_PATH/publicHostname.properties"
      *
-     * @param publicHostname the runner's instance publicHostname
+     * @param publicHostname the runner's publicHostname
      */
     @Override
     public String getRunnerKey( String publicHostname ) {
+        Preconditions.checkNotNull( publicHostname, "The publicHostname cannot be null." );
         StringBuilder sb = new StringBuilder();
         sb.append( publicHostname ).append( ".properties" );
         return sb.toString();
@@ -70,67 +71,10 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Registers this runner's instance by adding its instance information into S3 as a properties file into the bucket
-     * using the following key format:
+     * Gets the runner instance information from the store as a map of their keys to
+     * their Runner information.
      *
-     * "drivers/formationName-publicHostname.properties"
-     *
-     * @param runner the runner's instance metadata to be registered
-     */
-    @Override
-    public void register( Runner runner ) {
-
-        if ( runner == null || runner.getHostname() == null ) {
-            LOG.warn( "Refusing to register null runner or one without a hostname." );
-            return;
-        }
-
-        String blobName = getRunnerKey( runner.getHostname() );
-
-        try {
-            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), RUNNERS_PATH + "/" + blobName,
-                    runner.getPropertiesAsStream(), new ObjectMetadata() );
-            client.putObject( putRequest );
-        }
-        catch ( IOException e ) {
-            LOG.error( "Failed to create input stream for object.", e );
-        }
-
-        LOG.info( "Successfully registered {}", blobName );
-    }
-
-
-    /**
-     * Scans tests under the bucket as "tests/.*\/test-info.json
-     *
-     * @return a set of keys as Strings for test information
-     */
-    @Override
-    public Set<Project> getTests() throws IOException {
-        Set<Project> tests = new HashSet<Project>();
-        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
-
-        do {
-            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
-                String key = summary.getKey();
-
-                if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/test-info.json" ) ) {
-                    tests.add( getJsonObject( key, Project.class ) );
-                }
-            }
-
-            listing = client.listNextBatchOfObjects( listing );
-        }
-        while ( listing.isTruncated() );
-
-        return tests;
-    }
-
-
-    /**
-     * Gets the runner instance information from S3 as a map of keys to their properties.
-     *
-     * @return the keys mapped to runner instance properties
+     * @return the keys mapped to Runner information
      */
     @Override
     public Map<String, Runner> getRunners() {
@@ -139,11 +83,11 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Gets the runner instance information from S3 as a map of keys to their properties.
+     * Gets the runner instance information from the store as a map of keys Runner instances.
      *
      * @param runner a runner to exclude from results (none if null)
      *
-     * @return the keys mapped to runner instance properties
+     * @return the keys mapped to Runner instance
      */
     @Override
     public Map<String, Runner> getRunners( Runner runner ) {
@@ -179,13 +123,245 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     }
 
 
+    @Override
+    public void deleteGhostRunners( Collection<String> activeRunners ) {
+        Map<String, Runner> registeredRunners = getRunners();
+        Runner runner;
+        for( String key : registeredRunners.keySet() ) {
+            runner = registeredRunners.get( key );
+            if ( ! activeRunners.contains( runner.getHostname() ) ) {
+                String path = RUNNERS_PATH + "/" + runner.getHostname() + ".properties";
+                client.deleteObject( awsBucket.get(), path );
+            }
+        }
+    }
+
+
     /**
-     * Downloads a blob in the S3 store by key, and places it in a temporary file returning the file. Use this to
-     * download big things like war files or results.
+     * Registers this runner's instance by adding its instance information into the
+     * store as a properties file into the bucket using the following key format:
+     *
+     * "$RUNNERS_PATH/publicHostname.properties"
+     *
+     * @param runner the runner's instance metadata to be registered
+     */
+    @Override
+    public void register( Runner runner ) {
+        Preconditions.checkNotNull( runner, "The runner cannot be null." );
+        Preconditions.checkNotNull( runner.getHostname(), "The runners public hostname cannot be null." );
+
+        String blobName = getRunnerKey( runner.getHostname() );
+
+        try {
+            PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(),
+                    RUNNERS_PATH + "/" + blobName, runner.getPropertiesAsStream(), new ObjectMetadata() );
+            client.putObject( putRequest );
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to create input stream for object.", e );
+        }
+
+        LOG.info( "Successfully registered {}", blobName );
+    }
+
+
+    /**
+     * Tries to load a Project file based on prepackaged Runner metadata. If it cannot
+     * find the project then null is returned.
+     *
+     * @return the Project object if it exists in the store or null if it does not
+     */
+    @Override
+    public Project getProject() {
+        String gitUuid = this.gitUuid.get();
+        Preconditions.checkNotNull( gitUuid, "gitUuid cannot be null" );
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( CONFIGS_PATH ).append( '/' )
+          .append( gitUuid ).append( "/" )
+          .append( PROJECT_FILE );
+
+        try {
+            return getJsonObject( sb.toString(), Project.class );
+        }
+        catch ( Exception e ) {
+            LOG.error( "Could not find test-info.json at {}: returning null Project", sb.toString(), e );
+            return null;
+        }
+    }
+
+
+    /**
+     * Scans for projects with test information under the bucket as:
+     * </p>
+     * "$CONFIGS_PATH/.*\/$PROJECT_FILE
+     *
+     * @return a set of keys as Strings for test information
+     */
+    @Override
+    public Set<Project> getProjects() throws IOException {
+        Set<Project> tests = new HashSet<Project>();
+        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
+
+        do {
+            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
+                String key = summary.getKey();
+
+                if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
+                    tests.add( getJsonObject( key, Project.class ) );
+                }
+            }
+
+            listing = client.listNextBatchOfObjects( listing );
+        }
+        while ( listing.isTruncated() );
+
+        return tests;
+    }
+
+
+    /**
+     * Stores the project test information.
+     *
+     * @param project the Project object to be serialized and stored
+     */
+    @Override
+    public void store( Project project ) {
+        Preconditions.checkNotNull( project, "The project cannot be null." );
+        Preconditions.checkNotNull( project.getLoadKey(), "The project load key cannot be null." );
+
+        String loadKey = project.getLoadKey();
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( loadKey ).append( PROJECT_FILE );
+
+        if ( hasKey( sb.toString() ) ) {
+            LOG.warn( "The key {} already exists for Project - not updating!", sb.toString() );
+            return;
+        }
+
+        String blobName = sb.toString();
+        putJsonObject( blobName, project );
+        LOG.info( "Successfully saved Project with key {}", blobName );
+    }
+
+
+    /**
+     * Tries to load a Project file based on prepackaged runner metadata: the runner's
+     * loadKey. If it cannot find it, null is returned.
+     *
+     * @param loadKey the load key for the runner war
+     * @return the Project object if it exists in the store or null if it does not
+     */
+    @Override
+    public Project getProject( String loadKey ) {
+        Preconditions.checkNotNull( loadKey, "The key cannot be null" );
+
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+
+        try {
+            return getJsonObject( loadKey + PROJECT_FILE, Project.class );
+        }
+        catch ( Exception e ) {
+            LOG.error( "Could not find project file at {}: returning null Project", loadKey, e );
+            return null;
+        }
+    }
+
+
+    @Override
+    public void deleteProjects() {
+        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
+
+        do {
+            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
+                String key = summary.getKey();
+                client.deleteObject( awsBucket.get(), key );
+            }
+
+            listing = client.listNextBatchOfObjects( listing );
+        }
+        while ( listing.isTruncated() );
+    }
+
+
+    /**
+     * Serializes a Summary object into Json and stores it.
+     *
+     * @param project the test the Summary object is associated with
+     * @param summary the Summary object to store
+     */
+    @Override
+    public void store( Runner metadata, Project project, ISummary summary ) {
+        Preconditions.checkNotNull( project, "The project argument cannot be null." );
+        Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
+        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
+
+        String loadKey = project.getLoadKey();
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( loadKey )
+          .append( summary.getRunNumber() ).append( "/" )
+          .append( metadata.getHostname() ).append( SUMMARY_SUFFIX );
+
+        String blobName = sb.toString();
+        putJsonObject( blobName, summary );
+        LOG.info( "Successfully registered {}", blobName );
+    }
+
+
+    /**
+     * Stores the summary and detailed results for analysis later.
+     *
+     * @param metadata the metadata associated with the runner instance
+     * @param project the project test information
+     * @param summary the run summary to also store
+     * @param results the detailed results to store
+     */
+    @Override
+    public void store( Runner metadata, Project project, ISummary summary, File results ) {
+        store( metadata, project, summary );
+
+        String loadKey = project.getLoadKey();
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( loadKey )
+          .append( summary.getRunNumber() ).append( '/' )
+          .append( metadata.getHostname() ).append( RESULTS_SUFFIX );
+
+        putFile( sb.toString(), results );
+    }
+
+
+    /**
+     * Checks if a key is present in the store.
+     *
+     * @param key the key to be checked for
+     *
+     * @return true if it exists, false otherwise
+     */
+    private boolean hasKey( String key ) {
+        ObjectListing listing = client.listObjects( awsBucket.get(), key );
+
+        if ( listing.getObjectSummaries().isEmpty() ) {
+            return false;
+        }
+
+        S3ObjectSummary summary = listing.getObjectSummaries().get( 0 );
+        LOG.debug( "Got key {} while scanning for key {}", summary.getKey() );
+        return true;
+    }
+
+
+    /**
+     * Downloads a file from the store by key, and places it in a temporary file returning
+     * the file. Use this to download big things like war files or results.
      *
      * @param tempDir the temporary directory to use
      * @param key the blobs key
-     *
      * @return the File object referencing the temporary file
      *
      * @throws IOException if there's a problem accessing the stream
@@ -257,33 +433,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     /**
-     * Serializes a Summary object into Json and stores it in S3.
-     *
-     * @param project the test the Summary object is associated with
-     * @param summary the Summary object to store in S3
-     */
-    @Override
-    public void uploadRunInfo( Project project, ISummary summary ) {
-        String loadKey = project.getLoadKey();
-
-        if ( loadKey == null ) {
-            LOG.error( "project.getLoadKey() was null. Abandoning summary upload." );
-            return;
-        }
-
-        loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( "results/" ).append( summary.getRunNumber() ).append( "/run-info.json" );
-
-        String blobName = sb.toString();
-        putJsonObject( blobName, summary );
-        LOG.info( "Successfully registered {}", blobName );
-    }
-
-
-    /**
-     * Uploads a file into S3 using the supplied key.
+     * Uploads a file using the supplied key.
      *
      * @param key the supplied key
      * @param file the file to upload
@@ -300,163 +450,6 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         }
 
         client.putObject( putRequest );
-        LOG.info( "Successfully put file {} into S3 with key {}", file, key );
-    }
-
-
-    /**
-     * Uploads results to be archived in S3 for analysis later.
-     *
-     * @param metadata the metadata associated with the runner instance
-     * @param project the test information associated with the test the results ran on
-     * @param summary the run information to also upload into S3 besides the results
-     * @param results the results to upload
-     */
-    @Override
-    public void uploadInfoAndResults( Runner metadata, Project project, ISummary summary, File results ) {
-        uploadRunInfo( project, summary );
-
-        String loadKey = project.getLoadKey();
-
-        if ( loadKey == null ) {
-            LOG.error( "project.getLoadKey() was null. Abandoning info and results upload." );
-            return;
-        }
-
-        loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( "results/" ).append( summary.getRunNumber() ).append( '/' )
-          .append( metadata.getHostname() ).append( "-results.log" );
-
-        String blobName = sb.toString();
-        putFile( blobName, results );
-    }
-
-
-    /**
-     * Checks if a key is present in S3.
-     *
-     * @param key the key to be checked for
-     *
-     * @return true if it exists, false otherwise
-     */
-    private boolean hasKey( String key ) {
-        ObjectListing listing = client.listObjects( awsBucket.get(), key );
-
-        if ( listing.getObjectSummaries().isEmpty() ) {
-            return false;
-        }
-
-        S3ObjectSummary summary = listing.getObjectSummaries().get( 0 );
-        LOG.debug( "Got key {} while scanning for key {}", summary.getKey() );
-        return true;
-    }
-
-
-    /**
-     * Uploads the information associated with a test in a Project object into S3 as Json.
-     *
-     * @param project the Project object to be serialized and stored in S3
-     */
-    @Override
-    public void uploadTestInfo( Project project ) {
-        String loadKey = project.getLoadKey();
-
-        if ( loadKey == null ) {
-            LOG.error( "project.loadKey() was null. Abandoning upload." );
-            return;
-        }
-
-        loadKey = loadKey.substring( 0, loadKey.length() - "perftest.war".length() );
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( loadKey ).append( "results/test-info.json" );
-
-        if ( hasKey( sb.toString() ) ) {
-            LOG.warn( "The key {} already exists for Project - not updating!", sb.toString() );
-            return;
-        }
-
-        String blobName = sb.toString();
-        putJsonObject( blobName, project );
-        LOG.info( "Successfully saved Project with key {}", blobName );
-    }
-
-
-    /**
-     * Tries to load a Project file based on runner metadata prepackaged. If it cannot find it then null is returned.
-     *
-     * @return the Project object if it exists in the store or null if it does not
-     */
-    @Override
-    public Project loadTestInfo() {
-        String gitUuid = this.gitUuid.get();
-
-        if ( gitUuid == null ) {
-            LOG.error( "Could not find gitUuid: returning null Project." );
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append( CONFIGS_PATH ).append( '/' ).append( gitUuid ).append( "/test-info.json" );
-
-        try {
-            return getJsonObject( sb.toString(), Project.class );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Could not find test-info.json at {}: returning null Project", sb.toString(), e );
-            return null;
-        }
-    }
-
-
-    /**
-     * Tries to load a Project file based on runner metadata prepackaged. If it cannot find it then null is returned.
-     *
-     * @return the Project object if it exists in the store or null if it does not
-     */
-    @Override
-    public Project getTestInfo( String key ) {
-        key = key.substring( 0, key.length() - "perftest.war".length() );
-
-        try {
-            return getJsonObject( key + "test-info.json", Project.class );
-        }
-        catch ( Exception e ) {
-            LOG.error( "Could not find test-info.json at {}: returning null Project", key, e );
-            return null;
-        }
-    }
-
-
-    @Override
-    public void deleteTests() {
-        Set<Project> tests = new HashSet<Project>();
-        ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
-
-        do {
-            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
-                String key = summary.getKey();
-                client.deleteObject( awsBucket.get(), key );
-            }
-
-            listing = client.listNextBatchOfObjects( listing );
-        }
-        while ( listing.isTruncated() );
-    }
-
-
-    @Override
-    public void deleteGhostRunners( Collection<String> activeRunners ) {
-        Map<String, Runner> registeredRunners = getRunners();
-        Runner runner;
-        for( String key : registeredRunners.keySet() ) {
-            runner = registeredRunners.get( key );
-            if ( ! activeRunners.contains( runner.getHostname() ) ) {
-                String path = RUNNERS_PATH + "/" + runner.getHostname() + ".properties";
-                client.deleteObject( awsBucket.get(), path );
-            }
-        }
+        LOG.info( "Successfully put file {} into store with key {}", file, key );
     }
 }

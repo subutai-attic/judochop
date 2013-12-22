@@ -44,7 +44,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
     @Override
     public void deleteTests() {
-        operations.deleteTests();
+        operations.deleteProjects();
     }
 
 
@@ -56,7 +56,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
     @Override
     public Set<Project> getProjectConfigs() throws IOException {
-        return operations.getTests();
+        return operations.getProjects();
     }
 
 
@@ -155,7 +155,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     private Project getTest( final String testKey ) {
-        return operations.getTestInfo( testKey );
+        return operations.getProject( testKey );
     }
 
 
