@@ -7,7 +7,7 @@
 package org.safehaus.perftest.client;
 
 
-import org.safehaus.perftest.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 
 import com.google.inject.AbstractModule;
 import com.netflix.config.DynamicPropertyFactory;

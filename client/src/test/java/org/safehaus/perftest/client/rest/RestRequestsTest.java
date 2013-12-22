@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.store.StoreService;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.store.StoreService;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +47,14 @@ public class RestRequestsTest {
 
     @Test @Ignore
     public void testStart() {
-        Map<String, RunnerInfo> runners = service.getRunners();
+        Map<String, Runner> runners = service.getRunners();
 
         if ( runners.size() == 0 ) {
-            LOG.debug( "No runners found, cannot start test" );
+            LOG.debug( "No drivers found, cannot start test" );
             return;
         }
 
-        RunnerInfo firstRunner = runners.values().iterator().next();
+        Runner firstRunner = runners.values().iterator().next();
         Result result = RestRequests.start( firstRunner, true );
 
         if ( !result.getStatus() ) {
@@ -68,9 +68,9 @@ public class RestRequestsTest {
 
     @Test
     public void testStatus() {
-        Map<String, RunnerInfo> runners = service.getRunners();
+        Map<String, Runner> runners = service.getRunners();
 
-        for ( RunnerInfo runner : runners.values() ) {
+        for ( Runner runner : runners.values() ) {
             if ( runner.getHostname() != null ) {
                 Result result = status( runner );
                 LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );

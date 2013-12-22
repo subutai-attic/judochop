@@ -7,14 +7,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.safehaus.perftest.api.BaseResult;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.Signal;
-import org.safehaus.perftest.api.State;
-import org.safehaus.perftest.api.TestInfo;
-import org.safehaus.perftest.api.store.StoreOperations;
+import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Signal;
+import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.perftest.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import com.netflix.config.DynamicStringProperty;
  * An implementation of the PerftestClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest.api.store.amazon.ConfigKeys {
+public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api.store.amazon.ConfigKeys {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
     private final StoreOperations operations;
     @Inject @Named( AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
@@ -44,50 +44,50 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
     @Override
     public void deleteTests() {
-        operations.deleteTests();
+        operations.deleteProjects();
     }
 
 
     @Override
-    public Collection<RunnerInfo> getRunners() {
+    public Collection<Runner> getRunners() {
         return operations.getRunners().values();
     }
 
 
     @Override
-    public Set<TestInfo> getTests() throws IOException {
-        return operations.getTests();
+    public Set<Project> getProjectConfigs() throws IOException {
+        return operations.getProjects();
     }
 
 
     @Override
-    public Set<RunInfo> getRuns( final TestInfo test ) {
+    public Set<ISummary> getRuns( final Project test ) {
         return null;
     }
 
 
     @Override
-    public File getResults( final RunInfo run ) throws IOException {
+    public File getResults( final ISummary run ) throws IOException {
         return File.createTempFile( "foo", "bar" );
     }
 
 
     @Override
-    public void delete( final RunInfo run ) {
+    public void delete( final ISummary run ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
-    public void delete( final TestInfo test ) {
+    public void delete( final Project test ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
-    public Result load( RunnerInfo runner, String testKey, Boolean propagate ) {
-        TestInfo testInfo = getTest( testKey );
-        String md5 = testInfo.getWarMd5();
+    public Result load( Runner runner, String testKey, Boolean propagate ) {
+        Project project = getTest( testKey );
+        String md5 = project.getWarMd5();
 
         LOG.warn( "Sending load request to " + runner.getHostname() );
 
@@ -98,10 +98,10 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
             return result;
         }
 
-        Collection<RunnerInfo> runners = getRunners();
-        LinkedList<RunnerInfo> failed = new LinkedList<RunnerInfo>( runners );
+        Collection<Runner> runners = getRunners();
+        LinkedList<Runner> failed = new LinkedList<Runner>( runners );
 
-        // Wait a little for the runners to come back up
+        // Wait a little for the drivers to come back up
         try {
             Thread.sleep( 5000L );
         }
@@ -119,11 +119,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
                         "failed to verify all nodes as ready", State.INACTIVE );
             }
 
-            RunnerInfo runnerInfo = failed.removeLast();
+            Runner runnerInfo = failed.removeLast();
 
             try {
                 Result status = status( runnerInfo );
-                TestInfo remoteInfo = status.getTestInfo();
+                Project remoteInfo = status.getProject();
 
                 if ( ! status.getStatus() ) {
                     LOG.warn( "Runner {} failed on status call", runnerInfo );
@@ -154,27 +154,27 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     }
 
 
-    private TestInfo getTest( final String testKey ) {
-        return operations.getTestInfo( testKey );
+    private Project getTest( final String testKey ) {
+        return operations.getProject( testKey );
     }
 
 
     @Override
-    public Result status( RunnerInfo runner ) {
+    public Result status( Runner runner ) {
         return RestRequests.status( runner );
     }
 
 
     /**
      * Sends the start rest request to runner with given propagate value.
-     * Call verify() method first to make sure all runners are ready and up-to-date, call status() if you're not
+     * Call verify() method first to make sure all drivers are ready and up-to-date, call status() if you're not
      * going to propagate.
      * @param runner
      * @param propagate
      * @return
      */
     @Override
-    public Result start( RunnerInfo runner, final boolean propagate ) {
+    public Result start( Runner runner, final boolean propagate ) {
         return RestRequests.start( runner, propagate );
     }
 
@@ -187,13 +187,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
      * @return
      */
     @Override
-    public Result stop( final RunnerInfo runner, final boolean propagate ) {
+    public Result stop( final Runner runner, final boolean propagate ) {
         Result status = null;
         boolean stoppable = false;
         // if request is wished to be propagated, then we check if there is at least one runner in RUNNING state
         if ( propagate ) {
-            Collection<RunnerInfo> runners = getRunners();
-            for ( RunnerInfo r : runners ) {
+            Collection<Runner> runners = getRunners();
+            for ( Runner r : runners ) {
                 status = status( r );
                 if ( status.getStatus() && status.getState() == State.RUNNING ) {
                     stoppable = true;
@@ -226,13 +226,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
      * @return
      */
     @Override
-    public Result reset( final RunnerInfo runner, final boolean propagate ) {
+    public Result reset( final Runner runner, final boolean propagate ) {
         Result status = status( runner );
         boolean resettable = false;
         // if request is wished to be propagated, then we check if there is at least one runner in STOPPED state
         if ( propagate ) {
-            Collection<RunnerInfo> runners = getRunners();
-            for ( RunnerInfo r : runners ) {
+            Collection<Runner> runners = getRunners();
+            for ( Runner r : runners ) {
                 status = status( r );
                 if ( status.getStatus() && status.getState() == State.STOPPED ) {
                     resettable = true;
@@ -255,13 +255,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     @Override
-    public Result scan( final RunnerInfo runner, final boolean propagate ) {
+    public Result scan( final Runner runner, final boolean propagate ) {
         return new BaseResult( "http://localhost:8080", true, "scan triggered", State.READY );
     }
 
 
     /**
-     * Checks whether all the runners in the cluster are reachable, in a READY state
+     * Checks whether all the drivers in the cluster are reachable, in a READY state
      * and has the latest test with matching MD5 checksum fields.
      * @return Returns true if all instances on the cluster is ready to start the test
      */
@@ -269,11 +269,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
     public boolean verify() {
         LOG.info( "Starting verify operation..." );
         // Get the latest test info
-        TestInfo latestTest = null;
+        Project latestTest = null;
         try {
-            Set<TestInfo> tests = getTests();
+            Set<Project> tests = getProjectConfigs();
 
-            for ( TestInfo test : tests ) {
+            for ( Project test : tests ) {
                 if ( latestTest == null ) {
                     latestTest = test;
                 }
@@ -295,8 +295,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
         LOG.info( "Got the latest test info from store" );
         LOG.info( "Latest test: MD5: " + latestTest.getWarMd5() + " Create Time: " + latestTest.getCreateTimestamp() );
 
-        Collection<RunnerInfo> runners = getRunners();
-        for ( RunnerInfo runner : runners ) {
+        Collection<Runner> runners = getRunners();
+        for ( Runner runner : runners ) {
             try {
                 LOG.info( "Getting status of " + runner.getHostname() );
                 Result result = status( runner );
@@ -311,11 +311,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
-                if ( ! result.getTestInfo().getWarMd5().equals( latestTest.getWarMd5() ) ) {
+                if ( ! result.getProject().getWarMd5().equals( latestTest.getWarMd5() ) ) {
                     LOG.info( "Runner doesn't have the latest test loaded" );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     LOG.info( "Latest test MD5 is {}", latestTest.getWarMd5() );
-                    LOG.info( "Runner's installed MD5 is {}", result.getTestInfo().getWarMd5() );
+                    LOG.info( "Runner's installed MD5 is {}", result.getProject().getWarMd5() );
                     return false;
                 }
                 LOG.info( "Runner is READY: {}", runner );
@@ -362,10 +362,10 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
 
 
     @Override
-    public RunnerInfo getLiveRunner() {
-        Collection<RunnerInfo> candidates = getRunners();
+    public Runner getLiveRunner() {
+        Collection<Runner> candidates = getRunners();
 
-        for ( RunnerInfo runner : candidates )
+        for ( Runner runner : candidates )
         {
             try {
                 Result result = status( runner );
@@ -381,6 +381,6 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.perftest
         }
 
         LOG.error( "Could not find a live runner: blowing chunks!" );
-        throw new RuntimeException( "No live runners available" );
+        throw new RuntimeException( "No live drivers available" );
     }
 }

@@ -6,28 +6,28 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunInfo;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.Runner;
 
 
 /**
  * A client to interact with the perftest system and it's test results archive.
  *
- * <ul> <li>listing registered runners in the cluster</li> <li>listing and deleting uploaded test jars and their test
- * information</li> <li>downloading and collating test run results from runners</li> </ul>
+ * <ul> <li>listing registered drivers in the cluster</li> <li>listing and deleting uploaded test jars and their test
+ * information</li> <li>downloading and collating test run results from drivers</li> </ul>
  */
 public interface PerftestClient extends ConfigKeys {
 
     void deleteTests();
 
     /**
-     * Gets the set of runners involved in a perftest cluster formation.
+     * Gets the set of drivers involved in a perftest cluster formation.
      *
      * @return the set of Perftest runner nodes
      */
-    Collection<RunnerInfo> getRunners();
+    Collection<Runner> getRunners();
 
 
     /**
@@ -35,7 +35,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the set of performance tests
      */
-    Set<TestInfo> getTests() throws IOException;
+    Set<Project> getProjectConfigs() throws IOException;
 
 
     /**
@@ -43,7 +43,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the set of runs that have taken place on a test.
      */
-    Set<RunInfo> getRuns( TestInfo test );
+    Set<ISummary> getRuns( Project test );
 
 
     /**
@@ -53,7 +53,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return a collated version of the results from each runner
      */
-    File getResults( RunInfo run ) throws IOException;
+    File getResults( ISummary run ) throws IOException;
 
 
     /**
@@ -61,7 +61,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @param run the run information and its results to delete.
      */
-    void delete( RunInfo run );
+    void delete( ISummary run );
 
 
     /**
@@ -69,7 +69,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @param test the test to
      */
-    void delete( TestInfo test );
+    void delete( Project test );
 
 
     /**
@@ -84,10 +84,10 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the results associated with the operation
      */
-    Result load( RunnerInfo runner, String testKey, Boolean propagate );
+    Result load( Runner runner, String testKey, Boolean propagate );
 
 
-    Result start( RunnerInfo runner, boolean propagate );
+    Result start( Runner runner, boolean propagate );
 
 
     /**
@@ -96,16 +96,16 @@ public interface PerftestClient extends ConfigKeys {
      * @param propagate
      * @return
      */
-    Result stop( RunnerInfo runner, boolean propagate );
+    Result stop( Runner runner, boolean propagate );
 
 
-    Result status( RunnerInfo runner );
+    Result status( Runner runner );
 
 
-    Result reset( RunnerInfo runner, boolean propagate );
+    Result reset( Runner runner, boolean propagate );
 
 
-    Result scan( RunnerInfo runner, boolean propagate );
+    Result scan( Runner runner, boolean propagate );
 
 
     /**
@@ -128,5 +128,5 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the first available live runner
      */
-    RunnerInfo getLiveRunner();
+    Runner getLiveRunner();
 }

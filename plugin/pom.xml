@@ -2,16 +2,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.safehaus.perftest</groupId>
-    <artifactId>perftest-parent</artifactId>
+    <groupId>org.safehaus.chop</groupId>
+    <artifactId>chop-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <name>Perftest Maven Plugin</name>
-  <artifactId>perftest-maven-plugin</artifactId>
+  <name>Chop Maven Plugin</name>
+  <artifactId>chop-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <description>
-    A Maven plugin providing Perftest integration to build, deploy, load and
+    A Maven plugin providing Chop integration to build, deploy, load and
     run your performance tests within an environment.
   </description>
 
@@ -85,15 +85,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.safehaus.perftest</groupId>
-      <artifactId>perftest-server</artifactId>
+      <groupId>org.safehaus.chop</groupId>
+      <artifactId>chop-runner</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>war</type>
     </dependency>
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>perftest-client</artifactId>
+      <artifactId>chop-client</artifactId>
       <version>${project.version}</version>
     </dependency>
 

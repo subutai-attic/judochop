@@ -10,15 +10,15 @@ import org.jukito.UseModules;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.perftest.api.Result;
-import org.safehaus.perftest.api.RunnerInfo;
-import org.safehaus.perftest.api.TestInfo;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.Runner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import junit.framework.Assert;
+import static junit.framework.TestCase.assertEquals;
 
 
 /** Tests the PerftestClient implementations. */
@@ -38,9 +38,9 @@ public class PerftestClientTest {
 
     @Test
     public void testGetTests() throws IOException {
-        Set<TestInfo> tests = client.getTests();
+        Set<Project> tests = client.getProjectConfigs();
 
-        for ( TestInfo test : tests ) {
+        for ( Project test : tests ) {
             LOG.debug( "Got a test: {}", test );
             LOG.debug( "Test md5: {}", test.getWarMd5() );
         }
@@ -49,16 +49,16 @@ public class PerftestClientTest {
 
     @Test @Ignore //TODO
     public void testLoad() throws IOException {
-        RunnerInfo liveRunner = client.getLiveRunner();
+        Runner liveRunner = client.getLiveRunner();
         client.load( liveRunner, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true );
     }
 
 
     @Test
     public void testGetRunners() throws Exception {
-        Collection<RunnerInfo> runners = client.getRunners();
+        Collection<Runner> runners = client.getRunners();
 
-        for ( RunnerInfo info : runners ) {
+        for ( Runner info : runners ) {
             LOG.debug( "Got runner {}", info );
         }
     }
@@ -83,7 +83,7 @@ public class PerftestClientTest {
         String date1 = "2013.12.12.23.00.02";
         String date2 = "2013.12.12.23.00.03";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
+        assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
     }
 
 
@@ -92,7 +92,7 @@ public class PerftestClientTest {
         String date1 = "2013.12.12.23.00.02";
         String date2 = "2013.12.12.23.52.02";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
+        assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
     }
 
 
@@ -101,7 +101,7 @@ public class PerftestClientTest {
         String date1 = "2013.12.12.00.00.02";
         String date2 = "2013.12.12.23.00.02";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", 1, client.compareTimestamps( date2, date1 ) );
+        assertEquals( "Compare Timestamp is faulty", 1, client.compareTimestamps( date2, date1 ) );
     }
 
 
@@ -110,7 +110,7 @@ public class PerftestClientTest {
         String date1 = "2013.12.12.07.00.02";
         String date2 = "2013.12.12.15.00.02";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", 1, client.compareTimestamps( date2, date1 ) );
+        assertEquals( "Compare Timestamp is faulty", 1, client.compareTimestamps( date2, date1 ) );
     }
 
 
@@ -119,7 +119,7 @@ public class PerftestClientTest {
         String date1 = "2013.12.12.07.00.02";
         String date2 = "2013.12.12.11.00.02";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
+        assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
     }
 
 
@@ -128,6 +128,6 @@ public class PerftestClientTest {
         String date1 = "2013.02.12.23.00.02";
         String date2 = "2013.12.12.23.52.02";
 
-        Assert.assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
+        assertEquals( "Compare Timestamp is faulty", -1, client.compareTimestamps( date1, date2 ) );
     }
 }
