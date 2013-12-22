@@ -1,4 +1,4 @@
-![Judo Chop](browse/judo-chop.jpeg)
+![Judo Chop](http://stash.safehaus.org/projects/CHOP/repos/main/browse/judo-chop.jpeg?at=321c1def8f09eb0f0d488a3ea2d874d1b2ef7c94&raw)
 
 # What is it?
 
