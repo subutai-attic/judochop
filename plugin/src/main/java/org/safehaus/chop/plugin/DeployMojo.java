@@ -50,7 +50,7 @@ public class DeployMojo extends MainMojo {
         String destinationFile = getWarOnS3Path();
         String projectFileKey = getProjectFilePath();
         File source = new File( sourceFile );
-        File testInfo = new File( source.getParent(), PROJECT_FILE );
+        File projectFile = new File( source.getParent(), PROJECT_FILE );
 
         if ( ! isReadyToDeploy() ) {
             getLog().info( "War is not ready to upload to store, calling perftest:war goal now..." );
@@ -75,7 +75,7 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( "Unable to upload war file to S3." );
         }
 
-        success = Utils.uploadToS3( s3, bucketName, projectFileKey, testInfo );
+        success = Utils.uploadToS3( s3, bucketName, projectFileKey, projectFile );
         if ( !success ) {
             throw new MojoExecutionException( "Unable to upload $PROJECT_FILE file to S3." );
         }

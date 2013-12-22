@@ -138,25 +138,25 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public void uploadResults( final Project project, final ISummary summary, final File resultsFile ) {
+    public void store( final Project project, final ISummary summary, final File resultsFile ) {
         operations.store( metadata, project, summary, resultsFile );
     }
 
 
     @Override
-    public void uploadTestInfo( final Project project ) {
+    public void store( final Project project ) {
         operations.store( project );
     }
 
 
     @Override
-    public Project loadTestInfo() {
+    public Project getProject() {
         return operations.getProject();
     }
 
 
     @Override
-    public Set<Project> listTests() throws IOException {
+    public Set<Project> getProjects() throws IOException {
         return operations.getProjects();
     }
 

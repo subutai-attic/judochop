@@ -24,7 +24,7 @@ public interface StoreService {
 
     Set<String> listRunners();
 
-    Set<Project> listTests() throws IOException;
+    Set<Project> getProjects() throws IOException;
 
     Runner getRunner( String key );
 
@@ -34,9 +34,9 @@ public interface StoreService {
 
     File download( File tempDir, String perftest ) throws Exception;
 
-    void uploadResults( Project project, ISummary summary, File resultsFile );
+    void store( Project project, ISummary summary, File resultsFile );
 
-    void uploadTestInfo( Project project );
+    void store( Project project );
 
-    Project loadTestInfo();
+    Project getProject();
 }

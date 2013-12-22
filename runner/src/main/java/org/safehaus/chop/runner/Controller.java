@@ -194,7 +194,7 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
-                service.uploadResults( project, summary, currentDriver.getResultsFile() );
+                service.store( project, summary, currentDriver.getResultsFile() );
             }
         }
 
@@ -225,7 +225,7 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
-                service.uploadResults( project, summary, currentDriver.getResultsFile() );
+                service.store( project, summary, currentDriver.getResultsFile() );
             }
         }
 

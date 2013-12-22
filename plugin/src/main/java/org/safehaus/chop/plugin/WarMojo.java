@@ -153,8 +153,8 @@ public class WarMojo extends MainMojo {
             project.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();
-            File testInfoFile = new File( getProjectFileToUploadPath() );
-            mapper.writeValue( testInfoFile, project );
+            File projectFile = new File( getProjectFileToUploadPath() );
+            mapper.writeValue( projectFile, project );
         }
         catch ( Exception e ) {
             throw new MojoExecutionException( "Error while executing plugin", e );
