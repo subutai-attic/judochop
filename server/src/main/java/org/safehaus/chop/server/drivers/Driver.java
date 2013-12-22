@@ -12,30 +12,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.netflix.config.DynamicLongProperty;
 
 
 /**
  * An abstract chop runner.
  */
 public abstract class Driver<T extends Tracker> implements IDriver<T> {
-    public static final long TIMEOUT = 1000L;
     protected static final Logger LOG = LoggerFactory.getLogger( Driver.class );
     private final T tracker;
     protected final Object lock = new Object();
     protected ExecutorService executorService;
     protected State state = State.READY;
-    private long timeout = TIMEOUT; // @TODO should be configurable
+    private DynamicLongProperty timeout;
 
 
     protected Driver( T tracker ) {
         this.tracker = tracker;
-        executorService = Executors.newFixedThreadPool( tracker.getThreads() );
+
+        // 1 extra for stopper thread and 1 extra for shits and giggles
+        executorService = Executors.newFixedThreadPool( tracker.getThreads() + 2 );
     }
 
 
-    // @TODO should be dynamically configurable
-    public void setTimeout( long timeout ) {
+    public void setTimeout( DynamicLongProperty timeout ) {
         this.timeout = timeout;
+    }
+
+
+    public long getTimeout() {
+        return this.timeout.get();
     }
 
 
@@ -94,7 +100,7 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
      * we need to keep blocking and this runner is not done yet.
      */
     public boolean blockTilDone( long timeout ) {
-        Preconditions.checkState( isRunning(), "Cannot block on a driver that is not running." );
+        Preconditions.checkState( isRunning() || isComplete(), "Cannot block on a driver that is not running: state = " + state );
 
         synchronized ( lock ) {
             if ( state == State.RUNNING ) {
@@ -121,7 +127,7 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
 
                 executorService.shutdown();
                 try {
-                    if ( ! executorService.awaitTermination( timeout, TimeUnit.MILLISECONDS ) ) {
+                    if ( ! executorService.awaitTermination( timeout.get(), TimeUnit.MILLISECONDS ) ) {
                         executorService.shutdownNow();
                     }
                 }

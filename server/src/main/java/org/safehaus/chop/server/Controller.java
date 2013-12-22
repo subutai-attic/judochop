@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+import com.netflix.config.DynamicLongProperty;
 
 
 /**
@@ -29,16 +30,15 @@ import com.google.inject.name.Named;
  */
 @Singleton
 public class Controller implements IController, Runnable {
-    public static final long TIMEOUT = 1000L;
-
     private static final Logger LOG = LoggerFactory.getLogger( Controller.class );
     private final Object lock = new Object();
 
     private Set<Class<?>> timeChopClasses;
     private Set<Class<?>> iterationChopClasses;
     private State state = State.READY;
-    private long timeout = TIMEOUT;
     private Driver<?> currentDriver;
+
+    private DynamicLongProperty timeout;
 
     private StoreService service;
     private Project project;
@@ -47,6 +47,8 @@ public class Controller implements IController, Runnable {
 
     @Inject
     private void setProject( Project project ) {
+        LOG.info( "Controller injected with project properties: {}", project );
+
         if ( project == null ) {
             state = State.INACTIVE;
         }
@@ -65,7 +67,7 @@ public class Controller implements IController, Runnable {
     @Inject
     private void setBasePackage( @Named( ConfigKeys.TEST_PACKAGE_BASE ) String basePackage ) {
         Preconditions.checkNotNull( basePackage, "The basePackage cannot be null!" );
-        Preconditions.checkArgument( basePackage.length() == 0,
+        Preconditions.checkArgument( basePackage.length() > 0,
                 "The basePackage cannot be the empty string and must be a valid package." );
 
         Reflections reflections = new Reflections( basePackage );
@@ -82,13 +84,8 @@ public class Controller implements IController, Runnable {
 
 
     @Inject
-    private void setTimeout( @Named( ConfigKeys.TEST_STOP_TIMEOUT ) long timeout ) {
-        if ( timeout <= 0 ) {
-            this.timeout = TIMEOUT;
-        }
-        else {
-            this.timeout = timeout;
-        }
+    private void setTimeout( @Named( ConfigKeys.TEST_STOP_TIMEOUT ) DynamicLongProperty timeout ) {
+        this.timeout = timeout;
     }
 
 
@@ -106,17 +103,13 @@ public class Controller implements IController, Runnable {
 
     @Override
     public boolean isRunning() {
-        synchronized ( lock ) {
-            return state == State.RUNNING;
-        }
+        return state == State.RUNNING;
     }
 
 
     @Override
     public boolean needsReset() {
-        synchronized ( lock ) {
-            return state == State.STOPPED;
-        }
+        return state == State.STOPPED;
     }
 
 
@@ -180,24 +173,28 @@ public class Controller implements IController, Runnable {
                 currentDriver.setTimeout( timeout );
                 currentDriver.start();
                 lock.notifyAll();
+            }
 
-                while ( currentDriver.blockTilDone( timeout ) ) {
-                    if ( state == State.STOPPED ) {
-                        LOG.info( "Got the signal to stop running." );
+            LOG.info( "Started new IterationDriver driver: controller state = {}", state );
+            while ( currentDriver.blockTilDone( timeout.get() ) ) {
+                if ( state == State.STOPPED ) {
+                    LOG.info( "Got the signal to stop running." );
+                    synchronized ( lock ) {
                         currentDriver.stop();
                         currentDriver = null;
                         lock.notifyAll();
-                        return;
                     }
-
-                    lock.notifyAll();
+                    return;
                 }
+            }
 
-                if ( currentDriver.isComplete() ) {
-                    Summary summary = new Summary( runNumber );
-                    summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
-                    service.uploadResults( project, summary, currentDriver.getResultsFile() );
-                }
+            LOG.info( "Out of while loop. controller state = {}, currentDriver is running = {}",
+                    state, currentDriver.isRunning());
+
+            if ( currentDriver.isComplete() ) {
+                Summary summary = new Summary( runNumber );
+                summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
+                service.uploadResults( project, summary, currentDriver.getResultsFile() );
             }
         }
 
@@ -207,24 +204,28 @@ public class Controller implements IController, Runnable {
                 currentDriver.setTimeout( timeout );
                 currentDriver.start();
                 lock.notifyAll();
+            }
 
-                while ( currentDriver.blockTilDone( timeout ) ) {
-                    if ( state == State.STOPPED ) {
-                        LOG.info( "Got the signal to stop running." );
+            LOG.info( "Started new TimeDriver driver: controller state = {}", state );
+            while ( currentDriver.blockTilDone( timeout.get() ) ) {
+                if ( state == State.STOPPED ) {
+                    LOG.info( "Got the signal to stop running." );
+                    synchronized ( lock ) {
                         currentDriver.stop();
                         currentDriver = null;
                         lock.notifyAll();
-                        return;
                     }
-
-                    lock.notifyAll();
+                    return;
                 }
+            }
 
-                if ( currentDriver.isComplete() ) {
-                    Summary summary = new Summary( runNumber );
-                    summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
-                    service.uploadResults( project, summary, currentDriver.getResultsFile() );
-                }
+            LOG.info( "Out of while loop. controller state = {}, currentDriver is running = {}",
+                    state, currentDriver.isRunning());
+
+            if ( currentDriver.isComplete() ) {
+                Summary summary = new Summary( runNumber );
+                summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
+                service.uploadResults( project, summary, currentDriver.getResultsFile() );
             }
         }
 

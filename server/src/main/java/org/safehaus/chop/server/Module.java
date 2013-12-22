@@ -10,6 +10,7 @@ package org.safehaus.chop.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.safehaus.archaius.DynamicPropertyNames;
 import org.safehaus.chop.api.ApiModule;
 import org.safehaus.perftest.client.PerftestClientModule;
 import org.safehaus.chop.server.rest.ResetResource;
@@ -24,6 +25,8 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 
 public class Module extends ServletModule {
+    public static final String DEFAULT_TEST_STOP_TIMEOUT = "1000L";
+    public static final String DEFAULT_TEST_PACKAGE_BASE = "org.safehaus.chop.server.dummy";
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
 
@@ -37,7 +40,10 @@ public class Module extends ServletModule {
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
-        bind( IController.class ).to( Controller.class );
+        DynamicPropertyNames names = new DynamicPropertyNames();
+        names.bindProperty( binder(), ConfigKeys.TEST_STOP_TIMEOUT, DEFAULT_TEST_STOP_TIMEOUT );
+        names.bindProperty( binder(), ConfigKeys.TEST_PACKAGE_BASE, DEFAULT_TEST_PACKAGE_BASE );
+        bind( IController.class ).to( Controller.class ).asEagerSingleton();
 
         bind( ResetResource.class ).asEagerSingleton();
         bind( StopResource.class ).asEagerSingleton();

@@ -1,6 +1,9 @@
 package org.safehaus.chop.server.drivers;
 
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.annotations.TimeChop;
 
@@ -9,9 +12,12 @@ import org.safehaus.chop.api.annotations.TimeChop;
  * Runs a time based unit test.
  */
 public class TimeDriver extends Driver<TimeTracker> {
+    private final CountDownLatch latch;
+
 
     public TimeDriver( Class<?> testClass ) {
         super( new TimeTracker( testClass ) );
+        latch = new CountDownLatch( getTracker().getThreads() );
     }
 
 
@@ -21,8 +27,30 @@ public class TimeDriver extends Driver<TimeTracker> {
             if ( state == State.READY ) {
                 state = state.next( Signal.START );
 
+                executorService.submit( new Runnable() {
+                    @Override
+                    public void run() {
+                        LOG.info( "Started completion detection job." );
+
+                        try {
+                            while ( latch.getCount() > 0 ) {
+                                latch.await( getTimeout(), TimeUnit.MILLISECONDS );
+                            }
+                        }
+                        catch ( InterruptedException e ) {
+                            LOG.warn( "Awe snap! Someone woke me up early!", e );
+                        }
+
+                        LOG.info( "All threads stopped processing. Time to stop tracker and complete." );
+                        getTracker().stop();
+                        state = state.next( Signal.COMPLETED );
+                        lock.notifyAll();
+                    }
+                } );
+
                 final TimeChop timeChop = getTracker().getTimeChop();
                 for ( int ii = 0; ii < getTracker().getThreads(); ii++ ) {
+                    final int id = ii;
                     executorService.submit( new Runnable() {
                         @Override
                         public void run() {
@@ -46,13 +74,12 @@ public class TimeDriver extends Driver<TimeTracker> {
                                 }
                             }
                             while ( runTime < timeChop.time() && isRunning() );
+
+                            latch.countDown();
+                            LOG.info( "Thread {} completed, count down latch value = {}", id, latch.getCount() );
                         }
                     } );
                 }
-
-                getTracker().stop();
-                state = state.next( Signal.COMPLETED );
-                lock.notifyAll();
             }
         }
     }

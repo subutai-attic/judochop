@@ -24,7 +24,7 @@ public interface ConfigKeys {
 
     String TEST_STOP_TIMEOUT = "test.stop.timeout";
 
-    String DEFAULT_PACKAGE_BASE = "org.safehaus.chop.examples";
+    String DEFAULT_PACKAGE_BASE = "org.safehaus.chop";
 
     String LOAD_TIME_KEY = "load.time.key";
 

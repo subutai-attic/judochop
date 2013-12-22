@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicLongProperty;
@@ -43,12 +44,15 @@ public class ResultsLog implements IResultsLog, Runnable {
     private DynamicBooleanProperty prettyPrint;
 
 
-    public ResultsLog( Tracker tracker ) {
+    public ResultsLog( Tracker tracker ) throws IOException {
         this.tracker = tracker;
-        String defaultFile = "/tmp/details.log";
+        File defaultFile = File.createTempFile( tracker.getTestClass().getCanonicalName(), "log" );
+        LOG.info( "Default results log file path = {}", defaultFile.getAbsolutePath() );
 
 
-        resultsFile = DynamicPropertyFactory.getInstance().getStringProperty( RESULTS_FILE_KEY, defaultFile );
+        resultsFile = DynamicPropertyFactory.getInstance().
+                getStringProperty( RESULTS_FILE_KEY, defaultFile.getAbsolutePath() );
+        LOG.info( "Actual results log file path = {}", resultsFile.get() );
         waitTime = DynamicPropertyFactory.getInstance().getLongProperty( WAIT_TIME_KEY, 200 );
         prettyPrint = DynamicPropertyFactory.getInstance().getBooleanProperty( PRETTY_PRINT_RESULTS_LOG, true );
     }
@@ -67,6 +71,8 @@ public class ResultsLog implements IResultsLog, Runnable {
                 if ( prettyPrint.get() ) {
                     jgen.useDefaultPrettyPrinter();
                 }
+
+                jgen.setCodec( new ObjectMapper() );
 
                 setupJsonStream();
 

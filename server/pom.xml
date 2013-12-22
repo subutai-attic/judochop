@@ -110,6 +110,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.safehaus.archaius</groupId>
+      <artifactId>archaius-guice</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
       <version>${jetty.version}</version>

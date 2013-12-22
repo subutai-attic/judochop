@@ -51,9 +51,9 @@ public abstract class Tracker {
 
     protected Tracker( Class<?> testClass ) {
         this.testClass = testClass;
-        resultsLog = new ResultsLog( this );
 
         try {
+            resultsLog = new ResultsLog( this );
             resultsLog.open();
         }
         catch ( IOException e ) {
@@ -70,7 +70,7 @@ public abstract class Tracker {
 
 
     public Result execute() {
-        Preconditions.checkState( ! isStarted.get(), "Cannot execute a stopped tracker!" );
+        Preconditions.checkState( isStarted.get(), "Cannot execute a tracker that has not started!" );
 
         Result result = new JUnitCore().run( testClass );
         long runTime = result.getRunTime();
@@ -130,7 +130,7 @@ public abstract class Tracker {
 
 
     void stop() {
-        Preconditions.checkState( ! isStarted.get(), "Cannot stop already stopped Tracker." );
+        Preconditions.checkState( isStarted.get(), "Cannot stop Tracker which has not started." );
         stopTime = System.currentTimeMillis();
 
         try {
