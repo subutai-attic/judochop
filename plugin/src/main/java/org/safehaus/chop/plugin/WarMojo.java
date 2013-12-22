@@ -84,7 +84,14 @@ public class WarMojo extends MainMojo {
 
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
-            FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), new File( libPath ) );
+            File libPathFile = new File( libPath );
+            String projectTestOutputJar = getProjectTestOutputJarPath();
+            if ( ! FileUtils.fileExists( projectTestOutputJar ) ) {
+                throw new MojoExecutionException( "Project Test Jar could not be found. Make sure you use 'test-jar'" +
+                        " goal of the 'maven-jar-plugin' in your project's pom" );
+            }
+            FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), libPathFile );
+            FileUtils.copyFileToDirectory( new File( projectTestOutputJar ), libPathFile );
             Utils.copyArtifactsTo( this.project, libPath, false );
 
             // Create config.properties file
@@ -155,6 +162,9 @@ public class WarMojo extends MainMojo {
             ObjectMapper mapper = new ObjectMapper();
             File projectFile = new File( getProjectFileToUploadPath() );
             mapper.writeValue( projectFile, project );
+        }
+        catch ( MojoExecutionException e ) {
+            throw e;
         }
         catch ( Exception e ) {
             throw new MojoExecutionException( "Error while executing plugin", e );

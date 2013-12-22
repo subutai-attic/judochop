@@ -169,6 +169,12 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
+    public String getProjectTestOutputJarPath() {
+        return Utils.forceSlashOnDir( project.getBuild().getDirectory() ) + project.getBuild().getFinalName() +
+                "-tests.jar";
+    }
+
+
     /** @return Returns the project base directory with a '/' at the end */
     public String getProjectBaseDirectory() {
         return Utils.forceSlashOnDir( project.getBasedir().getAbsolutePath() );
