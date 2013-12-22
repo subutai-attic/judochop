@@ -4,19 +4,32 @@ package org.safehaus.chop.api;
 /** Configuration setting keys. */
 public interface ConfigKeys {
 
+    /** @TODO - this is a constant and not a key does not belong here */
+    String PARAM_PROJECT = "project";
+
+    /** @TODO - this is a constant and not a key does not belong here */
+    String PARAM_PROPAGATE = "propagate";
+
+    /** @TODO - this is a constant and not a key does not belong here */
     /** the default name to use for the runner's war file */
     String RUNNER_WAR = "runner.war";
 
+    /** @TODO - this is a constant and not a key does not belong here */
     int CHARS_OF_UUID = 8;
 
+    /** @TODO - this is a constant and not a key does not belong here */
     String PROJECT_FILE = "project.json";
 
+    /** @TODO - this is a constant and not a key does not belong here */
     String RUNNERS_PATH = "runners";
 
+    /** @TODO - this is a constant and not a key does not belong here */
     String CONFIGS_PATH = "tests";
 
+    /** @TODO - this is a constant and not a key does not belong here */
     String SUMMARY_SUFFIX = "-summary.json";
 
+    /** @TODO - this is a constant and not a key does not belong here */
     String RESULTS_SUFFIX = "-results.json";
 
     String CHOP_VERSION_KEY = "chop.version";

@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import static org.safehaus.chop.api.store.amazon.ConfigKeys.*;
+
 
 /** ... */
 @Singleton
@@ -54,7 +56,7 @@ public class StartResource extends PropagatingResource {
 
 
     @POST
-    public Result start( @QueryParam("propagate") Boolean propagate ) {
+    public Result start( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
         if ( runner.isRunning() ) {
             return new BaseResult( getEndpointUrl(), false, "already running", runner.getState() );
         }

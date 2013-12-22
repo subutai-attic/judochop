@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.client.ConfigKeys;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
@@ -33,6 +34,8 @@ import org.safehaus.chop.api.store.StoreService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
 
 
 /** ... */
@@ -51,7 +54,7 @@ public class ScanResource extends PropagatingResource {
 
 
     @POST
-    public Result triggerScan( @QueryParam("propagate") Boolean propagate ) {
+    public Result triggerScan( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
         getService().triggerScan();
 
         if ( propagate == Boolean.FALSE ) {

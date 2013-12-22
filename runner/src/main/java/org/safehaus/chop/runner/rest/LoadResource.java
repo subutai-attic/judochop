@@ -51,6 +51,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import static org.safehaus.chop.client.ConfigKeys.*;
+
 
 /** Loads a test configuration from the "tests" container. */
 @Singleton
@@ -58,6 +60,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 @Path("/load")
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
+    private static final String PARAM_PROPAGATE = "propagate";
     private final IController runner;
 
 
@@ -73,12 +76,12 @@ public class LoadResource extends PropagatingResource {
      * the other drivers this parameter will be set to true.
      *
      * @param propagate when true call the same function on other drivers
-     * @param perftest the perftest to use specified by the string containing the <git-uuid>-<deploy-timestamp>
+     * @param project the project to use specified by the string containing the <git-uuid>-<deploy-timestamp>
      *
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam("propagate") Boolean propagate, @QueryParam("perftest") String perftest ) {
+    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( PARAM_PROJECT ) String project ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {
@@ -95,19 +98,19 @@ public class LoadResource extends PropagatingResource {
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
 
-        Map<String, String> params = Collections.singletonMap( "perftest", perftest );
+        Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
 
         if ( propagate == Boolean.TRUE ) {
             PropagatedResult result =
                     propagate( runner.getState().next( Signal.LOAD ), true, "reload started", params );
 
             try {
-                deploy( perftest );
+                deploy( project );
                 result.setStatus( true );
                 return result;
             }
             catch ( Exception e ) {
-                LOG.error( "Encountered failure while reloading perftest", e );
+                LOG.error( "Encountered failure while reloading project", e );
                 result.setStatus( false );
                 result.setMessage( e.getMessage() );
                 return result;
@@ -119,20 +122,20 @@ public class LoadResource extends PropagatingResource {
         }
 
         try {
-            deploy( perftest );
+            deploy( project );
             return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState().next( Signal.LOAD ) );
         }
         catch ( Exception e ) {
-            LOG.error( "Encountered failure while reloading perftest", e );
+            LOG.error( "Encountered failure while reloading project", e );
             return new BaseResult( getEndpointUrl(), false, e.getMessage(), runner.getState() );
         }
     }
 
 
-    private void deploy( String perftest ) throws Exception {
+    private void deploy( String project ) throws Exception {
         // @Todo if the admin app reload does not work, do not store in app's temp are but in /tmp instead
         File tempDir = new File( getService().getMyMetadata().getRunnerTempDir() );
-        File tempFile = getService().download( tempDir, perftest );
+        File tempFile = getService().download( tempDir, project );
         final BlockingDeployTask uploadTask = new BlockingDeployTask( tempFile );
         new Thread( uploadTask ).start();
         uploadTask.returnOnLimit();   // ==> blocks until we hit the limit
@@ -163,8 +166,8 @@ public class LoadResource extends PropagatingResource {
 
     /**
      * Will try to recover by confirming that the peer is back up by attempting to contact the reloaded peer N number of
-     * times with X seconds delay in between on it's /status page. The version of the perftest will be checked against
-     * the perftest that was loaded in the /load operation that failed.
+     * times with X seconds delay in between on it's /status page. The version of the project will be checked against
+     * the project that was loaded in the /load operation that failed.
      */
     class RecoveryOperation implements Callable<Result> {
         private final PropagatingCall failingCaller;

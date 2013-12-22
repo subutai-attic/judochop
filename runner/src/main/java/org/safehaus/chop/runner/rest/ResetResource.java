@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.client.ConfigKeys;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
 
 
 /** ... */
@@ -62,7 +65,7 @@ public class ResetResource extends PropagatingResource {
      * @return a summary message
      */
     @POST
-    public Result reset( @QueryParam("propagate") Boolean propagate ) {
+    public Result reset( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {

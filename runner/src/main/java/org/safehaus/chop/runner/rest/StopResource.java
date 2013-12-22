@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.client.ConfigKeys;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
@@ -51,7 +52,7 @@ public class StopResource extends PropagatingResource {
 
 
     @POST
-    public Result stop( @QueryParam("propagate") Boolean propagate ) {
+    public Result stop( @QueryParam( ConfigKeys.PARAM_PROPAGATE ) Boolean propagate ) {
         if ( runner.isRunning() ) {
             runner.stop();
 
