@@ -1,4 +1,4 @@
-![Judo Chop]judo-chop.jpeg
+![Judo Chop](judo-chop.jpeg)
 
 # What is it?
 
