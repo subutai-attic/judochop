@@ -11,6 +11,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -18,7 +19,10 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.DeleteSecurityGroupRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
@@ -32,6 +36,7 @@ import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesResult;
@@ -92,6 +97,10 @@ public class EC2Manager {
         this.runnerName = runnerName;
 
         client = getEC2Client( accessKey, secretKey );
+
+        if( ! securityGroupExists( securityGroup ) ) {
+            createSecurityGroup( securityGroup );
+        }
     }
 
 
@@ -344,6 +353,55 @@ public class EC2Manager {
         while ( timePassed < timeout && instanceIdCopy.size() > 0 );
 
         return ( timePassed < timeout );
+    }
+
+
+    public boolean createSecurityGroup( String securityGroup ) {
+        try {
+            CreateSecurityGroupRequest request = new CreateSecurityGroupRequest();
+
+            request = request.withGroupName( securityGroup ).withDescription( "Performance testing Security Group" );
+            CreateSecurityGroupResult result = client.createSecurityGroup( request );
+            return ( result != null && result.getGroupId() != null && ! result.getGroupId().isEmpty() );
+        }
+        catch ( AmazonServiceException e ) {
+            LOG.warn( "Error while trying to create security group", e );
+            return false;
+        }
+    }
+
+
+    public boolean deleteSecurityGroup( String securityGroup ) {
+        try {
+            DeleteSecurityGroupRequest request = new DeleteSecurityGroupRequest().withGroupName( securityGroup );
+            client.deleteSecurityGroup( request );
+            return true;
+        }
+        catch ( AmazonServiceException e ) {
+            LOG.warn( "Error while trying to delete security group", e );
+            return false;
+        }
+    }
+
+
+    public Collection<String> listSecurityGroups() {
+        DescribeSecurityGroupsResult result = client.describeSecurityGroups();
+        Collection<String> groups = new ArrayList<String>();
+        for( SecurityGroup group : result.getSecurityGroups() ) {
+            groups.add( group.getGroupName() );
+        }
+        return groups;
+    }
+
+
+    public boolean securityGroupExists( String securityGroup ) {
+        Collection<String> groups = listSecurityGroups();
+        for( String g : groups ) {
+            if ( g.equals( securityGroup ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

@@ -2,7 +2,9 @@ package org.safehaus.chop.api.store.amazon;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.IdentityHashMap;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,8 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
+
+import junit.framework.Assert;
 
 
 public class EC2ManagerTest {
@@ -139,6 +143,28 @@ public class EC2ManagerTest {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         boolean res = ec2.ensureRunningInstances( 3, 5 );
         LOG.info( "Result: " + res );
+        ec2.close();
+    }
+
+    @Test
+    public void testListSecurityGroups() {
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        Collection<String> groups = ec2.listSecurityGroups();
+        LOG.info( "Security Groups are:" );
+        for( String g : groups ) {
+            LOG.info( g );
+        }
+        ec2.close();
+    }
+
+    @Test
+    public void testCreateDeleteSecurityGroup() {
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        String groupName = "perftest-security-create-delete-test";
+        if( ec2.securityGroupExists( groupName ) ) {
+            ec2.deleteSecurityGroup( groupName );
+        }
+        Assert.assertTrue( ec2.createSecurityGroup( groupName ) && ec2.deleteSecurityGroup( groupName ) );
         ec2.close();
     }
 }
