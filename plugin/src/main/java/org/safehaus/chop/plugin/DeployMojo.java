@@ -3,12 +3,20 @@ package org.safehaus.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 import java.util.Properties;
+
+import org.safehaus.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /** Deploys the perftest.war created by war goal to S3 bucket using supplied configuration parameters */
@@ -61,6 +69,21 @@ public class DeployMojo extends MainMojo {
         if ( ! isReadyToDeploy() ) {
             throw new MojoExecutionException( "Files to be deployed are not ready and chop:war failed" );
         }
+
+        try {
+            // Write deploy time to loadTime property in project.json
+            ObjectMapper mapper = new ObjectMapper();
+            Project proj = mapper.readValue( projectFile, Project.class );
+            proj.setLoadTime( Utils.getTimestamp( new Date() ) );
+            mapper.writeValue( projectFile, proj );
+        }
+        catch ( JsonMappingException e ) {
+            throw new MojoExecutionException( "Project.json file format is faulty", e );
+        }
+        catch ( IOException e ) {
+            throw new MojoExecutionException( "Error while modifying project.json file", e );
+        }
+
 
         AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
 
