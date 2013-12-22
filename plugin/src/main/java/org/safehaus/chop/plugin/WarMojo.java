@@ -85,7 +85,7 @@ public class WarMojo extends MainMojo {
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
             FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), new File( libPath ) );
-            Utils.copyArtifactsTo( this.project, libPath, true );
+            Utils.copyArtifactsTo( this.project, libPath, false );
 
             // Create config.properties file
             InputStream inputStream;
