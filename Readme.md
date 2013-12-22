@@ -1,4 +1,4 @@
-![Judo Chop](main/judo-chop.jpeg)
+![Judo Chop](judo-chop.jpeg)
 
 # What is it?
 
@@ -14,12 +14,12 @@ or server.
 Judo Chop has two kinds of annotations you apply to JUnit tests. Each 
 annotation value and the annotations applying to tests are listed below:
  
-     * time (TimeChop) - time in milliseconds to run the test
-     * iterations (IterationChop) - iterations of the test to run per thread
-     * threads (Both) - the number of threads to use per runner
-     * runners (Both) - the number of distributed runners to use
-     * delay (Both) - the number of milliseconds to delay between test runs
-     * saturate (Both) - find and run tests at saturation
+* time (TimeChop) - time in milliseconds to run the test
+* iterations (IterationChop) - iterations of the test to run per thread
+* threads (Both) - the number of threads to use per runner
+* runners (Both) - the number of distributed runners to use
+* delay (Both) - the number of milliseconds to delay between test runs
+* saturate (Both) - find and run tests at saturation
 
 It's probably already clear how this thingy works. The Chop annotations tell 
 Judo Chop how to run your JUnit or Jukito tests. Of course it's up to you to
