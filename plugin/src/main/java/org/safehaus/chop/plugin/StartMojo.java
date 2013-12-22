@@ -42,7 +42,7 @@ public class StartMojo extends MainMojo {
         boolean testUpToDate = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Project currentProject = mapper.readValue( new File( getTestInfoToUploadPath() ), Project.class );
+            Project currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), Project.class );
             Set<Project> tests = client.getProjectConfigs();
 
             for ( Project test : tests ) {

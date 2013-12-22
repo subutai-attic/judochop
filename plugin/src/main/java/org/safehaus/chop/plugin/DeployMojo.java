@@ -26,7 +26,6 @@ public class DeployMojo extends MainMojo {
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
         this.testPackageBase = mojo.testPackageBase;
-        this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
         this.awsSecurityGroup = mojo.awsSecurityGroup;
@@ -49,9 +48,9 @@ public class DeployMojo extends MainMojo {
     public void execute() throws MojoExecutionException {
         String sourceFile = getWarToUploadPath();
         String destinationFile = getWarOnS3Path();
-        String testinfoKey = getTestInfoOnS3Path();
+        String projectFileKey = getProjectFilePath();
         File source = new File( sourceFile );
-        File testInfo = new File( source.getParent(), "test-info.json" );
+        File testInfo = new File( source.getParent(), PROJECT_FILE );
 
         if ( ! isReadyToDeploy() ) {
             getLog().info( "War is not ready to upload to store, calling perftest:war goal now..." );
@@ -60,7 +59,7 @@ public class DeployMojo extends MainMojo {
         }
 
         if ( ! isReadyToDeploy() ) {
-            throw new MojoExecutionException( "Files to be deployed are not ready and perftest:war failed" );
+            throw new MojoExecutionException( "Files to be deployed are not ready and chop:war failed" );
         }
 
         AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
@@ -76,9 +75,9 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( "Unable to upload war file to S3." );
         }
 
-        success = Utils.uploadToS3( s3, bucketName, testinfoKey, testInfo );
+        success = Utils.uploadToS3( s3, bucketName, projectFileKey, testInfo );
         if ( !success ) {
-            throw new MojoExecutionException( "Unable to upload test-info.json file to S3." );
+            throw new MojoExecutionException( "Unable to upload $PROJECT_FILE file to S3." );
         }
 
         getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );

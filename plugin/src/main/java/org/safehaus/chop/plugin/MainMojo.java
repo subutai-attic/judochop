@@ -40,11 +40,6 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     protected boolean failIfCommitNecessary;
 
 
-    /** This parameter is written to the config.properties file in the created WAR and used by the runner at runtime */
-    @Parameter( property = "perftestFormation", required = true )
-    protected String perftestFormation;
-
-
     /**
      * Fully qualified package base property of the app once it's deployed to its container. This parameter will be put to the
      * config.properties file inside the WAR to be uploaded
@@ -69,11 +64,11 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
 
 
     /**
-     * sourceFile will be uploaded as $destinationParentDir$commitUUID/perftest.war in S3 bucket
+     * sourceFile will be uploaded as $destinationParentDir$commitUUID/RUNNER_WAR in S3 bucket
      *
      * defaultValue is "tests/"
      */
-    @Parameter( property = "destinationParentDir", defaultValue = "tests/" )
+    @Parameter( property = "destinationParentDir", defaultValue = CONFIGS_PATH + "/" )
     protected String destinationParentDir;
 
 
@@ -109,7 +104,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     protected String runnerKeyPairName;
 
 
-    @Parameter( property = "runnerName", defaultValue = "perftest-runner" )
+    @Parameter( property = "runnerName", defaultValue = "chop-runner" )
     protected String runnerName;
 
 
@@ -148,7 +143,6 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
         this.testPackageBase = mojo.testPackageBase;
-        this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
         this.awsSecurityGroup = mojo.awsSecurityGroup;
@@ -181,9 +175,9 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the extracted path of perftest-server.war file with a '/' at the end */
+    /** @return Returns the extracted path of RUNNER_WAR file with a '/' at the end */
     public String getExtractedWarRootPath() {
-        return getProjectBaseDirectory() + "target/perftest/";
+        return getProjectBaseDirectory() + "target/runner/";
     }
 
 
@@ -191,15 +185,15 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     public String getWarToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/perftest.war";
+        return projectBaseDirectory + "/target/runner.war";
     }
 
 
     /** @return Returns the full path of created perftest.war file */
-    public String getTestInfoToUploadPath() {
+    public String getProjectFileToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/test-info.json";
+        return projectBaseDirectory + "/target/" + PROJECT_FILE;
     }
 
 
@@ -208,20 +202,22 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
      *         bucketName is not included in the returned String
      */
     public String getWarOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + Utils
-                .getLastCommitUuid( Utils.getGitConfigFolder( project.getBasedir().getParent() ) )
-                + "/perftest.war";
+        return destinationParentDir + getShortUuid() + "/" + RUNNER_WAR;
+    }
+
+
+    private String getShortUuid() throws MojoExecutionException {
+        String uuid = Utils.getLastCommitUuid( Utils.getGitConfigFolder( project.getBasedir().getParent() ) );
+        return uuid.substring( 0, CHARS_OF_UUID/2 ) + uuid.substring( uuid.length() - CHARS_OF_UUID/2 );
     }
 
 
     /**
-     * @return Returns the file path of test-info.json file inside the S3 bucket, using the current last commit uuid; S3
+     * @return Returns the file path of project file inside the store, using the current last commit uuid; S3
      *         bucketName is not included in the returned String
      */
-    public String getTestInfoOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + Utils
-                .getLastCommitUuid( Utils.getGitConfigFolder( project.getBasedir().getParent() ) )
-                + "/test-info.json";
+    public String getProjectFilePath() throws MojoExecutionException {
+        return destinationParentDir + getShortUuid() + "/" + PROJECT_FILE;
     }
 
 
@@ -230,8 +226,8 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();
 
-        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/perftest-server/" +
-                perftestArtifact.getVersion() + "/perftest-server-" + perftestArtifact.getVersion() + ".war";
+        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/chop-runner/" +
+                perftestArtifact.getVersion() + "/chop-runner-" + perftestArtifact.getVersion() + ".war";
 
         return path;
     }

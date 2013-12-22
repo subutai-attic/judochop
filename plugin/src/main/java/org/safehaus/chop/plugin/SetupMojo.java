@@ -32,7 +32,6 @@ public class SetupMojo extends MainMojo {
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
         this.testPackageBase = mojo.testPackageBase;
-        this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
         this.awsSecurityGroup = mojo.awsSecurityGroup;

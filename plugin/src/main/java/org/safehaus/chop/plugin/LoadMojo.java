@@ -39,7 +39,6 @@ public class LoadMojo extends MainMojo {
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
         this.testPackageBase = mojo.testPackageBase;
-        this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
         this.awsSecurityGroup = mojo.awsSecurityGroup;
@@ -101,7 +100,7 @@ public class LoadMojo extends MainMojo {
         boolean testUpToDate = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Project currentProject = mapper.readValue( new File( getTestInfoToUploadPath() ), Project.class );
+            Project currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), Project.class );
             Set<Project> tests = client.getProjectConfigs();
 
             for ( Project test : tests ) {

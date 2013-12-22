@@ -34,7 +34,6 @@ public class WarMojo extends MainMojo {
         this.managerAppUsername = mojo.managerAppUsername;
         this.managerAppPassword = mojo.managerAppPassword;
         this.testPackageBase = mojo.testPackageBase;
-        this.perftestFormation = mojo.perftestFormation;
         this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
         this.awsSecurityGroup = mojo.awsSecurityGroup;
@@ -149,12 +148,12 @@ public class WarMojo extends MainMojo {
             project.setGroupId( this.project.getGroupId() );
             project.setVcsRepoUrl( gitUrl );
             project.setVcsVersion( commitId );
-            project.setLoadKey( "tests/" + commitId + "/perftest.war" );
+            project.setLoadKey( CONFIGS_PATH + "/" + commitId + "/" + RUNNER_WAR );
             project.setChopVersion( prop.getProperty( CHOP_VERSION_KEY ) );
             project.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();
-            File testInfoFile = new File( getTestInfoToUploadPath() );
+            File testInfoFile = new File( getProjectFileToUploadPath() );
             mapper.writeValue( testInfoFile, project );
         }
         catch ( Exception e ) {
