@@ -28,7 +28,7 @@ public class S3OperationsTest {
     private String amiID = System.getProperty( "amiID" );
     private String securityGroup = System.getProperty( "securityGroup" );
     private String keyName = System.getProperty( "keyName" );
-    private String runnerName = "perftest-runner";
+    private String runnerName = "chop-runner";
 
     @Test
     public void testRunnersListing() {

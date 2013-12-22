@@ -81,6 +81,7 @@ public class EC2ManagerTest {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<String> ipRanges = new ArrayList<String>();
         ipRanges.add( "213.74.31.18/32" );
+        ec2.deleteSecurityGroupRecord( ipRanges, "tcp", 8080 );
         ec2.addRecordToSecurityGroup( ipRanges, "tcp", 8080 );
         ec2.close();
     }

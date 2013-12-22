@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Perftest Client</name>
+  <name>Chop Client</name>
   <artifactId>chop-client</artifactId>
   <packaging>jar</packaging>
   <description>

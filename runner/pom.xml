@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Perftest Server</name>
+  <name>Chop Runner</name>
   <artifactId>chop-runner</artifactId>
   <packaging>war</packaging>
   <description>
