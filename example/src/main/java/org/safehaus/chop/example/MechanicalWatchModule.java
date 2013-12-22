@@ -10,7 +10,9 @@ package org.safehaus.chop.example;
 import com.google.inject.AbstractModule;
 
 
-public class DummyModule extends AbstractModule {
+public class MechanicalWatchModule extends AbstractModule {
     protected void configure() {
+        bind( Mainspring.class );
+        bind( Watch.class ).to( MechanicalWatch.class );
     }
 }
