@@ -5,8 +5,8 @@ import java.io.File;
 import java.util.Set;
 
 import org.safehaus.chop.api.Project;
-import org.safehaus.perftest.client.PerftestClient;
-import org.safehaus.perftest.client.PerftestClientModule;
+import org.safehaus.chop.client.PerftestClient;
+import org.safehaus.chop.client.PerftestClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

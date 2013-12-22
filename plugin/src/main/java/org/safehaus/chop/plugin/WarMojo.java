@@ -18,7 +18,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-/** Creates perftest.war using perftest-server module and caller module */
+/** Creates perftest.war using perftest-runner module and caller module */
 @Mojo(name = "war", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST)
 public class WarMojo extends MainMojo {
@@ -92,13 +92,13 @@ public class WarMojo extends MainMojo {
             Properties prop = new Properties();
             String configPropertiesFilePath = extractedWarRoot + "WEB-INF/classes/config.properties";
             if ( FileUtils.fileExists( configPropertiesFilePath ) ) {
-                // Existing config.properties of perftest-server
+                // Existing config.properties of perftest-runner
                 inputStream = new FileInputStream( configPropertiesFilePath );
                 prop.load( inputStream );
                 inputStream.close();
             }
 
-            // If exists, properties in this file can overwrite the ones from perftest-server
+            // If exists, properties in this file can overwrite the ones from perftest-runner
             if ( getClass().getResource( "config.properties" ) != null ) {
                 inputStream = getClass().getResourceAsStream( "config.properties" );
                 Properties propCurrent = new Properties();

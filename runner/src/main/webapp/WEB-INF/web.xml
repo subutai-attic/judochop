@@ -11,7 +11,7 @@
  
   <listener>
     <listener-class>
-      org.safehaus.chop.server.ServletConfig
+      org.safehaus.chop.runner.ServletConfig
     </listener-class>
   </listener>
 

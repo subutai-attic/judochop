@@ -28,7 +28,7 @@ public class S3OperationsTest {
     private String amiID = System.getProperty( "amiID" );
     private String securityGroup = System.getProperty( "securityGroup" );
     private String keyName = System.getProperty( "keyName" );
-    private String runnerName = "chop-runner";
+
 
     @Test
     public void testRunnersListing() {
@@ -51,6 +51,7 @@ public class S3OperationsTest {
 
     @Test
     public void testDeleteGhostRunners() {
+        final String runnerName = "chop-runner";
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
         Collection<String> instanceHosts = new ArrayList<String>( instances.size() );

@@ -9,10 +9,10 @@ import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
-import org.safehaus.perftest.client.PerftestClient;
-import org.safehaus.perftest.client.PerftestClientModule;
-import org.safehaus.perftest.client.ResponseInfo;
-import org.safehaus.perftest.client.ssh.SSHCommands;
+import org.safehaus.chop.client.PerftestClient;
+import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

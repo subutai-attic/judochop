@@ -51,7 +51,7 @@
           <bucketName>${aws.s3.bucket}</bucketName>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
-          <testPackageBase>org.safehaus.chop.dummy</testPackageBase>
+          <testPackageBase>org.safehaus.chop.example</testPackageBase>
           <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>

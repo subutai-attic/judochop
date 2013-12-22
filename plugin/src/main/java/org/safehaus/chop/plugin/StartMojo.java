@@ -9,8 +9,8 @@ import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
-import org.safehaus.perftest.client.PerftestClient;
-import org.safehaus.perftest.client.PerftestClientModule;
+import org.safehaus.chop.client.PerftestClient;
+import org.safehaus.chop.client.PerftestClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

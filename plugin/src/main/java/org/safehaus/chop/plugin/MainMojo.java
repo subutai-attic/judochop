@@ -3,7 +3,7 @@ package org.safehaus.chop.plugin;
 
 import java.util.List;
 
-import org.safehaus.perftest.client.ConfigKeys;
+import org.safehaus.chop.client.ConfigKeys;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -221,7 +221,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the full path of the original perftest-server war file inside the local maven repository */
+    /** @return Returns the full path of the original perftest-runner war file inside the local maven repository */
     public String getServerWarPath() {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();
