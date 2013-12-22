@@ -10,9 +10,12 @@ package org.safehaus.chop.example;
 import com.google.inject.AbstractModule;
 
 
+/**
+ * Guice {@link com.google.inject.Module} for wiring digital watches.
+ */
 public class DigitalWatchModule extends AbstractModule {
     protected void configure() {
-        bind( Battery.class );
+        bind( PowerSource.class ).to( RechargeableBattery.class );
         bind( Watch.class ).to( DigitalWatch.class );
     }
 }

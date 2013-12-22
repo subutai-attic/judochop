@@ -13,22 +13,25 @@ public class DigitalWatch implements Watch {
 
 
     @Inject
-    public void installBattery( Battery battery ) {
-        Preconditions.checkState( ! battery.isDead(), "Don't install a dead battery" );
-        this.battery = battery;
+    public void addPowerSource( PowerSource powerSource ) {
+        Preconditions.checkState( powerSource.hasPower(), "Don't install a dead battery" );
+        Preconditions.checkState( powerSource instanceof Battery );
+
+        //noinspection ConstantConditions
+        this.battery = ( Battery ) powerSource;
     }
 
 
     @Override
     public long getTime() {
-        Preconditions.checkState( ! battery.isDead(), "Can't tell time with a dead battery!" );
+        Preconditions.checkState( battery.hasPower(), "Can't tell time with a dead battery!" );
         return System.currentTimeMillis();
     }
 
 
     @Override
     public boolean isDead() {
-        return battery.isDead();
+        return ! battery.hasPower();
     }
 
 

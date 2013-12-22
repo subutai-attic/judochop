@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertEquals;
 
 
 /**
- * Test the digital watch.
+ * Jukito (iteration) chopped digital watch test with member injection.
  */
 @RunWith( JukitoRunner.class )
 @UseModules( DigitalWatchModule.class )
@@ -26,12 +26,9 @@ import static junit.framework.Assert.assertEquals;
 public class DigitalWatchTest {
     private static final Logger LOG = LoggerFactory.getLogger( DigitalWatchTest.class );
 
-    @Inject
-    Watch watch;
-
 
     @Test
-    public void testCreation() {
+    public void testCreation( Watch watch ) {
         assertNotNull( watch );
         assertFalse( watch.isDead() );
         assertEquals( Type.DIGITAL, watch.getType() );
@@ -39,7 +36,7 @@ public class DigitalWatchTest {
 
 
     @Test
-    public void testBattery() throws InterruptedException {
+    public void testBattery( Watch watch ) throws InterruptedException {
         assertFalse( watch.isDead() );
         while ( ! watch.isDead() ) {
             Thread.sleep( 1000L );
@@ -53,7 +50,7 @@ public class DigitalWatchTest {
             LOG.debug( "Watch is dead, can't read the time." );
         }
 
-        ( ( DigitalWatch ) watch ).installBattery( new Battery() );
+        watch.addPowerSource( new RechargeableBattery() );
         assertFalse( watch.isDead() );
         watch.getTime();
     }

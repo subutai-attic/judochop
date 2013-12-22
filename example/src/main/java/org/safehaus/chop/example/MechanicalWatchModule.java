@@ -10,9 +10,12 @@ package org.safehaus.chop.example;
 import com.google.inject.AbstractModule;
 
 
+/**
+ * A Guice {@link com.google.inject.Module} for mechanical watches.
+ */
 public class MechanicalWatchModule extends AbstractModule {
     protected void configure() {
-        bind( Mainspring.class );
+        bind( PowerSource.class ).to( Mainspring.class );
         bind( Watch.class ).to( MechanicalWatch.class );
     }
 }

@@ -2,10 +2,11 @@ package org.safehaus.chop.example;
 
 
 /**
- * Example interface.
+ * Watch interface.
  */
 public interface Watch {
     long getTime();
     boolean isDead();
+    void addPowerSource( PowerSource powerSource );
     Type getType();
 }

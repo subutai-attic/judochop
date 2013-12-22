@@ -6,16 +6,16 @@ import com.google.inject.Inject;
 
 
 /**
- * A mechanical watch.
+ * A mechanical watch powered by a Mainspring.
  */
 public class MechanicalWatch implements Watch {
     private Mainspring spring;
 
 
     @Inject
-    public void installSpring( Mainspring spring ) {
-        Preconditions.checkState( spring.hasEnergy(), "Make sure the spring is wound before starting." );
-        this.spring = spring;
+    public void addPowerSource( PowerSource powerSource ) {
+        Preconditions.checkState( powerSource.hasPower(), "Make sure the spring is wound before starting." );
+        this.spring = ( Mainspring ) powerSource;
     }
 
 
@@ -26,14 +26,14 @@ public class MechanicalWatch implements Watch {
 
     @Override
     public long getTime() {
-        Preconditions.checkState( spring.hasEnergy(), "Can't get the time if the spring is not wound." );
+        Preconditions.checkState( spring.hasPower(), "Can't get the time if the spring is not wound." );
         return System.currentTimeMillis();
     }
 
 
     @Override
     public boolean isDead() {
-        return ! spring.hasEnergy();
+        return ! spring.hasPower();
     }
 
 

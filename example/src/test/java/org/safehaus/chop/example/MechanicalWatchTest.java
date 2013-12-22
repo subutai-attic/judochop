@@ -15,10 +15,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 
 /**
- * Test the digital watch.
+ * A Jukito (time) chopped mechanical watch test demonstrating Jukito member level injections.
  */
 @RunWith( JukitoRunner.class )
 @UseModules( MechanicalWatchModule.class )
@@ -40,15 +41,16 @@ public class MechanicalWatchTest {
 
 
     @Test
-    public void testSpring() throws InterruptedException {
+    public void testWatch() throws InterruptedException {
         assertFalse( watch.isDead() );
         while ( ! watch.isDead() ) {
-            Thread.sleep( 1000L );
+            Thread.sleep( 300L );
         }
         assertTrue( watch.isDead() );
 
         try {
             watch.getTime();
+            fail( "A dead watch cannot tell time." );
         }
         catch ( IllegalStateException e ) {
             LOG.debug( "Watch is dead, can't read the time." );
