@@ -50,6 +50,11 @@ your source associated with your VCS.
 
 # How do I use it?
 
+The best way is to look at an [example](http://stash.safehaus.org/projects/CHOP/repos/main/browse/example/pom.xml) project where it has been used. More info
+on how to use the plugin is also available [here](http://stash.safehaus.org/projects/CHOP/repos/main/browse/plugin).
+
+-------
+
 First add the Judo Chop maven plugin to your project like so:
 
 ~~~~~~
