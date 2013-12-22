@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.io.File;
@@ -17,7 +17,7 @@ import com.google.inject.Injector;
 
 
 @Mojo( name = "verify" )
-public class PerftestVerifyMojo extends PerftestMojo {
+public class VerifyMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {

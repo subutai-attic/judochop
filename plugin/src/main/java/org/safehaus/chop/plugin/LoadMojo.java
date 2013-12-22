@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.io.File;
@@ -26,10 +26,10 @@ import com.google.inject.Injector;
 
 
 @Mojo(name = "load")
-public class PerftestLoadMojo extends PerftestMojo {
+public class LoadMojo extends MainMojo {
 
 
-    protected PerftestLoadMojo( PerftestMojo mojo ) {
+    protected LoadMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
@@ -55,7 +55,7 @@ public class PerftestLoadMojo extends PerftestMojo {
     }
 
 
-    protected PerftestLoadMojo() {
+    protected LoadMojo() {
 
     }
 
@@ -64,7 +64,7 @@ public class PerftestLoadMojo extends PerftestMojo {
     public void execute() throws MojoExecutionException {
 
         getLog().info( "Calling setup goal first to ensure cluster is prepared" );
-        PerftestSetupMojo setupMojo = new PerftestSetupMojo( this );
+        SetupMojo setupMojo = new SetupMojo( this );
         setupMojo.execute();
         getLog().info( "Cluster is prepared" );
 
@@ -83,7 +83,7 @@ public class PerftestLoadMojo extends PerftestMojo {
             throw new MojoExecutionException( "There is no runner found" );
         }
 
-        AmazonS3 s3 = PerftestUtils.getS3Client( accessKey, secretKey );
+        AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
 
         Bucket bucket = null;
         for ( Bucket b : s3.listBuckets() ) {
@@ -127,7 +127,7 @@ public class PerftestLoadMojo extends PerftestMojo {
 
         if ( ! warExists || ! testUpToDate ) {
             getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
-            PerftestDeployMojo deployMojo = new PerftestDeployMojo( this );
+            DeployMojo deployMojo = new DeployMojo( this );
             deployMojo.execute();
         }
 

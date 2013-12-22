@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.util.List;
@@ -17,7 +17,7 @@ import org.apache.maven.project.MavenProject;
  * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
  * module's pom and provides extended get methods for several file paths that will be used by extended classes
  */
-public class PerftestMojo extends AbstractMojo implements ConfigKeys {
+public class MainMojo extends AbstractMojo implements ConfigKeys {
 
 
     @Parameter( defaultValue = "${project}", readonly = true )
@@ -138,7 +138,7 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    protected PerftestMojo( PerftestMojo mojo ) {
+    protected MainMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
@@ -164,20 +164,20 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    protected PerftestMojo() {
+    protected MainMojo() {
 
     }
 
 
     public String getProjectOutputJarPath() {
-        return PerftestUtils.forceSlashOnDir( project.getBuild().getDirectory() ) + project.getBuild().getFinalName() +
+        return Utils.forceSlashOnDir( project.getBuild().getDirectory() ) + project.getBuild().getFinalName() +
                 "." + project.getPackaging();
     }
 
 
     /** @return Returns the project base directory with a '/' at the end */
     public String getProjectBaseDirectory() {
-        return PerftestUtils.forceSlashOnDir( project.getBasedir().getAbsolutePath() );
+        return Utils.forceSlashOnDir( project.getBasedir().getAbsolutePath() );
     }
 
 
@@ -189,7 +189,7 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
     /** @return Returns the full path of created perftest.war file */
     public String getWarToUploadPath() {
-        String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
+        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
         return projectBaseDirectory + "/target/perftest.war";
     }
@@ -197,7 +197,7 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
 
     /** @return Returns the full path of created perftest.war file */
     public String getTestInfoToUploadPath() {
-        String projectBaseDirectory = PerftestUtils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
+        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
         return projectBaseDirectory + "/target/test-info.json";
     }
@@ -208,8 +208,8 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
      *         bucketName is not included in the returned String
      */
     public String getWarOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + PerftestUtils
-                .getLastCommitUuid( PerftestUtils.getGitConfigFolder( project.getBasedir().getParent() ) )
+        return destinationParentDir + Utils
+                .getLastCommitUuid( Utils.getGitConfigFolder( project.getBasedir().getParent() ) )
                 + "/perftest.war";
     }
 
@@ -219,8 +219,8 @@ public class PerftestMojo extends AbstractMojo implements ConfigKeys {
      *         bucketName is not included in the returned String
      */
     public String getTestInfoOnS3Path() throws MojoExecutionException {
-        return destinationParentDir + PerftestUtils
-                .getLastCommitUuid( PerftestUtils.getGitConfigFolder( project.getBasedir().getParent() ) )
+        return destinationParentDir + Utils
+                .getLastCommitUuid( Utils.getGitConfigFolder( project.getBasedir().getParent() ) )
                 + "/test-info.json";
     }
 

@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.io.File;
@@ -21,10 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /** Creates perftest.war using perftest-server module and caller module */
 @Mojo(name = "war", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST)
-public class PerftestWarMojo extends PerftestMojo {
+public class WarMojo extends MainMojo {
 
 
-    protected PerftestWarMojo( PerftestMojo mojo ) {
+    protected WarMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
@@ -50,7 +50,7 @@ public class PerftestWarMojo extends PerftestMojo {
     }
 
 
-    protected PerftestWarMojo() {
+    protected WarMojo() {
 
     }
 
@@ -58,10 +58,10 @@ public class PerftestWarMojo extends PerftestMojo {
     @Override
     public void execute() throws MojoExecutionException {
 
-        String gitConfigDirectory = PerftestUtils.getGitConfigFolder( getProjectBaseDirectory() );
-        String commitId = PerftestUtils.getLastCommitUuid( gitConfigDirectory );
+        String gitConfigDirectory = Utils.getGitConfigFolder( getProjectBaseDirectory() );
+        String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
 
-        if ( failIfCommitNecessary && PerftestUtils.isCommitNecessary( gitConfigDirectory ) ) {
+        if ( failIfCommitNecessary && Utils.isCommitNecessary( gitConfigDirectory ) ) {
             String failMsg = "There are modified sources, commit changes before calling the plugin or set "
                     + "failIfCommitNecessary parameter as false in your plugin configuration field inside the pom.xml";
 
@@ -70,7 +70,7 @@ public class PerftestWarMojo extends PerftestMojo {
 
         try {
 
-            String timeStamp = PerftestUtils.getTimestamp( new Date() );
+            String timeStamp = Utils.getTimestamp( new Date() );
 
             // Extract the war file
             String serverWarPath = getServerWarPath();
@@ -81,12 +81,12 @@ public class PerftestWarMojo extends PerftestMojo {
             else {
                 FileUtils.mkdir( extractedWarRoot );
             }
-            PerftestUtils.extractWar( new File( serverWarPath ), extractedWarRoot );
+            Utils.extractWar( new File( serverWarPath ), extractedWarRoot );
 
             // Copy caller project jar and its dependency jars to WEB-INF/lib folder
             String libPath = extractedWarRoot + "WEB-INF/lib/";
             FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), new File( libPath ) );
-            PerftestUtils.copyArtifactsTo( this.project, libPath, true );
+            Utils.copyArtifactsTo( this.project, libPath, true );
 
             // Create config.properties file
             InputStream inputStream;
@@ -114,8 +114,8 @@ public class PerftestWarMojo extends PerftestMojo {
             }
 
             // Insert all properties acquired in runtime and overwrite existing ones
-            String gitUrl = PerftestUtils.getGitRemoteUrl( gitConfigDirectory );
-            String warMd5 = PerftestUtils.getMD5( timeStamp, commitId );
+            String gitUrl = Utils.getGitRemoteUrl( gitConfigDirectory );
+            String warMd5 = Utils.getMD5( timeStamp, commitId );
             prop.setProperty( GIT_UUID_KEY, commitId );
             prop.setProperty( GIT_URL_KEY, gitUrl );
             prop.setProperty( CREATE_TIMESTAMP_KEY, timeStamp );
@@ -138,7 +138,7 @@ public class PerftestWarMojo extends PerftestMojo {
             // Create the final WAR
             String finalWarPath = getWarToUploadPath();
             File finalWarFile = new File( finalWarPath );
-            PerftestUtils.archiveWar( finalWarFile, extractedWarRoot );
+            Utils.archiveWar( finalWarFile, extractedWarRoot );
 
             // Generate the test-info.json file
             Project project = new Project();

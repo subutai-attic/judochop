@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.io.File;
@@ -23,7 +23,7 @@ import com.google.inject.Injector;
 
 
 @Mojo ( name = "start" )
-public class PerftestStartMojo extends PerftestMojo {
+public class StartMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -67,7 +67,7 @@ public class PerftestStartMojo extends PerftestMojo {
             throw new MojoExecutionException( "There is no runner found" );
         }
 
-        AmazonS3 s3 = PerftestUtils.getS3Client( accessKey, secretKey );
+        AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
         String warOnS3Path = getWarOnS3Path();
         boolean warExists = false;
 
@@ -80,7 +80,7 @@ public class PerftestStartMojo extends PerftestMojo {
 
         if ( ! warExists || ! testUpToDate || ! client.verify() ) {
             getLog().info( "Cluster is not ready to start the tests, calling perftest:load goal..."  );
-            PerftestLoadMojo loadMojo = new PerftestLoadMojo( this );
+            LoadMojo loadMojo = new LoadMojo( this );
             loadMojo.execute();
         }
 

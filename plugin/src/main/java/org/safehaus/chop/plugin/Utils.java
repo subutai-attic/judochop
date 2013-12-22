@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.io.File;
@@ -44,9 +44,9 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 
 
-public class PerftestUtils {
+public class Utils {
 
-    private final static Logger logger = Logger.getLogger( PerftestUtils.class.getName() );
+    private final static Logger logger = Logger.getLogger( Utils.class.getName() );
 
 
     public static AmazonS3 getS3Client( String accessKey, String secretKey ) {

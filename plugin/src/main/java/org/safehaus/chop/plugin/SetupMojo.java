@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.Collection;
 
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
-import org.safehaus.chop.api.store.amazon.ConfigKeys;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,10 +19,10 @@ import com.google.inject.Injector;
 
 
 @Mojo( name = "setup" )
-public class PerftestSetupMojo extends PerftestMojo {
+public class SetupMojo extends MainMojo {
 
 
-    protected PerftestSetupMojo( PerftestMojo mojo ) {
+    protected SetupMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
@@ -49,7 +48,7 @@ public class PerftestSetupMojo extends PerftestMojo {
     }
 
 
-    protected PerftestSetupMojo() {
+    protected SetupMojo() {
 
     }
 
@@ -68,7 +67,7 @@ public class PerftestSetupMojo extends PerftestMojo {
             if( ! ec2Manager.ensureRunningInstances( minimumRunners, maximumRunners ) ) {
                 throw new MojoExecutionException( "Setting up instances failed" );
             }
-            int port = Integer.parseInt( ConfigKeys.DEFAULT_SERVER_PORT );
+            int port = Integer.parseInt( DEFAULT_SERVER_PORT );
             ArrayList<Integer> ports = new ArrayList<Integer>();
             ports.add( port );
             ec2Manager.updateSecurityGroupRecords( ports, false );

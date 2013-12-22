@@ -1,4 +1,4 @@
-package org.safehaus.perftest.plugin;
+package org.safehaus.chop.plugin;
 
 
 import org.junit.Assert;
@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.apache.maven.plugin.MojoExecutionException;
 
 
-public class PerftestMojoTest {
+public class MainMojoTest {
     @Test
     @Ignore
     public void testGetS3Client() {
@@ -50,7 +50,7 @@ public class PerftestMojoTest {
         String timestamp = "2013.12.08.01.52.51";
 
         try {
-            String md5 = PerftestUtils.getMD5( timestamp, lastCommitUUID );
+            String md5 = Utils.getMD5( timestamp, lastCommitUUID );
             Assert.assertEquals( "MD5 generator is not working properly", md5, "81a28bb20ca1f89ed41ce5c861fb7222" );
         }
         catch ( MojoExecutionException e ) {
