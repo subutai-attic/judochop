@@ -9,14 +9,14 @@
     <version>7</version>
   </parent>
 
-  <artifactId>perftest-parent</artifactId>
-  <groupId>org.safehaus.perftest</groupId>
+  <artifactId>chop-parent</artifactId>
+  <groupId>org.safehaus.chop</groupId>
   <version>1.0-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
-  <name>Perftest Parent</name>
+  <name>Chop Parent</name>
 
   <packaging>pom</packaging>
-  <description>A Simple PERFormance TESTing Framework</description>
+  <description>A Simple Performance Testing Framework for Jukito</description>
 
   <licenses>
     <license>
@@ -46,12 +46,12 @@
   </developers>
 
   <scm>
-    <url>http://stash.safehaus.org/projects/PERFTEST/repos/main/browse</url>
+    <url>http://stash.safehaus.org/projects/CHOP/repos/main/browse</url>
     <connection>
-      scm:git:http://stash.safehaus.org/scm/perftest/main.git
+      scm:git:http://stash.safehaus.org/scm/chop/main.git
     </connection>
     <developerConnection>
-scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/perftest/main.git
+scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
     </developerConnection>
   </scm>
 
@@ -63,7 +63,7 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/perftest/main.git
 
   <modules>
     <module>amazon</module>
-    <module>server</module>
+    <module>runner</module>
     <module>plugin</module>
     <module>api</module>
     <module>client</module>

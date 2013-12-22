@@ -3,17 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>perftest-parent</artifactId>
-    <groupId>org.safehaus.perftest</groupId>
+    <artifactId>chop-parent</artifactId>
+    <groupId>org.safehaus.chop</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Perftest API</name>
-  <artifactId>perftest-api</artifactId>
+  <name>Chop API</name>
+  <artifactId>chop-api</artifactId>
   <packaging>jar</packaging>
   <description>
-    Common API for Perftest entities shared across environments and across
+    Common API for Chop entities shared across environments and across
     various modules of the project.
   </description>
 

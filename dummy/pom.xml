@@ -3,17 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.safehaus.perftest</groupId>
-    <artifactId>perftest-parent</artifactId>
+    <groupId>org.safehaus.chop</groupId>
+    <artifactId>chop-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <name>Perftest Dummy Project</name>
+  <name>Chop Dummy Project</name>
   <artifactId>dummy</artifactId>
   <packaging>jar</packaging>
   <description>
-    A fake project used to test the plugin and components of the Perftest
-    system.
+    A fake project used to test the plugin and components of Chop
   </description>
 
   <properties>
@@ -23,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>perftest-api</artifactId>
+      <artifactId>chop-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -49,14 +48,13 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.safehaus.perftest</groupId>
-        <artifactId>perftest-maven-plugin</artifactId>
+        <groupId>org.safehaus.chop</groupId>
+        <artifactId>chop-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
           <accessKey>${aws.s3.key}</accessKey>
           <secretKey>${aws.s3.secret}</secretKey>
           <bucketName>${aws.s3.bucket}</bucketName>
-          <perftestFormation>${perftest.formation}</perftestFormation>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testPackageBase>org.safehaus.chop.dummy.DummyModule</testPackageBase>
