@@ -156,7 +156,7 @@ public class WarMojo extends MainMojo {
             project.setVcsRepoUrl( gitUrl );
             project.setVcsVersion( commitId );
             project.setLoadKey( CONFIGS_PATH + "/" + commitId + "/" + RUNNER_WAR );
-            project.setChopVersion( prop.getProperty( CHOP_VERSION_KEY ) );
+            project.setChopVersion( plugin.getVersion() );
             project.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();
