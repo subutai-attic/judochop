@@ -44,8 +44,10 @@ public class S3OperationsTest {
     public void testRegister() {
         Ec2Runner metadata = new Ec2Runner();
         metadata.setProperty( "foo", "bar" );
+        metadata.setProperty( ConfigKeys.HOSTNAME_KEY, "foobar-host" );
         operations.register( metadata );
     }
+
 
     @Test
     public void testDeleteGhostRunners() {
