@@ -28,10 +28,12 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.Filter;
+import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
+import com.amazonaws.services.ec2.model.Placement;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
@@ -64,6 +66,8 @@ public class EC2Manager {
 
     private InstanceType defaultType = InstanceType.M1Medium;
 
+    private String availabilityZone;
+
     private AmazonEC2Client client;
 
 
@@ -84,6 +88,16 @@ public class EC2Manager {
 
     public void setDefaultType( final InstanceType defaultType ) {
         this.defaultType = defaultType;
+    }
+
+
+    public String getAvailabilityZone() {
+        return availabilityZone;
+    }
+
+
+    public void setAvailabilityZone( final String availabilityZone ) {
+        this.availabilityZone = availabilityZone;
     }
 
 
@@ -208,6 +222,10 @@ public class EC2Manager {
         RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
         runInstancesRequest.withImageId( amiId ).withInstanceType( instanceType ).withMinCount( count )
                            .withMaxCount( count ).withKeyName( keyName ).withSecurityGroups( securityGroup );
+
+        if( availabilityZone != null && ! availabilityZone.isEmpty() ) {
+            runInstancesRequest = runInstancesRequest.withPlacement( new Placement( availabilityZone ) );
+        }
 
         RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
 

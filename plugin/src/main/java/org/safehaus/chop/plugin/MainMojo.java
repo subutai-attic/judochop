@@ -128,6 +128,10 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     protected List securityGroupExceptions;
 
 
+    @Parameter( property = "availabilityZone" )
+    protected String availabilityZone;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -195,7 +199,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the full path of created perftest.war file */
+    /** @return Returns the full path of created project.json file */
     public String getProjectFileToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 

@@ -26,17 +26,18 @@ public class EC2ManagerTest {
     private String amiID = System.getProperty( "amiID" );
     private String securityGroup = System.getProperty( "securityGroup" );
     private String keyName = System.getProperty( "keyName" );
-    private String runnerName = "perftest-runner";
+    private String runnerName = "chop-runner";
 
-    @Test
+    @Test @Ignore
     public void testLaunchInstances()
     {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
-        ec2.launchEC2Instances( InstanceType.M1Medium, 3 );
+        ec2.setAvailabilityZone( "us-east-1d" );
+        ec2.launchEC2Instances( InstanceType.M1Medium, 2 );
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testGetInstances1()
     {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
@@ -47,7 +48,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testGetInstances2()
     {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
@@ -58,7 +59,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testGetInstances3()
     {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
@@ -69,7 +70,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testGetInstances4()
     {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
@@ -80,7 +81,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testAddRecordToSecurityGroup() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<String> ipRanges = new ArrayList<String>();
@@ -90,7 +91,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testDeleteSecurityGroupRecord() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<String> ipRanges = new ArrayList<String>();
@@ -99,7 +100,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testGetSecurityGroupRecords() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<IpPermission> permissions = ec2.getSecurityGroupRecords();
@@ -112,7 +113,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testUpdateSecurityGroupRecords() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<Integer> ports = new ArrayList<Integer> ( 2 );
@@ -122,7 +123,7 @@ public class EC2ManagerTest {
     }
 
 
-    @Test
+    @Test @Ignore
     public void testEnsureRunningInstancesMin() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         boolean res = ec2.ensureRunningInstancesMin( 4 );
@@ -130,7 +131,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testEnsureRunningInstancesMax() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         boolean res = ec2.ensureRunningInstancesMax( 1 );
@@ -138,7 +139,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testEnsureRunningInstances() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         boolean res = ec2.ensureRunningInstances( 3, 5 );
@@ -146,7 +147,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testListSecurityGroups() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<String> groups = ec2.listSecurityGroups();
@@ -157,7 +158,7 @@ public class EC2ManagerTest {
         ec2.close();
     }
 
-    @Test
+    @Test @Ignore
     public void testCreateDeleteSecurityGroup() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         String groupName = "perftest-security-create-delete-test";

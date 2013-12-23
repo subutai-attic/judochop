@@ -14,6 +14,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.IpPermission;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -63,15 +64,48 @@ public class SetupMojo extends MainMojo {
             }
             ec2Manager.setDefaultTimeout( setupTimeout );
 
+            if( availabilityZone != null && ! availabilityZone.isEmpty() ) {
+                ec2Manager.setAvailabilityZone( availabilityZone );
+            }
+
             if( ! ec2Manager.ensureRunningInstances( minimumRunners, maximumRunners ) ) {
                 throw new MojoExecutionException( "Setting up instances failed" );
             }
+
             int port = Integer.parseInt( DEFAULT_SERVER_PORT );
             ArrayList<Integer> ports = new ArrayList<Integer>();
             ports.add( port );
             ec2Manager.updateSecurityGroupRecords( ports, false );
             if( securityGroupExceptions != null && securityGroupExceptions.size() != 0 ) {
-                ec2Manager.addRecordToSecurityGroup( securityGroupExceptions, "tcp", port );
+                Collection<IpPermission> existingRules = ec2Manager.getSecurityGroupRecords();
+                String record;
+                ArrayList<String> ipRanges = new ArrayList<String>();
+                for( Object obj : securityGroupExceptions ) {
+                    record = obj.toString();
+                    int colonInd = record.indexOf( ':' );
+                    ipRanges.clear();
+                    ipRanges.add( record.substring( 0, colonInd ) );
+                    port = Integer.parseInt( record.substring( colonInd + 1 ) );
+
+                    boolean permissionAlreadyGranted = false;
+                    for( IpPermission permission : existingRules ) {
+                        if( permission.getFromPort() <= port &&  permission.getToPort() >= port ) {
+                            // This doesn't check if given IP range is already covered in an existing range,
+                            // but checks if there is another record with the same exact range
+                            // e.g. If there is a rule with 10.11.12.0/24, it also covers 10.11.12.123/32
+                            for( String range : permission.getIpRanges() ) {
+                                if ( range.equals( ipRanges.get( 0 ) ) ) {
+                                    permissionAlreadyGranted = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if( ! permissionAlreadyGranted ) {
+                        ec2Manager.addRecordToSecurityGroup( ipRanges, "tcp", port );
+                    }
+                }
             }
 
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
