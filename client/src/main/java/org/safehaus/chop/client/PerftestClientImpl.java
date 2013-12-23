@@ -85,13 +85,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     @Override
-    public Result load( Runner runner, String projectKey, Boolean propagate ) {
-        Project project = getProject( projectKey );
+    public Result load( Runner runner, String runnerPathWithBucket, Boolean propagate ) {
+        Project project = getProject( runnerPathWithBucket.substring( runnerPathWithBucket.indexOf( "/" ) + 1 ) );
         String md5 = project.getWarMd5();
 
-        LOG.warn( "Sending load request to " + runner.getHostname() );
+        LOG.info( "Sending load request to " + runner.getHostname() );
 
-        Result result = RestRequests.load( runner, projectKey, propagate );
+        Result result = RestRequests.load( runner, runnerPathWithBucket, propagate );
 
         if ( ! result.getStatus() ) {
             LOG.info( "Failed on load POST to {} response message was: {}" ,
