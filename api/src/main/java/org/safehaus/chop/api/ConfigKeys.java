@@ -5,7 +5,7 @@ package org.safehaus.chop.api;
 public interface ConfigKeys {
 
     /** @TODO - this is a constant and not a key does not belong here */
-    String PARAM_PROJECT = "project";
+    String PARAM_RUNNER_WAR = "runner.war";
 
     /** @TODO - this is a constant and not a key does not belong here */
     String PARAM_PROPAGATE = "propagate";

@@ -85,13 +85,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     @Override
-    public Result load( Runner runner, String testKey, Boolean propagate ) {
-        Project project = getTest( testKey );
+    public Result load( Runner runner, String runnerPathWithBucket, Boolean propagate ) {
+        Project project = getTest( runnerPathWithBucket.substring( runnerPathWithBucket.indexOf( "/" ) + 1 ) );
         String md5 = project.getWarMd5();
 
-        LOG.warn( "Sending load request to " + runner.getHostname() );
+        LOG.info( "Sending load request to " + runner.getHostname() );
 
-        Result result = RestRequests.load( runner, testKey, propagate );
+        Result result = RestRequests.load( runner, runnerPathWithBucket, propagate );
 
         if ( ! result.getStatus() )
         {
@@ -305,7 +305,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
-                if ( result.getState().accepts( Signal.LOAD, State.READY ) ) {
+                if ( ! result.getState().accepts( Signal.LOAD, State.READY ) ) {
                     LOG.info( "Runner is not in a ready state, State: {}", result.getState() );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;

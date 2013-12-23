@@ -47,7 +47,7 @@ public class PerftestClientTest {
     }
 
 
-    @Test @Ignore //TODO
+    @Test @Ignore( "make sure this is not hard coded and does not break" )
     public void testLoad() throws IOException {
         Runner liveRunner = client.getLiveRunner();
         client.load( liveRunner, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true );

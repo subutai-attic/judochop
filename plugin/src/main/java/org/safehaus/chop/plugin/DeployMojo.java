@@ -15,6 +15,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.Bucket;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -88,7 +89,13 @@ public class DeployMojo extends MainMojo {
         AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
 
         if ( !s3.doesBucketExist( bucketName ) ) {
-            throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
+            Bucket bucket = s3.createBucket( bucketName );
+            if( bucket == null ) {
+                throw new MojoExecutionException( "Bucket " + bucketName + " doesn't exist and could not create one" );
+            }
+            else {
+                getLog().info( "Bucket " + bucketName + " didn't exist, created a new one" );
+            }
         }
 
         getLog().info( "Uploading file to: " + destinationFile );

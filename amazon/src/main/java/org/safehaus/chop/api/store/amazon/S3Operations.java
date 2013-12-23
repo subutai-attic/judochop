@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -366,17 +367,22 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * the file. Use this to download big things like war files or results.
      *
      * @param tempDir the temporary directory to use
-     * @param key the blobs key
+     * @param keyWithBucket the blobs key
      * @return the File object referencing the temporary file
      *
      * @throws IOException if there's a problem accessing the stream
      */
     @Override
-    public File download( File tempDir, String key ) throws IOException {
+    public File download( File tempDir, String keyWithBucket ) throws IOException {
+        int firstSlashInd = keyWithBucket.indexOf( "/" );
+        String bucket = keyWithBucket.substring( 0, firstSlashInd );
+        String remainderKey = keyWithBucket.substring( bucket.length() + 1 );
+        LOG.info( "Using bucket {} and remaining key {}", bucket, remainderKey );
+
         File tempFile = File.createTempFile( "download", "file", tempDir );
         LOG.debug( "Created temporary file {} for new war download.", tempFile.getAbsolutePath() );
 
-        S3Object s3Object = client.getObject( awsBucket.get(), key );
+        S3Object s3Object = client.getObject( bucket, remainderKey );
         LOG.debug( "Got S3Object:\n{}", s3Object.toString() );
 
         // Download war file contents into temporary file
@@ -392,7 +398,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         out.flush();
         out.close();
         in.close();
-        LOG.info( "Successfully downloaded {} from S3 to {}.", key, tempFile.getAbsoluteFile() );
+        LOG.info( "Successfully downloaded {} from S3 to {}.", keyWithBucket, tempFile.getAbsoluteFile() );
         return tempFile;
     }
 
