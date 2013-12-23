@@ -28,6 +28,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
+import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
+
 
 /** A resource that optionally propagates its operation to peer drivers. */
 public class PropagatingResource {
@@ -95,7 +97,7 @@ public class PropagatingResource {
 
 
     /**
-     * Propagates this resource operation to other peers in the perftest cluster.
+     * Propagates this resource operation to other peers in the chop cluster.
      *
      * @param status whether or not the propagating operation itself succeeded, sometimes you might want to propagate
      * the operation even if the initiating operation failed
@@ -109,7 +111,7 @@ public class PropagatingResource {
 
 
     /**
-     * Propagates this resource operation to other peers in the perftest cluster.
+     * Propagates this resource operation to other peers in the chop cluster.
      *
      * @param status whether or not the propagating operation itself succeeded, sometimes you might want to propagate
      * the operation even if the initiating operation failed
@@ -186,9 +188,9 @@ public class PropagatingResource {
             WebResource resource = client.resource( metadata.getUrl() ).path( getResourcePath() );
 
             // Inject required query parameters
-            resource = resource.queryParam( "propagate", "false" );
+            resource = resource.queryParam( PARAM_PROPAGATE, "false" );
             for ( String paramKey : params.keySet() ) {
-                if ( paramKey.equals( "propagate" ) ) {
+                if ( paramKey.equals( PARAM_PROPAGATE ) ) {
                     continue;
                 }
 

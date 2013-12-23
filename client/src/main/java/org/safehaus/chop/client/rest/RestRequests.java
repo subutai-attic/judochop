@@ -4,6 +4,7 @@ package org.safehaus.chop.client.rest;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.ConfigKeys;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
@@ -12,10 +13,12 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
+import static org.safehaus.chop.api.ConfigKeys.PARAM_PROJECT;
+import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
+
 
 /**
- * Created with IntelliJ IDEA. User: akarasulu Date: 12/9/13 Time: 3:15 AM To change this template use File | Settings |
- * File Templates.
+ * Client REST request functions.
  */
 public class RestRequests {
     /**
@@ -32,7 +35,7 @@ public class RestRequests {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/load" );
-        return resource.queryParam( "propagate", propagate.toString() ).queryParam( "perftest", perftest )
+        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).queryParam( PARAM_PROJECT, perftest )
                        .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
     }
 
@@ -49,7 +52,7 @@ public class RestRequests {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/start" );
-        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
 
@@ -66,7 +69,7 @@ public class RestRequests {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/reset" );
-        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
 
@@ -83,7 +86,7 @@ public class RestRequests {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runner.getUrl() ).path( "/stop" );
-        return resource.queryParam( "propagate", propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
+        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
 
