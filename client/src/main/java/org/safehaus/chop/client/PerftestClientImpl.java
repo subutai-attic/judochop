@@ -85,16 +85,17 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     @Override
-    public Result load( Runner runner, String runnerPathWithBucket, Boolean propagate ) {
-        Project project = getTest( runnerPathWithBucket.substring( runnerPathWithBucket.indexOf( "/" ) + 1 ) );
+    public Result load( Runner runner, String projectKey, Boolean propagate ) {
+        Project project = getProject( projectKey );
         String md5 = project.getWarMd5();
 
-        LOG.info( "Sending load request to " + runner.getHostname() );
+        LOG.warn( "Sending load request to " + runner.getHostname() );
 
-        Result result = RestRequests.load( runner, runnerPathWithBucket, propagate );
+        Result result = RestRequests.load( runner, projectKey, propagate );
 
-        if ( ! result.getStatus() )
-        {
+        if ( ! result.getStatus() ) {
+            LOG.info( "Failed on load POST to {} response message was: {}" ,
+                    result.getEndpoint(), result.getMessage()  );
             return result;
         }
 
@@ -154,7 +155,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
     }
 
 
-    private Project getTest( final String testKey ) {
+    private Project getProject( final String testKey ) {
         return operations.getProject( testKey );
     }
 
@@ -268,52 +269,53 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
     @Override
     public boolean verify() {
         LOG.info( "Starting verify operation..." );
-        // Get the latest test info
-        Project latestTest = null;
-        try {
-            Set<Project> tests = getProjectConfigs();
 
-            for ( Project test : tests ) {
-                if ( latestTest == null ) {
-                    latestTest = test;
+        // Get the latest project information
+        Project project = null;
+        try {
+            Set<Project> projects = getProjectConfigs();
+
+            for ( Project projectCandidate : projects ) {
+                if ( project == null ) {
+                    project = projectCandidate;
                 }
-                else if ( compareTimestamps( test.getCreateTimestamp(), latestTest.getCreateTimestamp() ) > 0 ) {
-                    latestTest = test;
+                else if ( compareTimestamps( projectCandidate.getCreateTimestamp(), project.getCreateTimestamp() ) > 0 ) {
+                    project = projectCandidate;
                 }
             }
-
         } catch ( Exception e ) {
-            LOG.warn( "Error while getting test information from store", e );
+            LOG.warn( "Error while getting project information from store", e );
             return false;
         }
 
-        if ( latestTest == null ) {
-            LOG.info( "No tests found on store" );
+        if ( project == null ) {
+            LOG.info( "No projects were found in the store" );
             return false;
         }
 
-        LOG.info( "Got the latest test info from store" );
-        LOG.info( "Latest test: MD5: " + latestTest.getWarMd5() + " Create Time: " + latestTest.getCreateTimestamp() );
+        LOG.info( "Got the latest project info from store" );
+        LOG.info( "Latest project MD5: {}, Create Time: {}", project.getWarMd5(), project.getCreateTimestamp() );
 
         Collection<Runner> runners = getRunners();
         for ( Runner runner : runners ) {
             try {
-                LOG.info( "Getting status of " + runner.getHostname() );
+                LOG.info( "Verifying runner with hostname {}", runner.getHostname() );
                 Result result = status( runner );
+
                 if ( ! result.getStatus() ) {
                     LOG.info( "State of runner could not be retrieved" );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
-                if ( ! result.getState().accepts( Signal.LOAD, State.READY ) ) {
+                if ( result.getState().accepts( Signal.LOAD, State.READY ) ) {
                     LOG.info( "Runner is not in a ready state, State: {}", result.getState() );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
-                if ( ! result.getProject().getWarMd5().equals( latestTest.getWarMd5() ) ) {
+                if ( ! result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
                     LOG.info( "Runner doesn't have the latest test loaded" );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
-                    LOG.info( "Latest test MD5 is {}", latestTest.getWarMd5() );
+                    LOG.info( "Latest test MD5 is {}", project.getWarMd5() );
                     LOG.info( "Runner's installed MD5 is {}", result.getProject().getWarMd5() );
                     return false;
                 }

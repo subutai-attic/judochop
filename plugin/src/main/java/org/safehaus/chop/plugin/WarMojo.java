@@ -136,6 +136,13 @@ public class WarMojo extends MainMojo {
             prop.setProperty( "manager.app.password", managerAppPassword );
             prop.setProperty( WAR_MD5_KEY, warMd5 );
 
+            String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
+                    commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
+
+            prop.setProperty( LOAD_KEY, CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR );
+            prop.setProperty( LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
+            prop.setProperty( CHOP_VERSION_KEY, plugin.getVersion() );
+
             // Save the newly formed properties file under WEB-INF/classes/config.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
             FileWriter writer = new FileWriter( configPropertiesFilePath );

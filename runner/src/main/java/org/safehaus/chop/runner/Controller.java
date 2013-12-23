@@ -122,8 +122,8 @@ public class Controller implements IController, Runnable {
     @Override
     public void reset() {
         synchronized ( lock ) {
-            Preconditions.checkState( state.accepts( Signal.RESET ), "Cannot reset the controller in state: " + state );
-            state = State.READY;
+            Preconditions.checkState( state.accepts( Signal.RESET, State.READY ), "Cannot reset the controller in state: " + state );
+            state = state.next( Signal.RESET );
             currentDriver = null;
         }
     }
