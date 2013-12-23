@@ -304,7 +304,9 @@ public class S3Operations implements StoreOperations, ConfigKeys {
         Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
 
         String loadKey = project.getLoadKey();
+        LOG.info( "Using loadKey = {}", loadKey );
         loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        LOG.info( "Stripped loadKey to {}", loadKey );
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
@@ -312,6 +314,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
           .append( metadata.getHostname() ).append( SUMMARY_SUFFIX );
 
         String blobName = sb.toString();
+        LOG.info( "Saving summary json with key = {}", blobName );
         putJsonObject( blobName, summary );
         LOG.info( "Successfully registered {}", blobName );
     }
