@@ -73,7 +73,8 @@
           <minimumRunners>5</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>
-            <param>213.74.31.18/32</param>
+            <param>213.74.31.18/32:8080</param>
+            <param>213.74.31.18/32:22</param>
           </securityGroupExceptions>
         </configuration>
       </plugin>
