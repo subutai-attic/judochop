@@ -81,7 +81,7 @@ public class LoadResource extends PropagatingResource {
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( PARAM_PROJECT ) String project ) {
+    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( PARAM_RUNNER_WAR ) String project ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( runner.isRunning() ) {
@@ -98,7 +98,7 @@ public class LoadResource extends PropagatingResource {
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
 
-        Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
+        Map<String, String> params = Collections.singletonMap( PARAM_RUNNER_WAR, project );
 
         if ( propagate == Boolean.TRUE ) {
             PropagatedResult result =

@@ -126,12 +126,12 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public File download( File tempDir, String perftest ) throws Exception {
+    public File download( File tempDir, String runnerWarPathWithBucket ) throws Exception {
         try {
-            return operations.download( tempDir, perftest );
+            return operations.download( tempDir, runnerWarPathWithBucket );
         }
         catch ( Exception e ) {
-            LOG.error( "Failed to execute load operation for {}", perftest, e );
+            LOG.error( "Failed to execute load operation for {}", runnerWarPathWithBucket, e );
             throw e;
         }
     }

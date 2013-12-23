@@ -24,7 +24,7 @@ public interface StoreOperations {
 
     Map<String, Runner> getRunners();
 
-    File download( File tempDir, String key ) throws IOException;
+    File download( File tempDir, String keyWithBucket ) throws IOException;
 
     <T> T putJsonObject( String key, Object obj );
 

@@ -32,7 +32,7 @@ public interface StoreService {
 
     Runner getMyMetadata();
 
-    File download( File tempDir, String perftest ) throws Exception;
+    File download( File tempDir, String runnerWarPathWithBucket ) throws Exception;
 
     void store( Project project, ISummary summary, File resultsFile );
 

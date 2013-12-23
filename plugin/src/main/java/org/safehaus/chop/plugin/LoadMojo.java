@@ -132,7 +132,7 @@ public class LoadMojo extends MainMojo {
 
         getLog().info( "Loading the test on drivers..." );
 
-        Result result = client.load( info, getWarOnS3Path(), true );
+        Result result = client.load( info, bucketName + "/" + getWarOnS3Path(), true );
 
         if ( !result.getStatus() ) {
             throw new MojoExecutionException( "Could not get the status of drivers, quitting..." );

@@ -307,7 +307,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
                 }
-                if ( result.getState().accepts( Signal.LOAD, State.READY ) ) {
+                if ( ! result.getState().accepts( Signal.LOAD, State.READY ) ) {
                     LOG.info( "Runner is not in a ready state, State: {}", result.getState() );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     return false;
