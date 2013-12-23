@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 
 
@@ -26,6 +29,7 @@ public enum State {
     // ready ==> (start signal) ==> running
     READY( 0, new Signal[] { Signal.LOAD, Signal.START }, new Integer[] { 0, 1 } );
 
+    private static final Logger LOG = LoggerFactory.getLogger( State.class );
 
     private final int id;
     private final Map<Signal, Integer> trantab;
@@ -53,13 +57,47 @@ public enum State {
      * @return true if the signal will be accepted, false otherwise
      */
     public boolean accepts( Signal signal ) {
-        Preconditions.checkNotNull( signal, "Signal parameter cannot be null" );
+        Preconditions.checkNotNull( signal, "Signal parameter cannot be null: state = {}", toString() );
         return accepts.contains( signal );
     }
 
 
+    /**
+     * Check to see if the state accepts a signal: in other words is the signal a
+     * valid signal to produce a state transition and does that transition lead
+     * to the supplied 'next' state parameter.
+     *
+     * @param signal the signal to check
+     * @param next the next state to transit to
+     * @return true if the signal will be accepted and the next state will be the
+     * supplied state, false otherwise
+     */
+    public boolean accepts( Signal signal, State next ) {
+        if ( signal == null || next == null ) {
+            return false;
+        }
+
+        if ( ! accepts.contains( signal ) ) {
+            return false;
+        }
+
+        Integer id = trantab.get( signal );
+        if ( id == null ) {
+            return false;
+        }
+
+        State realNext = get( id );
+
+        if ( realNext == null ) {
+            return false;
+        }
+
+        return realNext.equals( next );
+    }
+
+
     public State get( Integer id ) {
-        Preconditions.checkNotNull( id, "The id cannot be null" );
+        Preconditions.checkNotNull( id, "The id cannot be null: state = {}", toString() );
 
         switch ( id ) {
             case 0:
@@ -77,9 +115,12 @@ public enum State {
 
 
     public State next( Signal signal ) {
-        Preconditions.checkNotNull( signal, "The signal cannot be null." );
+        Preconditions.checkNotNull( signal, "The signal cannot be null: state = {}", toString() );
+        Integer id = trantab.get( signal );
 
-        return get( trantab.get( signal ) );
+        LOG.info( "Got signal {} in {} state: id = " + id, signal, toString() );
+
+        return get( id );
     }
 
 
