@@ -43,6 +43,8 @@ public class SetupMojo extends MainMojo {
         this.minimumRunners = mojo.minimumRunners;
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
+        this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }

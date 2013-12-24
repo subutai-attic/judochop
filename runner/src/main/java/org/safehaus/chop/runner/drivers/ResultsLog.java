@@ -129,7 +129,7 @@ public class ResultsLog implements IResultsLog, Runnable {
         jgen.writeNumberField( "totalTestsRun", tracker.getTotalTestsRun() );
         jgen.writeNumberField( "maxTime", tracker.getMaxTime() );
         jgen.writeNumberField( "minTime", tracker.getMinTime() );
-        jgen.writeNumberField( "meanTime", tracker.getMaxTime() );
+        jgen.writeNumberField( "meanTime", tracker.getMeanTime() );
         jgen.writeEndObject();
         jgen.flush();
     }

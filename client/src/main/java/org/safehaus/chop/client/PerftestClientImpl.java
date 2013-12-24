@@ -208,8 +208,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
         }
 
         if ( ! stoppable ) {
-            LOG.info( "Cluster is not in a stoppable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot stop", status.getState() );
+            LOG.info( "Runner is not in a stoppable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot stop", status.getState() );
         }
 
         LOG.info( "Sending stop request to runner at {}", runner.getHostname() );
@@ -244,8 +244,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
         }
 
         if ( ! resettable ) {
-            LOG.info( "Cluster is not in a resettable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot reset", status.getState() );
+            LOG.info( "Runner is not in a resettable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot reset", status.getState() );
         }
 
         LOG.info( "Sending reset request to runner at {}", runner.getHostname() );
@@ -265,8 +265,10 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
      * @return Returns true if all instances on the cluster is ready to start the test
      */
     @Override
-    public boolean verify() {
+    public Result verify() {
         LOG.info( "Starting verify operation..." );
+
+        String message;
 
         // Get the latest project information
         Project project = null;
@@ -282,13 +284,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                 }
             }
         } catch ( Exception e ) {
-            LOG.warn( "Error while getting project information from store", e );
-            return false;
+            message = "Error while getting project information from store";
+            LOG.warn( message, e );
+            return new BaseResult( null, false, message, State.INACTIVE );
         }
 
         if ( project == null ) {
-            LOG.info( "No projects were found in the store" );
-            return false;
+            return new BaseResult( null, false, "No projects were found in the store", State.INACTIVE );
         }
 
         LOG.info( "Got the latest project info from store" );
@@ -303,30 +305,33 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                 if ( ! result.getStatus() ) {
                     LOG.info( "State of runner could not be retrieved" );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
-                    return false;
+                    return result;
                 }
                 if ( ! result.getState().accepts( Signal.LOAD, State.READY ) ) {
                     LOG.info( "Runner is not in a ready state, State: {}", result.getState() );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
-                    return false;
+                    return result;
                 }
                 if ( ! result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
-                    LOG.info( "Runner doesn't have the latest test loaded" );
+                    message = "Runner doesn't have the latest test loaded";
+                    LOG.info( message );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     LOG.info( "Latest test MD5 is {}", project.getWarMd5() );
                     LOG.info( "Runner's installed MD5 is {}", result.getProject().getWarMd5() );
-                    return false;
+                    return new BaseResult( result.getEndpoint(), false, message, result.getState() );
                 }
                 LOG.info( "Runner is READY: {}", runner );
             } catch ( Exception e ) {
-                LOG.warn( "Error while getting runner states", e );
-                return false;
+                message = "Error while getting runner states";
+                LOG.warn( message, e );
+                return new BaseResult( runner.getHostname(), false, message, State.INACTIVE );
             }
         }
 
-        LOG.info( "Cluster is ready to start..." );
+        message = "Cluster is ready to start...";
+        LOG.info( message );
 
-        return true;
+        return new BaseResult( null, true, message, State.READY );
     }
 
 
