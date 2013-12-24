@@ -313,11 +313,12 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                     return result;
                 }
                 if ( ! result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
-                    LOG.info( "Runner doesn't have the latest test loaded" );
+                    message = "Runner doesn't have the latest test loaded";
+                    LOG.info( message );
                     LOG.info( "Runner hostname: {}", runner.getHostname() );
                     LOG.info( "Latest test MD5 is {}", project.getWarMd5() );
                     LOG.info( "Runner's installed MD5 is {}", result.getProject().getWarMd5() );
-                    return result;
+                    return new BaseResult( result.getEndpoint(), false, message, result.getState() );
                 }
                 LOG.info( "Runner is READY: {}", runner );
             } catch ( Exception e ) {
