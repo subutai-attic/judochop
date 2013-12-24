@@ -132,6 +132,10 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     protected String availabilityZone;
 
 
+    @Parameter( property = "resetIfStopped", defaultValue = "true" )
+    protected boolean resetIfStopped;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -157,6 +161,8 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
         this.minimumRunners = mojo.minimumRunners;
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
+        this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }

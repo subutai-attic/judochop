@@ -208,8 +208,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
         }
 
         if ( ! stoppable ) {
-            LOG.info( "Cluster is not in a stoppable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot stop", status.getState() );
+            LOG.info( "Runner is not in a stoppable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot stop", status.getState() );
         }
 
         LOG.info( "Sending stop request to runner at {}", runner.getHostname() );
@@ -244,8 +244,8 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
         }
 
         if ( ! resettable ) {
-            LOG.info( "Cluster is not in a resettable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot reset", status.getState() );
+            LOG.info( "Runner is not in a resettable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot reset", status.getState() );
         }
 
         LOG.info( "Sending reset request to runner at {}", runner.getHostname() );
