@@ -89,11 +89,17 @@ public class StartMojo extends MainMojo {
         boolean callLoadGoal = true;
         if( warExists && testUpToDate ) {
             Result verifyResult = client.verify();
-            if( resetIfStopped && verifyResult.getStatus() && verifyResult.getState().equals( State.STOPPED ) ) {
-                getLog().info( "There is at least one runner in STOPPED state, calling reset goal..." );
-                ResetMojo resetMojo = new ResetMojo( this );
-                resetMojo.execute();
-                verifyResult = client.verify();
+            if( verifyResult.getStatus() && verifyResult.getState().equals( State.STOPPED ) ) {
+                if( resetIfStopped ) {
+                    getLog().info( "There is at least one runner in STOPPED state, calling reset goal..." );
+                    ResetMojo resetMojo = new ResetMojo( this );
+                    resetMojo.execute();
+                    verifyResult = client.verify();
+                }
+                else {
+                    throw new MojoExecutionException( "There is at least one runner in STOPPED state, execute reset" +
+                            " plugin goal or set resetIfStopped to true in your plugin configuration" );
+                }
             }
             callLoadGoal = ( verifyResult.getStatus() && verifyResult.getState().equals( State.RUNNING ) );
         }
