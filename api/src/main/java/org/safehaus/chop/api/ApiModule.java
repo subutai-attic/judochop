@@ -83,4 +83,18 @@ public class ApiModule extends AbstractModule implements ConfigKeys {
     String getLoadTimeKey() {
         return propertyFactory.getStringProperty( LOAD_TIME_KEY, "none" ).get();
     }
+
+
+    @Provides
+    @Named( WAR_MD5_KEY )
+    String getWarMd5() {
+        return propertyFactory.getStringProperty( WAR_MD5_KEY, "none" ).get();
+    }
+
+
+    @Provides
+    @Named( PROJECT_VERSION_KEY )
+    String getProjectVersion() {
+        return propertyFactory.getStringProperty( PROJECT_VERSION_KEY, "none" ).get();
+    }
 }

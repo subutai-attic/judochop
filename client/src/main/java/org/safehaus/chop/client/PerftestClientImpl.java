@@ -136,11 +136,9 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
                     failed.addFirst( runnerInfo );
                 }
 
-                if ( remoteInfo != null && remoteInfo.getWarMd5() != null ) {
-                    if ( ! remoteInfo.getWarMd5().equals( md5 ) ) {
-                        LOG.warn( "Runner {} has wrong md5 ... was expecting {}", runnerInfo, md5 );
-                        failed.addFirst( runnerInfo );
-                    }
+                if ( remoteInfo == null || remoteInfo.getWarMd5() == null || ! remoteInfo.getWarMd5().equals( md5 ) ) {
+                    LOG.warn( "Runner {} has wrong md5 ... was expecting {}", runnerInfo, md5 );
+                    failed.addFirst( runnerInfo );
                 }
 
                 LOG.info( "Runner {} is backup and READY!", runnerInfo );

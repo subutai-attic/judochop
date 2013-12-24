@@ -142,7 +142,8 @@ public class Project implements ConfigKeys {
     }
 
 
-    public void setProjectVersion( final String projectVersion ) {
+    @Inject
+    public void setProjectVersion( @Named( PROJECT_VERSION_KEY ) final String projectVersion ) {
         this.projectVersion = projectVersion;
     }
 
@@ -152,8 +153,8 @@ public class Project implements ConfigKeys {
         return warMd5;
     }
 
-
-    public void setWarMd5( final String warMd5 ) {
+    @Inject
+    public void setWarMd5( @Named( WAR_MD5_KEY ) final String warMd5 ) {
         this.warMd5 = warMd5;
     }
 
