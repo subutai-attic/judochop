@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.Set;
 
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.State;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
 
@@ -41,7 +43,8 @@ public class VerifyMojo extends MainMojo {
 
             if ( result ) {
                 getLog().info( "Test on store is up-to-date, checking drivers..." );
-                result &= client.verify();
+                Result verifyResult = client.verify();
+                result = ( verifyResult.getStatus() && verifyResult.getState().equals( State.READY ) );
             }
             else {
                 getLog().info( "Test on Store is not up-to-date" );

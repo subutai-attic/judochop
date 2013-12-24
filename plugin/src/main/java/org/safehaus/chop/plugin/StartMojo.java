@@ -7,6 +7,7 @@ import java.util.Set;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.client.PerftestClient;
@@ -78,7 +79,25 @@ public class StartMojo extends MainMojo {
             }
         }
 
-        if ( ! warExists || ! testUpToDate || ! client.verify() ) {
+        /**
+         * - If latest war exists both locally and on store, try to verify the state of runners;
+         *   |__ If at least one runner is in stopped state and resetIfStopped parameter of plugin is set,
+         *          execute reset goal and try to verify again;
+         * - If verification result in all runners with running state, set callLoadGoal to false;
+         * - If callLoadGoal is true, execute load goal in chain;
+         */
+        boolean callLoadGoal = true;
+        if( warExists && testUpToDate ) {
+            Result verifyResult = client.verify();
+            if( resetIfStopped && verifyResult.getStatus() && verifyResult.getState().equals( State.STOPPED ) ) {
+                getLog().info( "There is at least one runner in STOPPED state, calling reset goal..." );
+                ResetMojo resetMojo = new ResetMojo( this );
+                resetMojo.execute();
+                verifyResult = client.verify();
+            }
+            callLoadGoal = ( verifyResult.getStatus() && verifyResult.getState().equals( State.RUNNING ) );
+        }
+        if ( callLoadGoal ) {
             getLog().info( "Cluster is not ready to start the tests, calling perftest:load goal..."  );
             LoadMojo loadMojo = new LoadMojo( this );
             loadMojo.execute();

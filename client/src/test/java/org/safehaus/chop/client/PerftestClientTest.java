@@ -66,8 +66,8 @@ public class PerftestClientTest {
 
     @Test
     public void testVerify() throws Exception {
-        boolean verified = client.verify();
-        LOG.debug( "Verified: {}", verified );
+        Result result = client.verify();
+        LOG.debug( "Verification result: {} , with state: {}", result.getMessage(), result.getState() );
     }
 
 

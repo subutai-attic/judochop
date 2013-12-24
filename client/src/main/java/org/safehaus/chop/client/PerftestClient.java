@@ -117,7 +117,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the results of the verification
      */
-    boolean verify();
+    Result verify();
 
 
     int compareTimestamps ( String ts1, String ts2 );
