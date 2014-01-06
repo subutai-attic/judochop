@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
@@ -128,7 +128,7 @@ public class PropagatingResource {
                 new ExecutorCompletionService<Result>( executorService, completionQueue );
 
         for ( String runner : getService().listRunners() ) {
-            final Runner metadata = getService().getRunner( runner );
+            final RunnerFig metadata = getService().getRunner( runner );
 
             // skip if the runner is myself
             if ( getService().getMyMetadata().getHostname().equals( metadata.getHostname() ) ) {
@@ -159,18 +159,18 @@ public class PropagatingResource {
 
 
     class PropagatingCall implements Callable<Result> {
-        private final Runner metadata;
+        private final RunnerFig metadata;
         private final Map<String, String> params;
 
 
-        PropagatingCall( Runner metadata, Map<String, String> params ) {
+        PropagatingCall( RunnerFig metadata, Map<String, String> params ) {
             this.metadata = metadata;
             this.params = params;
         }
 
 
         @SuppressWarnings("UnusedDeclaration")
-        Runner getMetadata() {
+        RunnerFig getMetadata() {
             return metadata;
         }
 

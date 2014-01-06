@@ -17,7 +17,7 @@ annotation value and the annotations applying to tests are listed below:
 * time (TimeChop) - time in milliseconds to run the test
 * iterations (IterationChop) - iterations of the test to run per thread
 * threads (Both) - the number of threads to use per controller
-* runners (Both) - the number of distributed runners to use
+* runnerFigs (Both) - the number of distributed runnerFigs to use
 * delay (Both) - the number of milliseconds to delay between test runs
 * saturate (Both) - find and run tests at saturation
 
@@ -29,7 +29,7 @@ web applications.
 
 Judo Chop's maven plugin will take your annotated tests and build a controller war
 out of it. The plugin will deploy it to several virtual machines. The plugin
-or just a curl start command against the rest API of one of the runners triggers
+or just a curl start command against the rest API of one of the runnerFigs triggers
 their synchronous bombardment of your application via your own tests. Reports
 are generated and placed in a store where they can be later analyzed.
 

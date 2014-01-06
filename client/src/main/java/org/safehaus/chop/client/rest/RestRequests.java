@@ -6,7 +6,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -24,16 +24,16 @@ public class RestRequests {
      * Performs a POST HTTP operation against the /load endpoint with the perftest query parameter, and propagate query
      * parameter.
      *
-     * @param runner the runner to perform the load operation on
+     * @param runnerFig the runnerFig to perform the load operation on
      * @param perftest the perftest query parameter value
      * @param propagate whether or not to enable propagation
      *
      * @return the result of the operation
      */
-    public static Result load( Runner runner, String perftest, Boolean propagate ) {
+    public static Result load( RunnerFig runnerFig, String perftest, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/load" );
+        WebResource resource = client.resource( runnerFig.getUrl() ).path( "/load" );
         return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).queryParam( PARAM_PROJECT, perftest )
                        .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
     }
@@ -42,15 +42,15 @@ public class RestRequests {
     /**
      * Performs a POST HTTP operation against the /start endpoint with a propagate query parameter.
      *
-     * @param runner the runner which will perform the start operation
+     * @param runnerFig the runnerFig which will perform the start operation
      * @param propagate whether or not to enable propagation
      *
      * @return the result of the operation
      */
-    public static Result start( Runner runner, Boolean propagate ) {
+    public static Result start( RunnerFig runnerFig, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/start" );
+        WebResource resource = client.resource( runnerFig.getUrl() ).path( "/start" );
         return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
@@ -59,15 +59,15 @@ public class RestRequests {
     /**
      * Performs a POST HTTP operation against the /reset endpoint with a propagate query parameter.
      *
-     * @param runner the runner to perform the reset operation on
+     * @param runnerFig the runnerFig to perform the reset operation on
      * @param propagate whether or not to enable propagation
      *
      * @return the result of the operation
      */
-    public static Result reset( Runner runner, Boolean propagate ) {
+    public static Result reset( RunnerFig runnerFig, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/reset" );
+        WebResource resource = client.resource( runnerFig.getUrl() ).path( "/reset" );
         return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
@@ -76,15 +76,15 @@ public class RestRequests {
     /**
      * Performs a POST HTTP operation against the /stop endpoint with a propagate query parameter.
      *
-     * @param runner the runner which will perform the stop operation
+     * @param runnerFig the runnerFig which will perform the stop operation
      * @param propagate whether or not to enable propagation
      *
      * @return the result of the operation
      */
-    public static Result stop( Runner runner, Boolean propagate ) {
+    public static Result stop( RunnerFig runnerFig, Boolean propagate ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/stop" );
+        WebResource resource = client.resource( runnerFig.getUrl() ).path( "/stop" );
         return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
                        .post( PropagatedResult.class );
     }
@@ -93,14 +93,14 @@ public class RestRequests {
     /**
      * Performs a GET HTTP operation against the /status endpoint.
      *
-     * @param runner the runner to perform the status operation on
+     * @param runnerFig the runnerFig to perform the status operation on
      *
      * @return the result of the operation
      */
-    public static Result status( Runner runner ) {
+    public static Result status( RunnerFig runnerFig ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
-        WebResource resource = client.resource( runner.getUrl() ).path( "/status" );
+        WebResource resource = client.resource( runnerFig.getUrl() ).path( "/status" );
         return resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( BaseResult.class );
     }
 }

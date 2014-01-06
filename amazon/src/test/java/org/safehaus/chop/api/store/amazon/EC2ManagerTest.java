@@ -26,7 +26,7 @@ public class EC2ManagerTest {
     private String amiID = System.getProperty( "amiID" );
     private String securityGroup = System.getProperty( "securityGroup" );
     private String keyName = System.getProperty( "keyName" );
-    private String runnerName = "chop-runner";
+    private String runnerName = "chop-runnerFig";
 
     @Test @Ignore
     public void testLaunchInstances()

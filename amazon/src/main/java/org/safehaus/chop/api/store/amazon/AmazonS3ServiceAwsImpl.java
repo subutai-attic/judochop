@@ -38,7 +38,7 @@ import java.util.Set;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,15 +65,15 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
 
     private boolean started = false;
-    private Runner metadata;
-    private Map<String, Runner> runners = new HashMap<String, Runner>();
+    private RunnerFig metadata;
+    private Map<String, RunnerFig> runners = new HashMap<String, RunnerFig>();
     private final Object lock = new Object();
     private final AmazonS3Client client;
     private final AmazonFig amazonFig;
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Runner metadata, AmazonFig amazonFig ) {
+    public AmazonS3ServiceAwsImpl( AmazonS3Client client, RunnerFig metadata, AmazonFig amazonFig ) {
         this.client = client;
         this.metadata = metadata;
         this.amazonFig = amazonFig;
@@ -121,13 +121,13 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
 
     @Override
-    public Runner getRunner( String key ) {
+    public RunnerFig getRunner( String key ) {
         return runners.get( key );
     }
 
 
     @Override
-    public Runner getMyMetadata() {
+    public RunnerFig getMyMetadata() {
         return metadata;
     }
 
@@ -157,26 +157,26 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
     /**
      * Gets the runner instance information from the store as a map of their keys to
-     * their Runner information.
+     * their RunnerFig information.
      *
-     * @return the keys mapped to Runner information
+     * @return the keys mapped to RunnerFig information
      */
     @Override
-    public Map<String, Runner> getRunners() {
+    public Map<String, RunnerFig> getRunners() {
         return getRunners( null );
     }
 
 
     /**
-     * Gets the runner instance information from the store as a map of keys Runner instances.
+     * Gets the runnerFig instance information from the store as a map of keys RunnerFig instances.
      *
-     * @param runner a runner to exclude from results (none if null)
+     * @param runnerFig a runnerFig to exclude from results (none if null)
      *
-     * @return the keys mapped to Runner instance
+     * @return the keys mapped to RunnerFig instance
      */
     @Override
-    public Map<String, Runner> getRunners( Runner runner ) {
-        Map<String, Runner> runners = new HashMap<String, Runner>();
+    public Map<String, RunnerFig> getRunners( RunnerFig runnerFig ) {
+        Map<String, RunnerFig> runners = new HashMap<String, RunnerFig>();
         ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), RUNNERS_PATH );
 
         do {
@@ -187,8 +187,8 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
                 S3Object s3Object = client.getObject( amazonFig.getAwsBucket(), key );
 
-                if ( runner != null && runner.getHostname() != null &&
-                        s3Object.getKey().contains( runner.getHostname() ) ) {
+                if ( runnerFig != null && runnerFig.getHostname() != null &&
+                        s3Object.getKey().contains( runnerFig.getHostname() ) ) {
                     continue;
                 }
 
@@ -197,7 +197,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
                     runners.put( key,  builder.getRunner() );
                 }
                 catch ( IOException e ) {
-                    LOG.error( "Failed to load metadata for runner {}", key, e );
+                    LOG.error( "Failed to load metadata for runnerFig {}", key, e );
                 }
             }
 
@@ -211,12 +211,12 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
     @Override
     public void deleteGhostRunners( Collection<String> activeRunners ) {
-        Map<String, Runner> registeredRunners = getRunners();
-        Runner runner;
+        Map<String, RunnerFig> registeredRunners = getRunners();
+        RunnerFig runnerFig;
         for( String key : registeredRunners.keySet() ) {
-            runner = registeredRunners.get( key );
-            if ( ! activeRunners.contains( runner.getHostname() ) ) {
-                String path = RUNNERS_PATH + "/" + runner.getHostname() + ".properties";
+            runnerFig = registeredRunners.get( key );
+            if ( ! activeRunners.contains( runnerFig.getHostname() ) ) {
+                String path = RUNNERS_PATH + "/" + runnerFig.getHostname() + ".properties";
                 client.deleteObject( amazonFig.getAwsBucket(), path );
             }
         }
@@ -224,23 +224,23 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
 
     /**
-     * Registers this runner's instance by adding its instance information into the
+     * Registers this runnerFig's instance by adding its instance information into the
      * store as a properties file into the bucket using the following key format:
      *
      * "$RUNNERS_PATH/publicHostname.properties"
      *
-     * @param runner the runner's instance metadata to be registered
+     * @param runnerFig the runnerFig's instance metadata to be registered
      */
     @Override
-    public void register( Runner runner ) {
-        Preconditions.checkNotNull( runner, "The runner cannot be null." );
-        Preconditions.checkNotNull( runner.getHostname(), "The runners public hostname cannot be null." );
+    public void register( RunnerFig runnerFig ) {
+        Preconditions.checkNotNull( runnerFig, "The runnerFig cannot be null." );
+        Preconditions.checkNotNull( runnerFig.getHostname(), "The runners public hostname cannot be null." );
 
-        String key = getRunnerKey( runner.getHostname() );
+        String key = getRunnerKey( runnerFig.getHostname() );
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( amazonFig.getAwsBucket(), key,
-                    getPropertiesAsStream( runner ), new ObjectMetadata() );
+                    getPropertiesAsStream( runnerFig ), new ObjectMetadata() );
             client.putObject( putRequest );
         }
         catch ( IOException e ) {
@@ -259,14 +259,14 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
      *
      * @throws java.io.IOException there are io failures
      */
-    private InputStream getPropertiesAsStream( Runner runner ) throws IOException {
+    private InputStream getPropertiesAsStream( RunnerFig runnerFig ) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         Properties properties = new Properties();
-        properties.setProperty( Runner.RUNNER_TEMP_DIR_KEY, runner.getTempDir() );
-        properties.setProperty( Runner.URL_KEY, runner.getUrl() );
-        properties.setProperty( Runner.SERVER_PORT_KEY, String.valueOf( runner.getServerPort() ) );
-        properties.setProperty( Runner.HOSTNAME_KEY, runner.getHostname() );
-        properties.setProperty( Runner.IPV4_KEY, runner.getIpv4Address() );
+        properties.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, runnerFig.getTempDir() );
+        properties.setProperty( RunnerFig.URL_KEY, runnerFig.getUrl() );
+        properties.setProperty( RunnerFig.SERVER_PORT_KEY, String.valueOf( runnerFig.getServerPort() ) );
+        properties.setProperty( RunnerFig.HOSTNAME_KEY, runnerFig.getHostname() );
+        properties.setProperty( RunnerFig.IPV4_KEY, runnerFig.getIpv4Address() );
         properties.store( bytes, null );
         bytes.flush();
         return new ByteArrayInputStream( bytes.toByteArray() );
@@ -375,7 +375,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
      * @param summary the Summary object to store
      */
     @Override
-    public void store( Runner metadata, ProjectFig project, ISummary summary ) {
+    public void store( RunnerFig metadata, ProjectFig project, ISummary summary ) {
         Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
         Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
@@ -406,7 +406,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
      * @param results the detailed results to store
      */
     @Override
-    public void store( Runner metadata, ProjectFig project, ISummary summary, File results ) {
+    public void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results ) {
         store( metadata, project, summary );
 
         String loadKey = project.getLoadKey();

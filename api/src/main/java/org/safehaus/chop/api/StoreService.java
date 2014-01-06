@@ -21,11 +21,11 @@ public interface StoreService {
 
     Set<String> listRunners();
 
-    Runner getRunner( String key );
+    RunnerFig getRunner( String key );
 
-    Map<String, Runner> getRunners();
+    Map<String, RunnerFig> getRunners();
 
-    Runner getMyMetadata();
+    RunnerFig getMyMetadata();
 
     File download( File tempDir, String perftest ) throws Exception;
 
@@ -33,7 +33,7 @@ public interface StoreService {
 
     void store( ProjectFig project );
 
-    void store( Runner metadata, ProjectFig project, ISummary summary, File results );
+    void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results );
 
     void putFile( String key, File file );
 
@@ -41,15 +41,15 @@ public interface StoreService {
 
     String getRunnerKey( String publicHostname );
 
-    void register( Runner metadata );
+    void register( RunnerFig metadata );
 
     Set<ProjectFig> getProjects() throws IOException;
 
-    Map<String, Runner> getRunners( Runner runner );
+    Map<String, RunnerFig> getRunners( RunnerFig runnerFig );
 
     <T> T putJsonObject( String key, Object obj );
 
-    void store( Runner metadata, ProjectFig project, ISummary summary );
+    void store( RunnerFig metadata, ProjectFig project, ISummary summary );
 
     void deleteProjects();
 

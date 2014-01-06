@@ -32,8 +32,8 @@ public interface ProjectFig extends GuicyFig {
     String CREATE_TIMESTAMP_KEY = "create.timestamp";
 
     /**
-     * Gets the timestamp when the project Runner was generated. Uses
-     * {@link ProjectFig#CREATE_TIMESTAMP_KEY} to access the Runner creation
+     * Gets the timestamp when the project RunnerFig was generated. Uses
+     * {@link ProjectFig#CREATE_TIMESTAMP_KEY} to access the RunnerFig creation
      * timestamp.
      *
      * @return the Judo Chop runner creation time
@@ -123,7 +123,7 @@ public interface ProjectFig extends GuicyFig {
     String getTestPackageBase();
 
 
-    // ~~~~~~~~~~~~~~~~~~~~~ Runner Related Configuration ~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~ RunnerFig Related Configuration ~~~~~~~~~~~~~~~~~~~~
 
 
     String TEST_STOP_TIMEOUT = "test.stop.timeout";
@@ -159,10 +159,10 @@ public interface ProjectFig extends GuicyFig {
     String LOAD_KEY = "load.key";
 
     /**
-     * Gets the path or key to the Runner's war in the store. Uses {@link
+     * Gets the path or key to the RunnerFig's war in the store. Uses {@link
      * ProjectFig#LOAD_KEY} to access the store's load key.
      *
-     * @return the path or key to the Runner's war in the store
+     * @return the path or key to the RunnerFig's war in the store
      */
     @JsonProperty
     @Key( LOAD_KEY )
@@ -173,10 +173,10 @@ public interface ProjectFig extends GuicyFig {
     String WAR_MD5_KEY = "war.md5";
 
     /**
-     * Gets the MD5 checksum of the Runner. Uses {@link ProjectFig#WAR_MD5_KEY} to
+     * Gets the MD5 checksum of the RunnerFig. Uses {@link ProjectFig#WAR_MD5_KEY} to
      * access the MD5 checksum.
      *
-     * @return the MD5 checksum of the Runner war
+     * @return the MD5 checksum of the RunnerFig war
      */
     @Key( WAR_MD5_KEY )
     String getWarMd5();
@@ -185,7 +185,7 @@ public interface ProjectFig extends GuicyFig {
     String MANAGER_USERNAME_KEY = "manager.app.username";
 
     /**
-     * Gets the username to use with the Tomcat manager of this Runner. Uses {@link
+     * Gets the username to use with the Tomcat manager of this RunnerFig. Uses {@link
      * ProjectFig#MANAGER_USERNAME_KEY} to access the Tomcat manager username.
      *
      * @return the Tomcat manager username

@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
@@ -98,7 +98,7 @@ public class LoadResource extends PropagatingResource {
             return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", controller.getState() );
         }
 
-        Map<String, Runner> peers = getService().getRunners();
+        Map<String, RunnerFig> peers = getService().getRunners();
 
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
@@ -122,7 +122,7 @@ public class LoadResource extends PropagatingResource {
             }
         }
 
-        for ( Runner runner : peers.values() ) {
+        for ( RunnerFig runnerFig : peers.values() ) {
 
         }
 

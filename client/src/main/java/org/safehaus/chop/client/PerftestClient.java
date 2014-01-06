@@ -9,7 +9,7 @@ import java.util.Set;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 
 
 /**
@@ -27,7 +27,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the set of Perftest runner nodes
      */
-    Collection<Runner> getRunners();
+    Collection<RunnerFig> getRunners();
 
 
     /**
@@ -78,34 +78,34 @@ public interface PerftestClient extends ConfigKeys {
      * formation is consistent and each node is in the State.READY state to start running tests. It will block until the
      * verification is found to fail or until the cluster is consistent.
      *
-     * @param runner the runner to use for propagating the load request
+     * @param runnerFig the runnerFig to use for propagating the load request
      * @param testKey the test information associated with the test to load
      * @param propagate whether or not to make the call propagate
      *
      * @return the results associated with the operation
      */
-    Result load( Runner runner, String testKey, Boolean propagate );
+    Result load( RunnerFig runnerFig, String testKey, Boolean propagate );
 
 
-    Result start( Runner runner, boolean propagate );
+    Result start( RunnerFig runnerFig, boolean propagate );
 
 
     /**
      *
-     * @param runner
+     * @param runnerFig
      * @param propagate
      * @return
      */
-    Result stop( Runner runner, boolean propagate );
+    Result stop( RunnerFig runnerFig, boolean propagate );
 
 
-    Result status( Runner runner );
+    Result status( RunnerFig runnerFig );
 
 
-    Result reset( Runner runner, boolean propagate );
+    Result reset( RunnerFig runnerFig, boolean propagate );
 
 
-    Result scan( Runner runner, boolean propagate );
+    Result scan( RunnerFig runnerFig, boolean propagate );
 
 
     /**
@@ -128,5 +128,5 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the first available live runner
      */
-    Runner getLiveRunner();
+    RunnerFig getLiveRunner();
 }

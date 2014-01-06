@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.client.PerftestClient;
@@ -57,9 +57,9 @@ public class StartMojo extends MainMojo {
             getLog().warn( "Error while getting test information from store", e );
         }
 
-        Runner info = null;
-        for ( Runner runner : client.getRunners() ) {
-            info = runner;
+        RunnerFig info = null;
+        for ( RunnerFig runnerFig : client.getRunners() ) {
+            info = runnerFig;
             break;
         }
 

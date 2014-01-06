@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
@@ -70,11 +70,11 @@ public class LoadMojo extends MainMojo {
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
-        Collection<Runner> runnerCollection = client.getRunners();
-        Runner[] runners = runnerCollection.toArray( new Runner[ runnerCollection.size() ] ) ;
-        Runner info = null;
-        for ( Runner runner : runners ) {
-            info = runner;
+        Collection<RunnerFig> runnerFigCollection = client.getRunners();
+        RunnerFig[] runnerFigs = runnerFigCollection.toArray( new RunnerFig[ runnerFigCollection.size() ] ) ;
+        RunnerFig info = null;
+        for ( RunnerFig runnerFig : runnerFigs ) {
+            info = runnerFig;
             break;
         }
 
@@ -146,29 +146,29 @@ public class LoadMojo extends MainMojo {
         // Restart tomcats on all instances
         getLog().info( "Sending restart tomcat requests to all instances..." );
 
-        Thread[] restarterThreads = new Thread[runners.length];
-        SSHRequestThread[] restarters = new SSHRequestThread[runners.length];
+        Thread[] restarterThreads = new Thread[runnerFigs.length];
+        SSHRequestThread[] restarters = new SSHRequestThread[runnerFigs.length];
 
-        for ( int i = 0; i < runners.length; i++ ) {
+        for ( int i = 0; i < runnerFigs.length; i++ ) {
             restarters[i] = new SSHRequestThread();
             restarters[i].setSshKeyFile( runnerSSHKeyFile );
-            restarters[i].setInstanceURL( runners[i].getHostname() );
+            restarters[i].setInstanceURL( runnerFigs[i].getHostname() );
             restarterThreads[i] = new Thread( restarters[i] );
             restarterThreads[i].start();
         }
 
-        for ( int i = 0; i < runners.length; i++ ) {
+        for ( int i = 0; i < runnerFigs.length; i++ ) {
             try {
                 restarterThreads[i].join(30000); // Is this enough or too much, should this be an annotated parameter?
             }
             catch ( InterruptedException e ) {
-                getLog().warn( "Restart request on " + runners[i].getHostname() + " is interrupted before finish", e );
+                getLog().warn( "Restart request on " + runnerFigs[i].getHostname() + " is interrupted before finish", e );
             }
         }
 
         ResponseInfo response;
         boolean failedRestart = false;
-        for ( int i = 0; i < runners.length; i++ ) {
+        for ( int i = 0; i < runnerFigs.length; i++ ) {
             response = restarters[i].getResult();
             if ( ! response.isRequestSuccessful() || ! response.isOperationSuccessful() ) {
                 for ( String s : response.getMessages() ) {

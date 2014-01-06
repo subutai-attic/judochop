@@ -12,7 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
@@ -48,13 +48,13 @@ public class AmazonS3ServiceAwsImplTest {
 
     @Test
     public void testGetRunners() {
-        Map<String, Runner> runners = service.getRunners();
+        Map<String, RunnerFig> runners = service.getRunners();
         assertNotNull( runners );
         int runnerCount = 0;
 
-        for ( Runner runner : runners.values() ) {
+        for ( RunnerFig runnerFig : runners.values() ) {
             runnerCount++;
-            LOG.debug( "Got runner {}", runner );
+            LOG.debug( "Got runnerFig {}", runnerFig );
         }
 
         if ( runnerCount == 0 ) {
@@ -71,30 +71,30 @@ public class AmazonS3ServiceAwsImplTest {
 
 
     @Inject
-    public Runner runner;
+    public RunnerFig runnerFig;
 
 
     @Test
     public void testRunnersListing() {
-        Map<String, Runner> runners = service.getRunners( runner );
+        Map<String, RunnerFig> runners = service.getRunners( runnerFig );
 
-        for ( Runner runner : runners.values() ) {
-            LOG.debug( "Got runner {}", runner );
+        for ( RunnerFig runnerFig : runners.values() ) {
+            LOG.debug( "Got runnerFig {}", runnerFig );
         }
     }
 
 
     @Test
     public void testRegister() {
-        runner.override( "foo", "bar" );
-        runner.override( Runner.HOSTNAME_KEY, "foobar-host" );
-        service.register( runner );
+        runnerFig.override( "foo", "bar" );
+        runnerFig.override( RunnerFig.HOSTNAME_KEY, "foobar-host" );
+        service.register( runnerFig );
     }
 
 
     @Test
     public void testDeleteGhostRunners() {
-        final String runnerName = "chop-runner";
+        final String runnerName = "chop-runnerFig";
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
         Collection<String> instanceHosts = new ArrayList<String>( instances.size() );
@@ -109,7 +109,7 @@ public class AmazonS3ServiceAwsImplTest {
     public static class TestModule extends JukitoModule {
         @Override
         protected void configureTest() {
-            install( new GuicyFigModule( Runner.class) );
+            install( new GuicyFigModule( RunnerFig.class) );
         }
     }
 }

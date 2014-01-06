@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.guicyfig.Bypass;
 import org.safehaus.guicyfig.OptionState;
 import org.safehaus.guicyfig.Overrides;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Builds a Runner in the EC2 environment.
+ * Builds a RunnerFig in the EC2 environment.
  */
 public class Ec2RunnerBuilder {
     private static final Logger LOG = LoggerFactory.getLogger( Ec2RunnerBuilder.class );
@@ -39,7 +39,7 @@ public class Ec2RunnerBuilder {
 
 
     /**
-     * Creates a runner builder that builds a Runner using values in a
+     * Creates a runner builder that builds a RunnerFig using values in a
      * properties file. Used primarily to create a representation of a
      * remote runner.
      *
@@ -53,7 +53,7 @@ public class Ec2RunnerBuilder {
 
 
     /**
-     * Creates a runner builder that builds a Runner using values produced by
+     * Creates a runner builder that builds a RunnerFig using values produced by
      * a program on an EC2 instance if this code does in fact run on an EC2
      * instance.
      */
@@ -81,7 +81,7 @@ public class Ec2RunnerBuilder {
             if ( LOG.isDebugEnabled() ) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 props.store( out, null );
-                LOG.debug( "Contents of Runner =\n{}", new String( out.toByteArray() ) );
+                LOG.debug( "Contents of RunnerFig =\n{}", new String( out.toByteArray() ) );
             }
         }
         catch ( IOException e ) {
@@ -129,31 +129,31 @@ public class Ec2RunnerBuilder {
 
 
     private void extractValues() {
-        ipv4Address = props.getProperty( Runner.IPV4_KEY );
-        hostname = props.getProperty( Runner.HOSTNAME_KEY );
-        serverPort = Integer.parseInt( props.getProperty( Runner.SERVER_PORT_KEY ) );
-        url = props.getProperty( Runner.URL_KEY );
-        runnerTempDir = props.getProperty( Runner.RUNNER_TEMP_DIR_KEY );
+        ipv4Address = props.getProperty( RunnerFig.IPV4_KEY );
+        hostname = props.getProperty( RunnerFig.HOSTNAME_KEY );
+        serverPort = Integer.parseInt( props.getProperty( RunnerFig.SERVER_PORT_KEY ) );
+        url = props.getProperty( RunnerFig.URL_KEY );
+        runnerTempDir = props.getProperty( RunnerFig.RUNNER_TEMP_DIR_KEY );
     }
 
 
     private void normalizeProperties() {
         if ( props.containsKey( PUBLIC_HOSTNAME_KEY ) ) {
-            props.setProperty( Runner.HOSTNAME_KEY, props.getProperty( PUBLIC_HOSTNAME_KEY ) );
+            props.setProperty( RunnerFig.HOSTNAME_KEY, props.getProperty( PUBLIC_HOSTNAME_KEY ) );
         }
 
         if ( props.containsKey( PUBLIC_IPV4_KEY ) ) {
-            props.setProperty( Runner.IPV4_KEY, props.getProperty( PUBLIC_IPV4_KEY ) );
+            props.setProperty( RunnerFig.IPV4_KEY, props.getProperty( PUBLIC_IPV4_KEY ) );
         }
 
         if ( props.containsKey( SERVLET_TEMP_DIR ) ) {
-            props.setProperty( Runner.RUNNER_TEMP_DIR_KEY, props.getProperty( SERVLET_TEMP_DIR ) );
+            props.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, props.getProperty( SERVLET_TEMP_DIR ) );
         }
     }
 
 
-    public Runner getRunner() {
-        return new Runner() {
+    public RunnerFig getRunner() {
+        return new RunnerFig() {
 
             @Override
             public String getIpv4Address() {
@@ -271,7 +271,7 @@ public class Ec2RunnerBuilder {
 
             @Override
             public Class getFigInterface() {
-                return Runner.class;
+                return RunnerFig.class;
             }
 
 
