@@ -4,7 +4,6 @@ package org.safehaus.chop.plugin;
 import java.util.List;
 
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.client.ConfigKeys;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -18,7 +17,7 @@ import org.apache.maven.project.MavenProject;
  * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
  * module's pom and provides extended get methods for several file paths that will be used by extended classes
  */
-public class MainMojo extends AbstractMojo implements ConfigKeys {
+public class MainMojo extends AbstractMojo implements Constants {
 
 
     @Parameter( defaultValue = "${project}", readonly = true )

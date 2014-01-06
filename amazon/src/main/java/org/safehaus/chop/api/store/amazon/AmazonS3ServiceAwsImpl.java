@@ -20,6 +20,7 @@
 package org.safehaus.chop.api.store.amazon;
 
 
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,8 +39,12 @@ import java.util.Set;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
+import org.safehaus.guicyfig.Bypass;
+import org.safehaus.guicyfig.OptionState;
+import org.safehaus.guicyfig.Overrides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,7 +307,8 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
                 String key = summary.getKey();
 
                 if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
-                    tests.add( getJsonObject( key, ProjectFig.class ) );
+                    ProjectFigBuilder builder = getJsonObject( key, ProjectFigBuilder.class );
+                    tests.add( builder.getProject() );
                 }
             }
 

@@ -11,6 +11,7 @@ import org.safehaus.guicyfig.Overrides;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 
 
@@ -76,78 +77,91 @@ public class ProjectFigBuilder {
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setTestPackageBase( final String testPackageBase ) {
         this.testPackageBase = testPackageBase;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setCreateTimestamp( final String timeStamp ) {
         this.createTimestamp = timeStamp;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setArtifactId( final String artifactId ) {
         this.artifactId = artifactId;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setProjectVersion( final String version ) {
         this.version = version;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setGroupId( final String groupId ) {
         this.groupId = groupId;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setVcsRepoUrl( final String vcsRepoUrl ) {
         this.vcsRepoUrl = vcsRepoUrl;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setVcsVersion( final String commitId ) {
         this.commitId = commitId;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setLoadKey( final String loadKey ) {
         this.loadKey = loadKey;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setChopVersion( final String version ) {
         this.chopVersion = version;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setWarMd5( final String warMd5 ) {
         this.warMd5 = warMd5;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setLoadTime( final String loadTime ) {
         this.loadTime = loadTime;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setManagerUsername( final String managerUsername ) {
         this.managerUsername = managerUsername;
         return this;
     }
 
 
+    @JsonProperty
     public ProjectFigBuilder setManagerPassword( final String managerPassword ) {
         this.managerPassword = managerPassword;
         return this;
