@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
@@ -40,7 +41,7 @@ import com.netflix.config.DynamicStringProperty;
 
 
 /** Used to encapsulate the various store operations to perform. */
-public class S3Operations implements StoreOperations, ConfigKeys {
+public class S3Operations implements StoreOperations, Constants {
     private static final Logger LOG = LoggerFactory.getLogger( S3Operations.class );
 
 
@@ -51,7 +52,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
 
     @Inject
-    public S3Operations( AmazonS3Client client, @Named( AWS_BUCKET_KEY ) DynamicStringProperty awsBucket ) {
+    public S3Operations( AmazonS3Client client, @Named( AmazonFig.AWS_BUCKET_KEY ) DynamicStringProperty awsBucket ) {
         this.client = client;
         this.awsBucket = awsBucket;
     }

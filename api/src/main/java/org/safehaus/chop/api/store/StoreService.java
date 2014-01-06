@@ -2,7 +2,6 @@ package org.safehaus.chop.api.store;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 

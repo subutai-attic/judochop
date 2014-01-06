@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
@@ -42,7 +43,7 @@ import com.netflix.config.DynamicLongProperty;
 
 /** Handles S3 interactions to interface with other test drivers. */
 @Singleton
-public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKeys {
+public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants {
 
     private final static Logger LOG = LoggerFactory.getLogger( AmazonS3ServiceAwsImpl.class );
 
@@ -58,7 +59,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     @Inject
     public AmazonS3ServiceAwsImpl( AmazonS3Client client, Runner metadata, S3Operations operations,
-                                   @Named( SCAN_PERIOD_KEY ) DynamicLongProperty scanPeriod ) {
+                                   @Named( AmazonFig.SCAN_PERIOD_KEY ) DynamicLongProperty scanPeriod ) {
         this.client = client;
         this.metadata = metadata;
         this.operations = operations;

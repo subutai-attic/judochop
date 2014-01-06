@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
@@ -15,6 +16,7 @@ import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +31,10 @@ import com.netflix.config.DynamicStringProperty;
  * An implementation of the PerftestClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api.store.amazon.ConfigKeys {
+public class PerftestClientImpl implements PerftestClient, Constants {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
     private final StoreOperations operations;
-    @Inject @Named( AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
+    @Inject @Named( AmazonFig.AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
 
 
     @Inject

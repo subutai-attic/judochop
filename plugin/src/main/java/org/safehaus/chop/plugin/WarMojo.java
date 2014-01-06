@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.codehaus.plexus.util.FileUtils;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.store.amazon.AmazonFig;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -131,9 +132,9 @@ public class WarMojo extends MainMojo {
             prop.setProperty( ProjectFig.ARTIFACT_ID_KEY, this.project.getArtifactId() );
             prop.setProperty( ProjectFig.PROJECT_VERSION_KEY, this.project.getVersion() );
             prop.setProperty( ProjectFig.TEST_PACKAGE_BASE, testPackageBase );
-            prop.setProperty( AWS_BUCKET_KEY, bucketName );
-            prop.setProperty( AWSKEY_KEY, accessKey );
-            prop.setProperty( AWS_SECRET_KEY, secretKey );
+            prop.setProperty( AmazonFig.AWS_BUCKET_KEY, bucketName );
+            prop.setProperty( AmazonFig.AWSKEY_KEY, accessKey );
+            prop.setProperty( AmazonFig.AWS_SECRET_KEY, secretKey );
             prop.setProperty( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
             prop.setProperty( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
             prop.setProperty( ProjectFig.WAR_MD5_KEY, warMd5 );
