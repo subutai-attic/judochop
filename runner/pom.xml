@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>Chop Runner</name>
-  <artifactId>chop-controller</artifactId>
+  <artifactId>chop-runner</artifactId>
   <packaging>war</packaging>
   <description>
     A REST based web application that services requests to load, run, and
