@@ -3,6 +3,7 @@ package org.safehaus.chop.plugin;
 
 import java.util.List;
 
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.client.ConfigKeys;
 
 import org.apache.maven.artifact.Artifact;
@@ -68,7 +69,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
      *
      * defaultValue is "tests/"
      */
-    @Parameter( property = "destinationParentDir", defaultValue = CONFIGS_PATH + "/" )
+    @Parameter( property = "destinationParentDir", defaultValue = Constants.CONFIGS_PATH + "/" )
     protected String destinationParentDir;
 
 

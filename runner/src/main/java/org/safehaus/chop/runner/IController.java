@@ -2,7 +2,7 @@ package org.safehaus.chop.runner;
 
 
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.State;
 
 
@@ -61,5 +61,5 @@ public interface IController {
      *
      * @return the project being chopped up
      */
-    Project getProject();
+    ProjectFig getProject();
 }

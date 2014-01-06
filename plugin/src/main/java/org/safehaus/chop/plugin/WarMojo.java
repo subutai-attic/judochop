@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -49,6 +50,7 @@ public class WarMojo extends MainMojo {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected WarMojo() {
 
     }
@@ -122,26 +124,26 @@ public class WarMojo extends MainMojo {
             // Insert all properties acquired in runtime and overwrite existing ones
             String gitUrl = Utils.getGitRemoteUrl( gitConfigDirectory );
             String warMd5 = Utils.getMD5( timeStamp, commitId );
-            prop.setProperty( GIT_UUID_KEY, commitId );
-            prop.setProperty( GIT_URL_KEY, gitUrl );
-            prop.setProperty( CREATE_TIMESTAMP_KEY, timeStamp );
-            prop.setProperty( GROUP_ID_KEY, this.project.getGroupId() );
-            prop.setProperty( ARTIFACT_ID_KEY, this.project.getArtifactId() );
-            prop.setProperty( PROJECT_VERSION_KEY, this.project.getVersion() );
-            prop.setProperty( TEST_PACKAGE_BASE, testPackageBase );
+            prop.setProperty( ProjectFig.GIT_UUID_KEY, commitId );
+            prop.setProperty( ProjectFig.GIT_URL_KEY, gitUrl );
+            prop.setProperty( ProjectFig.CREATE_TIMESTAMP_KEY, timeStamp );
+            prop.setProperty( ProjectFig.GROUP_ID_KEY, this.project.getGroupId() );
+            prop.setProperty( ProjectFig.ARTIFACT_ID_KEY, this.project.getArtifactId() );
+            prop.setProperty( ProjectFig.PROJECT_VERSION_KEY, this.project.getVersion() );
+            prop.setProperty( ProjectFig.TEST_PACKAGE_BASE, testPackageBase );
             prop.setProperty( AWS_BUCKET_KEY, bucketName );
             prop.setProperty( AWSKEY_KEY, accessKey );
             prop.setProperty( AWS_SECRET_KEY, secretKey );
-            prop.setProperty( "manager.app.username", managerAppUsername );
-            prop.setProperty( "manager.app.password", managerAppPassword );
-            prop.setProperty( WAR_MD5_KEY, warMd5 );
+            prop.setProperty( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
+            prop.setProperty( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
+            prop.setProperty( ProjectFig.WAR_MD5_KEY, warMd5 );
 
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
 
-            prop.setProperty( LOAD_KEY, CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR );
-            prop.setProperty( LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
-            prop.setProperty( CHOP_VERSION_KEY, plugin.getVersion() );
+            prop.setProperty( ProjectFig.LOAD_KEY, CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR );
+            prop.setProperty( ProjectFig.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
+            prop.setProperty( ProjectFig.CHOP_VERSION_KEY, plugin.getVersion() );
 
             // Save the newly formed properties file under WEB-INF/classes/config.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
@@ -154,21 +156,21 @@ public class WarMojo extends MainMojo {
             Utils.archiveWar( finalWarFile, extractedWarRoot );
 
             // Generate the test-info.json file
-            Project project = new Project();
-            project.setTestPackageBase( testPackageBase );
-            project.setCreateTimestamp( timeStamp );
-            project.setArtifactId( this.project.getArtifactId() );
-            project.setProjectVersion( this.project.getVersion() );
-            project.setGroupId( this.project.getGroupId() );
-            project.setVcsRepoUrl( gitUrl );
-            project.setVcsVersion( commitId );
-            project.setLoadKey( CONFIGS_PATH + "/" + commitId + "/" + RUNNER_WAR );
-            project.setChopVersion( plugin.getVersion() );
-            project.setWarMd5( warMd5 );
+            ProjectFigBuilder projectBuilder = new ProjectFigBuilder();
+            projectBuilder.setTestPackageBase( testPackageBase );
+            projectBuilder.setCreateTimestamp( timeStamp );
+            projectBuilder.setArtifactId( this.project.getArtifactId() );
+            projectBuilder.setProjectVersion( this.project.getVersion() );
+            projectBuilder.setGroupId( this.project.getGroupId() );
+            projectBuilder.setVcsRepoUrl( gitUrl );
+            projectBuilder.setVcsVersion( commitId );
+            projectBuilder.setLoadKey( CONFIGS_PATH + "/" + commitId + "/" + RUNNER_WAR );
+            projectBuilder.setChopVersion( plugin.getVersion() );
+            projectBuilder.setWarMd5( warMd5 );
 
             ObjectMapper mapper = new ObjectMapper();
             File projectFile = new File( getProjectFileToUploadPath() );
-            mapper.writeValue( projectFile, project );
+            mapper.writeValue( projectFile, projectBuilder.getProject() );
         }
         catch ( MojoExecutionException e ) {
             throw e;

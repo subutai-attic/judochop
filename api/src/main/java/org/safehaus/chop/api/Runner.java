@@ -1,71 +1,85 @@
 package org.safehaus.chop.api;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import org.safehaus.guicyfig.Default;
+import org.safehaus.guicyfig.GuicyFig;
+import org.safehaus.guicyfig.Key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /** Minimal requirements for runner information. */
-public class Runner extends Properties implements ConfigKeys {
+public interface Runner extends GuicyFig {
 
 
-    @JsonProperty
-    public String getIpv4() {
-        return getProperty( IPV4_KEY );
-    }
+    // ~~~~~~~~~~~~~~~~~~~~~ Runner Related Configuration ~~~~~~~~~~~~~~~~~~~~
 
 
-    @JsonProperty
-    public String getHostname() {
-        return getProperty( HOSTNAME_KEY );
-    }
-
-
-    @JsonProperty
-    public int getServerPort() {
-        return Integer.getInteger( getProperty( SERVER_PORT_KEY ) );
-    }
-
-
-    @JsonProperty
-    public String getUrl() {
-        return getProperty( URL_KEY );
-    }
-
-
-    @JsonProperty
-    public String getRunnerTempDir() {
-        return getProperty( RUNNER_TEMP_DIR_KEY );
-    }
-
-
-    public Runner() {
-        super();
-    }
-
-
-    public Runner( InputStream in ) throws IOException {
-        super();
-        load( in );
-    }
-
+    String IPV4_KEY = "public-ipv4";
 
     /**
-     * Gets the properties listing as an input stream.
+     * Gets the IPv4 public address used by the Runner. Uses {@link Runner#IPV4_KEY}
+     * to access the IPv4 public address.
      *
-     * @return the properties listing as an input stream
-     *
-     * @throws java.io.IOException there are io failures
+     * @return the IPv4 public address (octet) as a String
      */
-    public InputStream getPropertiesAsStream() throws IOException {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        store( bytes, null );
-        bytes.flush();
-        return new ByteArrayInputStream( bytes.toByteArray() );
-    }
+    @JsonProperty
+    @Key( IPV4_KEY )
+    String getIpv4Address();
+
+
+    String HOSTNAME_KEY = "public-hostname";
+
+    /**
+     * Gets the public hostname of the Runner. Uses {@link Runner#HOSTNAME_KEY} to
+     * access the public hostname.
+     *
+     * @return the public hostname
+     */
+    @JsonProperty
+    @Key( HOSTNAME_KEY )
+    String getHostname();
+
+    String SERVER_PORT_KEY = "server.port";
+    String DEFAULT_SERVER_PORT = "8080";
+
+    /**
+     * Gets the Runner server port. Uses {@link Runner#SERVER_PORT_KEY} to access
+     * the server port. The default port used is setup via {@link
+     * Runner#DEFAULT_SERVER_PORT}.
+     *
+     * @return the Runner's server port
+     */
+    @JsonProperty
+    @Key( SERVER_PORT_KEY )
+    @Default( DEFAULT_SERVER_PORT )
+    int getServerPort();
+
+
+    String URL_KEY = "url.key";
+
+    /**
+     * Gets the URL of the Runner's REST interface. Uses {@link Runner#URL_KEY} to
+     * access the Runner's URL.
+     *
+     * @return the URL of the Runner's REST interface
+     */
+    @JsonProperty
+    @Key( URL_KEY )
+    String getUrl();
+
+
+    String DEFAULT_RUNNER_TEMP_DIR = "/tmp";
+    String RUNNER_TEMP_DIR_KEY = "runner.temp.dir";
+
+    /**
+     * Gets the temporary directory used by the Runner to store files. Uses {@link
+     * Runner#RUNNER_TEMP_DIR_KEY} to access the temp dir used by the Runner.
+     *
+     * @return the temporary directory used by the Runner
+     */
+    @JsonProperty
+    @Key( RUNNER_TEMP_DIR_KEY )
+    @Default( DEFAULT_RUNNER_TEMP_DIR )
+    String getTempDir();
 }

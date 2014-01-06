@@ -4,6 +4,7 @@ package org.safehaus.chop.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
@@ -72,7 +73,7 @@ public class SetupMojo extends MainMojo {
                 throw new MojoExecutionException( "Setting up instances failed" );
             }
 
-            int port = Integer.parseInt( DEFAULT_SERVER_PORT );
+            int port = Integer.parseInt( Runner.DEFAULT_SERVER_PORT );
             ArrayList<Integer> ports = new ArrayList<Integer>();
             ports.add( port );
             ec2Manager.updateSecurityGroupRecords( ports, false );

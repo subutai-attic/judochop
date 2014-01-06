@@ -63,7 +63,7 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
 
   <modules>
     <module>amazon</module>
-    <module>runner</module>
+    <module>controller</module>
     <module>plugin</module>
     <module>api</module>
     <module>client</module>

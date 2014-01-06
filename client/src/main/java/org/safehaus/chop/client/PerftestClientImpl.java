@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
@@ -55,13 +55,13 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     @Override
-    public Set<Project> getProjectConfigs() throws IOException {
+    public Set<ProjectFig> getProjectConfigs() throws IOException {
         return operations.getProjects();
     }
 
 
     @Override
-    public Set<ISummary> getRuns( final Project test ) {
+    public Set<ISummary> getRuns( final ProjectFig test ) {
         return null;
     }
 
@@ -79,14 +79,14 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
 
     @Override
-    public void delete( final Project test ) {
+    public void delete( final ProjectFig test ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
     public Result load( Runner runner, String projectKey, Boolean propagate ) {
-        Project project = getProject( projectKey );
+        ProjectFig project = getProject( projectKey );
         String md5 = project.getWarMd5();
 
         LOG.warn( "Sending load request to " + runner.getHostname() );
@@ -124,7 +124,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
 
             try {
                 Result status = status( runnerInfo );
-                Project remoteInfo = status.getProject();
+                ProjectFig remoteInfo = status.getProject();
 
                 if ( ! status.getStatus() ) {
                     LOG.warn( "Runner {} failed on status call", runnerInfo );
@@ -155,7 +155,7 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
     }
 
 
-    private Project getProject( final String testKey ) {
+    private ProjectFig getProject( final String testKey ) {
         return operations.getProject( testKey );
     }
 
@@ -271,11 +271,11 @@ public class PerftestClientImpl implements PerftestClient, org.safehaus.chop.api
         LOG.info( "Starting verify operation..." );
 
         // Get the latest project information
-        Project project = null;
+        ProjectFig project = null;
         try {
-            Set<Project> projects = getProjectConfigs();
+            Set<ProjectFig> projects = getProjectConfigs();
 
-            for ( Project projectCandidate : projects ) {
+            for ( ProjectFig projectCandidate : projects ) {
                 if ( project == null ) {
                     project = projectCandidate;
                 }

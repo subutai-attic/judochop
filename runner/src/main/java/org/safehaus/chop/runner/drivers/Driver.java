@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.netflix.config.DynamicLongProperty;
 
 
 /**
@@ -24,7 +23,7 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
     protected final Object lock = new Object();
     protected ExecutorService executorService;
     protected State state = State.READY;
-    private DynamicLongProperty timeout;
+    private long timeout;
 
 
     protected Driver( T tracker ) {
@@ -35,13 +34,13 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
     }
 
 
-    public void setTimeout( DynamicLongProperty timeout ) {
+    public void setTimeout( long timeout ) {
         this.timeout = timeout;
     }
 
 
     public long getTimeout() {
-        return this.timeout.get();
+        return timeout;
     }
 
 
@@ -127,7 +126,7 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
 
                 executorService.shutdown();
                 try {
-                    if ( ! executorService.awaitTermination( timeout.get(), TimeUnit.MILLISECONDS ) ) {
+                    if ( ! executorService.awaitTermination( timeout, TimeUnit.MILLISECONDS ) ) {
                         executorService.shutdownNow();
                     }
                 }

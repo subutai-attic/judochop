@@ -25,8 +25,8 @@ import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -35,6 +35,7 @@ import com.netflix.blitz4j.LoggingConfiguration;
 
 
 /** ... */
+@SuppressWarnings( "UnusedDeclaration" )
 public class ServletConfig extends GuiceServletContextListener {
     private Injector injector;
     private StoreService storeService;
@@ -54,16 +55,18 @@ public class ServletConfig extends GuiceServletContextListener {
     @Override
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
         super.contextInitialized( servletContextEvent );
+
+        final ServletFig servletFig = Guice.createInjector(
+                new GuicyFigModule( ServletFig.class ) ).getInstance( ServletFig.class );
+
         LoggingConfiguration.getInstance().configure();
         storeService = getInjector().getInstance( StoreService.class );
-        Runner runner = storeService.getMyMetadata();
 
         ServletContext context = servletContextEvent.getServletContext();
-        runner.setProperty( ConfigKeys.CONTEXT_PATH, context.getContextPath() );
-        runner.setProperty( ConfigKeys.SERVER_INFO_KEY, context.getServerInfo() );
-        runner.setProperty( ConfigKeys.SERVER_PORT_KEY, Integer.toString( PropSettings.getServerPort() ) );
-        runner.setProperty( ConfigKeys.CONTEXT_TEMPDIR_KEY,
-                ( ( File ) context.getAttribute( ConfigKeys.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
+        servletFig.override( ServletFig.CONTEXT_PATH, context.getContextPath() );
+        servletFig.override( ServletFig.SERVER_INFO_KEY, context.getServerInfo() );
+        servletFig.override( ServletFig.CONTEXT_TEMPDIR_KEY,
+                ( ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
 
         storeService.start();
     }

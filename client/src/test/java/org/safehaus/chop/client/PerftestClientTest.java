@@ -10,7 +10,7 @@ import org.jukito.UseModules;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.slf4j.Logger;
@@ -38,9 +38,9 @@ public class PerftestClientTest {
 
     @Test
     public void testGetTests() throws IOException {
-        Set<Project> tests = client.getProjectConfigs();
+        Set<ProjectFig> tests = client.getProjectConfigs();
 
-        for ( Project test : tests ) {
+        for ( ProjectFig test : tests ) {
             LOG.debug( "Got a test: {}", test );
             LOG.debug( "Test md5: {}", test.getWarMd5() );
         }

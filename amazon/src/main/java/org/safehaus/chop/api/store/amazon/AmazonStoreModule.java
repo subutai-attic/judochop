@@ -10,6 +10,7 @@ package org.safehaus.chop.api.store.amazon;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class AmazonStoreModule extends AbstractModule implements ConfigKeys {
 
 
     protected void configure() {
-        bind( Runner.class ).to( Ec2Runner.class );
+        install( new GuicyFigModule( Runner.class ) );
         bind( StoreOperations.class ).to( S3Operations.class );
         bind( StoreService.class ).to( AmazonS3ServiceAwsImpl.class );
     }

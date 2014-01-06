@@ -17,6 +17,7 @@
 
   <properties>
     <guice.version>3.0</guice.version>
+    <guava.version>15.0</guava.version>
   </properties>
 
   <dependencies>
@@ -24,6 +25,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
     </dependency>
 
     <dependency>
@@ -65,11 +72,11 @@
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testPackageBase>org.safehaus.chop.example</testPackageBase>
-          <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
+          <runnerSSHKeyFile>${controller.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
-          <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
+          <runnerKeyPairName>${controller.keypair.name}</runnerKeyPairName>
           <minimumRunners>5</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>

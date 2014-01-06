@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 
@@ -35,7 +35,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the set of performance tests
      */
-    Set<Project> getProjectConfigs() throws IOException;
+    Set<ProjectFig> getProjectConfigs() throws IOException;
 
 
     /**
@@ -43,7 +43,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @return the set of runs that have taken place on a test.
      */
-    Set<ISummary> getRuns( Project test );
+    Set<ISummary> getRuns( ProjectFig test );
 
 
     /**
@@ -69,7 +69,7 @@ public interface PerftestClient extends ConfigKeys {
      *
      * @param test the test to
      */
-    void delete( Project test );
+    void delete( ProjectFig test );
 
 
     /**

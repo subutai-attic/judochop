@@ -21,13 +21,12 @@ package org.safehaus.chop.api.store.amazon;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.safehaus.chop.api.store.StoreService;
@@ -50,7 +49,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
     private boolean started = false;
     private StoreOperations operations;
-    private Ec2Runner metadata;
+    private Runner metadata;
     private Map<String, Runner> runners = new HashMap<String, Runner>();
     private final Object lock = new Object();
     private final AmazonS3Client client;
@@ -58,7 +57,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Ec2Runner metadata, S3Operations operations,
+    public AmazonS3ServiceAwsImpl( AmazonS3Client client, Runner metadata, S3Operations operations,
                                    @Named( SCAN_PERIOD_KEY ) DynamicLongProperty scanPeriod ) {
         this.client = client;
         this.metadata = metadata;
@@ -138,26 +137,20 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, ConfigKey
 
 
     @Override
-    public void store( final Project project, final ISummary summary, final File resultsFile ) {
+    public void store( final ProjectFig project, final ISummary summary, final File resultsFile ) {
         operations.store( metadata, project, summary, resultsFile );
     }
 
 
     @Override
-    public void store( final Project project ) {
+    public void store( final ProjectFig project ) {
         operations.store( project );
     }
 
 
     @Override
-    public Project getProject() {
+    public ProjectFig getProject() {
         return operations.getProject();
-    }
-
-
-    @Override
-    public Set<Project> getProjects() throws IOException {
-        return operations.getProjects();
     }
 
 

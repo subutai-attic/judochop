@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
@@ -35,8 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
-import static org.safehaus.chop.api.store.amazon.ConfigKeys.*;
 
 
 /** ... */
@@ -56,7 +55,7 @@ public class StartResource extends PropagatingResource {
 
 
     @POST
-    public Result start( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
+    public Result start( @QueryParam( Constants.PARAM_PROPAGATE ) Boolean propagate ) {
         if ( runner.isRunning() ) {
             return new BaseResult( getEndpointUrl(), false, "already running", runner.getState() );
         }

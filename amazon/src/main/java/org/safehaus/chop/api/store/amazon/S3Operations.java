@@ -2,19 +2,22 @@ package org.safehaus.chop.api.store.amazon;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.StoreOperations;
 import org.slf4j.Logger;
@@ -44,7 +47,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     private final AmazonS3Client client;
     private final DynamicStringProperty awsBucket;
     private final DynamicStringProperty gitUuid =
-            DynamicPropertyFactory.getInstance().getStringProperty( GIT_UUID_KEY, "none" );
+            DynamicPropertyFactory.getInstance().getStringProperty( ProjectFig.GIT_UUID_KEY, "none" );
 
 
     @Inject
@@ -109,7 +112,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 }
 
                 try {
-                    runners.put( key, new Ec2Runner( s3Object.getObjectContent() ) {} );
+                    Ec2RunnerBuilder builder = new Ec2RunnerBuilder( s3Object.getObjectContent() );
+                    runners.put( key,  builder.getRunner() );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runner {}", key, e );
@@ -155,7 +159,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
 
         try {
             PutObjectRequest putRequest = new PutObjectRequest( awsBucket.get(), key,
-                    runner.getPropertiesAsStream(), new ObjectMetadata() );
+                    getPropertiesAsStream( runner ), new ObjectMetadata() );
             client.putObject( putRequest );
         }
         catch ( IOException e ) {
@@ -166,6 +170,29 @@ public class S3Operations implements StoreOperations, ConfigKeys {
     }
 
 
+
+    /**
+     * Gets the properties listing as an input stream.
+     *
+     * @return the properties listing as an input stream
+     *
+     * @throws java.io.IOException there are io failures
+     */
+    private InputStream getPropertiesAsStream( Runner runner ) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        Properties properties = new Properties();
+        properties.setProperty( Runner.RUNNER_TEMP_DIR_KEY, runner.getTempDir() );
+        properties.setProperty( Runner.URL_KEY, runner.getUrl() );
+        properties.setProperty( Runner.SERVER_PORT_KEY, String.valueOf( runner.getServerPort() ) );
+        properties.setProperty( Runner.HOSTNAME_KEY, runner.getHostname() );
+        properties.setProperty( Runner.IPV4_KEY, runner.getIpv4Address() );
+        properties.store( bytes, null );
+        bytes.flush();
+        return new ByteArrayInputStream( bytes.toByteArray() );
+    }
+
+
+
     /**
      * Tries to load a Project file based on prepackaged Runner metadata. If it cannot
      * find the project then null is returned.
@@ -173,7 +200,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return the Project object if it exists in the store or null if it does not
      */
     @Override
-    public Project getProject() {
+    public ProjectFig getProject() {
         Preconditions.checkNotNull( gitUuid, "gitUuid cannot be null" );
         String uuid = gitUuid.get();
         Preconditions.checkNotNull( uuid, "gitUuid cannot be null" );
@@ -187,7 +214,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
           .append( PROJECT_FILE );
 
         try {
-            return getJsonObject( sb.toString(), Project.class );
+            return getJsonObject( sb.toString(), ProjectFig.class );
         }
         catch ( Exception e ) {
             LOG.error( "Could not find project file at {}: returning null Project", sb.toString(), e );
@@ -204,8 +231,8 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return a set of keys as Strings for test information
      */
     @Override
-    public Set<Project> getProjects() throws IOException {
-        Set<Project> tests = new HashSet<Project>();
+    public Set<ProjectFig> getProjects() throws IOException {
+        Set<ProjectFig> tests = new HashSet<ProjectFig>();
         ObjectListing listing = client.listObjects( awsBucket.get(), CONFIGS_PATH + "/" );
 
         do {
@@ -213,7 +240,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
                 String key = summary.getKey();
 
                 if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
-                    tests.add( getJsonObject( key, Project.class ) );
+                    tests.add( getJsonObject( key, ProjectFig.class ) );
                 }
             }
 
@@ -231,7 +258,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @param project the Project object to be serialized and stored
      */
     @Override
-    public void store( Project project ) {
+    public void store( ProjectFig project ) {
         Preconditions.checkNotNull( project, "The project cannot be null." );
         Preconditions.checkNotNull( project.getLoadKey(), "The project load key cannot be null." );
 
@@ -260,13 +287,13 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @return the Project object if it exists in the store or null if it does not
      */
     @Override
-    public Project getProject( String loadKey ) {
+    public ProjectFig getProject( String loadKey ) {
         Preconditions.checkNotNull( loadKey, "The key cannot be null" );
 
         loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
 
         try {
-            return getJsonObject( loadKey + PROJECT_FILE, Project.class );
+            return getJsonObject( loadKey + PROJECT_FILE, ProjectFig.class );
         }
         catch ( Exception e ) {
             LOG.error( "Could not find project file at {}: returning null Project", loadKey, e );
@@ -298,7 +325,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @param summary the Summary object to store
      */
     @Override
-    public void store( Runner metadata, Project project, ISummary summary ) {
+    public void store( Runner metadata, ProjectFig project, ISummary summary ) {
         Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
         Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
@@ -329,7 +356,7 @@ public class S3Operations implements StoreOperations, ConfigKeys {
      * @param results the detailed results to store
      */
     @Override
-    public void store( Runner metadata, Project project, ISummary summary, File results ) {
+    public void store( Runner metadata, ProjectFig project, ISummary summary, File results ) {
         store( metadata, project, summary );
 
         String loadKey = project.getLoadKey();

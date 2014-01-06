@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
 
 
@@ -24,8 +24,6 @@ public interface StoreService {
 
     Set<String> listRunners();
 
-    Set<Project> getProjects() throws IOException;
-
     Runner getRunner( String key );
 
     Map<String, Runner> getRunners();
@@ -34,9 +32,9 @@ public interface StoreService {
 
     File download( File tempDir, String perftest ) throws Exception;
 
-    void store( Project project, ISummary summary, File resultsFile );
+    void store( ProjectFig project, ISummary summary, File resultsFile );
 
-    void store( Project project );
+    void store( ProjectFig project );
 
-    Project getProject();
+    ProjectFig getProject();
 }

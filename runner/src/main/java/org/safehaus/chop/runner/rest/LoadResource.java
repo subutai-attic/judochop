@@ -32,6 +32,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.Constants;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
@@ -40,7 +42,7 @@ import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.StoreService;
-import org.safehaus.chop.runner.PropSettings;
+import org.safehaus.chop.runner.ServletFig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +53,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
-import static org.safehaus.chop.client.ConfigKeys.*;
-
 
 /** Loads a test configuration from the "tests" container. */
 @Singleton
@@ -61,13 +61,18 @@ import static org.safehaus.chop.client.ConfigKeys.*;
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
     private static final String PARAM_PROPAGATE = "propagate";
-    private final IController runner;
+
+    private final IController controller;
+    private final ProjectFig projectFig;
+    private final ServletFig servletFig;
 
 
     @Inject
-    public LoadResource( IController runner, StoreService service ) {
+    public LoadResource( IController controller, StoreService service, ProjectFig projectFig, ServletFig servletFig ) {
         super( "/load", service );
-        this.runner = runner;
+        this.controller = controller;
+        this.projectFig = projectFig;
+        this.servletFig = servletFig;
     }
 
 
@@ -81,16 +86,16 @@ public class LoadResource extends PropagatingResource {
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( PARAM_PROJECT ) String project ) {
+    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( Constants.PARAM_PROJECT ) String project ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
-        if ( runner.isRunning() ) {
+        if ( controller.isRunning() ) {
             return new BaseResult( getEndpointUrl(), false, "still running stop and reset before loading a new test",
-                    runner.getState() );
+                    controller.getState() );
         }
 
-        if ( runner.needsReset() ) {
-            return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", runner.getState() );
+        if ( controller.needsReset() ) {
+            return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", controller.getState() );
         }
 
         Map<String, Runner> peers = getService().getRunners();
@@ -98,11 +103,11 @@ public class LoadResource extends PropagatingResource {
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
 
-        Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
+        Map<String, String> params = Collections.singletonMap( Constants.PARAM_PROJECT, project );
 
         if ( propagate == Boolean.TRUE ) {
             PropagatedResult result =
-                    propagate( runner.getState().next( Signal.LOAD ), true, "reload started", params );
+                    propagate( controller.getState().next( Signal.LOAD ), true, "reload started", params );
 
             try {
                 deploy( project );
@@ -123,18 +128,18 @@ public class LoadResource extends PropagatingResource {
 
         try {
             deploy( project );
-            return new BaseResult( getEndpointUrl(), true, "reload started", runner.getState().next( Signal.LOAD ) );
+            return new BaseResult( getEndpointUrl(), true, "reload started", controller.getState().next( Signal.LOAD ) );
         }
         catch ( Exception e ) {
             LOG.error( "Encountered failure while reloading project", e );
-            return new BaseResult( getEndpointUrl(), false, e.getMessage(), runner.getState() );
+            return new BaseResult( getEndpointUrl(), false, e.getMessage(), controller.getState() );
         }
     }
 
 
     private void deploy( String project ) throws Exception {
         // @Todo if the admin app reload does not work, do not store in app's temp are but in /tmp instead
-        File tempDir = new File( getService().getMyMetadata().getRunnerTempDir() );
+        File tempDir = new File( getService().getMyMetadata().getTempDir() );
         File tempFile = getService().download( tempDir, project );
         final BlockingDeployTask uploadTask = new BlockingDeployTask( tempFile );
         new Thread( uploadTask ).start();
@@ -182,10 +187,10 @@ public class LoadResource extends PropagatingResource {
         public Result call() throws Exception {
             Exception lastException = null;
 
-            for ( int retryCount = 0; retryCount < PropSettings.getRecoveryRetryCount(); retryCount++ ) {
-                if ( PropSettings.getRecoveryRetryDelay() > 0 ) {
+            for ( int retryCount = 0; retryCount < servletFig.getRecoveryRetryCount(); retryCount++ ) {
+                if ( servletFig.getRetryDelay() > 0 ) {
                     try {
-                        Thread.sleep( PropSettings.getRecoveryRetryDelay() );
+                        Thread.sleep( servletFig.getRetryDelay() );
                     }
                     catch ( InterruptedException e ) {
                         LOG.warn( "Got interrupted on recover retry sleep for delay. "
@@ -253,10 +258,10 @@ public class LoadResource extends PropagatingResource {
         public void run() {
             DefaultClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create( clientConfig );
-            client.addFilter( new HTTPBasicAuthFilter( PropSettings.getManagerAppUsername(),
-                    PropSettings.getManagerAppPassword() ) );
+            client.addFilter( new HTTPBasicAuthFilter( projectFig.getManagerUsername(),
+                    projectFig.getManagerPassword() ) );
 
-            WebResource resource = client.resource( PropSettings.getManagerEndpoint() ).path( "/deploy" )
+            WebResource resource = client.resource( servletFig.getManagerEndpoint() ).path( "/deploy" )
                                          .queryParam( "update", "true" ).queryParam( "path", "/" );
 
             // We will block on the put upload at just a little before the end
@@ -266,7 +271,7 @@ public class LoadResource extends PropagatingResource {
 
             if ( response.contains( "FAIL" ) ) {
                 LOG.error( "FAILED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), false, response, runner.getState() );
+                result = new BaseResult( getEndpointUrl(), false, response, controller.getState() );
             }
             else if ( response.contains( "OK" ) ) {
                 LOG.info( "SUCCEEDED to deploy via tomcat manager: {}", response );

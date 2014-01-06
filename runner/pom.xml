@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>Chop Runner</name>
-  <artifactId>chop-runner</artifactId>
+  <artifactId>chop-controller</artifactId>
   <packaging>war</packaging>
   <description>
     A REST based web application that services requests to load, run, and
@@ -107,6 +107,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-amazon</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.safehaus.guicyfig</groupId>
+      <artifactId>guicyfig</artifactId>
+      <version>3.1</version>
     </dependency>
 
     <dependency>

@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
-import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
+import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
 
 
 /** A resource that optionally propagates its operation to peer drivers. */

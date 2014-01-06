@@ -20,7 +20,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.1.5</jackson.version>
-    <archaius.version>0.5.12</archaius.version>
+    <guicyfig.version>3.1</guicyfig.version>
+    <archaius.version>0.5.11</archaius.version>
     <guice.version>3.0</guice.version>
     <junit.version>4.11</junit.version>
   </properties>
@@ -48,7 +49,7 @@
             </property>
             <property>
               <name>keyName</name>
-              <value>${runner.keypair.name}</value>
+              <value>${controller.keypair.name}</value>
             </property>
             <property>
               <name>securityGroup</name>
@@ -88,9 +89,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
-      <version>${archaius.version}</version>
+      <groupId>org.safehaus.guicyfig</groupId>
+      <artifactId>guicyfig</artifactId>
+      <version>${guicyfig.version}</version>
     </dependency>
 
     <dependency>

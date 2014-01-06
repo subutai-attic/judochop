@@ -62,6 +62,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.safehaus.guicyfig</groupId>
+      <artifactId>guicyfig</artifactId>
+      <version>3.1</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-client</artifactId>
       <version>${jersey.version}</version>

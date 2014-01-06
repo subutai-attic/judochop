@@ -4,7 +4,6 @@ package org.safehaus.chop.client.rest;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.ConfigKeys;
 import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
@@ -13,8 +12,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
-import static org.safehaus.chop.api.ConfigKeys.PARAM_PROJECT;
-import static org.safehaus.chop.api.ConfigKeys.PARAM_PROPAGATE;
+import static org.safehaus.chop.api.Constants.PARAM_PROJECT;
+import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
 
 
 /**

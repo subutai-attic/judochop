@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
@@ -100,10 +100,10 @@ public class LoadMojo extends MainMojo {
         boolean testUpToDate = false;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Project currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), Project.class );
-            Set<Project> tests = client.getProjectConfigs();
+            ProjectFig currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), ProjectFig.class );
+            Set<ProjectFig> tests = client.getProjectConfigs();
 
-            for ( Project test : tests ) {
+            for ( ProjectFig test : tests ) {
                 if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
                         currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;

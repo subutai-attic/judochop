@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Runner;
 
 
@@ -18,7 +18,7 @@ public interface StoreOperations {
 
     void register( Runner metadata );
 
-    Set<Project> getProjects() throws IOException;
+    Set<ProjectFig> getProjects() throws IOException;
 
     Map<String, Runner> getRunners( Runner runner );
 
@@ -28,17 +28,17 @@ public interface StoreOperations {
 
     <T> T putJsonObject( String key, Object obj );
 
-    void store( Runner metadata, Project project, ISummary summary );
+    void store( Runner metadata, ProjectFig project, ISummary summary );
 
     void putFile( String key, File file );
 
-    void store( Runner metadata, Project project, ISummary summary, File results );
+    void store( Runner metadata, ProjectFig project, ISummary summary, File results );
 
-    void store( Project project );
+    void store( ProjectFig project );
 
-    Project getProject();
+    ProjectFig getProject();
 
-    Project getProject( String testKey );
+    ProjectFig getProject( String testKey );
 
     void deleteProjects();
 

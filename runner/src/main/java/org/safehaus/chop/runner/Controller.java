@@ -4,16 +4,15 @@ package org.safehaus.chop.runner;
 import java.util.Set;
 
 import org.reflections.Reflections;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.api.Project;
 import org.safehaus.chop.runner.drivers.Driver;
 import org.safehaus.chop.runner.drivers.IterationDriver;
 import org.safehaus.chop.runner.drivers.TimeDriver;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.annotations.IterationChop;
 import org.safehaus.chop.api.annotations.TimeChop;
-import org.safehaus.chop.api.ConfigKeys;
 import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.netflix.config.DynamicLongProperty;
 
 
 /**
@@ -38,39 +35,22 @@ public class Controller implements IController, Runnable {
     private State state = State.READY;
     private Driver<?> currentDriver;
 
-    private DynamicLongProperty timeout;
-
     private StoreService service;
-    private Project project;
+    private ProjectFig project;
     private int runNumber;
 
 
     @Inject
-    private void setProject( Project project ) {
+    private void setProject( ProjectFig project ) {
         LOG.info( "Controller injected with project properties: {}", project );
 
-        if ( project == null ) {
+        if ( project.getLoadKey() == null ) {
             state = State.INACTIVE;
         }
 
         this.project = project;
-    }
 
-
-    @Inject
-    private void setStoreService( StoreService service ) {
-        Preconditions.checkNotNull( service, "The StoreService cannot be null." );
-        this.service = service;
-    }
-
-
-    @Inject
-    private void setBasePackage( @Named( ConfigKeys.TEST_PACKAGE_BASE ) String basePackage ) {
-        Preconditions.checkNotNull( basePackage, "The basePackage cannot be null!" );
-        Preconditions.checkArgument( basePackage.length() > 0,
-                "The basePackage cannot be the empty string and must be a valid package." );
-
-        Reflections reflections = new Reflections( basePackage );
+        Reflections reflections = new Reflections( project.getTestPackageBase() );
         timeChopClasses = reflections.getTypesAnnotatedWith( TimeChop.class );
         iterationChopClasses = reflections.getTypesAnnotatedWith( IterationChop.class );
 
@@ -84,8 +64,9 @@ public class Controller implements IController, Runnable {
 
 
     @Inject
-    private void setTimeout( @Named( ConfigKeys.TEST_STOP_TIMEOUT ) DynamicLongProperty timeout ) {
-        this.timeout = timeout;
+    private void setStoreService( StoreService service ) {
+        Preconditions.checkNotNull( service, "The StoreService cannot be null." );
+        this.service = service;
     }
 
 
@@ -114,7 +95,7 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public Project getProject() {
+    public ProjectFig getProject() {
         return project;
     }
 
@@ -170,13 +151,13 @@ public class Controller implements IController, Runnable {
         for ( Class<?> iterationTest : iterationChopClasses ) {
             synchronized ( lock ) {
                 currentDriver = new IterationDriver( iterationTest );
-                currentDriver.setTimeout( timeout );
+                currentDriver.setTimeout( project.getTestStopTimeout() );
                 currentDriver.start();
                 lock.notifyAll();
             }
 
             LOG.info( "Started new IterationDriver driver: controller state = {}", state );
-            while ( currentDriver.blockTilDone( timeout.get() ) ) {
+            while ( currentDriver.blockTilDone( project.getTestStopTimeout() ) ) {
                 if ( state == State.STOPPED ) {
                     LOG.info( "Got the signal to stop running." );
                     synchronized ( lock ) {
@@ -201,13 +182,13 @@ public class Controller implements IController, Runnable {
         for ( Class<?> timeTest : timeChopClasses ) {
             synchronized ( lock ) {
                 currentDriver = new TimeDriver( timeTest );
-                currentDriver.setTimeout( timeout );
+                currentDriver.setTimeout( project.getTestStopTimeout() );
                 currentDriver.start();
                 lock.notifyAll();
             }
 
             LOG.info( "Started new TimeDriver driver: controller state = {}", state );
-            while ( currentDriver.blockTilDone( timeout.get() ) ) {
+            while ( currentDriver.blockTilDone( project.getTestStopTimeout() ) ) {
                 if ( state == State.STOPPED ) {
                     LOG.info( "Got the signal to stop running." );
                     synchronized ( lock ) {

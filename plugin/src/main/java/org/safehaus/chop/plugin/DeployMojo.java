@@ -3,13 +3,12 @@ package org.safehaus.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.Properties;
 
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -73,7 +72,7 @@ public class DeployMojo extends MainMojo {
         try {
             // Write deploy time to loadTime property in project.json
             ObjectMapper mapper = new ObjectMapper();
-            Project proj = mapper.readValue( projectFile, Project.class );
+            ProjectFigBuilder proj = new ProjectFigBuilder( mapper.readValue( projectFile, ProjectFig.class ) );
             proj.setLoadTime( Utils.getTimestamp( new Date() ) );
             mapper.writeValue( projectFile, proj );
         }
@@ -122,7 +121,7 @@ public class DeployMojo extends MainMojo {
                 inputStream.close();
 
                 String commitId = Utils.getLastCommitUuid( Utils.getGitConfigFolder( getProjectBaseDirectory() ) );
-                return commitId.equals( props.getProperty( GIT_UUID_KEY ) );
+                return commitId.equals( props.getProperty( ProjectFig.GIT_UUID_KEY ) );
             }
         } catch ( Exception e ) {
             getLog().warn( e );
