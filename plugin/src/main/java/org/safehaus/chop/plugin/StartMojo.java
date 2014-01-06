@@ -7,7 +7,7 @@ import java.util.Set;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
@@ -31,9 +31,9 @@ public class StartMojo extends MainMojo {
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
         injector = Guice.createInjector( new AmazonStoreModule() );
-        StoreOperations store = injector.getInstance( StoreOperations.class );
+        StoreService service = injector.getInstance( StoreService.class );
 
-        if ( store == null ) {
+        if ( service == null ) {
             getLog().info( "Couldn't get S3 object, aborting." );
             return;
         }

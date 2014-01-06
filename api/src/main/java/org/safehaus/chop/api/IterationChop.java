@@ -1,4 +1,4 @@
-package org.safehaus.chop.api.annotations;
+package org.safehaus.chop.api;
 
 
 import java.lang.annotation.ElementType;
@@ -27,7 +27,7 @@ public @interface IterationChop {
      * @return the number of times your tests should be invoked
      */
     @JsonProperty
-    long iterations() default AnnotationDefaults.DEFAULT_ITERATIONS;
+    long iterations() default Constants.DEFAULT_ITERATIONS;
 
 
     /**
@@ -36,7 +36,7 @@ public @interface IterationChop {
      * @return the number of concurrent threads per runner
      */
     @JsonProperty
-    int threads() default AnnotationDefaults.DEFAULT_THREADS;
+    int threads() default Constants.DEFAULT_THREADS;
 
 
     /**
@@ -45,7 +45,7 @@ public @interface IterationChop {
      * @return the number of distributed drivers to use
      */
     @JsonProperty
-    int runners() default AnnotationDefaults.DEFAULT_RUNNERS;
+    int runners() default Constants.DEFAULT_RUNNERS;
 
 
     /**
@@ -56,7 +56,7 @@ public @interface IterationChop {
      * @return whether or not to run a preliminary saturation test
      */
     @JsonProperty
-    boolean saturate() default AnnotationDefaults.DEFAULT_SATURATE;
+    boolean saturate() default Constants.DEFAULT_SATURATE;
 
 
     /**
@@ -65,5 +65,5 @@ public @interface IterationChop {
      * @return the delay between test iterations in milliseconds
      */
     @JsonProperty
-    long delay() default AnnotationDefaults.DEFAULT_DELAY;
+    long delay() default Constants.DEFAULT_DELAY;
 }

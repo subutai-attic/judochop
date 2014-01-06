@@ -1,4 +1,4 @@
-package org.safehaus.chop.api.annotations;
+package org.safehaus.chop.api;
 
 
 import java.lang.annotation.ElementType;
@@ -21,7 +21,7 @@ public @interface TimeChop {
      *
      * @return the amount of time in milliseconds to run tests
      */
-    long time() default AnnotationDefaults.DEFAULT_TIME;
+    long time() default Constants.DEFAULT_TIME;
 
 
     /**
@@ -29,7 +29,7 @@ public @interface TimeChop {
      *
      * @return the number of concurrent threads per runner
      */
-    int threads() default AnnotationDefaults.DEFAULT_THREADS;
+    int threads() default Constants.DEFAULT_THREADS;
 
 
     /**
@@ -37,7 +37,7 @@ public @interface TimeChop {
      *
      * @return the number of distributed drivers to use
      */
-    int runners() default AnnotationDefaults.DEFAULT_RUNNERS;
+    int runners() default Constants.DEFAULT_RUNNERS;
 
 
     /**
@@ -47,7 +47,7 @@ public @interface TimeChop {
      *
      * @return whether or not to run a preliminary saturation test
      */
-    boolean saturate() default AnnotationDefaults.DEFAULT_SATURATE;
+    boolean saturate() default Constants.DEFAULT_SATURATE;
 
 
     /**
@@ -55,5 +55,5 @@ public @interface TimeChop {
      *
      * @return the delay between test iterations in milliseconds
      */
-    long delay() default AnnotationDefaults.DEFAULT_DELAY;
+    long delay() default Constants.DEFAULT_DELAY;
 }

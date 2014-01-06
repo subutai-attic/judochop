@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.annotations.TimeChop;
+import org.safehaus.chop.api.TimeChop;
 
 
 /**

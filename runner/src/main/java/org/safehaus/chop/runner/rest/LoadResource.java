@@ -41,7 +41,7 @@ import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.runner.ServletFig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

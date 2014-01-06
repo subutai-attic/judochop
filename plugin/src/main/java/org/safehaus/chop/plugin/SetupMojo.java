@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 
@@ -49,6 +49,7 @@ public class SetupMojo extends MainMojo {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected SetupMojo() {
 
     }
@@ -110,7 +111,7 @@ public class SetupMojo extends MainMojo {
             }
 
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
-            StoreOperations store = injector.getInstance( StoreOperations.class );
+            StoreService store = injector.getInstance( StoreService.class );
             Collection<Instance> activeInstances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
             Collection<String> activeInstanceHostnames = new ArrayList<String>( activeInstances.size() );
             for ( Instance instance : activeInstances ) {

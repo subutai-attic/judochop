@@ -2,7 +2,7 @@ package org.safehaus.chop.runner.dummy;
 
 
 import org.junit.Test;
-import org.safehaus.chop.api.annotations.IterationChop;
+import org.safehaus.chop.api.IterationChop;
 
 
 /**

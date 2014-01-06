@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.client.PerftestClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

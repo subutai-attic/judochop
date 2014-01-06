@@ -15,7 +15,7 @@ import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
@@ -33,32 +33,32 @@ import com.netflix.config.DynamicStringProperty;
 @Singleton
 public class PerftestClientImpl implements PerftestClient, Constants {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
-    private final StoreOperations operations;
+    private final StoreService service;
     @Inject @Named( AmazonFig.AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
 
 
     @Inject
-    public PerftestClientImpl( StoreOperations operations )
+    public PerftestClientImpl( StoreService service )
     {
-        this.operations = operations;
+        this.service = service;
     }
 
 
     @Override
     public void deleteTests() {
-        operations.deleteProjects();
+        service.deleteProjects();
     }
 
 
     @Override
     public Collection<Runner> getRunners() {
-        return operations.getRunners().values();
+        return service.getRunners().values();
     }
 
 
     @Override
     public Set<ProjectFig> getProjectConfigs() throws IOException {
-        return operations.getProjects();
+        return service.getProjects();
     }
 
 
@@ -158,7 +158,7 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
 
     private ProjectFig getProject( final String testKey ) {
-        return operations.getProject( testKey );
+        return service.getProject( testKey );
     }
 
 

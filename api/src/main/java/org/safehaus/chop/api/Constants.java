@@ -29,4 +29,22 @@ public interface Constants {
 
     /** the suffix used for the run results json file */
     String RESULTS_SUFFIX = "-results.json";
+
+    /** IterationChop iterations default */
+    long DEFAULT_ITERATIONS = 1000L;
+
+    /** TimeChop iterations default */
+    long DEFAULT_TIME = 30000L;
+
+    /** Chop threads default */
+    int DEFAULT_THREADS = 10;
+
+    /** Chop runners default */
+    int DEFAULT_RUNNERS = 6;
+
+    /** Chop saturate default */
+    boolean DEFAULT_SATURATE = false;
+
+    /** Chop delay default */
+    long DEFAULT_DELAY = 0;
 }

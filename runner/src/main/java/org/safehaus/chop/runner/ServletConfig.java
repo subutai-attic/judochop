@@ -25,7 +25,7 @@ import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.google.inject.Guice;

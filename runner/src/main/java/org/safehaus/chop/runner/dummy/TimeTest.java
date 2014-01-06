@@ -2,7 +2,7 @@ package org.safehaus.chop.runner.dummy;
 
 
 import org.junit.Test;
-import org.safehaus.chop.api.annotations.TimeChop;
+import org.safehaus.chop.api.TimeChop;
 
 
 /**

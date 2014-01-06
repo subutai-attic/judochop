@@ -11,9 +11,9 @@ import org.safehaus.chop.runner.drivers.Driver;
 import org.safehaus.chop.runner.drivers.IterationDriver;
 import org.safehaus.chop.runner.drivers.TimeDriver;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.annotations.IterationChop;
-import org.safehaus.chop.api.annotations.TimeChop;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.IterationChop;
+import org.safehaus.chop.api.TimeChop;
+import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

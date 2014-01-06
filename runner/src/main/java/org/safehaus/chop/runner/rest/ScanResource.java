@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.StoreService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
