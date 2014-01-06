@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -30,18 +31,30 @@ import static junit.framework.TestCase.assertNotNull;
 @UseModules( AmazonStoreModule.class )
 public class AmazonS3ServiceAwsImplTest {
     private static final Logger LOG = LoggerFactory.getLogger( AmazonS3ServiceAwsImplTest.class );
+    private String accessKey = System.getProperty( "accessKey" );
+    private String secretKey = System.getProperty( "secretKey" );
+    private String amiID = System.getProperty( "amiID" );
+    private String securityGroup = System.getProperty( "securityGroup" );
+    private String keyName = System.getProperty( "keyName" );
+
+
+    public RunnerFig runnerFig;
+
+
     @Inject
     StoreService service;
 
 
     @Before
     public void setup() {
+        runnerFig = Guice.createInjector( new GuicyFigModule( RunnerFig.class ) ).getInstance( RunnerFig.class );
         service.start();
     }
 
 
     @After
     public void tearDown() {
+        runnerFig = null;
         service.stop();
     }
 
@@ -63,17 +76,6 @@ public class AmazonS3ServiceAwsImplTest {
     }
 
 
-    private String accessKey = System.getProperty( "accessKey" );
-    private String secretKey = System.getProperty( "secretKey" );
-    private String amiID = System.getProperty( "amiID" );
-    private String securityGroup = System.getProperty( "securityGroup" );
-    private String keyName = System.getProperty( "keyName" );
-
-
-    @Inject
-    public RunnerFig runnerFig;
-
-
     @Test
     public void testRunnersListing() {
         Map<String, RunnerFig> runners = service.getRunners( runnerFig );
@@ -86,8 +88,7 @@ public class AmazonS3ServiceAwsImplTest {
 
     @Test
     public void testRegister() {
-        runnerFig.override( "foo", "bar" );
-        runnerFig.override( RunnerFig.HOSTNAME_KEY, "foobar-host" );
+        runnerFig.bypass( RunnerFig.HOSTNAME_KEY, "foobar-host" );
         service.register( runnerFig );
     }
 

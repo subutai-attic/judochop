@@ -262,11 +262,23 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
     private InputStream getPropertiesAsStream( RunnerFig runnerFig ) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         Properties properties = new Properties();
+
+
+        if ( runnerFig.getUrl() != null ) {
+            properties.setProperty( RunnerFig.URL_KEY, runnerFig.getUrl() );
+        }
+
         properties.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, runnerFig.getTempDir() );
-        properties.setProperty( RunnerFig.URL_KEY, runnerFig.getUrl() );
         properties.setProperty( RunnerFig.SERVER_PORT_KEY, String.valueOf( runnerFig.getServerPort() ) );
-        properties.setProperty( RunnerFig.HOSTNAME_KEY, runnerFig.getHostname() );
-        properties.setProperty( RunnerFig.IPV4_KEY, runnerFig.getIpv4Address() );
+
+        if ( runnerFig.getIpv4Address() != null ) {
+            properties.setProperty( RunnerFig.IPV4_KEY, runnerFig.getIpv4Address() );
+        }
+
+        if ( runnerFig.getHostname() != null ) {
+            properties.setProperty( RunnerFig.HOSTNAME_KEY, runnerFig.getHostname() );
+        }
+
         properties.store( bytes, null );
         bytes.flush();
         return new ByteArrayInputStream( bytes.toByteArray() );
