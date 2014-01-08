@@ -102,7 +102,7 @@ public class WarMojo extends MainMojo {
             Properties prop = new Properties();
             String configPropertiesFilePath = extractedWarRoot + "WEB-INF/classes/project.properties";
             if ( FileUtils.fileExists( configPropertiesFilePath ) ) {
-                // Existing project.properties of perftest-runner
+                // Existing project.properties of chop-runner
                 inputStream = new FileInputStream( configPropertiesFilePath );
                 prop.load( inputStream );
                 inputStream.close();
