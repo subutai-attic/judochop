@@ -64,7 +64,7 @@ public interface ServletFig extends GuicyFig {
 
 
     String MANAGER_ENDPOINT_KEY = "manager.endpoint";
-    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:8080/manager/text";
+    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:24981/manager/text";
 
     /**
      * Gets the Tomcat servlet manager endpoint. Uses {@link ServletFig#MANAGER_ENDPOINT_KEY}

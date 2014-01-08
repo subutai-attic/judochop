@@ -41,7 +41,7 @@ public interface RunnerFig extends GuicyFig {
     String getHostname();
 
     String SERVER_PORT_KEY = "server.port";
-    String DEFAULT_SERVER_PORT = "8080";
+    String DEFAULT_SERVER_PORT = "24981";
 
     /**
      * Gets the RunnerFig server port. Uses {@link RunnerFig#SERVER_PORT_KEY} to access
