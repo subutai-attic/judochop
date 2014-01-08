@@ -6,11 +6,15 @@ import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.Key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
 /**
  * Information about the project to be chopped up!
  */
+@JsonSerialize( using = ProjectSerializer.class )
+@JsonDeserialize( using = ProjectDeserializer.class )
 public interface ProjectFig extends GuicyFig {
 
     // ~~~~~~~~~~~~~~~~~~~~ Chopped Project's Parameters ~~~~~~~~~~~~~~~~~~~~
