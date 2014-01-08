@@ -256,7 +256,7 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
     @Override
     public Result scan( final RunnerFig runnerFig, final boolean propagate ) {
-        return new BaseResult( "http://localhost:8080", true, "scan triggered", State.READY );
+        return new BaseResult( "http://localhost:24981", true, "scan triggered", State.READY );
     }
 
 

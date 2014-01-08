@@ -75,6 +75,7 @@
           <securityGroupExceptions>
             <param>${myip.address}/32:8080</param>
             <param>${myip.address}/32:22</param>
+            <param>${myip.address}/32:24981</param>
           </securityGroupExceptions>
         </configuration>
       </plugin>
