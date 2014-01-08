@@ -97,20 +97,20 @@ public class WarMojo extends MainMojo {
             FileUtils.copyFileToDirectory( new File( projectTestOutputJar ), libPathFile );
             Utils.copyArtifactsTo( this.project, libPath, false );
 
-            // Create config.properties file
+            // Create project.properties file
             InputStream inputStream;
             Properties prop = new Properties();
-            String configPropertiesFilePath = extractedWarRoot + "WEB-INF/classes/config.properties";
+            String configPropertiesFilePath = extractedWarRoot + "WEB-INF/classes/project.properties";
             if ( FileUtils.fileExists( configPropertiesFilePath ) ) {
-                // Existing config.properties of perftest-runner
+                // Existing project.properties of perftest-runner
                 inputStream = new FileInputStream( configPropertiesFilePath );
                 prop.load( inputStream );
                 inputStream.close();
             }
 
             // If exists, properties in this file can overwrite the ones from perftest-runner
-            if ( getClass().getResource( "config.properties" ) != null ) {
-                inputStream = getClass().getResourceAsStream( "config.properties" );
+            if ( getClass().getResource( "project.properties" ) != null ) {
+                inputStream = getClass().getResourceAsStream( "project.properties" );
                 Properties propCurrent = new Properties();
                 propCurrent.load( inputStream );
                 inputStream.close();
@@ -146,7 +146,7 @@ public class WarMojo extends MainMojo {
             prop.setProperty( ProjectFig.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
             prop.setProperty( ProjectFig.CHOP_VERSION_KEY, plugin.getVersion() );
 
-            // Save the newly formed properties file under WEB-INF/classes/config.properties
+            // Save the newly formed properties file under WEB-INF/classes/project.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
             FileWriter writer = new FileWriter( configPropertiesFilePath );
             prop.store( writer, null );
@@ -177,6 +177,7 @@ public class WarMojo extends MainMojo {
             throw e;
         }
         catch ( Exception e ) {
+            e.printStackTrace();
             throw new MojoExecutionException( "Error while executing plugin", e );
         }
     }

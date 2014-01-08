@@ -11,6 +11,7 @@ import org.safehaus.guicyfig.Overrides;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 
@@ -254,96 +255,112 @@ public class ProjectFigBuilder {
             }
 
 
+            @JsonIgnore
             @Override
             public void addPropertyChangeListener( final PropertyChangeListener listener ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public void removePropertyChangeListener( final PropertyChangeListener listener ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public OptionState[] getOptions() {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public OptionState getOption( final String key ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public String getKeyByMethod( final String methodName ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Object getValueByMethod( final String methodName ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Properties filterOptions( final Properties properties ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Map<String, Object> filterOptions( final Map<String, Object> entries ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public void override( final String key, final String override ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public void setOverrides( final Overrides overrides ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Overrides getOverrides() {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public void bypass( final String key, final String bypass ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public void setBypass( final Bypass bypass ) {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Bypass getBypass() {
                 throw new NotImplementedException();
             }
 
 
+            @JsonIgnore
             @Override
             public Class getFigInterface() {
                 return ProjectFig.class;
             }
 
 
+            @JsonIgnore
             @Override
             public boolean isSingleton() {
                 return false;

@@ -21,22 +21,29 @@ package org.safehaus.chop.runner;
 
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.api.StoreService;
+import org.safehaus.guicyfig.Env;
 import org.safehaus.guicyfig.GuicyFigModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.blitz4j.LoggingConfiguration;
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConfigurationManager;
 
 
 /** ... */
 @SuppressWarnings( "UnusedDeclaration" )
 public class ServletConfig extends GuiceServletContextListener {
+    private final static Logger LOG = LoggerFactory.getLogger( ServletConfig.class );
     private Injector injector;
     private StoreService storeService;
 
@@ -55,6 +62,27 @@ public class ServletConfig extends GuiceServletContextListener {
     @Override
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
         super.contextInitialized( servletContextEvent );
+
+        ConcurrentCompositeConfiguration ccc = new ConcurrentCompositeConfiguration();
+        Env env = Env.getEnvironment();
+
+        if ( env == Env.ALL ) {
+            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "CHOP" );
+            LOG.info( "Setting environment to: CHOP" );
+        }
+        else if ( env == Env.UNIT ) {
+            LOG.info( "Operating in UNIT environment" );
+        }
+
+
+        ConfigurationManager.install( ccc );
+        try {
+            ConfigurationManager.loadCascadedPropertiesFromResources( "project" );
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to load project properties!", e );
+            throw new RuntimeException( "Cannot do much without properly loading our configuration.", e );
+        }
 
         final ServletFig servletFig = Guice.createInjector(
                 new GuicyFigModule( ServletFig.class ) ).getInstance( ServletFig.class );

@@ -2,7 +2,6 @@ package org.safehaus.chop.api.store.amazon;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.IdentityHashMap;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
 
-import junit.framework.Assert;
+import static junit.framework.TestCase.assertTrue;
 
 
 public class EC2ManagerTest {
@@ -165,7 +164,7 @@ public class EC2ManagerTest {
         if( ec2.securityGroupExists( groupName ) ) {
             ec2.deleteSecurityGroup( groupName );
         }
-        Assert.assertTrue( ec2.createSecurityGroup( groupName ) && ec2.deleteSecurityGroup( groupName ) );
+        assertTrue( ec2.createSecurityGroup( groupName ) && ec2.deleteSecurityGroup( groupName ) );
         ec2.close();
     }
 }

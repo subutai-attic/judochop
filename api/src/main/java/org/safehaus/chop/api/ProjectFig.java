@@ -178,6 +178,7 @@ public interface ProjectFig extends GuicyFig {
      *
      * @return the MD5 checksum of the RunnerFig war
      */
+    @JsonProperty
     @Key( WAR_MD5_KEY )
     String getWarMd5();
 
@@ -190,6 +191,7 @@ public interface ProjectFig extends GuicyFig {
      *
      * @return the Tomcat manager username
      */
+    @JsonProperty
     @Key( MANAGER_USERNAME_KEY )
     String getManagerUsername();
 
@@ -202,6 +204,7 @@ public interface ProjectFig extends GuicyFig {
      *
      * @return the Tomcat manager user's password
      */
+    @JsonProperty
     @Key( MANAGER_PASSWORD_KEY )
     String getManagerPassword();
 }

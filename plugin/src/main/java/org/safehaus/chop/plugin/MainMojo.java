@@ -42,7 +42,7 @@ public class MainMojo extends AbstractMojo implements Constants {
 
     /**
      * Fully qualified package base property of the app once it's deployed to its container. This parameter will be put to the
-     * config.properties file inside the WAR to be uploaded
+     * project.properties file inside the WAR to be uploaded
      */
     @Parameter( property = "testPackageBase", required = true )
     protected String testPackageBase;
@@ -73,7 +73,7 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /**
-     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the project.properties file inside
      * the WAR to be uploaded
      */
     @Parameter( property = "managerAppUsername", required = true )
@@ -81,7 +81,7 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /**
-     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the project.properties file inside
      * the WAR to be uploaded
      */
     @Parameter( property = "managerAppPassword", required = true )

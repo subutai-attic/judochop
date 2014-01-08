@@ -53,56 +53,61 @@ public class DeployMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        String sourceFile = getWarToUploadPath();
-        String destinationFile = getWarOnS3Path();
-        String projectFileKey = getProjectFilePath();
-        File source = new File( sourceFile );
-        File projectFile = new File( source.getParent(), PROJECT_FILE );
-
-        if ( ! isReadyToDeploy() ) {
-            getLog().info( "War is not ready to upload to store, calling perftest:war goal now..." );
-            WarMojo warMojo = new WarMojo( this );
-            warMojo.execute();
-        }
-
-        if ( ! isReadyToDeploy() ) {
-            throw new MojoExecutionException( "Files to be deployed are not ready and chop:war failed" );
-        }
-
         try {
-            // Write deploy time to loadTime property in project.json
-            ObjectMapper mapper = new ObjectMapper();
-            ProjectFigBuilder proj = new ProjectFigBuilder( mapper.readValue( projectFile, ProjectFig.class ) );
-            proj.setLoadTime( Utils.getTimestamp( new Date() ) );
-            mapper.writeValue( projectFile, proj );
+            String sourceFile = getWarToUploadPath();
+            String destinationFile = getWarOnS3Path();
+            String projectFileKey = getProjectFilePath();
+            File source = new File( sourceFile );
+            File projectFile = new File( source.getParent(), PROJECT_FILE );
+
+            if ( ! isReadyToDeploy() ) {
+                getLog().info( "War is not ready to upload to store, calling perftest:war goal now..." );
+                WarMojo warMojo = new WarMojo( this );
+                warMojo.execute();
+            }
+
+            if ( ! isReadyToDeploy() ) {
+                throw new MojoExecutionException( "Files to be deployed are not ready and chop:war failed" );
+            }
+
+            try {
+                // Write deploy time to loadTime property in project.json
+                ObjectMapper mapper = new ObjectMapper();
+                ProjectFigBuilder proj = new ProjectFigBuilder( mapper.readValue( projectFile, ProjectFig.class ) );
+                proj.setLoadTime( Utils.getTimestamp( new Date() ) );
+                mapper.writeValue( projectFile, proj );
+            }
+            catch ( JsonMappingException e ) {
+                throw new MojoExecutionException( "Project.json file format is faulty", e );
+            }
+            catch ( IOException e ) {
+                throw new MojoExecutionException( "Error while modifying project.json file", e );
+            }
+
+
+            AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
+
+            if ( !s3.doesBucketExist( bucketName ) ) {
+                throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
+            }
+
+            getLog().info( "Uploading file to: " + destinationFile );
+
+            boolean success = Utils.uploadToS3( s3, bucketName, destinationFile, source );
+            if ( !success ) {
+                throw new MojoExecutionException( "Unable to upload war file to S3." );
+            }
+
+            success = Utils.uploadToS3( s3, bucketName, projectFileKey, projectFile );
+            if ( !success ) {
+                throw new MojoExecutionException( "Unable to upload $PROJECT_FILE file to S3." );
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
         }
-        catch ( JsonMappingException e ) {
-            throw new MojoExecutionException( "Project.json file format is faulty", e );
-        }
-        catch ( IOException e ) {
-            throw new MojoExecutionException( "Error while modifying project.json file", e );
-        }
 
 
-        AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
-
-        if ( !s3.doesBucketExist( bucketName ) ) {
-            throw new MojoExecutionException( "Bucket doesn't exist: " + bucketName );
-        }
-
-        getLog().info( "Uploading file to: " + destinationFile );
-
-        boolean success = Utils.uploadToS3( s3, bucketName, destinationFile, source );
-        if ( !success ) {
-            throw new MojoExecutionException( "Unable to upload war file to S3." );
-        }
-
-        success = Utils.uploadToS3( s3, bucketName, projectFileKey, projectFile );
-        if ( !success ) {
-            throw new MojoExecutionException( "Unable to upload $PROJECT_FILE file to S3." );
-        }
-
-        getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );
+        // getLog().info( "File " + source + " uploaded to s3://" + bucketName + "/" + destinationFile );
     }
 
 
@@ -113,7 +118,7 @@ public class DeployMojo extends MainMojo {
                 return false;
             }
 
-            File extractedConfigPropFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/config.properties" );
+            File extractedConfigPropFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/project.properties" );
             if ( extractedConfigPropFile.exists() ) {
                 Properties props = new Properties();
                 FileInputStream inputStream = new FileInputStream( extractedConfigPropFile );

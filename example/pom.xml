@@ -72,11 +72,11 @@
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testPackageBase>org.safehaus.chop.example</testPackageBase>
-          <runnerSSHKeyFile>${controller.ssh.key.file}</runnerSSHKeyFile>
+          <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
-          <runnerKeyPairName>${controller.keypair.name}</runnerKeyPairName>
+          <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
           <minimumRunners>5</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>

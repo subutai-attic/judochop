@@ -37,8 +37,8 @@ import com.google.inject.Singleton;
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/status")
+@Produces( MediaType.APPLICATION_JSON )
+@Path( "/status" )
 public class StatusResource {
     private final IController runner;
     private final StoreService storeService;
