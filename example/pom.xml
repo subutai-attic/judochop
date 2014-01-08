@@ -15,10 +15,6 @@
     A fake project used to test the plugin and components of Chop.
   </description>
 
-  <properties>
-    <guice.version>3.0</guice.version>
-    <guava.version>15.0</guava.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -30,19 +26,16 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>${guice.version}</version>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.6</version>
     </dependency>
   </dependencies>
 
@@ -77,11 +70,11 @@
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
           <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
-          <minimumRunners>1</minimumRunners>
+          <minimumRunners>3</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>
-            <param>213.74.31.18/32:8080</param>
-            <param>213.74.31.18/32:22</param>
+            <param>${myip.address}/32:8080</param>
+            <param>${myip.address}/32:22</param>
           </securityGroupExceptions>
         </configuration>
       </plugin>

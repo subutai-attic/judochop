@@ -99,7 +99,6 @@ public class LoadResource extends PropagatingResource {
      * @return a summary message
      */
     @POST
-    @Inject
     public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate,
                         @QueryParam( PARAM_PROJECT ) String project,
                         @Context UriInfo uriInfo ) {

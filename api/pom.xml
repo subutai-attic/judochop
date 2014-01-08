@@ -17,23 +17,15 @@
     various modules of the project.
   </description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.version>2.1.5</jackson.version>
-    <guicyfig.version>3.2</guicyfig.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.safehaus.guicyfig</groupId>
       <artifactId>guicyfig</artifactId>
-      <version>${guicyfig.version}</version>
     </dependency>
   </dependencies>
 </project>
