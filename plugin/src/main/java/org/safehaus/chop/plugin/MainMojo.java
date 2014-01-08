@@ -201,9 +201,10 @@ public class MainMojo extends AbstractMojo implements Constants {
 
     /** @return Returns the full path of created project.json file */
     public String getProjectFileToUploadPath() {
-        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
+        return getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE;
+//        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/" + PROJECT_FILE;
+//        return projectBaseDirectory + "/target/" + PROJECT_FILE;
     }
 
 

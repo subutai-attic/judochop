@@ -77,7 +77,7 @@
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
           <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
-          <minimumRunners>5</minimumRunners>
+          <minimumRunners>1</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>
             <param>213.74.31.18/32:8080</param>
