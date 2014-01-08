@@ -356,7 +356,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
         loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
 
         try {
-            return getJsonObject( loadKey + PROJECT_FILE, ProjectFig.class );
+            return getFromProperties( loadKey + PROJECT_FILE );
         }
         catch ( Exception e ) {
             LOG.error( "Could not find project file at {}: returning null Project", loadKey, e );
