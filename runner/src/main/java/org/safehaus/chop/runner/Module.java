@@ -29,7 +29,7 @@ public class Module extends ServletModule {
 
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ProjectFig.class ) );
+        install( new GuicyFigModule( ServletFig.class ) );
         install( new PerftestClientModule() );
 
         // Hook Jersey into Guice Servlet
