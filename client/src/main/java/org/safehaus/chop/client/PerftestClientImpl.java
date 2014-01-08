@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.BaseResult;
@@ -83,13 +84,13 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
 
     @Override
-    public Result load( RunnerFig runnerFig, String projectKey, Boolean propagate ) {
+    public Result load( RunnerFig runnerFig, String projectKey, Boolean propagate, Map<String,String> storeProps ) {
         ProjectFig project = getProject( projectKey );
         String md5 = project.getWarMd5();
 
         LOG.warn( "Sending load request to " + runnerFig.getHostname() );
 
-        Result result = RestRequests.load( runnerFig, projectKey, propagate );
+        Result result = RestRequests.load( runnerFig, projectKey, propagate, storeProps );
 
         if ( ! result.getStatus() ) {
             LOG.info( "Failed on load POST to {} response message was: {}" ,

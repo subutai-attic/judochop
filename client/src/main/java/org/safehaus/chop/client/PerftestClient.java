@@ -4,6 +4,7 @@ package org.safehaus.chop.client;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.Constants;
@@ -82,10 +83,11 @@ public interface PerftestClient extends Constants {
      * @param runnerFig the runnerFig to use for propagating the load request
      * @param testKey the test information associated with the test to load
      * @param propagate whether or not to make the call propagate
+     * @param storeProps an optional set of store property overrides
      *
      * @return the results associated with the operation
      */
-    Result load( RunnerFig runnerFig, String testKey, Boolean propagate );
+    Result load( RunnerFig runnerFig, String testKey, Boolean propagate, Map<String,String> storeProps );
 
 
     Result start( RunnerFig runnerFig, boolean propagate );

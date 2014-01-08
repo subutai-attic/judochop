@@ -3,12 +3,15 @@ package org.safehaus.chop.plugin;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
 import org.safehaus.chop.client.ResponseInfo;
@@ -54,6 +57,7 @@ public class LoadMojo extends MainMojo {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected LoadMojo() {
 
     }
@@ -73,6 +77,7 @@ public class LoadMojo extends MainMojo {
         Collection<RunnerFig> runnerFigCollection = client.getRunners();
         RunnerFig[] runnerFigs = runnerFigCollection.toArray( new RunnerFig[ runnerFigCollection.size() ] ) ;
         RunnerFig info = null;
+
         for ( RunnerFig runnerFig : runnerFigs ) {
             info = runnerFig;
             break;
@@ -132,7 +137,12 @@ public class LoadMojo extends MainMojo {
 
         getLog().info( "Loading the test on drivers..." );
 
-        Result result = client.load( info, getWarOnS3Path(), true );
+        Map<String,String> overrides = new HashMap<String, String>( 3 );
+        overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
+        overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
+        overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
+
+        Result result = client.load( info, getWarOnS3Path(), true, overrides );
 
         if ( !result.getStatus() ) {
             throw new MojoExecutionException( "Could not get the status of drivers, quitting..." );
@@ -201,18 +211,8 @@ public class LoadMojo extends MainMojo {
         private ResponseInfo result;
 
 
-        public String getInstanceURL() {
-            return instanceURL;
-        }
-
-
         public void setInstanceURL( final String instanceURL ) {
             this.instanceURL = instanceURL;
-        }
-
-
-        private String getSshKeyFile() {
-            return sshKeyFile;
         }
 
 

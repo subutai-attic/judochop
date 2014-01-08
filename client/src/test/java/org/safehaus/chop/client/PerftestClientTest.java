@@ -50,7 +50,7 @@ public class PerftestClientTest {
     @Test @Ignore //TODO
     public void testLoad() throws IOException {
         RunnerFig liveRunnerFig = client.getLiveRunner();
-        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true );
+        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true, null );
     }
 
 

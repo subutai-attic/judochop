@@ -1,6 +1,8 @@
 package org.safehaus.chop.client.rest;
 
 
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.BaseResult;
@@ -25,17 +27,25 @@ public class RestRequests {
      * parameter.
      *
      * @param runnerFig the runnerFig to perform the load operation on
-     * @param perftest the perftest query parameter value
+     * @param project the project query parameter value
      * @param propagate whether or not to enable propagation
+     * @param storeProps optional set of store configuration parameters
      *
      * @return the result of the operation
      */
-    public static Result load( RunnerFig runnerFig, String perftest, Boolean propagate ) {
+    public static Result load( RunnerFig runnerFig, String project, Boolean propagate, Map<String,String> storeProps ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/load" );
-        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).queryParam( PARAM_PROJECT, perftest )
-                       .accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        resource = resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).queryParam( PARAM_PROJECT, project );
+
+        if ( storeProps != null ) {
+            for ( String key : storeProps.keySet() ) {
+                resource = resource.queryParam( key, storeProps.get( key ) );
+            }
+        }
+
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
     }
 
 

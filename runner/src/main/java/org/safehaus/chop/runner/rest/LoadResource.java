@@ -26,11 +26,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ProjectFig;
@@ -52,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.servlet.RequestParameters;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -89,14 +95,14 @@ public class LoadResource extends PropagatingResource {
      *
      * @param propagate when true call the same function on other drivers
      * @param project the project to use specified by the string containing the <git-uuid>-<deploy-timestamp>
-     * @param storeProps store service implementation specific properties
      *
      * @return a summary message
      */
     @POST
+    @Inject
     public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate,
                         @QueryParam( PARAM_PROJECT ) String project,
-                        @QueryParam( PARAM_STORE_PROPERTIES ) Map<String,String> storeProps ) {
+                        @Context UriInfo uriInfo ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( controller.isRunning() ) {
@@ -116,14 +122,17 @@ public class LoadResource extends PropagatingResource {
         AmazonFig amazonFig = Guice.createInjector( new GuicyFigModule( AmazonFig.class ) )
                                    .getInstance( AmazonFig.class );
 
-        // all are now applied as bypasses taking effect immediately
-        for ( String key : storeProps.keySet() ) {
-            amazonFig.bypass( key, storeProps.get( key ) );
+        // Apply every parameter that is either a key or method name in query parameters as a bypass
+        MultivaluedMap<String,String> parameters = uriInfo.getQueryParameters();
+        for ( String key : parameters.keySet() ) {
+            if ( amazonFig.getOption( key ) != null ) {
+                amazonFig.bypass( key, parameters.get( key ).get( 0 ) );
+            }
         }
 
         while ( ! getService().isStarted() ) {
             try {
-                Thread.sleep( 50L );
+                Thread.sleep( 150L );
             }
             catch ( InterruptedException e ) {
                 LOG.error( "Someone woke me up before it was time.", e );
