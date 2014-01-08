@@ -240,7 +240,7 @@ public class Ec2RunnerBuilder {
 
 
             @Override
-            public void setOverrides( final Overrides overrides ) {
+            public boolean setOverrides( final Overrides overrides ) {
                 throw new UnsupportedOperationException();
             }
 
@@ -258,7 +258,7 @@ public class Ec2RunnerBuilder {
 
 
             @Override
-            public void setBypass( final Bypass bypass ) {
+            public boolean setBypass( final Bypass bypass ) {
                 throw new UnsupportedOperationException();
             }
 

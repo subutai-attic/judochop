@@ -24,7 +24,7 @@ public class AmazonStoreModule extends AbstractModule implements Constants {
 
     protected void configure() {
         install( new GuicyFigModule( AmazonFig.class, RunnerFig.class ) );
-        bind( StoreService.class ).to( AmazonS3ServiceAwsImpl.class );
+        bind( StoreService.class ).to( AmazonS3Store.class );
     }
 
 

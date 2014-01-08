@@ -35,6 +35,8 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.store.amazon.AmazonFig;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.PropagatedResult;
@@ -43,9 +45,11 @@ import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.runner.ServletFig;
+import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sun.jersey.api.client.Client;
@@ -53,14 +57,17 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import static org.safehaus.chop.api.Constants.PARAM_PROJECT;
+import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
+import static org.safehaus.chop.api.Constants.PARAM_STORE_PROPERTIES;
+
 
 /** Loads a test configuration from the "tests" container. */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/load")
+@Produces( MediaType.APPLICATION_JSON )
+@Path( "/load" )
 public class LoadResource extends PropagatingResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
-    private static final String PARAM_PROPAGATE = "propagate";
 
     private final IController controller;
     private final ProjectFig projectFig;
@@ -82,12 +89,14 @@ public class LoadResource extends PropagatingResource {
      *
      * @param propagate when true call the same function on other drivers
      * @param project the project to use specified by the string containing the <git-uuid>-<deploy-timestamp>
+     * @param storeProps store service implementation specific properties
      *
      * @return a summary message
      */
     @POST
     public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate,
-                        @QueryParam( Constants.PARAM_PROJECT ) String project ) {
+                        @QueryParam( PARAM_PROJECT ) String project,
+                        @QueryParam( PARAM_STORE_PROPERTIES ) Map<String,String> storeProps ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( controller.isRunning() ) {
@@ -99,12 +108,34 @@ public class LoadResource extends PropagatingResource {
             return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", controller.getState() );
         }
 
+        if ( ! controller.getState().accepts( Signal.LOAD ) ) {
+            LOG.error( "State of {} does not accept the LOAD signal.", controller.getState() );
+            return new BaseResult( getEndpointUrl(), false, "LOAD signal not accepted by state.", controller.getState() );
+        }
+
+        AmazonFig amazonFig = Guice.createInjector( new GuicyFigModule( AmazonFig.class ) )
+                                   .getInstance( AmazonFig.class );
+
+        // all are now applied as bypasses taking effect immediately
+        for ( String key : storeProps.keySet() ) {
+            amazonFig.bypass( key, storeProps.get( key ) );
+        }
+
+        while ( ! getService().isStarted() ) {
+            try {
+                Thread.sleep( 50L );
+            }
+            catch ( InterruptedException e ) {
+                LOG.error( "Someone woke me up before it was time.", e );
+            }
+        }
+
         Map<String, RunnerFig> peers = getService().getRunners();
 
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
 
-        Map<String, String> params = Collections.singletonMap( Constants.PARAM_PROJECT, project );
+        Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
 
         if ( propagate == Boolean.TRUE ) {
             PropagatedResult result =

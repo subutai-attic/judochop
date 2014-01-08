@@ -9,6 +9,9 @@ public interface Constants {
     /** the propagate HTTP parameter */
     String PARAM_PROPAGATE = "propagate";
 
+    /** store service properties */
+    String PARAM_STORE_PROPERTIES = "storeProps";
+
     /** the default name to use for the runner's war file */
     String RUNNER_WAR = "runner.war";
 

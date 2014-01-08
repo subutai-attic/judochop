@@ -378,7 +378,7 @@ public class ProjectFigBuilder {
 
             @JsonIgnore
             @Override
-            public void setOverrides( final Overrides overrides ) {
+            public boolean setOverrides( final Overrides overrides ) {
                 throw new NotImplementedException();
             }
 
@@ -399,7 +399,7 @@ public class ProjectFigBuilder {
 
             @JsonIgnore
             @Override
-            public void setBypass( final Bypass bypass ) {
+            public boolean setBypass( final Bypass bypass ) {
                 throw new NotImplementedException();
             }
 

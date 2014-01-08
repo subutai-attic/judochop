@@ -29,8 +29,8 @@ import static junit.framework.TestCase.assertNotNull;
 /** Tests the Amazon based PerftestStore implementation. */
 @RunWith( JukitoRunner.class )
 @UseModules( AmazonStoreModule.class )
-public class AmazonS3ServiceAwsImplTest {
-    private static final Logger LOG = LoggerFactory.getLogger( AmazonS3ServiceAwsImplTest.class );
+public class AmazonS3StoreTest {
+    private static final Logger LOG = LoggerFactory.getLogger( AmazonS3StoreTest.class );
     private String accessKey = System.getProperty( "accessKey" );
     private String secretKey = System.getProperty( "secretKey" );
     private String amiID = System.getProperty( "amiID" );

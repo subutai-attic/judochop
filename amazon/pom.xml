@@ -20,7 +20,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.1.5</jackson.version>
-    <guicyfig.version>3.1</guicyfig.version>
+    <guicyfig.version>3.2</guicyfig.version>
     <archaius.version>0.5.11</archaius.version>
     <guice.version>3.0</guice.version>
     <junit.version>4.11</junit.version>

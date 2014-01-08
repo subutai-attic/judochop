@@ -20,6 +20,8 @@
 package org.safehaus.chop.api.store.amazon;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,6 +43,7 @@ import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
+import org.safehaus.guicyfig.OptionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,29 +58,67 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 
 /** Handles S3 interactions to interface with other test drivers. */
 @Singleton
-public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants {
+public class AmazonS3Store implements StoreService, Runnable, Constants {
 
-    private final static Logger LOG = LoggerFactory.getLogger( AmazonS3ServiceAwsImpl.class );
-
+    private final static Logger LOG = LoggerFactory.getLogger( AmazonS3Store.class );
+    private final static HashSet<String> clientOptions = new HashSet<String>( 3 );
 
     private boolean started = false;
     private RunnerFig me;
     private Map<String, RunnerFig> runners = new HashMap<String, RunnerFig>();
     private final Object lock = new Object();
-    private final AmazonS3Client client;
     private final AmazonFig amazonFig;
+    private final Injector injector;
+    private AmazonS3Client client;
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client, RunnerFig me, AmazonFig amazonFig ) {
-        this.client = client;
-        this.me = me;
-        this.amazonFig = amazonFig;
+    public AmazonS3Store( Injector injector ) {
+        Preconditions.checkNotNull( injector );
+
+        this.injector = injector;
+        this.client = injector.getInstance( AmazonS3Client.class );
+        this.me = injector.getInstance( RunnerFig.class );
+        this.amazonFig = injector.getInstance( AmazonFig.class );
+
+        clientOptions.add( AmazonFig.AWS_BUCKET_KEY );
+        clientOptions.add( AmazonFig.AWS_SECRET_KEY );
+        clientOptions.add( AmazonFig.AWSKEY_KEY );
+
+        amazonFig.addPropertyChangeListener( new PropertyChangeListener() {
+            @Override
+            public void propertyChange( final PropertyChangeEvent evt ) {
+                updateClient( evt );
+            }
+        } );
+    }
+
+
+    private void updateClient( final PropertyChangeEvent event ) {
+        OptionState state = amazonFig.getOption( event.getPropertyName() );
+        if ( ! clientOptions.contains( state.getKey() ) ) {
+            return;
+        }
+
+        synchronized ( lock ) {
+            client.shutdown();
+            started = false;
+
+            try {
+                client = injector.getInstance( AmazonS3Client.class );
+                start();
+                LOG.info( "Restarted amazon client with settings update after event: {}", event );
+            }
+            catch ( Exception e ) {
+                LOG.warn( e.getMessage() );
+            }
+        }
     }
 
 
@@ -487,26 +528,6 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
         in.close();
         LOG.info( "Successfully downloaded {} from S3 to {}.", key, tempFile.getAbsoluteFile() );
         return tempFile;
-    }
-
-
-    private <T> T getJsonObject( String key, Class<T> clazz ) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        S3Object s3Object = client.getObject( amazonFig.getAwsBucket(), key );
-        S3ObjectInputStream in = s3Object.getObjectContent();
-
-        try {
-            return mapper.readValue( in, clazz );
-        }
-        catch ( IOException e ) {
-            LOG.error( "Failed to marshall {} into a valid object.", key, e );
-            throw e;
-        }
-        finally {
-            if ( in != null ) {
-                in.close();
-            }
-        }
     }
 
 
