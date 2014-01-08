@@ -20,7 +20,6 @@
 package org.safehaus.chop.api.store.amazon;
 
 
-import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,9 +41,6 @@ import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
-import org.safehaus.guicyfig.Bypass;
-import org.safehaus.guicyfig.OptionState;
-import org.safehaus.guicyfig.Overrides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +66,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
 
     private boolean started = false;
-    private RunnerFig metadata;
+    private RunnerFig me;
     private Map<String, RunnerFig> runners = new HashMap<String, RunnerFig>();
     private final Object lock = new Object();
     private final AmazonS3Client client;
@@ -78,21 +74,21 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
 
     @Inject
-    public AmazonS3ServiceAwsImpl( AmazonS3Client client, RunnerFig metadata, AmazonFig amazonFig ) {
+    public AmazonS3ServiceAwsImpl( AmazonS3Client client, RunnerFig me, AmazonFig amazonFig ) {
         this.client = client;
-        this.metadata = metadata;
+        this.me = me;
         this.amazonFig = amazonFig;
     }
 
 
     @Override
     public void start() {
-        if ( metadata.getHostname() != null ) {
-            register( metadata );
+        if ( me.getHostname() != null ) {
+            register( me );
         }
 
         started = true;
-        runners = getRunners( metadata );
+        runners = getRunners( me );
         new Thread( this ).start();
     }
 
@@ -133,13 +129,13 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
 
     @Override
     public RunnerFig getMyMetadata() {
-        return metadata;
+        return me;
     }
 
 
     @Override
     public void store( final ProjectFig project, final ISummary summary, final File resultsFile ) {
-        store( metadata, project, summary, resultsFile );
+        store( me, project, summary, resultsFile );
     }
 
 
@@ -307,8 +303,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
                 String key = summary.getKey();
 
                 if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
-                    ProjectFigBuilder builder = getJsonObject( key, ProjectFigBuilder.class );
-                    tests.add( builder.getProject() );
+                    tests.add( getFromProperties( key ) );
                 }
             }
 
@@ -515,6 +510,30 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
     }
 
 
+    private ProjectFig getFromProperties( String key ) throws IOException {
+        S3Object s3Object = client.getObject( amazonFig.getAwsBucket(), key );
+        S3ObjectInputStream in = s3Object.getObjectContent();
+
+        try {
+            Properties props = new Properties();
+            props.load( in );
+            in.close();
+
+            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            return builder.getProject();
+        }
+        catch ( IOException e ) {
+            LOG.error( "Failed to marshall {} into a valid object.", key, e );
+            throw e;
+        }
+        finally {
+            if ( in != null ) {
+                in.close();
+            }
+        }
+    }
+
+
     @Override
     public <T> T putJsonObject( String key, Object obj ) {
         ObjectMapper mapper = new ObjectMapper();
@@ -564,7 +583,7 @@ public class AmazonS3ServiceAwsImpl implements StoreService, Runnable, Constants
                     // wait first since we scan on start()
                     lock.wait( amazonFig.getScanPeriod() );
 
-                    runners = getRunners( metadata );
+                    runners = getRunners( me );
 
                     LOG.info( "Runners updated" );
                     for ( String runner : runners.keySet() ) {

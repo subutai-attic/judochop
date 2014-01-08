@@ -16,15 +16,12 @@ import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.StoreService;
-import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.netflix.config.DynamicStringProperty;
 
 
 /**
@@ -34,7 +31,6 @@ import com.netflix.config.DynamicStringProperty;
 public class PerftestClientImpl implements PerftestClient, Constants {
     private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
     private final StoreService service;
-    @Inject @Named( AmazonFig.AWS_BUCKET_KEY ) private DynamicStringProperty awsBucket;
 
 
     @Inject
@@ -64,13 +60,13 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
     @Override
     public Set<ISummary> getRuns( final ProjectFig test ) {
-        return null;
+        throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
     public File getResults( final ISummary run ) throws IOException {
-        return File.createTempFile( "foo", "bar" );
+        throw new RuntimeException( "Not implemented yet" );
     }
 
 
@@ -172,9 +168,9 @@ public class PerftestClientImpl implements PerftestClient, Constants {
      * Sends the start rest request to runnerFig with given propagate value.
      * Call verify() method first to make sure all drivers are ready and up-to-date, call status() if you're not
      * going to propagate.
-     * @param runnerFig
-     * @param propagate
-     * @return
+     * @param runnerFig the runner configuration
+     * @param propagate whether or not to propagate the call
+     * @return the result
      */
     @Override
     public Result start( RunnerFig runnerFig, final boolean propagate ) {
@@ -185,9 +181,9 @@ public class PerftestClientImpl implements PerftestClient, Constants {
     /**
      * If propagate is true, checks if there is at least one runnerFig in cluster in RUNNING state; if not, checks
      * if the given runnerFig is in RUNNING state. If that check succeeds, sends the stop rest request
-     * @param runnerFig
-     * @param propagate
-     * @return
+     * @param runnerFig the runner configuration
+     * @param propagate whether or not to propagate the call
+     * @return the result
      */
     @Override
     public Result stop( final RunnerFig runnerFig, final boolean propagate ) {
@@ -224,9 +220,9 @@ public class PerftestClientImpl implements PerftestClient, Constants {
     /**
      * If propagate is true, checks if there is at least one runnerFig in cluster in STOPPED state; if not, checks
      * if the given runnerFig is in STOPPED state. If that check succeeds, sends the reset rest request
-     * @param runnerFig
-     * @param propagate
-     * @return
+     * @param runnerFig the runner configuration
+     * @param propagate whether or not to propagate the call
+     * @return the result
      */
     @Override
     public Result reset( final RunnerFig runnerFig, final boolean propagate ) {

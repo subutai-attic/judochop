@@ -108,7 +108,7 @@ public class WarMojo extends MainMojo {
                 inputStream.close();
             }
 
-            // If exists, properties in this file can overwrite the ones from perftest-runner
+            // If exists, properties in this file can overwrite the ones from chop-runner
             if ( getClass().getResource( "project.properties" ) != null ) {
                 inputStream = getClass().getResourceAsStream( "project.properties" );
                 Properties propCurrent = new Properties();
@@ -149,29 +149,12 @@ public class WarMojo extends MainMojo {
             // Save the newly formed properties file under WEB-INF/classes/project.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
             FileWriter writer = new FileWriter( configPropertiesFilePath );
-            prop.store( writer, null );
+            prop.store( writer, "Generated with chop:war" );
 
             // Create the final WAR
             String finalWarPath = getWarToUploadPath();
             File finalWarFile = new File( finalWarPath );
             Utils.archiveWar( finalWarFile, extractedWarRoot );
-
-            // Generate the test-info.json file
-            ProjectFigBuilder projectBuilder = new ProjectFigBuilder();
-            projectBuilder.setTestPackageBase( testPackageBase );
-            projectBuilder.setCreateTimestamp( timeStamp );
-            projectBuilder.setArtifactId( this.project.getArtifactId() );
-            projectBuilder.setProjectVersion( this.project.getVersion() );
-            projectBuilder.setGroupId( this.project.getGroupId() );
-            projectBuilder.setVcsRepoUrl( gitUrl );
-            projectBuilder.setVcsVersion( commitId );
-            projectBuilder.setLoadKey( CONFIGS_PATH + "/" + commitId + "/" + RUNNER_WAR );
-            projectBuilder.setChopVersion( plugin.getVersion() );
-            projectBuilder.setWarMd5( warMd5 );
-
-            ObjectMapper mapper = new ObjectMapper();
-            File projectFile = new File( getProjectFileToUploadPath() );
-            mapper.writeValue( projectFile, projectBuilder.getProject() );
         }
         catch ( MojoExecutionException e ) {
             throw e;

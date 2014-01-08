@@ -74,7 +74,6 @@ public class ServletConfig extends GuiceServletContextListener {
             LOG.info( "Operating in UNIT environment" );
         }
 
-
         ConfigurationManager.install( ccc );
         try {
             ConfigurationManager.loadCascadedPropertiesFromResources( "project" );

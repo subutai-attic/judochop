@@ -20,7 +20,6 @@ public class PerftestClientModule extends AbstractModule implements Constants {
 
     protected void configure() {
         //noinspection unchecked
-        install( new GuicyFigModule( RunnerFig.class ) );
         install( new GuicyFigModule( ProjectFig.class ) );
         install( new AmazonStoreModule() );
         bind( PerftestClient.class ).to( PerftestClientImpl.class );

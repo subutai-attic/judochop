@@ -8,6 +8,7 @@ package org.safehaus.chop.api.store.amazon;
 
 
 import org.safehaus.chop.api.Constants;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.GuicyFigModule;
 
@@ -22,7 +23,7 @@ public class AmazonStoreModule extends AbstractModule implements Constants {
 
 
     protected void configure() {
-        install( new GuicyFigModule( AmazonFig.class ) );
+        install( new GuicyFigModule( AmazonFig.class, RunnerFig.class ) );
         bind( StoreService.class ).to( AmazonS3ServiceAwsImpl.class );
     }
 

@@ -16,7 +16,7 @@ public interface Constants {
     int CHARS_OF_UUID = 8;
 
     /** the name of the project json file */
-    String PROJECT_FILE = "project.json";
+    String PROJECT_FILE = "project.properties";
 
     /** the path to the runners */
     String RUNNERS_PATH = "runners";

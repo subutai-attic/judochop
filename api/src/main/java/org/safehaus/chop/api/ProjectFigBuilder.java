@@ -20,6 +20,7 @@ import com.google.inject.Inject;
  * Builds a ProjectFig for use many by the plugin.
  */
 public class ProjectFigBuilder {
+    private Properties props;
     private ProjectFig supplied;
     private String testPackageBase;
     private String createTimestamp;
@@ -41,6 +42,11 @@ public class ProjectFigBuilder {
     }
 
 
+    public ProjectFigBuilder( Properties props ) {
+        this.props = props;
+    }
+
+
     public ProjectFigBuilder( ProjectFig project ) {
         // set the supplied project - this is manually provided
         this.supplied = project;
@@ -58,23 +64,75 @@ public class ProjectFigBuilder {
 
 
     private void updateValues() {
-        if ( supplied == null ) {
-            return;
+        if ( supplied != null ) {
+            this.testPackageBase = supplied.getTestPackageBase();
+            this.createTimestamp = supplied.getCreateTimestamp();
+            this.artifactId = supplied.getArtifactId();
+            this.version = supplied.getVersion();
+            this.groupId = supplied.getGroupId();
+            this.vcsRepoUrl = supplied.getVcsRepoUrl();
+            this.commitId = supplied.getVcsVersion();
+            this.loadKey = supplied.getLoadKey();
+            this.chopVersion = supplied.getChopVersion();
+            this.warMd5 = supplied.getWarMd5();
+            this.loadTime = supplied.getLoadTime();
+            this.managerPassword = supplied.getManagerPassword();
+            this.managerUsername = supplied.getManagerUsername();
         }
 
-        this.testPackageBase = supplied.getTestPackageBase();
-        this.createTimestamp = supplied.getCreateTimestamp();
-        this.artifactId = supplied.getArtifactId();
-        this.version = supplied.getVersion();
-        this.groupId = supplied.getGroupId();
-        this.vcsRepoUrl = supplied.getVcsRepoUrl();
-        this.commitId = supplied.getVcsVersion();
-        this.loadKey = supplied.getLoadKey();
-        this.chopVersion = supplied.getChopVersion();
-        this.warMd5 = supplied.getWarMd5();
-        this.loadTime = supplied.getLoadTime();
-        this.managerPassword = supplied.getManagerPassword();
-        this.managerUsername = supplied.getManagerUsername();
+        if ( props != null ) {
+            if ( props.containsKey( ProjectFig.LOAD_TIME_KEY ) ) {
+                this.loadTime = props.getProperty( ProjectFig.LOAD_TIME_KEY );
+            }
+
+            if ( props.containsKey( ProjectFig.LOAD_KEY ) ) {
+                this.loadKey = props.getProperty( ProjectFig.LOAD_KEY );
+            }
+
+            if ( props.contains( ProjectFig.ARTIFACT_ID_KEY ) ) {
+                this.artifactId = props.getProperty( ProjectFig.ARTIFACT_ID_KEY );
+            }
+
+            if ( props.contains( ProjectFig.CHOP_VERSION_KEY ) ) {
+                this.chopVersion = props.getProperty( ProjectFig.CHOP_VERSION_KEY );
+            }
+
+            if ( props.contains( ProjectFig.CREATE_TIMESTAMP_KEY ) ) {
+                this.createTimestamp = props.getProperty( ProjectFig.CREATE_TIMESTAMP_KEY );
+            }
+
+            if ( props.contains( ProjectFig.GIT_URL_KEY ) ) {
+                this.vcsRepoUrl = props.getProperty( ProjectFig.GIT_URL_KEY );
+            }
+
+            if ( props.contains( ProjectFig.GIT_UUID_KEY ) ) {
+                this.commitId = props.getProperty( ProjectFig.GIT_UUID_KEY );
+            }
+
+            if ( props.contains( ProjectFig.GROUP_ID_KEY ) ) {
+                this.groupId = props.getProperty( ProjectFig.GROUP_ID_KEY );
+            }
+
+            if ( props.contains( ProjectFig.MANAGER_PASSWORD_KEY ) ) {
+                this.managerPassword = props.getProperty( ProjectFig.MANAGER_PASSWORD_KEY );
+            }
+
+            if ( props.contains( ProjectFig.MANAGER_USERNAME_KEY ) ) {
+                this.managerUsername = props.getProperty( ProjectFig.MANAGER_USERNAME_KEY );
+            }
+
+            if ( props.contains( ProjectFig.PROJECT_VERSION_KEY ) ) {
+                this.version = props.getProperty( ProjectFig.PROJECT_VERSION_KEY );
+            }
+
+            if ( props.contains( ProjectFig.TEST_PACKAGE_BASE ) ) {
+                this.testPackageBase = props.getProperty( ProjectFig.TEST_PACKAGE_BASE );
+            }
+
+            if ( props.contains( ProjectFig.WAR_MD5_KEY ) ) {
+                this.warMd5 = props.getProperty( ProjectFig.WAR_MD5_KEY );
+            }
+        }
     }
 
 
