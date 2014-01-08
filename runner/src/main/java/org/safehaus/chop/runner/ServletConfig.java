@@ -86,16 +86,14 @@ public class ServletConfig extends GuiceServletContextListener {
         final ServletFig servletFig = Guice.createInjector(
                 new GuicyFigModule( ServletFig.class ) ).getInstance( ServletFig.class );
 
-        LoggingConfiguration.getInstance().configure();
         storeService = getInjector().getInstance( StoreService.class );
+        storeService.start();
 
         ServletContext context = servletContextEvent.getServletContext();
         servletFig.override( ServletFig.CONTEXT_PATH, context.getContextPath() );
         servletFig.override( ServletFig.SERVER_INFO_KEY, context.getServerInfo() );
         servletFig.override( ServletFig.CONTEXT_TEMPDIR_KEY,
                 ( ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
-
-        storeService.start();
     }
 
 

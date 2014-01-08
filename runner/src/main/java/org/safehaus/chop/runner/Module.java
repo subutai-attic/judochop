@@ -38,13 +38,13 @@ public class Module extends ServletModule {
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
-        bind( IController.class ).to( Controller.class ).asEagerSingleton();
+        bind( IController.class ).to( Controller.class );
 
-        bind( ResetResource.class ).asEagerSingleton();
-        bind( StopResource.class ).asEagerSingleton();
-        bind( StartResource.class ).asEagerSingleton();
-        bind( StatsResource.class ).asEagerSingleton();
-        bind( StatusResource.class ).asEagerSingleton();
+        bind( ResetResource.class );
+        bind( StopResource.class );
+        bind( StartResource.class );
+        bind( StatsResource.class );
+        bind( StatusResource.class );
 
         Map<String, String> params = new HashMap<String, String>();
         params.put( PACKAGES_KEY, getClass().getPackage().toString() );

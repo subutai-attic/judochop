@@ -86,7 +86,8 @@ public class LoadResource extends PropagatingResource {
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate, @QueryParam( Constants.PARAM_PROJECT ) String project ) {
+    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate,
+                        @QueryParam( Constants.PARAM_PROJECT ) String project ) {
         LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( controller.isRunning() ) {

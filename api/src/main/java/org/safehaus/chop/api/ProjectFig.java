@@ -58,7 +58,6 @@ public interface ProjectFig extends GuicyFig {
     @JsonProperty
     @Key( GIT_UUID_KEY )
     String getVcsVersion();
-    //String getCommitId();
 
 
     String GIT_URL_KEY = "git.url";
@@ -114,7 +113,6 @@ public interface ProjectFig extends GuicyFig {
 
 
     String TEST_PACKAGE_BASE = "test.package.base";
-    String DEFAULT_PACKAGE_BASE = "org.safehaus.chop";
 
     /**
      * Gets the package base of the tests to run.
@@ -123,7 +121,6 @@ public interface ProjectFig extends GuicyFig {
      */
     @JsonProperty
     @Key( TEST_PACKAGE_BASE )
-    @Default( DEFAULT_PACKAGE_BASE )
     String getTestPackageBase();
 
 
@@ -156,7 +153,6 @@ public interface ProjectFig extends GuicyFig {
     @JsonProperty
     @Key( LOAD_TIME_KEY )
     String getLoadTime();
-//    String getLoadTimestamp();
 
 
     /** Key used to locate the runner's war in the store. */

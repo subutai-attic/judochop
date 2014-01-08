@@ -32,7 +32,7 @@ public class Controller implements IController, Runnable {
 
     private Set<Class<?>> timeChopClasses;
     private Set<Class<?>> iterationChopClasses;
-    private State state = State.READY;
+    private State state = State.INACTIVE;
     private Driver<?> currentDriver;
 
     private StoreService service;
@@ -42,24 +42,48 @@ public class Controller implements IController, Runnable {
 
     @Inject
     private void setProject( ProjectFig project ) {
-        LOG.info( "Controller injected with project properties: {}", project );
-
-        if ( project.getLoadKey() == null ) {
-            state = State.INACTIVE;
+        // if the project is null which should never really happen we just return
+        // and stay in the INACTIVE state waiting for a load to activate this runner
+        if ( project == null ) {
+            return;
         }
 
+        // setup the valid runner project
         this.project = project;
+        LOG.info( "Controller injected with project properties: {}", project );
 
+        // if the project test package base is null there's nothing we can do but
+        // return and stay in the inactive state waiting for a load to occur
+        if ( project.getTestPackageBase() == null ) {
+            return;
+        }
+
+        // reflect into package base looking for annotated classes
         Reflections reflections = new Reflections( project.getTestPackageBase() );
+
         timeChopClasses = reflections.getTypesAnnotatedWith( TimeChop.class );
+        LOG.info( "TimeChop classes = {}", timeChopClasses );
+
         iterationChopClasses = reflections.getTypesAnnotatedWith( IterationChop.class );
+        LOG.info( "IterationChop classes = {}", iterationChopClasses );
+
+        // if we don't have a valid project load key then this is bogus
+        if ( project.getLoadKey() == null ) {
+            state = State.INACTIVE;
+            LOG.info( "Null loadKey: controller going into INACTIVE state." );
+            return;
+        }
+
 
         if ( timeChopClasses.isEmpty() && iterationChopClasses.isEmpty() ) {
             state = State.INACTIVE;
+            LOG.info( "Nothing to scan: controller going into INACTIVE state." );
+            return;
         }
-        else {
-            state = State.READY;
-        }
+
+
+        state = State.READY;
+        LOG.info( "We have things to scan and a valid loadKey: controller going into READY state." );
     }
 
 
