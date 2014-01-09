@@ -83,9 +83,12 @@ public class ProjectDeserializer extends JsonDeserializer<ProjectFig> {
             }
 
             jp.nextToken();
+
+            if ( jp.getText().equals( "}" ) ) {
+                break;
+            }
         }
 
-        jp.close();
         return builder.getProject();
     }
 

@@ -2,16 +2,22 @@ package org.safehaus.chop.plugin;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
-import org.safehaus.chop.api.State;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
+import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
 import org.safehaus.chop.client.ResponseInfo;
@@ -20,17 +26,21 @@ import org.safehaus.chop.client.ssh.SSHCommands;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
-@Mojo(name = "load")
+@Mojo( name = "load" )
 public class LoadMojo extends MainMojo {
 
+    static {
+        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+    }
 
     protected LoadMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
@@ -66,6 +76,11 @@ public class LoadMojo extends MainMojo {
     @Override
     public void execute() throws MojoExecutionException {
 
+        /* ------------------------------------------------------------------------------
+         * This ensures the proper instance types and counts are up and ready.
+         * ------------------------------------------------------------------------------
+         */
+
         getLog().info( "Calling setup goal first to ensure cluster is prepared" );
         SetupMojo setupMojo = new SetupMojo( this );
         setupMojo.execute();
@@ -74,18 +89,58 @@ public class LoadMojo extends MainMojo {
         Injector injector = Guice.createInjector( new PerftestClientModule() );
         PerftestClient client = injector.getInstance( PerftestClient.class );
 
-        Collection<RunnerFig> runnerFigCollection = client.getRunners();
-        RunnerFig[] runnerFigs = runnerFigCollection.toArray( new RunnerFig[ runnerFigCollection.size() ] ) ;
-        RunnerFig info = null;
+        /* ------------------------------------------------------------------------------
+         * Instances may be running but may not be registered their runner information in
+         * S3, so we're going to need to access instance information directly with EC2
+         * Manager rather than from S3.
+         * ------------------------------------------------------------------------------
+         */
 
-        for ( RunnerFig runnerFig : runnerFigs ) {
-            info = runnerFig;
-            break;
+        EC2Manager ec2Manager =
+                new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName );
+        ec2Manager.setAvailabilityZone( availabilityZone );
+        ec2Manager.setDefaultTimeout( setupTimeout );
+        Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
+
+        /*
+         * Let's check and see if the project file exists and if it does not that means we
+         * need to build the war and thus invoke the war mojo.
+         */
+        File projectFile = new File( getProjectFileToUploadPath() );
+        if ( !projectFile.exists() ) {
+            getLog().warn( "It seems as though the project properties file " + projectFile
+                    + " does not exist. Creating it and the war now." );
+            WarMojo warMojo = new WarMojo( this );
+            warMojo.execute();
+
+            if ( !projectFile.exists() ) {
+                getLog().info( "War is generated and project file exists." );
+            }
+            else {
+                throw new MojoExecutionException( "Can't seem to create the project properties file: " + projectFile );
+            }
         }
 
-        if ( info == null ) {
-            throw new MojoExecutionException( "There is no runner found" );
+        // Load the project configuration from the file system
+        ProjectFig projectFig;
+        try {
+            Properties props = new Properties();
+            props.load( new FileInputStream( projectFile ) );
+            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            projectFig = builder.getProject();
         }
+        catch ( Exception e ) {
+            getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
+                    e );
+            throw new MojoExecutionException(
+                    "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
+        }
+
+        /* ------------------------------------------------------------------------------
+         * Before dealing with instances let's check and make sure the latest runner
+         * war software is deployed to S3 now that we have the project information loaded
+         * ------------------------------------------------------------------------------
+         */
 
         AmazonS3 s3 = Utils.getS3Client( accessKey, secretKey );
 
@@ -104,18 +159,18 @@ public class LoadMojo extends MainMojo {
         // Check if the latest war is deployed on Store
         boolean testUpToDate = false;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            ProjectFig currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), ProjectFig.class );
             Set<ProjectFig> tests = client.getProjectConfigs();
-
             for ( ProjectFig test : tests ) {
-                if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
-                        currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
+                if ( projectFig.getVcsRepoUrl() != null &&
+                        projectFig.getWarMd5() != null &&
+                        projectFig.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        projectFig.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }
             }
-        } catch ( Exception e ) {
+        }
+        catch ( Exception e ) {
             getLog().warn( "Error while getting test information from store", e );
         }
 
@@ -129,58 +184,92 @@ public class LoadMojo extends MainMojo {
             }
         }
 
-        if ( ! warExists || ! testUpToDate ) {
+        if ( !warExists || !testUpToDate ) {
             getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
             DeployMojo deployMojo = new DeployMojo( this );
             deployMojo.execute();
         }
 
-        getLog().info( "Loading the test on drivers..." );
 
-        Map<String,String> overrides = new HashMap<String, String>( 3 );
+        // These are the values we're going to send to load to setup S3 properly
+        Map<String, String> overrides = new HashMap<String, String>( 3 );
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
         overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
         overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
 
-        Result result = client.load( info, getWarOnS3Path(), true, overrides );
 
-        if ( !result.getStatus() ) {
-            throw new MojoExecutionException( "Could not get the status of drivers, quitting..." );
-        }
+        for ( Instance instance : instances ) {
+            getLog().info( "Checking out instance " + instance.getPublicDnsName() );
 
-        if ( !result.getState().equals( State.READY ) ) {
-            throw new MojoExecutionException(
-                    "Something went wrong while trying to load the test, drivers are not " + "in ready state" );
+            RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
+            runnerFig.bypass( RunnerFig.HOSTNAME_KEY, instance.getPublicDnsName() );
+            runnerFig.bypass( RunnerFig.SERVER_PORT_KEY, RunnerFig.DEFAULT_SERVER_PORT );
+            runnerFig.bypass( RunnerFig.IPV4_KEY, instance.getPublicIpAddress() );
+            runnerFig.bypass( RunnerFig.URL_KEY,
+                    "https://" + instance.getPublicDnsName() + ":" + RunnerFig.DEFAULT_SERVER_PORT + "/" );
+
+            try {
+                InstallCert.installCert( runnerFig.getHostname(), runnerFig.getServerPort(), null );
+            }
+            catch ( Exception e ) {
+                getLog().error( "Failed to install the server cert.", e );
+            }
+
+            // First let's check the instance's status and what it is running
+            Result result = client.status( runnerFig );
+            getLog().info( "Instance " + instance.getPublicDnsName() + " is in state " + result.getState() );
+            getLog().info( "Instance " + instance.getPublicDnsName() + " is has the following project setup " + result
+                    .getProject() );
+
+            if ( !result.getState().accepts( Signal.LOAD ) ) {
+                getLog().warn( "Instance " + instance.getPublicDnsName() + " not ready to load in state " + result
+                        .getState() );
+                continue;
+            }
+
+            if ( result.getProject() != null && result.getProject().getWarMd5().equals( projectFig.getWarMd5() ) ) {
+                getLog().info(
+                        "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
+            }
+
+            result = client.load( runnerFig, projectFig.getLoadKey(), false, overrides );
+
+            if ( result.getStatus() ) {
+                getLog().warn(
+                        "Load problem on " + instance.getPublicDnsName() + " in state " + result.getState() + ": "
+                                + result.getMessage() );
+            }
         }
 
         // Restart tomcats on all instances
         getLog().info( "Sending restart tomcat requests to all instances..." );
 
-        Thread[] restarterThreads = new Thread[runnerFigs.length];
-        SSHRequestThread[] restarters = new SSHRequestThread[runnerFigs.length];
+        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instances.size() );
 
-        for ( int i = 0; i < runnerFigs.length; i++ ) {
-            restarters[i] = new SSHRequestThread();
-            restarters[i].setSshKeyFile( runnerSSHKeyFile );
-            restarters[i].setInstanceURL( runnerFigs[i].getHostname() );
-            restarterThreads[i] = new Thread( restarters[i] );
-            restarterThreads[i].start();
+        for ( Instance instance : instances ) {
+            SSHRequestThread restarter = new SSHRequestThread();
+            restarter.setSshKeyFile( runnerSSHKeyFile );
+            restarter.setInstanceURL( instance.getPublicDnsName() );
+            restarter.setInstance( instance );
+            restarters.add( restarter );
+            restarter.start();
         }
 
-        for ( int i = 0; i < runnerFigs.length; i++ ) {
+        for ( SSHRequestThread restarter : restarters ) {
             try {
-                restarterThreads[i].join(30000); // Is this enough or too much, should this be an annotated parameter?
+                restarter.join( 30000 ); // Is this enough or too much, should this be an annotated parameter?
             }
             catch ( InterruptedException e ) {
-                getLog().warn( "Restart request on " + runnerFigs[i].getHostname() + " is interrupted before finish", e );
+                getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
+                        + " is interrupted before finish", e );
             }
         }
 
         ResponseInfo response;
         boolean failedRestart = false;
-        for ( int i = 0; i < runnerFigs.length; i++ ) {
-            response = restarters[i].getResult();
-            if ( ! response.isRequestSuccessful() || ! response.isOperationSuccessful() ) {
+        for ( SSHRequestThread restarter : restarters ) {
+            response = restarter.getResult();
+            if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
                 for ( String s : response.getMessages() ) {
                     getLog().warn( s );
                 }
@@ -192,8 +281,8 @@ public class LoadMojo extends MainMojo {
         }
 
         if ( failedRestart ) {
-            throw new MojoExecutionException( "There are instances that failed to restart properly, " +
-                    "verify the cluster before moving on" );
+            throw new MojoExecutionException(
+                    "There are instances that failed to restart properly, " + "verify the cluster before moving on" );
         }
 
         getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"
@@ -209,6 +298,31 @@ public class LoadMojo extends MainMojo {
         private String sshKeyFile;
 
         private ResponseInfo result;
+
+        private Instance instance;
+
+        private Thread thread;
+
+
+        public void start() {
+            thread = new Thread( this );
+            thread.start();
+        }
+
+
+        public void join( long timeout ) throws InterruptedException {
+            thread.join( timeout );
+        }
+
+
+        public Instance getInstance() {
+            return instance;
+        }
+
+
+        public void setInstance( Instance instance ) {
+            this.instance = instance;
+        }
 
 
         public void setInstanceURL( final String instanceURL ) {
@@ -231,5 +345,4 @@ public class LoadMojo extends MainMojo {
             result = SSHCommands.restartTomcatOnInstance( sshKeyFile, instanceURL );
         }
     }
-
 }
