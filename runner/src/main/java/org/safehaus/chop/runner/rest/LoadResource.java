@@ -129,14 +129,10 @@ public class LoadResource extends PropagatingResource {
             }
         }
 
-        while ( ! getService().isStarted() ) {
-            try {
-                Thread.sleep( 150L );
-            }
-            catch ( InterruptedException e ) {
-                LOG.error( "Someone woke me up before it was time.", e );
-            }
-        }
+        LOG.info( "About to shut down the store service." );
+        getService().stop();
+        LOG.info( "About to restart the store service." );
+        getService().start();
 
         Map<String, RunnerFig> peers = getService().getRunners();
 

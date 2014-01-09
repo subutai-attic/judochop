@@ -30,14 +30,12 @@ import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.Env;
-import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.netflix.blitz4j.LoggingConfiguration;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 
@@ -86,14 +84,18 @@ public class ServletConfig extends GuiceServletContextListener {
         }
 
         final ServletFig servletFig = injector.getInstance( ServletFig.class );
-        final RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
         final ProjectFig projectFig = injector.getInstance( ProjectFig.class );
 
         storeService = getInjector().getInstance( StoreService.class );
         storeService.start();
 
-        if ( projectFig.getLoadKey() != null && projectFig.getWarMd5() != null ) {
+        final RunnerFig runnerFig = storeService.getMyMetadata();
+
+        if ( runnerFig != null && runnerFig.getHostname() != null ) {
             storeService.register( runnerFig );
+        }
+        else {
+            LOG.warn( "Not registering this runner due no runnerFig hostname." );
         }
 
         ServletContext context = servletContextEvent.getServletContext();
@@ -106,8 +108,6 @@ public class ServletConfig extends GuiceServletContextListener {
 
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
-        LoggingConfiguration.getInstance().stop();
-
         if ( storeService != null ) {
             storeService.stop();
         }

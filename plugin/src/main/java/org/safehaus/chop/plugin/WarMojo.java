@@ -10,14 +10,11 @@ import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /** Creates perftest.war using perftest-runner module and caller module */

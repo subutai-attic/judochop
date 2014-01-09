@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.guicyfig.Bypass;
 import org.safehaus.guicyfig.OptionState;
@@ -36,6 +37,7 @@ public class Ec2RunnerBuilder {
     private int serverPort;
     private String url;
     private String runnerTempDir;
+    private RunnerFig provided;
 
 
     /**
@@ -57,8 +59,7 @@ public class Ec2RunnerBuilder {
      * a program on an EC2 instance if this code does in fact run on an EC2
      * instance.
      */
-    @SuppressWarnings( "UnusedDeclaration" )
-    Ec2RunnerBuilder() {
+    Ec2RunnerBuilder( RunnerFig runnerFig ) {
         if ( ! new File( EC2METADATA_PROCESS ).exists() ) {
             return;
         }
@@ -131,7 +132,7 @@ public class Ec2RunnerBuilder {
     private void extractValues() {
         ipv4Address = props.getProperty( RunnerFig.IPV4_KEY );
         hostname = props.getProperty( RunnerFig.HOSTNAME_KEY );
-        serverPort = Integer.parseInt( props.getProperty( RunnerFig.SERVER_PORT_KEY ) );
+        serverPort = Integer.parseInt( props.getProperty( RunnerFig.SERVER_PORT_KEY, RunnerFig.DEFAULT_SERVER_PORT ) );
         url = props.getProperty( RunnerFig.URL_KEY );
         runnerTempDir = props.getProperty( RunnerFig.RUNNER_TEMP_DIR_KEY );
     }
@@ -153,6 +154,14 @@ public class Ec2RunnerBuilder {
 
 
     public RunnerFig getRunner() {
+        if ( provided != null ) {
+            provided.bypass( RunnerFig.IPV4_KEY, ipv4Address );
+            provided.bypass( RunnerFig.HOSTNAME_KEY, hostname );
+            provided.bypass( RunnerFig.SERVER_PORT_KEY, String.valueOf( serverPort ) );
+            provided.bypass( RunnerFig.RUNNER_TEMP_DIR_KEY, runnerTempDir );
+            return provided;
+        }
+
         return new RunnerFig() {
 
             @Override

@@ -20,8 +20,6 @@
 package org.safehaus.chop.api.store.amazon;
 
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,7 +41,6 @@ import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
-import org.safehaus.guicyfig.OptionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +64,6 @@ import com.google.inject.Singleton;
 public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     private final static Logger LOG = LoggerFactory.getLogger( AmazonS3Store.class );
-    private final static HashSet<String> clientOptions = new HashSet<String>( 3 );
 
     private boolean started = false;
     private RunnerFig me;
@@ -84,52 +80,27 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
         this.injector = injector;
         this.client = injector.getInstance( AmazonS3Client.class );
-        this.me = injector.getInstance( RunnerFig.class );
+        this.me = new Ec2RunnerBuilder( injector.getInstance( RunnerFig.class ) ).getRunner();
         this.amazonFig = injector.getInstance( AmazonFig.class );
-
-        clientOptions.add( AmazonFig.AWS_BUCKET_KEY );
-        clientOptions.add( AmazonFig.AWS_SECRET_KEY );
-        clientOptions.add( AmazonFig.AWSKEY_KEY );
-
-        amazonFig.addPropertyChangeListener( new PropertyChangeListener() {
-            @Override
-            public void propertyChange( final PropertyChangeEvent evt ) {
-                updateClient( evt );
-            }
-        } );
     }
 
-
-    private void updateClient( final PropertyChangeEvent event ) {
-        OptionState state = amazonFig.getOption( event.getPropertyName() );
-        if ( ! clientOptions.contains( state.getKey() ) ) {
-            return;
-        }
-
-        synchronized ( lock ) {
-            client.shutdown();
-            started = false;
-
-            try {
-                client = injector.getInstance( AmazonS3Client.class );
-                start();
-                LOG.info( "Restarted amazon client with settings update after event: {}", event );
-            }
-            catch ( Exception e ) {
-                LOG.warn( e.getMessage() );
-            }
-        }
-    }
 
 
     @Override
     public void start() {
-        if ( me.getHostname() != null ) {
-            register( me );
+        Preconditions.checkState( ! started, "Doh! Must not be started to be started!" );
+
+        synchronized ( lock ) {
+            client = injector.getInstance( AmazonS3Client.class );
+
+            if ( me.getHostname() != null ) {
+                register( me );
+            }
+
+            started = true;
+            runners = getRunners( me );
         }
 
-        started = true;
-        runners = getRunners( me );
         new Thread( this ).start();
     }
 
@@ -142,8 +113,17 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     @Override
     public void stop() {
-        if ( isStarted() && client != null ) {
-            client.shutdown();
+        synchronized ( lock ) {
+            if ( isStarted() && client != null ) {
+                try {
+                    started = false;
+                    lock.notifyAll();
+                    client.shutdown();
+                }
+                catch ( Exception e ) {
+                    LOG.warn( "Ran into issues shutting down the Amazon client: ", e.getMessage() );
+                }
+            }
         }
     }
 
@@ -310,7 +290,10 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
             properties.setProperty( RunnerFig.URL_KEY, runnerFig.getUrl() );
         }
 
-        properties.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, runnerFig.getTempDir() );
+        if ( runnerFig.getTempDir() != null ) {
+            properties.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, runnerFig.getTempDir() );
+        }
+
         properties.setProperty( RunnerFig.SERVER_PORT_KEY, String.valueOf( runnerFig.getServerPort() ) );
 
         if ( runnerFig.getIpv4Address() != null ) {
@@ -604,7 +587,9 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
                     // wait first since we scan on start()
                     lock.wait( amazonFig.getScanPeriod() );
 
-                    runners = getRunners( me );
+                    if ( started ) {
+                        runners = getRunners( me );
+                    }
 
                     LOG.info( "Runners updated" );
                     for ( String runner : runners.keySet() ) {

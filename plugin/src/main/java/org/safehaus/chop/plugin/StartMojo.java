@@ -1,10 +1,12 @@
 package org.safehaus.chop.plugin;
 
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 import java.util.Set;
 
 import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
@@ -41,13 +43,17 @@ public class StartMojo extends MainMojo {
         // Check if the latest war is deployed on Store
         boolean testUpToDate = false;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            ProjectFig currentProject = mapper.readValue( new File( getProjectFileToUploadPath() ), ProjectFig.class );
+            Properties props = new Properties();
+            props.load( new FileInputStream( getProjectFileToUploadPath() ) );
+            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            ProjectFig projectFig = builder.getProject();
             Set<ProjectFig> tests = client.getProjectConfigs();
 
             for ( ProjectFig test : tests ) {
-                if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
-                        currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
+                if ( projectFig.getVcsRepoUrl() != null &&
+                        projectFig.getWarMd5() != null &&
+                        projectFig.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        projectFig.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }

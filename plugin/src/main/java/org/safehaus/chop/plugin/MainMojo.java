@@ -20,6 +20,10 @@ import org.apache.maven.project.MavenProject;
 public class MainMojo extends AbstractMojo implements Constants {
 
 
+    static {
+        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+    }
+
     @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
 

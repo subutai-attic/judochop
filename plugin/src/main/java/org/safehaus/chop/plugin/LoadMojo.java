@@ -38,10 +38,6 @@ import com.google.inject.Injector;
 @Mojo( name = "load" )
 public class LoadMojo extends MainMojo {
 
-    static {
-        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
-    }
-
     protected LoadMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
@@ -106,18 +102,20 @@ public class LoadMojo extends MainMojo {
          * Let's check and see if the project file exists and if it does not that means we
          * need to build the war and thus invoke the war mojo.
          */
-        File projectFile = new File( getProjectFileToUploadPath() );
-        while ( !projectFile.exists() ) {
+
+
+        File projectFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE );
+        if ( ! projectFile.exists() ) {
             getLog().warn( "It seems as though the project properties file " + projectFile
                     + " does not exist. Creating it and the war now." );
             WarMojo warMojo = new WarMojo( this );
             warMojo.execute();
 
-            if ( !projectFile.exists() ) {
+            if ( projectFile.exists() ) {
                 getLog().info( "War is generated and project file exists." );
             }
             else {
-                throw new MojoExecutionException( "Can't seem to create the project properties file: " + projectFile );
+                throw new MojoExecutionException( "Failed to generate the project.properties." );
             }
         }
 
