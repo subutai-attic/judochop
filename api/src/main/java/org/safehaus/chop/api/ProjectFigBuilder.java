@@ -44,6 +44,7 @@ public class ProjectFigBuilder {
 
     public ProjectFigBuilder( Properties props ) {
         this.props = props;
+        updateValues();
     }
 
 
@@ -89,47 +90,47 @@ public class ProjectFigBuilder {
                 this.loadKey = props.getProperty( ProjectFig.LOAD_KEY );
             }
 
-            if ( props.contains( ProjectFig.ARTIFACT_ID_KEY ) ) {
+            if ( props.containsKey( ProjectFig.ARTIFACT_ID_KEY ) ) {
                 this.artifactId = props.getProperty( ProjectFig.ARTIFACT_ID_KEY );
             }
 
-            if ( props.contains( ProjectFig.CHOP_VERSION_KEY ) ) {
+            if ( props.containsKey( ProjectFig.CHOP_VERSION_KEY ) ) {
                 this.chopVersion = props.getProperty( ProjectFig.CHOP_VERSION_KEY );
             }
 
-            if ( props.contains( ProjectFig.CREATE_TIMESTAMP_KEY ) ) {
+            if ( props.containsKey( ProjectFig.CREATE_TIMESTAMP_KEY ) ) {
                 this.createTimestamp = props.getProperty( ProjectFig.CREATE_TIMESTAMP_KEY );
             }
 
-            if ( props.contains( ProjectFig.GIT_URL_KEY ) ) {
+            if ( props.containsKey( ProjectFig.GIT_URL_KEY ) ) {
                 this.vcsRepoUrl = props.getProperty( ProjectFig.GIT_URL_KEY );
             }
 
-            if ( props.contains( ProjectFig.GIT_UUID_KEY ) ) {
+            if ( props.containsKey( ProjectFig.GIT_UUID_KEY ) ) {
                 this.commitId = props.getProperty( ProjectFig.GIT_UUID_KEY );
             }
 
-            if ( props.contains( ProjectFig.GROUP_ID_KEY ) ) {
+            if ( props.containsKey( ProjectFig.GROUP_ID_KEY ) ) {
                 this.groupId = props.getProperty( ProjectFig.GROUP_ID_KEY );
             }
 
-            if ( props.contains( ProjectFig.MANAGER_PASSWORD_KEY ) ) {
+            if ( props.containsKey( ProjectFig.MANAGER_PASSWORD_KEY ) ) {
                 this.managerPassword = props.getProperty( ProjectFig.MANAGER_PASSWORD_KEY );
             }
 
-            if ( props.contains( ProjectFig.MANAGER_USERNAME_KEY ) ) {
+            if ( props.containsKey( ProjectFig.MANAGER_USERNAME_KEY ) ) {
                 this.managerUsername = props.getProperty( ProjectFig.MANAGER_USERNAME_KEY );
             }
 
-            if ( props.contains( ProjectFig.PROJECT_VERSION_KEY ) ) {
+            if ( props.containsKey( ProjectFig.PROJECT_VERSION_KEY ) ) {
                 this.version = props.getProperty( ProjectFig.PROJECT_VERSION_KEY );
             }
 
-            if ( props.contains( ProjectFig.TEST_PACKAGE_BASE ) ) {
+            if ( props.containsKey( ProjectFig.TEST_PACKAGE_BASE ) ) {
                 this.testPackageBase = props.getProperty( ProjectFig.TEST_PACKAGE_BASE );
             }
 
-            if ( props.contains( ProjectFig.WAR_MD5_KEY ) ) {
+            if ( props.containsKey( ProjectFig.WAR_MD5_KEY ) ) {
                 this.warMd5 = props.getProperty( ProjectFig.WAR_MD5_KEY );
             }
         }

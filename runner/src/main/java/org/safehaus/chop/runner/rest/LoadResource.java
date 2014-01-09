@@ -134,14 +134,11 @@ public class LoadResource extends PropagatingResource {
         LOG.info( "About to restart the store service." );
         getService().start();
 
-        Map<String, RunnerFig> peers = getService().getRunners();
-
         // Handle loading the war here first for the peers we will propagate to since
         // we do not want to be reloaded before issuing this operation to the other drivers.
 
-        Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
-
         if ( propagate == Boolean.TRUE ) {
+            Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
             PropagatedResult result =
                     propagate( controller.getState().next( Signal.LOAD ), true, "reload started", params );
 
@@ -156,10 +153,6 @@ public class LoadResource extends PropagatingResource {
                 result.setMessage( e.getMessage() );
                 return result;
             }
-        }
-
-        for ( RunnerFig runnerFig : peers.values() ) {
-
         }
 
         try {

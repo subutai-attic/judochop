@@ -104,7 +104,7 @@ public class LoadMojo extends MainMojo {
          */
 
 
-        File projectFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE );
+        File projectFile = new File( getProjectFileToUploadPath() );
         if ( ! projectFile.exists() ) {
             getLog().warn( "It seems as though the project properties file " + projectFile
                     + " does not exist. Creating it and the war now." );
@@ -228,6 +228,7 @@ public class LoadMojo extends MainMojo {
             if ( result.getProject() != null && result.getProject().getWarMd5().equals( projectFig.getWarMd5() ) ) {
                 getLog().info(
                         "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
+                continue;
             }
 
             String gitConfigDirectory = Utils.getGitConfigFolder( getProjectBaseDirectory() );
