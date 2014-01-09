@@ -26,6 +26,8 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.Env;
 import org.safehaus.guicyfig.GuicyFigModule;
@@ -83,11 +85,16 @@ public class ServletConfig extends GuiceServletContextListener {
             throw new RuntimeException( "Cannot do much without properly loading our configuration.", e );
         }
 
-        final ServletFig servletFig = Guice.createInjector(
-                new GuicyFigModule( ServletFig.class ) ).getInstance( ServletFig.class );
+        final ServletFig servletFig = injector.getInstance( ServletFig.class );
+        final RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
+        final ProjectFig projectFig = injector.getInstance( ProjectFig.class );
 
         storeService = getInjector().getInstance( StoreService.class );
         storeService.start();
+
+        if ( projectFig.getLoadKey() != null && projectFig.getWarMd5() != null ) {
+            storeService.register( runnerFig );
+        }
 
         ServletContext context = servletContextEvent.getServletContext();
         servletFig.override( ServletFig.CONTEXT_PATH, context.getContextPath() );

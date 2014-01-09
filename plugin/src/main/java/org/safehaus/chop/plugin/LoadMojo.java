@@ -107,7 +107,7 @@ public class LoadMojo extends MainMojo {
          * need to build the war and thus invoke the war mojo.
          */
         File projectFile = new File( getProjectFileToUploadPath() );
-        if ( !projectFile.exists() ) {
+        while ( !projectFile.exists() ) {
             getLog().warn( "It seems as though the project properties file " + projectFile
                     + " does not exist. Creating it and the war now." );
             WarMojo warMojo = new WarMojo( this );
@@ -232,7 +232,12 @@ public class LoadMojo extends MainMojo {
                         "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
             }
 
-            result = client.load( runnerFig, projectFig.getLoadKey(), false, overrides );
+            String gitConfigDirectory = Utils.getGitConfigFolder( getProjectBaseDirectory() );
+            String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
+            String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
+                    commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
+            String loadKey = CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR;
+            result = client.load( runnerFig, loadKey, false, overrides );
 
             if ( result.getStatus() ) {
                 getLog().warn(
