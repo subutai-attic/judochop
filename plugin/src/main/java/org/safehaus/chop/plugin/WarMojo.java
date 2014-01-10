@@ -43,6 +43,7 @@ public class WarMojo extends MainMojo {
         this.minimumRunners = mojo.minimumRunners;
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
+        this.availabilityZone = mojo.availabilityZone;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
