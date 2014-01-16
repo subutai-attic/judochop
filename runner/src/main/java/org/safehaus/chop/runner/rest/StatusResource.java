@@ -40,19 +40,19 @@ import com.google.inject.Singleton;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( "/status" )
 public class StatusResource {
-    private final IController runner;
+    private final IController controller;
     private Runner runner;
 
 
     @Inject
-    public StatusResource( IController runner, Runner runnerFig ) {
+    public StatusResource( IController controller, Runner runner ) {
+        this.controller = controller;
         this.runner = runner;
-        this.runner = runnerFig;
     }
 
 
     @GET
     public Result status() throws JsonProcessingException {
-        return new BaseResult( runner.getUrl(), true, null, runner.getState(), runner.getProject() );
+        return new BaseResult( runner.getUrl(), true, null, controller.getState(), controller.getProject() );
     }
 }
