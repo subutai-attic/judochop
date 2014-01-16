@@ -43,6 +43,14 @@
       <id>akarasulu</id>
       <name>Alex Karasulu</name>
     </developer>
+    <developer>
+      <id>aasanaliev</id>
+      <name>Askhat Asanaliev</name>
+    </developer>
+    <developer>
+      <id>ctmax</id>
+      <name>Maksat Joldoshbekov</name>
+    </developer>
   </developers>
 
   <scm>
