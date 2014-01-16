@@ -36,11 +36,11 @@ import java.util.Set;
 
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 /** Handles S3 interactions to interface with other test drivers. */
 @Singleton
-public class AmazonS3Store implements StoreService, Runnable, Constants {
+public class AmazonS3Store implements Store, Runnable, Constants {
 
     private final static Logger LOG = LoggerFactory.getLogger( AmazonS3Store.class );
     private static final String PRETTY_PRINT_RESULTS = "";
@@ -138,7 +138,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public void store( final Project project, final ISummary summary, final File resultsFile,
+    public void store( final Project project, final Summary summary, final File resultsFile,
                        final Class<?> testClass ) {
         store( me, project, summary, resultsFile, testClass );
     }
@@ -427,7 +427,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param project the test the Summary object is associated with
      * @param summary the Summary object to store
      */
-    private void store( Runner metadata, Project project, ISummary summary, Class<?> testClass ) {
+    private void store( Runner metadata, Project project, Summary summary, Class<?> testClass ) {
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
 
         String loadKey = ChopUtils.getTestBase( project );
@@ -453,7 +453,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param summary the run summary to also store
      * @param results the detailed results to store
      */
-    private void store( Runner metadata, Project project, ISummary summary, File results, Class<?> testClass ) {
+    private void store( Runner metadata, Project project, Summary summary, File results, Class<?> testClass ) {
         store( metadata, project, summary, testClass );
 
         String loadKey = ChopUtils.getTestBase( project );

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
@@ -45,7 +45,7 @@ public interface ChopClient extends Constants {
      *
      * @return the set of runs that have taken place on a test.
      */
-    Set<ISummary> getRuns( Project test );
+    Set<Summary> getRuns( Project test );
 
 
     /**
@@ -55,7 +55,7 @@ public interface ChopClient extends Constants {
      *
      * @return a collated version of the results from each runner
      */
-    File getResults( ISummary run ) throws IOException;
+    File getResults( Summary run ) throws IOException;
 
 
     /**
@@ -63,7 +63,7 @@ public interface ChopClient extends Constants {
      *
      * @param run the run information and its results to delete.
      */
-    void delete( ISummary run );
+    void delete( Summary run );
 
 
     /**

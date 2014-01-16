@@ -11,13 +11,13 @@ import java.util.Set;
 
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.ISummary;
+import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +32,11 @@ import com.google.inject.Singleton;
 @Singleton
 public class ChopClientImpl implements ChopClient, Constants {
     private static final Logger LOG = LoggerFactory.getLogger( ChopClientImpl.class );
-    private final StoreService service;
+    private final Store service;
 
 
     @Inject
-    public ChopClientImpl( StoreService service )
+    public ChopClientImpl( Store service )
     {
         this.service = service;
     }
@@ -61,19 +61,19 @@ public class ChopClientImpl implements ChopClient, Constants {
 
 
     @Override
-    public Set<ISummary> getRuns( final Project test ) {
+    public Set<Summary> getRuns( final Project test ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
-    public File getResults( final ISummary run ) throws IOException {
+    public File getResults( final Summary run ) throws IOException {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
-    public void delete( final ISummary run ) {
+    public void delete( final Summary run ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 

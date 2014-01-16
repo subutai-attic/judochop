@@ -34,13 +34,13 @@ import javax.ws.rs.core.UriInfo;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.runner.ServletFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
@@ -69,12 +69,12 @@ public class LoadResource {
     private final Project project;
     private final ServletFig servletFig;
     private final Runner runner;
-    private final StoreService service;
+    private final Store service;
 
 
     @Inject
     public LoadResource( IController controller,
-                         StoreService service,
+                         Store service,
                          Project project,
                          ServletFig servletFig,
                          Runner runner ) {

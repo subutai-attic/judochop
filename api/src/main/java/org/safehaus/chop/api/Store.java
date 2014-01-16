@@ -7,23 +7,23 @@ import java.util.Map;
 import java.util.Set;
 
 
-/** The S3 Service is used to register the node so other nodes in the same perftest formation can access it. */
-public interface StoreService {
+/** The Store is used to register the node so other nodes in the same perftest formation can access it. */
+public interface Store {
 
     /**
-     * Starts up this StoreService.
+     * Starts up this Store.
      */
     void start();
 
     /**
-     * Checks if this StoreService has started.
+     * Checks if this Store has started.
      *
      * @return true if started, false otherwise
      */
     boolean isStarted();
 
     /**
-     * Stops this StoreService.
+     * Stops this Store.
      */
     void stop();
 
@@ -64,7 +64,7 @@ public interface StoreService {
      * @param resultsFile the results log file
      * @param testClass the chopped test class
      */
-    void store( Project project, ISummary summary, File resultsFile, Class<?> testClass );
+    void store( Project project, Summary summary, File resultsFile, Class<?> testClass );
 
     /**
      * Stores the project test information.

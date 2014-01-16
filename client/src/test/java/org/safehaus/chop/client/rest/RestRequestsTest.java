@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.client.ChopClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import static org.safehaus.chop.client.rest.RestRequests.status;
 public class RestRequestsTest {
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject
-    StoreService service;
+    Store service;
 
 
     @Before

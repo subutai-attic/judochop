@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A summary of a single chop run.
  */
-public interface ISummary {
+public interface Summary {
     /**
      * Gets the run number. Each start that is issued against the same
      * Runner will increment the run number. The results of each run
@@ -21,7 +21,7 @@ public interface ISummary {
     /**
      * Gets the number of iterations used in an IterationChop if the
      * chop summary is for an IterationChop, otherwise this value for
-     * a TimeChop ISummary will always be zero.
+     * a TimeChop Summary will always be zero.
      *
      * @return the number of iterations for IterationChops or zero for
      * TimeChop summaries

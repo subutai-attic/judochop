@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.safehaus.chop.api.InstallCert;
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
@@ -199,7 +199,7 @@ public class LoadMojo extends MainMojo {
                     "https://" + instance.getPublicDnsName() + ":" + Runner.DEFAULT_SERVER_PORT + "/" );
 
             try {
-                InstallCert.installCert( runner.getHostname(), runner.getServerPort(), null );
+                ChopUtils.installCert( runner.getHostname(), runner.getServerPort(), null );
             }
             catch ( Exception e ) {
                 getLog().error( "Failed to install the server cert.", e );

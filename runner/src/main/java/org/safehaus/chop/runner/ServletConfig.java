@@ -28,7 +28,7 @@ import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ import com.netflix.config.ConfigurationManager;
 public class ServletConfig extends GuiceServletContextListener {
     private final static Logger LOG = LoggerFactory.getLogger( ServletConfig.class );
     private Injector injector;
-    private StoreService storeService;
+    private Store store;
 
 
     @Override
@@ -143,16 +143,16 @@ public class ServletConfig extends GuiceServletContextListener {
 
         /*
          * --------------------------------------------------------------------
-         * Start Up The StoreService
+         * Start Up The Store
          * --------------------------------------------------------------------
          */
 
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
-            storeService = getInjector().getInstance( StoreService.class );
-            storeService.start();
+            store = getInjector().getInstance( Store.class );
+            store.start();
             LOG.info( "Store service started." );
 
-            storeService.register( runner );
+            store.register( runner );
             LOG.info( "Registered runner information in store." );
         }
         else {
@@ -163,8 +163,8 @@ public class ServletConfig extends GuiceServletContextListener {
 
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
-        if ( storeService != null ) {
-            storeService.stop();
+        if ( store != null ) {
+            store.stop();
         }
         super.contextDestroyed( servletContextEvent );
     }

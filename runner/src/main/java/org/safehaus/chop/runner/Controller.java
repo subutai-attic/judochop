@@ -11,13 +11,13 @@ import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.runner.drivers.Driver;
 import org.safehaus.chop.runner.drivers.IterationDriver;
 import org.safehaus.chop.runner.drivers.TimeDriver;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.IterationChop;
 import org.safehaus.chop.api.TimeChop;
-import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +43,13 @@ public class Controller implements IController, Runnable {
     private Driver<?> currentDriver;
 
     private Map<String, Runner> otherRunners;
-    private StoreService service;
+    private Store service;
     private Project project;
     private int runNumber;
 
 
     @Inject
-    Controller( Project project, StoreService service, Runner me ) {
+    Controller( Project project, Store service, Runner me ) {
         setProject( project );
         setStoreService( service );
 
@@ -111,8 +111,8 @@ public class Controller implements IController, Runnable {
     }
 
 
-    private void setStoreService( StoreService service ) {
-        Preconditions.checkNotNull( service, "The StoreService cannot be null." );
+    private void setStoreService( Store service ) {
+        Preconditions.checkNotNull( service, "The Store cannot be null." );
         this.service = service;
     }
 

@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class AmazonS3StoreTest {
 
 
     @Inject
-    StoreService service;
+    Store service;
 
 
     @Before

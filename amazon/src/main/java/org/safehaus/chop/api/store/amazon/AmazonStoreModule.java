@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Store;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 
@@ -32,7 +32,7 @@ public class AmazonStoreModule extends AbstractModule implements Constants {
         figs.add( Runner.class );
         install( new GuicyFigModule( figs ) );
 //        install( new GuicyFigModule( AmazonFig.class, Runner.class ) );
-        bind( StoreService.class ).to( AmazonS3Store.class );
+        bind( Store.class ).to( AmazonS3Store.class );
     }
 
 
