@@ -19,7 +19,7 @@ import com.google.inject.Inject;
 /**
  * Builds a Project for use many by the plugin.
  */
-public class ProjectFigBuilder {
+public class ProjectBuilder {
     private Properties props;
     private Project supplied;
     private String testPackageBase;
@@ -38,18 +38,18 @@ public class ProjectFigBuilder {
     private String managerEndpoint;
 
 
-    public ProjectFigBuilder() {
+    public ProjectBuilder() {
         // do nothing - supplied will be injected if in Guice env
     }
 
 
-    public ProjectFigBuilder( Properties props ) {
+    public ProjectBuilder( Properties props ) {
         this.props = props;
         updateValues();
     }
 
 
-    public ProjectFigBuilder( Project project ) {
+    public ProjectBuilder( Project project ) {
         // set the supplied project - this is manually provided
         this.supplied = project;
         updateValues();
@@ -144,98 +144,98 @@ public class ProjectFigBuilder {
 
 
     @JsonProperty
-    public ProjectFigBuilder setTestPackageBase( final String testPackageBase ) {
+    public ProjectBuilder setTestPackageBase( final String testPackageBase ) {
         this.testPackageBase = testPackageBase;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setCreateTimestamp( final String timeStamp ) {
+    public ProjectBuilder setCreateTimestamp( final String timeStamp ) {
         this.createTimestamp = timeStamp;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setArtifactId( final String artifactId ) {
+    public ProjectBuilder setArtifactId( final String artifactId ) {
         this.artifactId = artifactId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setProjectVersion( final String version ) {
+    public ProjectBuilder setProjectVersion( final String version ) {
         this.version = version;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setGroupId( final String groupId ) {
+    public ProjectBuilder setGroupId( final String groupId ) {
         this.groupId = groupId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setVcsRepoUrl( final String vcsRepoUrl ) {
+    public ProjectBuilder setVcsRepoUrl( final String vcsRepoUrl ) {
         this.vcsRepoUrl = vcsRepoUrl;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setVcsVersion( final String commitId ) {
+    public ProjectBuilder setVcsVersion( final String commitId ) {
         this.commitId = commitId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setLoadKey( final String loadKey ) {
+    public ProjectBuilder setLoadKey( final String loadKey ) {
         this.loadKey = loadKey;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setChopVersion( final String version ) {
+    public ProjectBuilder setChopVersion( final String version ) {
         this.chopVersion = version;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setWarMd5( final String warMd5 ) {
+    public ProjectBuilder setWarMd5( final String warMd5 ) {
         this.warMd5 = warMd5;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setLoadTime( final String loadTime ) {
+    public ProjectBuilder setLoadTime( final String loadTime ) {
         this.loadTime = loadTime;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerUsername( final String managerUsername ) {
+    public ProjectBuilder setManagerUsername( final String managerUsername ) {
         this.managerUsername = managerUsername;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerPassword( final String managerPassword ) {
+    public ProjectBuilder setManagerPassword( final String managerPassword ) {
         this.managerPassword = managerPassword;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerEndpoint( final String managerEndpoint ) {
+    public ProjectBuilder setManagerEndpoint( final String managerEndpoint ) {
         this.managerEndpoint = managerEndpoint;
         return this;
     }

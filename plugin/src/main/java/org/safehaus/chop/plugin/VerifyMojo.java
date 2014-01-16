@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.client.ChopClient;
@@ -33,7 +33,7 @@ public class VerifyMojo extends MainMojo {
         try {
             Properties props = new Properties();
             props.load( new FileInputStream( new File( getProjectFileToUploadPath() ) ) );
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            ProjectBuilder builder = new ProjectBuilder( props );
             Project currentProject = builder.getProject();
             Set<Project> tests = client.getProjectConfigs();
 

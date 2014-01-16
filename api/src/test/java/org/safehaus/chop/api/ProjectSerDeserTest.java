@@ -14,7 +14,7 @@ import static junit.framework.TestCase.assertNotNull;
 /**
  * Tests serialization / de-serialization of Project.
  */
-public class ProjectFigSerDeserTest {
+public class ProjectSerDeserTest {
     public static final String EXAMPLE = "{\"testPackageBase\":\"org.safehaus.chop.example\",\"chopVersion\":\"1.0-SNAPSHOT\"," +
             "\"createTimestamp\":\"2013.12.24.06.14.22\",\"vcsVersion\":\"3d2ccc1b2b96a45936e58b782c4c2d5f8c1ba76e\"," +
             "\"vcsRepoUrl\":\"https://jim.rybacki@stash.safehaus.org/scm/chop/main.git\"," +

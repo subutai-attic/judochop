@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.ProjectBuilder;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -325,7 +325,7 @@ public class MainMojo extends AbstractMojo implements Constants {
         try {
             Properties props = new Properties();
             props.load( new FileInputStream( projectFile ) );
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            ProjectBuilder builder = new ProjectBuilder( props );
             project = builder.getProject();
         }
         catch ( Exception e ) {

@@ -22,7 +22,7 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
 
     @Override
     public Project deserialize( final JsonParser jp, final DeserializationContext ctxt ) throws IOException {
-        ProjectFigBuilder builder = new ProjectFigBuilder();
+        ProjectBuilder builder = new ProjectBuilder();
 
         String tmp = jp.getText();
         validate( jp, tmp, "{" );

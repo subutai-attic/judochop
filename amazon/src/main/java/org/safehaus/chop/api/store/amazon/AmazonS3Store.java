@@ -38,7 +38,7 @@ import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
@@ -523,7 +523,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
             props.load( in );
             in.close();
 
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            ProjectBuilder builder = new ProjectBuilder( props );
             return builder.getProject();
         }
         catch ( IOException e ) {
