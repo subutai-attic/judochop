@@ -20,7 +20,7 @@ import org.safehaus.chop.api.RunnerFig;
  * <ul> <li>listing registered drivers in the cluster</li> <li>listing and deleting uploaded test jars and their test
  * information</li> <li>downloading and collating test run results from drivers</li> </ul>
  */
-public interface PerftestClient extends Constants {
+public interface ChopClient extends Constants {
 
     void deleteTests();
 

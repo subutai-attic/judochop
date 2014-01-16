@@ -7,8 +7,8 @@ import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -24,8 +24,8 @@ public class StartMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         // Always call load goal first since it is already making all the controls and next in the plugin chain scheme
         LoadMojo loadMojo = new LoadMojo( this );

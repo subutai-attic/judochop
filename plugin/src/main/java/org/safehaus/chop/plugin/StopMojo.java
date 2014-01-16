@@ -6,8 +6,8 @@ import java.util.Collection;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -57,8 +57,8 @@ public class StopMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         getLog().info( "Stopping runner(s)" );
 

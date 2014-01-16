@@ -21,13 +21,13 @@ import com.google.inject.Inject;
 import static junit.framework.TestCase.assertEquals;
 
 
-/** Tests the PerftestClient implementations. */
+/** Tests the ChopClient implementations. */
 @RunWith(JukitoRunner.class)
-@UseModules(PerftestClientModule.class)
-public class PerftestClientTest {
-    private static final Logger LOG = LoggerFactory.getLogger( PerftestClientTest.class );
+@UseModules(ChopClientModule.class)
+public class ChopClientTest {
+    private static final Logger LOG = LoggerFactory.getLogger( ChopClientTest.class );
     @Inject
-    PerftestClient client;
+    ChopClient client;
 
 
     @Test @Ignore

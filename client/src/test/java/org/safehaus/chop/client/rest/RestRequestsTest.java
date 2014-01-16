@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ import static org.safehaus.chop.client.rest.RestRequests.status;
  *
  */
 @RunWith(JukitoRunner.class)
-@UseModules(PerftestClientModule.class)
+@UseModules(ChopClientModule.class)
 public class RestRequestsTest {
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject

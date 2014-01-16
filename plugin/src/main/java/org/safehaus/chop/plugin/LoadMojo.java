@@ -19,8 +19,8 @@ import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.client.ResponseInfo;
 import org.safehaus.chop.client.ssh.SSHCommands;
 
@@ -87,8 +87,8 @@ public class LoadMojo extends MainMojo {
         setupMojo.execute();
         getLog().info( "Cluster is prepared" );
 
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         /* ------------------------------------------------------------------------------
          * Instances may be running but may not be registered their runner information in

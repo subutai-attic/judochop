@@ -27,16 +27,16 @@ import com.google.inject.Singleton;
 
 
 /**
- * An implementation of the PerftestClient interface.
+ * An implementation of the ChopClient interface.
  */
 @Singleton
-public class PerftestClientImpl implements PerftestClient, Constants {
-    private static final Logger LOG = LoggerFactory.getLogger( PerftestClientImpl.class );
+public class ChopClientImpl implements ChopClient, Constants {
+    private static final Logger LOG = LoggerFactory.getLogger( ChopClientImpl.class );
     private final StoreService service;
 
 
     @Inject
-    public PerftestClientImpl( StoreService service )
+    public ChopClientImpl( StoreService service )
     {
         this.service = service;
     }
