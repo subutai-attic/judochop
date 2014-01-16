@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
@@ -44,12 +44,12 @@ public class Controller implements IController, Runnable {
 
     private Map<String, RunnerFig> otherRunners;
     private StoreService service;
-    private ProjectFig project;
+    private Project project;
     private int runNumber;
 
 
     @Inject
-    Controller( ProjectFig project, StoreService service, RunnerFig me ) {
+    Controller( Project project, StoreService service, RunnerFig me ) {
         setProject( project );
         setStoreService( service );
 
@@ -66,7 +66,7 @@ public class Controller implements IController, Runnable {
     }
 
 
-    private void setProject( ProjectFig project ) {
+    private void setProject( Project project ) {
         // if the project is null which should never really happen we just return
         // and stay in the INACTIVE state waiting for a load to activate this runner
         if ( project == null ) {
@@ -142,7 +142,7 @@ public class Controller implements IController, Runnable {
 
 
     @Override
-    public ProjectFig getProject() {
+    public Project getProject() {
         return project;
     }
 

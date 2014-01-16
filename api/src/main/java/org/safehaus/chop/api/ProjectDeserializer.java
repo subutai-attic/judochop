@@ -14,14 +14,14 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 
 /**
- * A Jackson JSON Deserializer for ProjectFig.
+ * A Jackson JSON Deserializer for Project.
  */
-public class ProjectDeserializer extends JsonDeserializer<ProjectFig> {
+public class ProjectDeserializer extends JsonDeserializer<Project> {
     private static final Logger LOG = LoggerFactory.getLogger( ProjectDeserializer.class );
 
 
     @Override
-    public ProjectFig deserialize( final JsonParser jp, final DeserializationContext ctxt ) throws IOException {
+    public Project deserialize( final JsonParser jp, final DeserializationContext ctxt ) throws IOException {
         ProjectFigBuilder builder = new ProjectFigBuilder();
 
         String tmp = jp.getText();

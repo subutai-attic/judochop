@@ -64,14 +64,14 @@ public interface StoreService {
      * @param resultsFile the results log file
      * @param testClass the chopped test class
      */
-    void store( ProjectFig project, ISummary summary, File resultsFile, Class<?> testClass );
+    void store( Project project, ISummary summary, File resultsFile, Class<?> testClass );
 
     /**
      * Stores the project test information.
      *
      * @param project the Project object to be serialized and stored
      */
-    void store( ProjectFig project );
+    void store( Project project );
 
     /**
      * Tries to load a Project file based on prepackaged runner metadata: the runner's
@@ -80,7 +80,7 @@ public interface StoreService {
      * @param runnerWar the load key for the runner war
      * @return the Project object if it exists in the store or null if it does not
      */
-    ProjectFig getProject( String runnerWar );
+    Project getProject( String runnerWar );
 
     /**
      * Registers this runner instance by adding its instance information into the
@@ -106,7 +106,7 @@ public interface StoreService {
      *
      * @return a set of keys as Strings for test information
      */
-    Set<ProjectFig> getProjects() throws IOException;
+    Set<Project> getProjects() throws IOException;
 
     /**
      * Deletes all the projects in the store.
@@ -130,7 +130,7 @@ public interface StoreService {
      * @param testClass the chopped test to check for completion on
      * @return true if the summary information has been deposited, false otherwise
      */
-    boolean hasCompleted( RunnerFig runner, ProjectFig project, int runNumber, Class<?> testClass );
+    boolean hasCompleted( RunnerFig runner, Project project, int runNumber, Class<?> testClass );
 
     /**
      * Checks the store to find the next available run number starting at 1. This method
@@ -147,5 +147,5 @@ public interface StoreService {
      * @param project the project configuration
      * @return the next available run number
      */
-    int getNextRunNumber( RunnerFig runner, ProjectFig project );
+    int getNextRunNumber( RunnerFig runner, Project project );
 }

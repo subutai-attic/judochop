@@ -22,7 +22,7 @@ public class ChopUtils {
      * @return the testBase of the project
      * @throws NullPointerException if the project is null or it's loadKey property is null
      */
-    public static String getTestBase( ProjectFig project ) {
+    public static String getTestBase( Project project ) {
         Preconditions.checkNotNull( project, "The project cannot be null." );
         return getTestBase( project.getLoadKey() );
     }

@@ -12,7 +12,7 @@ import java.util.Set;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
@@ -55,13 +55,13 @@ public class ChopClientImpl implements ChopClient, Constants {
 
 
     @Override
-    public Set<ProjectFig> getProjectConfigs() throws IOException {
+    public Set<Project> getProjectConfigs() throws IOException {
         return service.getProjects();
     }
 
 
     @Override
-    public Set<ISummary> getRuns( final ProjectFig test ) {
+    public Set<ISummary> getRuns( final Project test ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
@@ -79,14 +79,14 @@ public class ChopClientImpl implements ChopClient, Constants {
 
 
     @Override
-    public void delete( final ProjectFig test ) {
+    public void delete( final Project test ) {
         throw new RuntimeException( "Not implemented yet" );
     }
 
 
     @Override
     public Result load( RunnerFig runnerFig, String projectKey, Map<String,String> props ) {
-        ProjectFig project = getProject( projectKey );
+        Project project = getProject( projectKey );
         String md5 = project.getWarMd5();
 
         LOG.info( "Sending load request to " + runnerFig.getHostname() );
@@ -125,7 +125,7 @@ public class ChopClientImpl implements ChopClient, Constants {
 
             try {
                 Result status = status( runnerFigInfo );
-                ProjectFig remoteInfo = status.getProject();
+                Project remoteInfo = status.getProject();
 
                 if ( ! status.getStatus() ) {
                     LOG.info( "RunnerFig {} failed on status call", runnerFigInfo );
@@ -156,7 +156,7 @@ public class ChopClientImpl implements ChopClient, Constants {
     }
 
 
-    private ProjectFig getProject( final String testKey ) {
+    private Project getProject( final String testKey ) {
         return service.getProject( testKey );
     }
 
@@ -238,11 +238,11 @@ public class ChopClientImpl implements ChopClient, Constants {
         String message;
 
         // Get the latest project information from store
-        ProjectFig project = null;
+        Project project = null;
         try {
-            Set<ProjectFig> projects = getProjectConfigs();
+            Set<Project> projects = getProjectConfigs();
 
-            for ( ProjectFig projectCandidate : projects ) {
+            for ( Project projectCandidate : projects ) {
                 if ( project == null ) {
                     project = projectCandidate;
                 }

@@ -17,11 +17,11 @@ import com.google.inject.Inject;
 
 
 /**
- * Builds a ProjectFig for use many by the plugin.
+ * Builds a Project for use many by the plugin.
  */
 public class ProjectFigBuilder {
     private Properties props;
-    private ProjectFig supplied;
+    private Project supplied;
     private String testPackageBase;
     private String createTimestamp;
     private String artifactId;
@@ -49,7 +49,7 @@ public class ProjectFigBuilder {
     }
 
 
-    public ProjectFigBuilder( ProjectFig project ) {
+    public ProjectFigBuilder( Project project ) {
         // set the supplied project - this is manually provided
         this.supplied = project;
         updateValues();
@@ -57,7 +57,7 @@ public class ProjectFigBuilder {
 
 
     @Inject
-    public void setProject( ProjectFig project ) {
+    public void setProject( Project project ) {
         if ( supplied == null ) {
             supplied = project;
             updateValues();
@@ -84,60 +84,60 @@ public class ProjectFigBuilder {
         }
 
         if ( props != null ) {
-            if ( props.containsKey( ProjectFig.LOAD_TIME_KEY ) ) {
-                this.loadTime = props.getProperty( ProjectFig.LOAD_TIME_KEY );
+            if ( props.containsKey( Project.LOAD_TIME_KEY ) ) {
+                this.loadTime = props.getProperty( Project.LOAD_TIME_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.LOAD_KEY ) ) {
-                this.loadKey = props.getProperty( ProjectFig.LOAD_KEY );
+            if ( props.containsKey( Project.LOAD_KEY ) ) {
+                this.loadKey = props.getProperty( Project.LOAD_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.ARTIFACT_ID_KEY ) ) {
-                this.artifactId = props.getProperty( ProjectFig.ARTIFACT_ID_KEY );
+            if ( props.containsKey( Project.ARTIFACT_ID_KEY ) ) {
+                this.artifactId = props.getProperty( Project.ARTIFACT_ID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.CHOP_VERSION_KEY ) ) {
-                this.chopVersion = props.getProperty( ProjectFig.CHOP_VERSION_KEY );
+            if ( props.containsKey( Project.CHOP_VERSION_KEY ) ) {
+                this.chopVersion = props.getProperty( Project.CHOP_VERSION_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.CREATE_TIMESTAMP_KEY ) ) {
-                this.createTimestamp = props.getProperty( ProjectFig.CREATE_TIMESTAMP_KEY );
+            if ( props.containsKey( Project.CREATE_TIMESTAMP_KEY ) ) {
+                this.createTimestamp = props.getProperty( Project.CREATE_TIMESTAMP_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GIT_URL_KEY ) ) {
-                this.vcsRepoUrl = props.getProperty( ProjectFig.GIT_URL_KEY );
+            if ( props.containsKey( Project.GIT_URL_KEY ) ) {
+                this.vcsRepoUrl = props.getProperty( Project.GIT_URL_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GIT_UUID_KEY ) ) {
-                this.commitId = props.getProperty( ProjectFig.GIT_UUID_KEY );
+            if ( props.containsKey( Project.GIT_UUID_KEY ) ) {
+                this.commitId = props.getProperty( Project.GIT_UUID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GROUP_ID_KEY ) ) {
-                this.groupId = props.getProperty( ProjectFig.GROUP_ID_KEY );
+            if ( props.containsKey( Project.GROUP_ID_KEY ) ) {
+                this.groupId = props.getProperty( Project.GROUP_ID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_PASSWORD_KEY ) ) {
-                this.managerPassword = props.getProperty( ProjectFig.MANAGER_PASSWORD_KEY );
+            if ( props.containsKey( Project.MANAGER_PASSWORD_KEY ) ) {
+                this.managerPassword = props.getProperty( Project.MANAGER_PASSWORD_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_USERNAME_KEY ) ) {
-                this.managerUsername = props.getProperty( ProjectFig.MANAGER_USERNAME_KEY );
+            if ( props.containsKey( Project.MANAGER_USERNAME_KEY ) ) {
+                this.managerUsername = props.getProperty( Project.MANAGER_USERNAME_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_ENDPOINT_KEY ) ) {
-                this.managerEndpoint = props.getProperty( ProjectFig.MANAGER_ENDPOINT_KEY );
+            if ( props.containsKey( Project.MANAGER_ENDPOINT_KEY ) ) {
+                this.managerEndpoint = props.getProperty( Project.MANAGER_ENDPOINT_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.PROJECT_VERSION_KEY ) ) {
-                this.version = props.getProperty( ProjectFig.PROJECT_VERSION_KEY );
+            if ( props.containsKey( Project.PROJECT_VERSION_KEY ) ) {
+                this.version = props.getProperty( Project.PROJECT_VERSION_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.TEST_PACKAGE_BASE ) ) {
-                this.testPackageBase = props.getProperty( ProjectFig.TEST_PACKAGE_BASE );
+            if ( props.containsKey( Project.TEST_PACKAGE_BASE ) ) {
+                this.testPackageBase = props.getProperty( Project.TEST_PACKAGE_BASE );
             }
 
-            if ( props.containsKey( ProjectFig.WAR_MD5_KEY ) ) {
-                this.warMd5 = props.getProperty( ProjectFig.WAR_MD5_KEY );
+            if ( props.containsKey( Project.WAR_MD5_KEY ) ) {
+                this.warMd5 = props.getProperty( Project.WAR_MD5_KEY );
             }
         }
     }
@@ -241,8 +241,8 @@ public class ProjectFigBuilder {
     }
 
 
-    public ProjectFig getProject() {
-        return new ProjectFig() {
+    public Project getProject() {
+        return new Project() {
             @Override
             public String getChopVersion() {
                 return chopVersion;
@@ -434,7 +434,7 @@ public class ProjectFigBuilder {
             @JsonIgnore
             @Override
             public Class getFigInterface() {
-                return ProjectFig.class;
+                return Project.class;
             }
 
 

@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.runner.IController;
@@ -66,7 +66,7 @@ public class LoadResource {
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
 
     private final IController controller;
-    private final ProjectFig projectFig;
+    private final Project project;
     private final ServletFig servletFig;
     private final RunnerFig runnerFig;
     private final StoreService service;
@@ -75,12 +75,12 @@ public class LoadResource {
     @Inject
     public LoadResource( IController controller,
                          StoreService service,
-                         ProjectFig projectFig,
+                         Project project,
                          ServletFig servletFig,
                          RunnerFig runnerFig ) {
         this.service = service;
         this.controller = controller;
-        this.projectFig = projectFig;
+        this.project = project;
         this.servletFig = servletFig;
         this.runnerFig = runnerFig;
     }
@@ -121,9 +121,9 @@ public class LoadResource {
                 amazonFig.bypass( key, parameters.get( key ).get( 0 ) );
             }
 
-            if ( projectFig.getOption( key ) != null ) {
-                LOG.debug( "Applying parameter {} with value {} as bypass to projectFig", key, parameters.get( key ) );
-                projectFig.bypass( key, parameters.get( key ).get( 0 ) );
+            if ( this.project.getOption( key ) != null ) {
+                LOG.debug( "Applying parameter {} with value {} as bypass to project", key, parameters.get( key ) );
+                this.project.bypass( key, parameters.get( key ).get( 0 ) );
             }
         }
 
@@ -207,8 +207,8 @@ public class LoadResource {
         public void run() {
             DefaultClientConfig clientConfig = new DefaultClientConfig();
             Client client = Client.create( clientConfig );
-            client.addFilter( new HTTPBasicAuthFilter( projectFig.getManagerUsername(),
-                    projectFig.getManagerPassword() ) );
+            client.addFilter( new HTTPBasicAuthFilter( project.getManagerUsername(),
+                    project.getManagerPassword() ) );
 
             WebResource resource = client.resource( servletFig.getManagerEndpoint() ).path( "/deploy" )
                                          .queryParam( "update", "true" ).queryParam( "path", "/" );

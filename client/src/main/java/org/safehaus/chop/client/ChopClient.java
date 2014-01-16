@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 
@@ -37,7 +37,7 @@ public interface ChopClient extends Constants {
      *
      * @return the set of performance tests
      */
-    Set<ProjectFig> getProjectConfigs() throws IOException;
+    Set<Project> getProjectConfigs() throws IOException;
 
 
     /**
@@ -45,7 +45,7 @@ public interface ChopClient extends Constants {
      *
      * @return the set of runs that have taken place on a test.
      */
-    Set<ISummary> getRuns( ProjectFig test );
+    Set<ISummary> getRuns( Project test );
 
 
     /**
@@ -71,7 +71,7 @@ public interface ChopClient extends Constants {
      *
      * @param test the test to
      */
-    void delete( ProjectFig test );
+    void delete( Project test );
 
 
     /**

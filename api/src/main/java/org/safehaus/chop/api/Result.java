@@ -41,5 +41,5 @@ public interface Result {
 
 
     @JsonProperty
-    ProjectFig getProject();
+    Project getProject();
 }

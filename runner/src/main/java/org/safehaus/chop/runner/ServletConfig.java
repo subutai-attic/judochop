@@ -25,9 +25,8 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletRequest;
 
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
@@ -99,7 +98,7 @@ public class ServletConfig extends GuiceServletContextListener {
 
         final ServletFig servletFig = injector.getInstance( ServletFig.class );
         final RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
-        final ProjectFig projectFig = injector.getInstance( ProjectFig.class );
+        final Project project = injector.getInstance( Project.class );
         ServletContext context = servletContextEvent.getServletContext();
 
         /*
@@ -148,7 +147,7 @@ public class ServletConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        if ( runnerFig.getHostname() != null && projectFig.getLoadKey() != null ) {
+        if ( runnerFig.getHostname() != null && project.getLoadKey() != null ) {
             storeService = getInjector().getInstance( StoreService.class );
             storeService.start();
             LOG.info( "Store service started." );

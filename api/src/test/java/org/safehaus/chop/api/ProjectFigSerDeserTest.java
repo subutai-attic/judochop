@@ -12,7 +12,7 @@ import static junit.framework.TestCase.assertNotNull;
 
 
 /**
- * Tests serialization / de-serialization of ProjectFig.
+ * Tests serialization / de-serialization of Project.
  */
 public class ProjectFigSerDeserTest {
     public static final String EXAMPLE = "{\"testPackageBase\":\"org.safehaus.chop.example\",\"chopVersion\":\"1.0-SNAPSHOT\"," +
@@ -34,7 +34,7 @@ public class ProjectFigSerDeserTest {
     @Test
     public void testBoth() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        ProjectFig value = mapper.readValue( EXAMPLE, ProjectFig.class );
+        Project value = mapper.readValue( EXAMPLE, Project.class );
         assertEquals( "org.safehaus.chop.example", value.getTestPackageBase() );
         assertEquals( "1.0-SNAPSHOT", value.getChopVersion() );
         assertEquals( "2013.12.24.06.14.22", value.getCreateTimestamp() );

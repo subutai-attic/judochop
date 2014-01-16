@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Set;
 
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.State;
@@ -34,10 +34,10 @@ public class VerifyMojo extends MainMojo {
             Properties props = new Properties();
             props.load( new FileInputStream( new File( getProjectFileToUploadPath() ) ) );
             ProjectFigBuilder builder = new ProjectFigBuilder( props );
-            ProjectFig currentProject = builder.getProject();
-            Set<ProjectFig> tests = client.getProjectConfigs();
+            Project currentProject = builder.getProject();
+            Set<Project> tests = client.getProjectConfigs();
 
-            for ( ProjectFig test : tests ) {
+            for ( Project test : tests ) {
                 if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
                         currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     result = true;

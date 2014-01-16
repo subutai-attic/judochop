@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.InstallCert;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
@@ -117,7 +117,7 @@ public class LoadMojo extends MainMojo {
          */
 
         // Load the project configuration from the file system
-        ProjectFig projectFig = loadProjectConfiguration();
+        Project project = loadProjectConfiguration();
 
         /* ------------------------------------------------------------------------------
          * Before dealing with instances let's check and make sure the latest runner
@@ -142,12 +142,12 @@ public class LoadMojo extends MainMojo {
         // Check if the latest war is deployed on Store
         boolean testUpToDate = false;
         try {
-            Set<ProjectFig> tests = client.getProjectConfigs();
-            for ( ProjectFig test : tests ) {
-                if ( projectFig.getVcsRepoUrl() != null &&
-                        projectFig.getWarMd5() != null &&
-                        projectFig.getVcsVersion().equals( test.getVcsVersion() ) &&
-                        projectFig.getWarMd5().equals( test.getWarMd5() ) ) {
+            Set<Project> tests = client.getProjectConfigs();
+            for ( Project test : tests ) {
+                if ( project.getVcsRepoUrl() != null &&
+                        project.getWarMd5() != null &&
+                        project.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        project.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }
@@ -179,11 +179,11 @@ public class LoadMojo extends MainMojo {
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
         overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
         overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
-        overrides.put( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
-        overrides.put( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
+        overrides.put( Project.MANAGER_USERNAME_KEY, managerAppUsername );
+        overrides.put( Project.MANAGER_PASSWORD_KEY, managerAppPassword );
 
         // @todo need to figure out why the default value does not hold for the manager endpoint
-        // overrides.put( ProjectFig.MANAGER_ENDPOINT_KEY, projectFig.getManagerEndpoint() );
+        // overrides.put( Project.MANAGER_ENDPOINT_KEY, project.getManagerEndpoint() );
 
         // This array holds the instances that have loaded a new runner, so absolutely requires restart on container
         Collection<Instance> instancesToRestart = new ArrayList<Instance>( instances.size() );
@@ -216,7 +216,7 @@ public class LoadMojo extends MainMojo {
                         .getState() );
             }
 
-            if ( result.getProject() != null && result.getProject().getWarMd5().equals( projectFig.getWarMd5() ) ) {
+            if ( result.getProject() != null && result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
                 getLog().info(
                         "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
                 continue;

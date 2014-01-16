@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectFigBuilder;
 
 import org.apache.maven.artifact.Artifact;
@@ -301,10 +301,10 @@ public class MainMojo extends AbstractMojo implements Constants {
     /**
      * Loads the project configuration data if available.
      *
-     * @return the ProjectFig for this project or blow chunks
+     * @return the Project for this project or blow chunks
      * @throws MojoExecutionException the chunks we blow
      */
-    public ProjectFig loadProjectConfiguration() throws MojoExecutionException {
+    public Project loadProjectConfiguration() throws MojoExecutionException {
         File projectFile = new File( getProjectFileToUploadPath() );
         if ( ! projectFile.exists() ) {
             getLog().warn( "It seems as though the project properties file " + projectFile
@@ -321,12 +321,12 @@ public class MainMojo extends AbstractMojo implements Constants {
         }
 
         // Load the project configuration from the file system
-        ProjectFig projectFig;
+        Project project;
         try {
             Properties props = new Properties();
             props.load( new FileInputStream( projectFile ) );
             ProjectFigBuilder builder = new ProjectFigBuilder( props );
-            projectFig = builder.getProject();
+            project = builder.getProject();
         }
         catch ( Exception e ) {
             getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
@@ -335,6 +335,6 @@ public class MainMojo extends AbstractMojo implements Constants {
                     "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
         }
 
-        return projectFig;
+        return project;
     }
 }

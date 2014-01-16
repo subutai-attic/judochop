@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize( using = ProjectSerializer.class )
 @JsonDeserialize( using = ProjectDeserializer.class )
-public interface ProjectFig extends GuicyFig {
+public interface Project extends GuicyFig {
 
     // ~~~~~~~~~~~~~~~~~~~~ Chopped Project's Parameters ~~~~~~~~~~~~~~~~~~~~
 
@@ -24,7 +24,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the version of Judo Chop used to generate Runners. Uses {@link
-     * ProjectFig#CHOP_VERSION_KEY} to access the chop version used.
+     * Project#CHOP_VERSION_KEY} to access the chop version used.
      *
      * @return the Judo Chop version
      */
@@ -37,7 +37,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the timestamp when the project RunnerFig was generated. Uses
-     * {@link ProjectFig#CREATE_TIMESTAMP_KEY} to access the RunnerFig creation
+     * {@link Project#CREATE_TIMESTAMP_KEY} to access the RunnerFig creation
      * timestamp.
      *
      * @return the Judo Chop runner creation time
@@ -51,7 +51,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * The last commit id of the project being chopped. Uses {@link
-     * ProjectFig#GIT_URL_KEY} to access the commit identifier.
+     * Project#GIT_URL_KEY} to access the commit identifier.
      *
      * @return the commit identifier
      */
@@ -64,7 +64,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the version control system URL for the project. Uses
-     * {@link ProjectFig#GIT_URL_KEY} to access the VCS URL for the Project.
+     * {@link Project#GIT_URL_KEY} to access the VCS URL for the Project.
      *
      * @return the VCS URL for this project
      */
@@ -77,7 +77,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the Maven project group identifier or equivalent for the project.
-     * Uses {@link ProjectFig#GROUP_ID_KEY} to access the Maven group id.
+     * Uses {@link Project#GROUP_ID_KEY} to access the Maven group id.
      *
      * @return the Maven group id
      */
@@ -90,7 +90,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the Maven artifact identifier or equivalent associated for the project.
-     * Uses {@link ProjectFig#ARTIFACT_ID_KEY} to access the Maven artifact id.
+     * Uses {@link Project#ARTIFACT_ID_KEY} to access the Maven artifact id.
      *
      * @return the Maven artifact id
      */
@@ -103,7 +103,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the Maven version of the project being chopped. Uses {@link
-     * ProjectFig#PROJECT_VERSION_KEY} to access the Maven project version.
+     * Project#PROJECT_VERSION_KEY} to access the Maven project version.
      *
      * @return the Maven project version
      */
@@ -132,7 +132,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the time in milliseconds to wait until a test stops. Uses {@link
-     * ProjectFig#TEST_STOP_TIMEOUT} to access the test timeout parameter.
+     * Project#TEST_STOP_TIMEOUT} to access the test timeout parameter.
      *
      * @return the time in milliseconds to wait for a test to stop
      */
@@ -146,7 +146,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the load timestamp for when the runner was loaded. Uses {@link
-     * ProjectFig#LOAD_TIME_KEY} to access the load timestamp.
+     * Project#LOAD_TIME_KEY} to access the load timestamp.
      *
      * @return the load timestamp of the runner
      */
@@ -160,7 +160,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the path or key to the RunnerFig's war in the store. Uses {@link
-     * ProjectFig#LOAD_KEY} to access the store's load key.
+     * Project#LOAD_KEY} to access the store's load key.
      *
      * @return the path or key to the RunnerFig's war in the store
      */
@@ -173,7 +173,7 @@ public interface ProjectFig extends GuicyFig {
     String WAR_MD5_KEY = "war.md5";
 
     /**
-     * Gets the MD5 checksum of the RunnerFig. Uses {@link ProjectFig#WAR_MD5_KEY} to
+     * Gets the MD5 checksum of the RunnerFig. Uses {@link Project#WAR_MD5_KEY} to
      * access the MD5 checksum.
      *
      * @return the MD5 checksum of the RunnerFig war
@@ -187,7 +187,7 @@ public interface ProjectFig extends GuicyFig {
 
     /**
      * Gets the username to use with the Tomcat manager of this RunnerFig. Uses {@link
-     * ProjectFig#MANAGER_USERNAME_KEY} to access the Tomcat manager username.
+     * Project#MANAGER_USERNAME_KEY} to access the Tomcat manager username.
      *
      * @return the Tomcat manager username
      */
@@ -199,7 +199,7 @@ public interface ProjectFig extends GuicyFig {
     String MANAGER_PASSWORD_KEY = "manager.app.password";
 
     /**
-     * Gets the Tomcat manager user's password. Uses {@link ProjectFig#MANAGER_PASSWORD_KEY}
+     * Gets the Tomcat manager user's password. Uses {@link Project#MANAGER_PASSWORD_KEY}
      * to access the Tomcat manager user's password.
      *
      * @return the Tomcat manager user's password

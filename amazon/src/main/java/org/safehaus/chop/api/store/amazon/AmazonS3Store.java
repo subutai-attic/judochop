@@ -37,7 +37,7 @@ import java.util.Set;
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
@@ -138,7 +138,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public void store( final ProjectFig project, final ISummary summary, final File resultsFile,
+    public void store( final Project project, final ISummary summary, final File resultsFile,
                        final Class<?> testClass ) {
         store( me, project, summary, resultsFile, testClass );
     }
@@ -286,8 +286,8 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public Set<ProjectFig> getProjects() throws IOException {
-        Set<ProjectFig> tests = new HashSet<ProjectFig>();
+    public Set<Project> getProjects() throws IOException {
+        Set<Project> tests = new HashSet<Project>();
         ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), CONFIGS_PATH + "/" );
 
         do {
@@ -308,7 +308,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public void store( ProjectFig project ) {
+    public void store( Project project ) {
         String loadKey = ChopUtils.getTestBase( project );
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey ).append( PROJECT_FILE );
@@ -325,7 +325,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public ProjectFig getProject( String loadKey ) {
+    public Project getProject( String loadKey ) {
         Preconditions.checkNotNull( loadKey, "The key cannot be null" );
 
         loadKey = ChopUtils.getTestBase( loadKey );
@@ -357,7 +357,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public int getNextRunNumber( RunnerFig runner, ProjectFig project ) {
+    public int getNextRunNumber( RunnerFig runner, Project project ) {
         Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
         String loadKey = ChopUtils.getTestBase( project );
 
@@ -397,7 +397,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public boolean hasCompleted( RunnerFig runner, ProjectFig project, int runNumber, Class<?> testClass ) {
+    public boolean hasCompleted( RunnerFig runner, Project project, int runNumber, Class<?> testClass ) {
         Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
         Preconditions.checkNotNull( testClass, "The testClass argument cannot be null." );
 
@@ -427,7 +427,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param project the test the Summary object is associated with
      * @param summary the Summary object to store
      */
-    private void store( RunnerFig metadata, ProjectFig project, ISummary summary, Class<?> testClass ) {
+    private void store( RunnerFig metadata, Project project, ISummary summary, Class<?> testClass ) {
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
 
         String loadKey = ChopUtils.getTestBase( project );
@@ -453,7 +453,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param summary the run summary to also store
      * @param results the detailed results to store
      */
-    private void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results, Class<?> testClass ) {
+    private void store( RunnerFig metadata, Project project, ISummary summary, File results, Class<?> testClass ) {
         store( metadata, project, summary, testClass );
 
         String loadKey = ChopUtils.getTestBase( project );
@@ -514,7 +514,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    private ProjectFig getFromProperties( String key ) throws IOException {
+    private Project getFromProperties( String key ) throws IOException {
         S3Object s3Object = client.getObject( amazonFig.getAwsBucket(), key );
         S3ObjectInputStream in = s3Object.getObjectContent();
 
