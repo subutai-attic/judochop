@@ -1,7 +1,6 @@
 package org.safehaus.chop.api.store.amazon;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,7 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +64,9 @@ public class Ec2Metadata {
     }
 
 
-    public static void applyBypass( RunnerFig runnerFig ) {
-        runnerFig.bypass( RunnerFig.HOSTNAME_KEY, PUBLIC_HOSTNAME );
-        runnerFig.bypass( RunnerFig.IPV4_KEY, PUBLIC_IPV4_ADDRESS );
+    public static void applyBypass( Runner runner ) {
+        runner.bypass( Runner.HOSTNAME_KEY, PUBLIC_HOSTNAME );
+        runner.bypass( Runner.IPV4_KEY, PUBLIC_IPV4_ADDRESS );
     }
 
 

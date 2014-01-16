@@ -11,7 +11,7 @@ import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 
 
 /**
@@ -29,7 +29,7 @@ public interface ChopClient extends Constants {
      *
      * @return the set of Perftest runner nodes
      */
-    Collection<RunnerFig> getRunners();
+    Collection<Runner> getRunners();
 
 
     /**
@@ -77,25 +77,25 @@ public interface ChopClient extends Constants {
     /**
      * Loads a new test to be run by the runner.
      *
-     * @param runnerFig the runnerFig to use for propagating the load request
+     * @param runner the runner to use for propagating the load request
      * @param testKey the test information associated with the test to load
      * @param storeProps an optional set of store property overrides
      *
      * @return the results associated with the operation
      */
-    Result load( RunnerFig runnerFig, String testKey, Map<String,String> storeProps );
+    Result load( Runner runner, String testKey, Map<String,String> storeProps );
 
 
-    Result start( RunnerFig runnerFig );
+    Result start( Runner runner );
 
 
-    Result stop( RunnerFig runnerFig );
+    Result stop( Runner runner );
 
 
-    Result status( RunnerFig runnerFig );
+    Result status( Runner runner );
 
 
-    Result reset( RunnerFig runnerFig );
+    Result reset( Runner runner );
 
 
     /**
@@ -118,5 +118,5 @@ public interface ChopClient extends Constants {
      *
      * @return the first available live runner
      */
-    RunnerFig getLiveRunner();
+    Runner getLiveRunner();
 }

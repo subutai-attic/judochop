@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,17 +49,17 @@ public class ChopClientTest {
 
     @Test @Ignore( "make sure this is not hard coded and does not break" )
     public void testLoad() throws IOException {
-        RunnerFig liveRunnerFig = client.getLiveRunner();
-        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", null );
+        Runner liveRunner = client.getLiveRunner();
+        client.load( liveRunner, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", null );
     }
 
 
     @Test
     public void testGetRunners() throws Exception {
-        Collection<RunnerFig> runnerFigs = client.getRunners();
+        Collection<Runner> runners = client.getRunners();
 
-        for ( RunnerFig info : runnerFigs ) {
-            LOG.debug( "Got runnerFig {}", info );
+        for ( Runner info : runners ) {
+            LOG.debug( "Got runner {}", info );
         }
     }
 

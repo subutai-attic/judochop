@@ -7,14 +7,14 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.guicyfig.Bypass;
 import org.safehaus.guicyfig.OptionState;
 import org.safehaus.guicyfig.Overrides;
 
 
 /**
- * Builds a RunnerFig in the EC2 environment.
+ * Builds a Runner in the EC2 environment.
  */
 public class Ec2RunnerBuilder {
     private static final String SERVLET_TEMP_DIR = "javax.servlet.context.tempdir";
@@ -29,7 +29,7 @@ public class Ec2RunnerBuilder {
 
 
     /**
-     * Creates a runner builder that builds a RunnerFig using values in a
+     * Creates a runner builder that builds a Runner using values in a
      * properties file. Used primarily to create a representation of a
      * remote runner.
      *
@@ -41,7 +41,7 @@ public class Ec2RunnerBuilder {
         extractValues();
 
         if ( props.containsKey( SERVLET_TEMP_DIR ) ) {
-            props.setProperty( RunnerFig.RUNNER_TEMP_DIR_KEY, props.getProperty( SERVLET_TEMP_DIR ) );
+            props.setProperty( Runner.RUNNER_TEMP_DIR_KEY, props.getProperty( SERVLET_TEMP_DIR ) );
         }
     }
 
@@ -82,16 +82,16 @@ public class Ec2RunnerBuilder {
 
 
     private void extractValues() {
-        ipv4Address = props.getProperty( RunnerFig.IPV4_KEY );
-        hostname = props.getProperty( RunnerFig.HOSTNAME_KEY );
-        serverPort = Integer.parseInt( props.getProperty( RunnerFig.SERVER_PORT_KEY, "-1" ) );
-        url = props.getProperty( RunnerFig.URL_KEY );
-        runnerTempDir = props.getProperty( RunnerFig.RUNNER_TEMP_DIR_KEY );
+        ipv4Address = props.getProperty( Runner.IPV4_KEY );
+        hostname = props.getProperty( Runner.HOSTNAME_KEY );
+        serverPort = Integer.parseInt( props.getProperty( Runner.SERVER_PORT_KEY, "-1" ) );
+        url = props.getProperty( Runner.URL_KEY );
+        runnerTempDir = props.getProperty( Runner.RUNNER_TEMP_DIR_KEY );
     }
 
 
-    public RunnerFig getRunner() {
-        return new RunnerFig() {
+    public Runner getRunner() {
+        return new Runner() {
 
             @Override
             public String getIpv4Address() {
@@ -209,7 +209,7 @@ public class Ec2RunnerBuilder {
 
             @Override
             public Class getFigInterface() {
-                return RunnerFig.class;
+                return Runner.class;
             }
 
 

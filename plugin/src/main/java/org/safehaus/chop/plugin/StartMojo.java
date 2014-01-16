@@ -4,7 +4,7 @@ package org.safehaus.chop.plugin;
 import java.util.Collection;
 
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.ChopClient;
@@ -42,12 +42,12 @@ public class StartMojo extends MainMojo {
         Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
         long startTime = System.currentTimeMillis();
         boolean runnersRegistered = false;
-        Collection<RunnerFig> runnerFigs = null;
+        Collection<Runner> runners = null;
         while ( System.currentTimeMillis() - startTime < setupTimeout && !runnersRegistered ) {
-            runnerFigs = client.getRunners();
+            runners = client.getRunners();
             // We are not checking here if runners correspond to instances 1-to-1 but this is theoretically safe
             // since we are checking cluster and removing ghostRunner records from store before coming here
-            if( instances.size() == runnerFigs.size() ) {
+            if( instances.size() == runners.size() ) {
                 runnersRegistered = true;
             }
         }
@@ -80,8 +80,8 @@ public class StartMojo extends MainMojo {
             throw new MojoExecutionException( "Runners could not be verified to run" );
         }
 
-        for( RunnerFig runnerFig : runnerFigs ) {
-            Result result = client.start( runnerFig );
+        for( Runner runner : runners ) {
+            Result result = client.start( runner );
             if ( ! result.getStatus() ) {
                 throw new MojoExecutionException( result.getMessage() );
             }

@@ -33,7 +33,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
@@ -68,7 +68,7 @@ public class LoadResource {
     private final IController controller;
     private final Project project;
     private final ServletFig servletFig;
-    private final RunnerFig runnerFig;
+    private final Runner runner;
     private final StoreService service;
 
 
@@ -77,12 +77,12 @@ public class LoadResource {
                          StoreService service,
                          Project project,
                          ServletFig servletFig,
-                         RunnerFig runnerFig ) {
+                         Runner runner ) {
         this.service = service;
         this.controller = controller;
         this.project = project;
         this.servletFig = servletFig;
-        this.runnerFig = runnerFig;
+        this.runner = runner;
     }
 
 
@@ -152,7 +152,7 @@ public class LoadResource {
          * servlet access.
          */
 
-        File tempDir = new File( runnerFig.getTempDir() );
+        File tempDir = new File( runner.getTempDir() );
         File tempFile = service.download( tempDir, project );
         final BlockingDeployTask uploadTask = new BlockingDeployTask( tempFile );
         new Thread( uploadTask ).start();

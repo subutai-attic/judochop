@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.runner.drivers.Driver;
@@ -42,14 +42,14 @@ public class Controller implements IController, Runnable {
     private State state = State.INACTIVE;
     private Driver<?> currentDriver;
 
-    private Map<String, RunnerFig> otherRunners;
+    private Map<String, Runner> otherRunners;
     private StoreService service;
     private Project project;
     private int runNumber;
 
 
     @Inject
-    Controller( Project project, StoreService service, RunnerFig me ) {
+    Controller( Project project, StoreService service, Runner me ) {
         setProject( project );
         setStoreService( service );
 
@@ -186,11 +186,11 @@ public class Controller implements IController, Runnable {
      * @param testClass the current chop test
      * @return the runners still executing a test class
      */
-    private Collection<RunnerFig> getLagers( int runNumber, Class<?> testClass ) {
-        Collection<RunnerFig> lagers = new ArrayList<RunnerFig>( otherRunners.size() );
+    private Collection<Runner> getLagers( int runNumber, Class<?> testClass ) {
+        Collection<Runner> lagers = new ArrayList<Runner>( otherRunners.size() );
 
         for ( String runnerKey : otherRunners.keySet() ) {
-            RunnerFig runner = otherRunners.get( runnerKey );
+            Runner runner = otherRunners.get( runnerKey );
             if ( service.hasCompleted( runner, project, runNumber, testClass ) ) {
                 LOG.info( "Runner {} has completed test {}", runner.getHostname(), testClass.getName() );
             }
@@ -238,7 +238,7 @@ public class Controller implements IController, Runnable {
 
                 long startWaitingForLagers = System.currentTimeMillis();
                 while ( state == State.RUNNING ) {
-                    Collection<RunnerFig> lagers = getLagers( runNumber, iterationTest );
+                    Collection<Runner> lagers = getLagers( runNumber, iterationTest );
                     if ( lagers.size() > 0 ) {
                         LOG.info( "IterationChop test {} completed but waiting on lagging runners:\n{}",
                                 iterationTest.getName(), lagers );
@@ -301,7 +301,7 @@ public class Controller implements IController, Runnable {
 
                 long startWaitingForLagers = System.currentTimeMillis();
                 while ( state == State.RUNNING ) {
-                    Collection<RunnerFig> lagers = getLagers( runNumber, timeTest );
+                    Collection<Runner> lagers = getLagers( runNumber, timeTest );
                     if ( lagers.size() > 0 ) {
                         LOG.warn( "TimeChop test {} completed but waiting on lagging runners:\n{}",
                                 timeTest.getName(), lagers );

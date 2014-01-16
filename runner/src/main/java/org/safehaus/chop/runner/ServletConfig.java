@@ -27,7 +27,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
@@ -97,32 +97,32 @@ public class ServletConfig extends GuiceServletContextListener {
          */
 
         final ServletFig servletFig = injector.getInstance( ServletFig.class );
-        final RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
+        final Runner runner = injector.getInstance( Runner.class );
         final Project project = injector.getInstance( Project.class );
         ServletContext context = servletContextEvent.getServletContext();
 
         /*
          * --------------------------------------------------------------------
-         * Adjust RunnerFig Settings to Environment
+         * Adjust Runner Settings to Environment
          * --------------------------------------------------------------------
          */
 
-        Ec2Metadata.applyBypass( runnerFig );
+        Ec2Metadata.applyBypass( runner );
 
         StringBuilder sb = new StringBuilder();
         sb.append( "https://" )
-          .append( runnerFig.getHostname() )
+          .append( runner.getHostname() )
           .append( ':' )
-          .append( runnerFig.getServerPort() )
+          .append( runner.getServerPort() )
           .append( context.getContextPath() );
         String baseUrl = sb.toString();
-        runnerFig.bypass( RunnerFig.URL_KEY, baseUrl );
-        LOG.info( "Setting url key {} to base url {}", RunnerFig.URL_KEY, baseUrl );
+        runner.bypass( Runner.URL_KEY, baseUrl );
+        LOG.info( "Setting url key {} to base url {}", Runner.URL_KEY, baseUrl );
 
         File tempDir = ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY );
-        runnerFig.bypass( RunnerFig.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
+        runner.bypass( Runner.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
         LOG.info( "Setting runner temp directory key {} to context temp directory {}",
-                RunnerFig.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
+                Runner.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
 
         /*
          * --------------------------------------------------------------------
@@ -147,12 +147,12 @@ public class ServletConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        if ( runnerFig.getHostname() != null && project.getLoadKey() != null ) {
+        if ( runner.getHostname() != null && project.getLoadKey() != null ) {
             storeService = getInjector().getInstance( StoreService.class );
             storeService.start();
             LOG.info( "Store service started." );
 
-            storeService.register( runnerFig );
+            storeService.register( runner );
             LOG.info( "Registered runner information in store." );
         }
         else {

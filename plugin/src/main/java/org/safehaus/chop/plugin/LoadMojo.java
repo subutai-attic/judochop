@@ -11,7 +11,7 @@ import java.util.Set;
 import org.safehaus.chop.api.InstallCert;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
@@ -191,22 +191,22 @@ public class LoadMojo extends MainMojo {
         for ( Instance instance : instances ) {
             getLog().info( "Checking out instance " + instance.getPublicDnsName() );
 
-            RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
-            runnerFig.bypass( RunnerFig.HOSTNAME_KEY, instance.getPublicDnsName() );
-            runnerFig.bypass( RunnerFig.SERVER_PORT_KEY, RunnerFig.DEFAULT_SERVER_PORT );
-            runnerFig.bypass( RunnerFig.IPV4_KEY, instance.getPublicIpAddress() );
-            runnerFig.bypass( RunnerFig.URL_KEY,
-                    "https://" + instance.getPublicDnsName() + ":" + RunnerFig.DEFAULT_SERVER_PORT + "/" );
+            Runner runner = injector.getInstance( Runner.class );
+            runner.bypass( Runner.HOSTNAME_KEY, instance.getPublicDnsName() );
+            runner.bypass( Runner.SERVER_PORT_KEY, Runner.DEFAULT_SERVER_PORT );
+            runner.bypass( Runner.IPV4_KEY, instance.getPublicIpAddress() );
+            runner.bypass( Runner.URL_KEY,
+                    "https://" + instance.getPublicDnsName() + ":" + Runner.DEFAULT_SERVER_PORT + "/" );
 
             try {
-                InstallCert.installCert( runnerFig.getHostname(), runnerFig.getServerPort(), null );
+                InstallCert.installCert( runner.getHostname(), runner.getServerPort(), null );
             }
             catch ( Exception e ) {
                 getLog().error( "Failed to install the server cert.", e );
             }
 
             // First let's check the instance's status and what it is running
-            Result result = client.status( runnerFig );
+            Result result = client.status( runner );
             getLog().info( "Instance " + instance.getPublicDnsName() + " is in state " + result.getState() );
             getLog().info( "Instance " + instance.getPublicDnsName() + " is has the following project setup " + result
                     .getProject() );
@@ -227,7 +227,7 @@ public class LoadMojo extends MainMojo {
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
             String loadKey = CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR;
-            result = client.load( runnerFig, loadKey, overrides );
+            result = client.load( runner, loadKey, overrides );
 
             instancesToRestart.add( instance );
 

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.StoreService;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.GuicyFigModule;
@@ -29,9 +29,9 @@ public class AmazonStoreModule extends AbstractModule implements Constants {
     protected void configure() {
         List<Class<? extends GuicyFig>> figs = new ArrayList<Class<? extends GuicyFig>>( 2 );
         figs.add( AmazonFig.class );
-        figs.add( RunnerFig.class );
+        figs.add( Runner.class );
         install( new GuicyFigModule( figs ) );
-//        install( new GuicyFigModule( AmazonFig.class, RunnerFig.class ) );
+//        install( new GuicyFigModule( AmazonFig.class, Runner.class ) );
         bind( StoreService.class ).to( AmazonS3Store.class );
     }
 

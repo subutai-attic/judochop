@@ -29,20 +29,20 @@ public interface StoreService {
 
     /**
      * Gets the runner instance information from the store as a map of their keys to
-     * their RunnerFig information.
+     * their Runner information.
      *
-     * @return the keys mapped to RunnerFig information
+     * @return the keys mapped to Runner information
      */
-    Map<String, RunnerFig> getRunners();
+    Map<String, Runner> getRunners();
 
     /**
-     * Gets the runnerFig instance information from the store as a map of keys RunnerFig instances.
+     * Gets the runner instance information from the store as a map of keys Runner instances.
      *
-     * @param runnerFig a runnerFig to exclude from results (none if null)
+     * @param runner a runner to exclude from results (none if null)
      *
-     * @return the keys mapped to RunnerFig instance
+     * @return the keys mapped to Runner instance
      */
-    Map<String, RunnerFig> getRunners( RunnerFig runnerFig );
+    Map<String, Runner> getRunners( Runner runner );
 
     /**
      * Downloads a file from the store by key, and places it in a temporary file returning
@@ -90,14 +90,14 @@ public interface StoreService {
      *
      * @param runner the runner's configuration instance to be registered
      */
-    void register( RunnerFig runner );
+    void register( Runner runner );
 
     /**
      * Removes this Runner's registration.
      *
      * @param runner the runners information
      */
-    void unregister( RunnerFig runner );
+    void unregister( Runner runner );
 
     /**
      * Scans for projects with test information under the bucket as:
@@ -130,7 +130,7 @@ public interface StoreService {
      * @param testClass the chopped test to check for completion on
      * @return true if the summary information has been deposited, false otherwise
      */
-    boolean hasCompleted( RunnerFig runner, Project project, int runNumber, Class<?> testClass );
+    boolean hasCompleted( Runner runner, Project project, int runNumber, Class<?> testClass );
 
     /**
      * Checks the store to find the next available run number starting at 1. This method
@@ -147,5 +147,5 @@ public interface StoreService {
      * @param project the project configuration
      * @return the next available run number
      */
-    int getNextRunNumber( RunnerFig runner, Project project );
+    int getNextRunNumber( Runner runner, Project project );
 }

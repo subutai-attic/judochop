@@ -4,7 +4,7 @@ package org.safehaus.chop.plugin;
 import java.util.Collection;
 
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
@@ -62,7 +62,7 @@ public class StopMojo extends MainMojo {
 
         getLog().info( "Stopping runner(s)" );
 
-        Collection<RunnerFig> runners = client.getRunners();
+        Collection<Runner> runners = client.getRunners();
 
         if ( runners.size() == 0 ) {
             throw new MojoExecutionException( "There is no runner found" );
@@ -70,7 +70,7 @@ public class StopMojo extends MainMojo {
 
         Result result;
         int stoppedCount = 0;
-        for ( RunnerFig runner : runners ) {
+        for ( Runner runner : runners ) {
             result = client.stop( runner );
             if( ! result.getStatus() || result.getState() != State.STOPPED ) {
                 getLog().info( "Could not stop runner at " + result.getEndpoint() );
