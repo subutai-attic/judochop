@@ -17,16 +17,8 @@
     storage.
   </description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.version>2.1.5</jackson.version>
-    <archaius.version>0.5.12</archaius.version>
-    <guice.version>3.0</guice.version>
-    <junit.version>4.11</junit.version>
-  </properties>
 
   <build>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -88,27 +80,23 @@
     </dependency>
 
     <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
-      <version>${archaius.version}</version>
+      <groupId>org.safehaus.guicyfig</groupId>
+      <artifactId>guicyfig</artifactId>
     </dependency>
 
     <dependency>
       <groupId>com.netflix.archaius</groupId>
       <artifactId>archaius-aws</artifactId>
-      <version>${archaius.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>${guice.version}</version>
     </dependency>
   </dependencies>
 </project>

@@ -5,11 +5,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.annotations.IterationChop;
+import org.safehaus.chop.api.IterationChop;
 
 
 /**
- * Runs an iteration based unit test.
+ * Runs an iteration count constrained chop performance test.
  */
 public class IterationDriver extends Driver<IterationTracker> {
     private final CountDownLatch latch;

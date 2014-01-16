@@ -7,17 +7,20 @@
 package org.safehaus.chop.client;
 
 
+import org.safehaus.chop.api.Constants;
+import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
+import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.google.inject.AbstractModule;
-import com.netflix.config.DynamicPropertyFactory;
 
 
-public class PerftestClientModule extends AbstractModule implements ConfigKeys {
-    private DynamicPropertyFactory propertyFactory = DynamicPropertyFactory.getInstance();
-
+public class PerftestClientModule extends AbstractModule implements Constants {
 
     protected void configure() {
+        //noinspection unchecked
+        install( new GuicyFigModule( ProjectFig.class ) );
         install( new AmazonStoreModule() );
         bind( PerftestClient.class ).to( PerftestClientImpl.class );
     }

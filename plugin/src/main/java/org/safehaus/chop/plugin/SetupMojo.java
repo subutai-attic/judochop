@@ -3,8 +3,11 @@ package org.safehaus.chop.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.safehaus.chop.api.store.StoreOperations;
+import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 
@@ -45,11 +48,13 @@ public class SetupMojo extends MainMojo {
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected SetupMojo() {
 
     }
@@ -74,7 +79,7 @@ public class SetupMojo extends MainMojo {
                 throw new MojoExecutionException( "Setting up instances failed" );
             }
 
-            int port = Integer.parseInt( DEFAULT_SERVER_PORT );
+            int port = Integer.parseInt( RunnerFig.DEFAULT_SERVER_PORT );
             ArrayList<Integer> ports = new ArrayList<Integer>();
             ports.add( port );
             ec2Manager.updateSecurityGroupRecords( ports, false );
@@ -111,9 +116,10 @@ public class SetupMojo extends MainMojo {
             }
 
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
-            StoreOperations store = injector.getInstance( StoreOperations.class );
+            StoreService store = injector.getInstance( StoreService.class );
             Collection<Instance> activeInstances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
-            Collection<String> activeInstanceHostnames = new ArrayList<String>( activeInstances.size() );
+
+            Set<String> activeInstanceHostnames = new HashSet<String>( activeInstances.size() );
             for ( Instance instance : activeInstances ) {
                 activeInstanceHostnames.add( instance.getPublicDnsName() );
             }

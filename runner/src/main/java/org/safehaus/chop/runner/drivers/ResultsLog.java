@@ -11,8 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.runner.Result;
-import org.safehaus.chop.api.annotations.IterationChop;
-import org.safehaus.chop.api.annotations.TimeChop;
+import org.safehaus.chop.api.Constants;
+import org.safehaus.chop.api.IterationChop;
+import org.safehaus.chop.api.TimeChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class ResultsLog implements IResultsLog, Runnable {
                 getStringProperty( RESULTS_FILE_KEY, defaultFile.getAbsolutePath() );
         LOG.info( "Actual results log file path = {}", resultsFile.get() );
         waitTime = DynamicPropertyFactory.getInstance().getLongProperty( WAIT_TIME_KEY, 200 );
-        prettyPrint = DynamicPropertyFactory.getInstance().getBooleanProperty( PRETTY_PRINT_RESULTS_LOG, true );
+        prettyPrint = DynamicPropertyFactory.getInstance().getBooleanProperty( Constants.PRETTY_PRINT_RESULTS, true );
     }
 
 

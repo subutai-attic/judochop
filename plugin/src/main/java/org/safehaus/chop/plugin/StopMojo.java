@@ -4,7 +4,7 @@ package org.safehaus.chop.plugin;
 import java.util.Collection;
 
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.client.PerftestClient;
 import org.safehaus.chop.client.PerftestClientModule;
@@ -20,6 +20,7 @@ import com.google.inject.Injector;
 public class StopMojo extends MainMojo {
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected StopMojo( MainMojo mojo ) {
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
@@ -42,11 +43,13 @@ public class StopMojo extends MainMojo {
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected StopMojo() {
 
     }
@@ -59,7 +62,7 @@ public class StopMojo extends MainMojo {
 
         getLog().info( "Stopping runner(s)" );
 
-        Collection<Runner> runners = client.getRunners();
+        Collection<RunnerFig> runners = client.getRunners();
 
         if ( runners.size() == 0 ) {
             throw new MojoExecutionException( "There is no runner found" );
@@ -67,8 +70,8 @@ public class StopMojo extends MainMojo {
 
         Result result;
         int stoppedCount = 0;
-        for ( Runner runner : runners ) {
-            result = client.stop( runner, false );
+        for ( RunnerFig runner : runners ) {
+            result = client.stop( runner );
             if( ! result.getStatus() || result.getState() != State.STOPPED ) {
                 getLog().info( "Could not stop runner at " + result.getEndpoint() );
             }

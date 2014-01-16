@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,16 +123,15 @@ public class Utils {
      *
      * @param targetFolder The folder which the dependency jars will be copied to
      */
-    public static void copyArtifactsTo( MavenProject project, String targetFolder, boolean skipTestScope )
+    public static void copyArtifactsTo( MavenProject project, String targetFolder )
             throws MojoExecutionException {
         File targetFolderFile = new File( targetFolder );
         for ( Iterator it = project.getArtifacts().iterator(); it.hasNext(); ) {
             Artifact artifact = ( Artifact ) it.next();
-            if ( skipTestScope && artifact.getScope() == "test" ) {
-                continue;
-            }
 
             File f = artifact.getFile();
+
+            logger.log( Level.INFO, "Artifact " + f.getAbsolutePath() + " found." );
 
             if ( f == null ) {
                 throw new MojoExecutionException( "Cannot locate artifact file of " + artifact.getArtifactId() );
@@ -284,9 +284,10 @@ public class Utils {
     }
 
 
-    /** @return Returns the given date in a 'yyyy.MM.dd.HH.mm.ss' format */
+    /** @return Returns the given date in a 'yyyy.MM.dd.HH.mm.ss' format, UTC timezone */
     public static String getTimestamp( Date date ) {
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.HH.mm.ss" );
+        dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
         return dateFormat.format( date );
     }
 

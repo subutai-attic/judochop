@@ -16,8 +16,8 @@ annotation value and the annotations applying to tests are listed below:
  
 * time (TimeChop) - time in milliseconds to run the test
 * iterations (IterationChop) - iterations of the test to run per thread
-* threads (Both) - the number of threads to use per runner
-* runners (Both) - the number of distributed runners to use
+* threads (Both) - the number of threads to use per controller
+* runnerFigs (Both) - the number of distributed runnerFigs to use
 * delay (Both) - the number of milliseconds to delay between test runs
 * saturate (Both) - find and run tests at saturation
 
@@ -27,9 +27,9 @@ make sure your chop tests actually pound on something else rather than running
 locally. So you guessed it Judo Chop is for pounding on services, servers and
 web applications.
 
-Judo Chop's maven plugin will take your annotated tests and build a runner war
+Judo Chop's maven plugin will take your annotated tests and build a controller war
 out of it. The plugin will deploy it to several virtual machines. The plugin
-or just a curl start command against the rest API of one of the runners triggers
+or just a curl start command against the rest API of one of the runnerFigs triggers
 their synchronous bombardment of your application via your own tests. Reports
 are generated and placed in a store where they can be later analyzed.
 
@@ -70,11 +70,11 @@ First add the Judo Chop maven plugin to your project like so:
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testPackageBase>org.safehaus.chop.example</testPackageBase>
-          <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
+          <runnerSSHKeyFile>${controller.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
-          <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
+          <runnerKeyPairName>${controller.keypair.name}</runnerKeyPairName>
           <minimumRunners>5</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>
@@ -122,7 +122,7 @@ go through while issuing POSTs to the end points above:
 
 A post to a single node using the optional boolean propagate option will issue
 the same POST to all the nodes in the cluster. All the POST operations support
-this property to control all the runner nodes in the cluster. Also note that 
+this property to control all the controller nodes in the cluster. Also note that
 the propagation occurs in parallel against all nodes in the cluster.
 
 Happy Chopping!

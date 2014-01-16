@@ -1,7 +1,7 @@
 package org.safehaus.chop.runner.drivers;
 
 
-import org.safehaus.chop.api.annotations.IterationChop;
+import org.safehaus.chop.api.IterationChop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -30,12 +30,6 @@ public class IterationTracker extends Tracker {
     @Override
     public int getThreads() {
         return iterationChop.threads();
-    }
-
-
-    @Override
-    public int getRunners() {
-        return iterationChop.runners();
     }
 
 

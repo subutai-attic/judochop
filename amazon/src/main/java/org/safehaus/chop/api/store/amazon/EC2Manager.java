@@ -8,15 +8,19 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.safehaus.chop.api.InstallCert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.internal.StaticCredentialsProvider;
+import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
@@ -28,7 +32,6 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.Filter;
-import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.InstanceType;
@@ -64,7 +67,7 @@ public class EC2Manager {
 
     private String runnerName;
 
-    private InstanceType defaultType = InstanceType.M1Medium;
+    private InstanceType defaultType = InstanceType.M1Large;
 
     private String availabilityZone;
 
@@ -537,7 +540,53 @@ public class EC2Manager {
             provider = new DefaultAWSCredentialsProviderChain();
         }
 
-        return new AmazonEC2Client( provider );
+        AmazonEC2Client client = new AmazonEC2Client( provider );
+
+        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
+        if ( availabilityZone != null ) {
+            if ( availabilityZone.contains( "us-east-1" ) ) {
+                client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "us-west-1" ) ) {
+                client.setEndpoint( "ec2.us-west-1.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "us-west-2" ) ) {
+                client.setEndpoint( "ec2.us-west-2.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "eu-west-1" ) ) {
+                client.setEndpoint( "ec2.eu-west-1.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
+                client.setEndpoint( "ec2.ap-southeast-1.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
+                client.setEndpoint( "ec2.ap-southeast-2.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
+                client.setEndpoint( "ec2.ap-northeast-1.amazonaws.com" );
+            }
+            else if ( availabilityZone.contains( "sa-east-1" ) ) {
+                client.setEndpoint( "ec2.sa-east-1.amazonaws.com" );
+            }
+            else {
+                client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
+            }
+        }
+        else {
+            client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
+        }
+
+        try {
+            InstallCert.installCert( "ec2.us-east-1.amazonaws.com", 443, null );
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        ClientConfiguration configuration = new ClientConfiguration();
+        configuration.setProtocol( Protocol.HTTPS );
+        client.setConfiguration( configuration );
+        return client;
     }
 
 }

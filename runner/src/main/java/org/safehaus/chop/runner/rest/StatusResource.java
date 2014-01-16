@@ -25,10 +25,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.StoreService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
@@ -37,23 +38,22 @@ import com.google.inject.Singleton;
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/status")
+@Produces( MediaType.APPLICATION_JSON )
+@Path( "/status" )
 public class StatusResource {
     private final IController runner;
-    private final StoreService storeService;
+    private RunnerFig runnerFig;
 
 
     @Inject
-    public StatusResource( StoreService storeService, IController runner ) {
+    public StatusResource( IController runner, RunnerFig runnerFig ) {
         this.runner = runner;
-        this.storeService = storeService;
+        this.runnerFig = runnerFig;
     }
 
 
     @GET
     public Result status() throws JsonProcessingException {
-        return new BaseResult( storeService.getMyMetadata().getUrl(), true, null, runner.getState(),
-                runner.getProject() );
+        return new BaseResult( runnerFig.getUrl(), true, null, runner.getState(), runner.getProject() );
     }
 }

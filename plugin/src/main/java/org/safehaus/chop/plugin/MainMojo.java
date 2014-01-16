@@ -3,7 +3,7 @@ package org.safehaus.chop.plugin;
 
 import java.util.List;
 
-import org.safehaus.chop.client.ConfigKeys;
+import org.safehaus.chop.api.Constants;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -17,8 +17,11 @@ import org.apache.maven.project.MavenProject;
  * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
  * module's pom and provides extended get methods for several file paths that will be used by extended classes
  */
-public class MainMojo extends AbstractMojo implements ConfigKeys {
+public class MainMojo extends AbstractMojo implements Constants {
 
+    static {
+        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+    }
 
     @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
@@ -42,7 +45,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
 
     /**
      * Fully qualified package base property of the app once it's deployed to its container. This parameter will be put to the
-     * config.properties file inside the WAR to be uploaded
+     * project.properties file inside the WAR to be uploaded
      */
     @Parameter( property = "testPackageBase", required = true )
     protected String testPackageBase;
@@ -68,12 +71,12 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
      *
      * defaultValue is "tests/"
      */
-    @Parameter( property = "destinationParentDir", defaultValue = CONFIGS_PATH + "/" )
+    @Parameter( property = "destinationParentDir", defaultValue = Constants.CONFIGS_PATH + "/" )
     protected String destinationParentDir;
 
 
     /**
-     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the project.properties file inside
      * the WAR to be uploaded
      */
     @Parameter( property = "managerAppUsername", required = true )
@@ -81,7 +84,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
 
 
     /**
-     * Container's (probably Tomcat) Manager user name. This parameter will be put to the config.properties file inside
+     * Container's (probably Tomcat) Manager user name. This parameter will be put to the project.properties file inside
      * the WAR to be uploaded
      */
     @Parameter( property = "managerAppPassword", required = true )
@@ -136,6 +139,10 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     protected boolean resetIfStopped;
 
 
+    @Parameter( property = "coldRestartTomcat", defaultValue = "true" )
+    protected boolean coldRestartTomcat;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -163,6 +170,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -197,24 +205,22 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the full path of created perftest.war file */
+    /** @return Returns the full path of created runner.war file */
     public String getWarToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/runner.war";
+        return projectBaseDirectory + "/target/" + RUNNER_WAR;
     }
 
 
     /** @return Returns the full path of created project.json file */
     public String getProjectFileToUploadPath() {
-        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
-
-        return projectBaseDirectory + "/target/" + PROJECT_FILE;
+        return getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE;
     }
 
 
     /**
-     * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid; S3
+     * @return Returns the file path of runner.war file inside the S3 bucket, using the current last commit uuid; S3
      *         bucketName is not included in the returned String
      */
     public String getWarOnS3Path() throws MojoExecutionException {
@@ -237,7 +243,7 @@ public class MainMojo extends AbstractMojo implements ConfigKeys {
     }
 
 
-    /** @return Returns the full path of the original perftest-runner war file inside the local maven repository */
+    /** @return Returns the full path of the original chop-runner war file inside the local maven repository */
     public String getServerWarPath() {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();

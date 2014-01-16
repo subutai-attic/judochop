@@ -23,14 +23,11 @@ package org.safehaus.chop.runner.rest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.chop.client.ConfigKeys;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.store.StoreService;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -38,31 +35,27 @@ import com.google.inject.Singleton;
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/stop")
-public class StopResource extends PropagatingResource {
+@Produces( MediaType.APPLICATION_JSON )
+@Path( StopResource.ENDPOINT_URL )
+public class StopResource {
+    public static final String ENDPOINT_URL = "/stop";
     private final IController runner;
 
 
     @Inject
-    public StopResource( IController runner, StoreService service ) {
-        super( "/stop", service );
+    public StopResource( IController runner ) {
         this.runner = runner;
     }
 
 
     @POST
-    public Result stop( @QueryParam( ConfigKeys.PARAM_PROPAGATE ) Boolean propagate ) {
+    public Result stop() {
         if ( runner.isRunning() ) {
             runner.stop();
 
-            if ( propagate == Boolean.FALSE ) {
-                return new BaseResult( getEndpointUrl(), true, "stopped", runner.getState() );
-            }
-
-            return propagate( runner.getState(), true, "stopped" );
+            return new BaseResult( ENDPOINT_URL, true, "stopped", runner.getState() );
         }
 
-        return new BaseResult( getEndpointUrl(), false, "must be running to stop", runner.getState() );
+        return new BaseResult( ENDPOINT_URL, false, "must be running to stop", runner.getState() );
     }
 }

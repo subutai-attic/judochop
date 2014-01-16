@@ -10,9 +10,9 @@ import org.jukito.UseModules;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.RunnerFig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +38,9 @@ public class PerftestClientTest {
 
     @Test
     public void testGetTests() throws IOException {
-        Set<Project> tests = client.getProjectConfigs();
+        Set<ProjectFig> tests = client.getProjectConfigs();
 
-        for ( Project test : tests ) {
+        for ( ProjectFig test : tests ) {
             LOG.debug( "Got a test: {}", test );
             LOG.debug( "Test md5: {}", test.getWarMd5() );
         }
@@ -49,17 +49,17 @@ public class PerftestClientTest {
 
     @Test @Ignore( "make sure this is not hard coded and does not break" )
     public void testLoad() throws IOException {
-        Runner liveRunner = client.getLiveRunner();
-        client.load( liveRunner, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true );
+        RunnerFig liveRunnerFig = client.getLiveRunner();
+        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", null );
     }
 
 
     @Test
     public void testGetRunners() throws Exception {
-        Collection<Runner> runners = client.getRunners();
+        Collection<RunnerFig> runnerFigs = client.getRunners();
 
-        for ( Runner info : runners ) {
-            LOG.debug( "Got runner {}", info );
+        for ( RunnerFig info : runnerFigs ) {
+            LOG.debug( "Got runnerFig {}", info );
         }
     }
 
@@ -73,7 +73,7 @@ public class PerftestClientTest {
 
     @Test @Ignore
     public void testStart() throws Exception {
-        Result result = client.start( client.getLiveRunner(), true );
+        Result result = client.start( client.getLiveRunner() );
         LOG.debug( "Start result is {}", result.getMessage() );
     }
 

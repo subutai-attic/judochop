@@ -23,67 +23,49 @@ package org.safehaus.chop.runner.rest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.store.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import static org.safehaus.chop.api.store.amazon.ConfigKeys.*;
-
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/start")
-public class StartResource extends PropagatingResource {
+@Produces( MediaType.APPLICATION_JSON )
+@Path( StartResource.ENDPOINT_URL )
+public class StartResource {
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
-    private final IController runner;
+    public static final String ENDPOINT_URL = "/start";
+
+    private final IController controller;
 
 
     @Inject
-    public StartResource( IController runner, StoreService service ) {
-        super( "/start", service );
-        this.runner = runner;
+    public StartResource( IController runner ) {
+        this.controller = runner;
     }
 
 
     @POST
-    public Result start( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
-        if ( runner.isRunning() ) {
-            return new BaseResult( getEndpointUrl(), false, "already running", runner.getState() );
+    public Result start() {
+        if ( controller.isRunning() ) {
+            LOG.info( "Cannot start when already running." );
+            return new BaseResult( ENDPOINT_URL, false, "already running", controller.getState() );
         }
 
-        if ( runner.needsReset() ) {
-            return new BaseResult( getEndpointUrl(), false, "reset needed - but save the last run data first!",
-                    runner.getState() );
+        if ( controller.needsReset() ) {
+            LOG.info( "A reset is need before starting." );
+            return new BaseResult( ENDPOINT_URL, false, "reset needed - but save the last run data first!",
+                    controller.getState() );
         }
 
-        if ( propagate == Boolean.FALSE ) {
-            runner.start();
-            return new BaseResult( getEndpointUrl(), true, "successfully started", runner.getState() );
-        }
-
-        new Thread( new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep( 500L );
-                }
-                catch ( InterruptedException e ) {
-                    LOG.error( "Awe dang someone broke my sleep!", e );
-                }
-                runner.start();
-            }
-        } ).start();
-
-        return propagate( runner.getState(), true, "successfully started" );
+        controller.start();
+        return new BaseResult( ENDPOINT_URL, true, "successfully started", controller.getState() );
     }
 }

@@ -1,7 +1,7 @@
 package org.safehaus.chop.runner.drivers;
 
 
-import org.safehaus.chop.api.annotations.TimeChop;
+import org.safehaus.chop.api.TimeChop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -30,12 +30,6 @@ public class TimeTracker extends Tracker {
     @Override
     public int getThreads() {
         return timeChop.threads();
-    }
-
-
-    @Override
-    public int getRunners() {
-        return timeChop.runners();
     }
 
 

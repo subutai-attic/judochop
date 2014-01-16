@@ -11,8 +11,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.store.StoreService;
+import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.StoreService;
 import org.safehaus.chop.client.PerftestClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,15 +47,15 @@ public class RestRequestsTest {
 
     @Test @Ignore
     public void testStart() {
-        Map<String, Runner> runners = service.getRunners();
+        Map<String, RunnerFig> runners = service.getRunners();
 
         if ( runners.size() == 0 ) {
             LOG.debug( "No drivers found, cannot start test" );
             return;
         }
 
-        Runner firstRunner = runners.values().iterator().next();
-        Result result = RestRequests.start( firstRunner, true );
+        RunnerFig firstRunnerFig = runners.values().iterator().next();
+        Result result = RestRequests.start( firstRunnerFig );
 
         if ( !result.getStatus() ) {
             LOG.debug( "Could not get the result of start request" );
@@ -68,12 +68,12 @@ public class RestRequestsTest {
 
     @Test
     public void testStatus() {
-        Map<String, Runner> runners = service.getRunners();
+        Map<String, RunnerFig> runners = service.getRunners();
 
-        for ( Runner runner : runners.values() ) {
-            if ( runner.getHostname() != null ) {
-                Result result = status( runner );
-                LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );
+        for ( RunnerFig runnerFig : runners.values() ) {
+            if ( runnerFig.getHostname() != null ) {
+                Result result = status( runnerFig );
+                LOG.debug( "Status result of runnerFig {} = {}", runnerFig.getHostname(), result );
             }
         }
     }

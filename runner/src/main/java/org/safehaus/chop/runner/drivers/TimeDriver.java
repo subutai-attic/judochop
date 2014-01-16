@@ -5,11 +5,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.annotations.TimeChop;
+import org.safehaus.chop.api.TimeChop;
 
 
 /**
- * Runs a time based unit test.
+ * Runs a time constrained chop performance test.
  */
 public class TimeDriver extends Driver<TimeTracker> {
     private final CountDownLatch latch;
