@@ -14,7 +14,7 @@ import org.apache.maven.project.MavenProject;
 
 
 /**
- * This is the parent class for all Perftest plugin goal classes, takes the configuration parameters from caller
+ * This is the parent class for all chop plugin goal classes, takes the configuration parameters from caller
  * module's pom and provides extended get methods for several file paths that will be used by extended classes
  */
 public class MainMojo extends AbstractMojo implements Constants {
