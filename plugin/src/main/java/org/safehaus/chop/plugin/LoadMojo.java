@@ -1,19 +1,15 @@
 package org.safehaus.chop.plugin;
 
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.safehaus.chop.api.InstallCert;
 import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
@@ -120,36 +116,8 @@ public class LoadMojo extends MainMojo {
          * need to build the war and thus invoke the war mojo.
          */
 
-
-        File projectFile = new File( getProjectFileToUploadPath() );
-        if ( ! projectFile.exists() ) {
-            getLog().warn( "It seems as though the project properties file " + projectFile
-                    + " does not exist. Creating it and the war now." );
-            WarMojo warMojo = new WarMojo( this );
-            warMojo.execute();
-
-            if ( projectFile.exists() ) {
-                getLog().info( "War is generated and project file exists." );
-            }
-            else {
-                throw new MojoExecutionException( "Failed to generate the project.properties." );
-            }
-        }
-
         // Load the project configuration from the file system
-        ProjectFig projectFig;
-        try {
-            Properties props = new Properties();
-            props.load( new FileInputStream( projectFile ) );
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
-            projectFig = builder.getProject();
-        }
-        catch ( Exception e ) {
-            getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
-                    e );
-            throw new MojoExecutionException(
-                    "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
-        }
+        ProjectFig projectFig = loadProjectConfiguration();
 
         /* ------------------------------------------------------------------------------
          * Before dealing with instances let's check and make sure the latest runner

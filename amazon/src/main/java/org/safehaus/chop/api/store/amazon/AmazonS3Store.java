@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.api.ProjectFig;
@@ -308,12 +309,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     @Override
     public void store( ProjectFig project ) {
-        Preconditions.checkNotNull( project, "The project cannot be null." );
-        Preconditions.checkNotNull( project.getLoadKey(), "The project load key cannot be null." );
-
-        String loadKey = project.getLoadKey();
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
-
+        String loadKey = ChopUtils.getTestBase( project );
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey ).append( PROJECT_FILE );
 
@@ -332,7 +328,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     public ProjectFig getProject( String loadKey ) {
         Preconditions.checkNotNull( loadKey, "The key cannot be null" );
 
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        loadKey = ChopUtils.getTestBase( loadKey );
 
         try {
             return getFromProperties( loadKey + PROJECT_FILE );
@@ -362,14 +358,8 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     @Override
     public int getNextRunNumber( RunnerFig runner, ProjectFig project ) {
-        Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
-        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
-
-        String loadKey = project.getLoadKey();
-        LOG.info( "Using loadKey = {}", loadKey );
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
-        LOG.info( "Stripped loadKey to {}", loadKey );
+        String loadKey = ChopUtils.getTestBase( project );
 
         int runNumber = 1;
         StringBuilder sb = new StringBuilder();
@@ -408,15 +398,10 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     @Override
     public boolean hasCompleted( RunnerFig runner, ProjectFig project, int runNumber, Class<?> testClass ) {
-        Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
         Preconditions.checkNotNull( testClass, "The testClass argument cannot be null." );
-        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
 
-        String loadKey = project.getLoadKey();
-        LOG.info( "Using loadKey = {}", loadKey );
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
-        LOG.info( "Stripped loadKey to {}", loadKey );
+        String loadKey = ChopUtils.getTestBase( project );
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
@@ -443,14 +428,9 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param summary the Summary object to store
      */
     private void store( RunnerFig metadata, ProjectFig project, ISummary summary, Class<?> testClass ) {
-        Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
-        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
 
-        String loadKey = project.getLoadKey();
-        LOG.info( "Using loadKey = {}", loadKey );
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
-        LOG.info( "Stripped loadKey to {}", loadKey );
+        String loadKey = ChopUtils.getTestBase( project );
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
@@ -476,8 +456,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     private void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results, Class<?> testClass ) {
         store( metadata, project, summary, testClass );
 
-        String loadKey = project.getLoadKey();
-        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        String loadKey = ChopUtils.getTestBase( project );
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )

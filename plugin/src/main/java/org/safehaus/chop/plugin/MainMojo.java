@@ -1,9 +1,14 @@
 package org.safehaus.chop.plugin;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.Properties;
 
 import org.safehaus.chop.api.Constants;
+import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.ProjectFigBuilder;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -143,12 +148,50 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected boolean coldRestartTomcat;
 
 
+    // ------------------------------------------------------------------------
+    // ------------------------ ResultsMojo Parameters ------------------------
+    // ------------------------------------------------------------------------
+
+
+    /**
+     * This is the folder to use for dumping results. If it does not exist it will be
+     * automatically created for you.
+     */
+    @Parameter( property = "resultsDirectory", defaultValue = "target/chopResults" )
+    protected File resultsDirectory;
+
+
+    /**
+     * This is the type of results dump to perform. The following enumeration values are
+     * valid and explained:
+     *
+     * <ul>
+     * <li>FULL: Summary and raw results for the project are pulled down</li>
+     * <li>SUMMARY: Just the summary results are pulled down if not already present</li>
+     * <li>TEST: Summary and raw results are pulled for this test, not the whole project</li>
+     * <li>RUN: Summary and raw results are pulled for the last run, not the whole test, or project</li>
+     *
+     * NOTE: Regardless of the dumpType used files that have already been downloaded
+     * from the store will NOT be downloaded again since results files essentially
+     * do not change.
+     */
+    @Parameter( property = "dumpType", defaultValue = "FULL" )
+    protected String dumpType;
+
+
+    // ------------------------------------------------------------------------
+    // ------------------------ ResultsMojo Parameters ------------------------
+    // ------------------------------------------------------------------------
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
 
 
     protected MainMojo( MainMojo mojo ) {
+        this.resultsDirectory = mojo.resultsDirectory;
+        this.dumpType = mojo.dumpType;
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
         this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
@@ -252,5 +295,46 @@ public class MainMojo extends AbstractMojo implements Constants {
                 perftestArtifact.getVersion() + "/chop-runner-" + perftestArtifact.getVersion() + ".war";
 
         return path;
+    }
+
+
+    /**
+     * Loads the project configuration data if available.
+     *
+     * @return the ProjectFig for this project or blow chunks
+     * @throws MojoExecutionException the chunks we blow
+     */
+    public ProjectFig loadProjectConfiguration() throws MojoExecutionException {
+        File projectFile = new File( getProjectFileToUploadPath() );
+        if ( ! projectFile.exists() ) {
+            getLog().warn( "It seems as though the project properties file " + projectFile
+                    + " does not exist. Creating it and the war now." );
+            WarMojo warMojo = new WarMojo( this );
+            warMojo.execute();
+
+            if ( projectFile.exists() ) {
+                getLog().info( "War is generated and project file exists." );
+            }
+            else {
+                throw new MojoExecutionException( "Failed to generate the project.properties." );
+            }
+        }
+
+        // Load the project configuration from the file system
+        ProjectFig projectFig;
+        try {
+            Properties props = new Properties();
+            props.load( new FileInputStream( projectFile ) );
+            ProjectFigBuilder builder = new ProjectFigBuilder( props );
+            projectFig = builder.getProject();
+        }
+        catch ( Exception e ) {
+            getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
+                    e );
+            throw new MojoExecutionException(
+                    "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
+        }
+
+        return projectFig;
     }
 }
