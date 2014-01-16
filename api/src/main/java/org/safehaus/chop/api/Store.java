@@ -2,9 +2,14 @@ package org.safehaus.chop.api;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nullable;
+
+import com.sun.istack.internal.NotNull;
 
 
 /** The Store is used to register the node so other nodes in the same perftest formation can access it. */
@@ -57,6 +62,17 @@ public interface Store {
     File download( File tempDir, String runnerWar ) throws Exception;
 
     /**
+     * Downloads files from the store as a folder structure under the specified
+     * results directory with the top most folder being the bucket name.
+     *
+     * @param resultsDirectory the directory to dump all results and summaries into
+     * @param prefix the key or path prefix to use, null applies no prefix
+     * @param filter a filter used to filter out desired candidates to download
+     * @throws Exception if there are problems downloading any items
+     */
+    void download( @NotNull File resultsDirectory, @Nullable String prefix, FilenameFilter filter ) throws Exception;
+
+    /**
      * Stores the summary and results file for a chop test run into the store.
      *
      * @param project the project associated with the run
@@ -102,7 +118,7 @@ public interface Store {
     /**
      * Scans for projects with test information under the bucket as:
      * </p>
-     * "$CONFIGS_PATH/.*\/$PROJECT_FILE
+     * "$TESTS_PATH/.*\/$PROJECT_FILE
      *
      * @return a set of keys as Strings for test information
      */
@@ -143,9 +159,8 @@ public interface Store {
      * in race conditions. During runner initialization this is not a possibility on the
      * same project.
      *
-     * @param runner the runner configuration
      * @param project the project configuration
      * @return the next available run number
      */
-    int getNextRunNumber( Runner runner, Project project );
+    int getNextRunNumber( Project project );
 }

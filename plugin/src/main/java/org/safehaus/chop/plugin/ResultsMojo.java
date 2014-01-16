@@ -1,12 +1,21 @@
 package org.safehaus.chop.plugin;
 
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Arrays;
+
+import org.safehaus.chop.api.ChopUtils;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Store;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import com.google.common.base.Preconditions;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 
 /**
@@ -23,6 +32,7 @@ public class ResultsMojo extends MainMojo {
     private DumpType type;
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected ResultsMojo( MainMojo mojo ) {
         this.resultsDirectory = mojo.resultsDirectory;
         this.dumpType = mojo.dumpType;
@@ -53,6 +63,7 @@ public class ResultsMojo extends MainMojo {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected ResultsMojo() {
 
     }
@@ -61,6 +72,68 @@ public class ResultsMojo extends MainMojo {
     @Override
     public void execute() throws MojoExecutionException {
         preconditions();
+
+        Injector injector = Guice.createInjector( new AmazonStoreModule() );
+        Store store = injector.getInstance( Store.class );
+        Project project = loadProjectConfiguration();
+        FilenameFilter summaryAndResults = new FilenameFilter() {
+            @Override
+            public boolean accept( final File dir, final String name ) {
+                return name.endsWith( SUMMARY_SUFFIX ) || name.endsWith( RESULTS_SUFFIX );
+            }
+        };
+        FilenameFilter summaryOnly = new FilenameFilter() {
+            @Override
+            public boolean accept( final File dir, final String name ) {
+                return name.endsWith( SUMMARY_SUFFIX );
+            }
+        };
+
+        switch ( type ) {
+            case FULL:
+                try {
+                    store.download( resultsDirectory, TESTS_PATH, summaryAndResults );
+                }
+                catch ( Exception e ) {
+                    throw new MojoExecutionException( "Failed to download all summaries and results.", e );
+                }
+                break;
+            case SUMMARY:
+                try {
+                    store.download( resultsDirectory, TESTS_PATH, summaryOnly );
+                }
+                catch ( Exception e ) {
+                    throw new MojoExecutionException( "Failed to download all summaries only.", e );
+                }
+                break;
+            case TEST:
+                String test = ChopUtils.getTestBase( project );
+                try {
+                    store.download( resultsDirectory, test, summaryAndResults );
+                }
+                catch ( Exception e ) {
+                    throw new MojoExecutionException( "Failed to download summaries and results for test: " + test, e );
+                }
+                break;
+            case RUN:
+                int nextRunNumber = store.getNextRunNumber( project );
+                if ( nextRunNumber < 2 ) {
+                    getLog().warn( "No runs exist yet for the specified project!" );
+                }
+                else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append( TESTS_PATH ).append( '/' )
+                      .append( String.valueOf( nextRunNumber - 1 ) ).append( '/' );
+                    try {
+                        store.download( resultsDirectory, sb.toString(), summaryAndResults );
+                    }
+                    catch ( Exception e ) {
+                        throw new MojoExecutionException( "Failed to download summaries and results for test run: "
+                                + sb.toString() , e );
+                    }
+                }
+                break;
+        }
     }
 
 

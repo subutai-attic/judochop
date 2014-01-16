@@ -76,7 +76,7 @@ public class MainMojo extends AbstractMojo implements Constants {
      *
      * defaultValue is "tests/"
      */
-    @Parameter( property = "destinationParentDir", defaultValue = Constants.CONFIGS_PATH + "/" )
+    @Parameter( property = "destinationParentDir", defaultValue = Constants.TESTS_PATH + "/" )
     protected String destinationParentDir;
 
 

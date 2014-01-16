@@ -143,7 +143,7 @@ public class WarMojo extends MainMojo {
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
 
-            prop.setProperty( Project.LOAD_KEY, CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR );
+            prop.setProperty( Project.LOAD_KEY, TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR );
             prop.setProperty( Project.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
             prop.setProperty( Project.CHOP_VERSION_KEY, plugin.getVersion() );
 

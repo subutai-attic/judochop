@@ -23,9 +23,11 @@ package org.safehaus.chop.api.store.amazon;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -288,13 +290,13 @@ public class AmazonS3Store implements Store, Runnable, Constants {
     @Override
     public Set<Project> getProjects() throws IOException {
         Set<Project> tests = new HashSet<Project>();
-        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), CONFIGS_PATH + "/" );
+        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), TESTS_PATH + "/" );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
 
-                if ( key.startsWith( CONFIGS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
+                if ( key.startsWith( TESTS_PATH + "/" ) && key.endsWith( "/" + PROJECT_FILE ) ) {
                     tests.add( getFromProperties( key ) );
                 }
             }
@@ -342,7 +344,7 @@ public class AmazonS3Store implements Store, Runnable, Constants {
 
     @Override
     public void deleteProjects() {
-        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), CONFIGS_PATH + "/" );
+        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), TESTS_PATH + "/" );
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
@@ -357,8 +359,7 @@ public class AmazonS3Store implements Store, Runnable, Constants {
 
 
     @Override
-    public int getNextRunNumber( Runner runner, Project project ) {
-        Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
+    public int getNextRunNumber( Project project ) {
         String loadKey = ChopUtils.getTestBase( project );
 
         int runNumber = 1;
@@ -485,6 +486,47 @@ public class AmazonS3Store implements Store, Runnable, Constants {
         S3ObjectSummary summary = listing.getObjectSummaries().get( 0 );
         LOG.debug( "Got key {} while scanning for key {}", summary.getKey() );
         return true;
+    }
+
+
+    @Override
+    public void download( File resultsDirectory, String prefix, FilenameFilter filter ) throws Exception {
+        Preconditions.checkNotNull( resultsDirectory, "resultsDirectory cannot be null" );
+
+        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), prefix );
+
+        do {
+            for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
+                String key = summary.getKey();
+
+                if ( key.startsWith( prefix ) && filter.accept( null, key ) ) {
+                    S3Object object = client.getObject( amazonFig.getAwsBucket(), key );
+                    LOG.debug( "Downloading candidate with key {}", key );
+
+                    S3ObjectInputStream in = object.getObjectContent();
+                    File file = new File( new File( resultsDirectory, amazonFig.getAwsBucket() ), key );
+
+                    if ( ! file.getParentFile().mkdirs() ) {
+                        throw new RuntimeException( "Cannot create parent directory " + file.getParent()
+                                + " to download " + key );
+                    }
+
+                    FileOutputStream out = new FileOutputStream( file );
+                    byte[] buffer = new byte[1024];
+                    int readAmount;
+
+                    while ( ( readAmount = in.read( buffer ) ) != -1 ) {
+                        out.write( buffer, 0, readAmount );
+                    }
+
+                    out.flush();
+                    out.close();
+                    in.close();
+                    LOG.info( "Successfully downloaded {} from S3 to {}.", key, file.getAbsoluteFile() );
+                }
+            }
+        }
+        while ( listing.isTruncated() );
     }
 
 

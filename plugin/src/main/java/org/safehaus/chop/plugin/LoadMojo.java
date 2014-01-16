@@ -226,7 +226,7 @@ public class LoadMojo extends MainMojo {
             String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
-            String loadKey = CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR;
+            String loadKey = TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR;
             result = client.load( runner, loadKey, overrides );
 
             instancesToRestart.add( instance );

@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.ConnectException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
@@ -77,6 +78,15 @@ public class ChopUtils {
     }
 
 
+    /**
+     * Installs a certificate from the server into a local certificate store.
+     *
+     * @param host the HTTPS base server host to get the certificate from
+     * @param port the port of the server
+     * @param passphrase the passphrase to access/set the cert store if it does not
+     * exist, defaults to "changeit" if null is provided
+     * @throws Exception if something goes wrong
+     */
     public static void installCert( String host, int port, char[] passphrase ) throws Exception {
 
         if ( passphrase == null ) {
