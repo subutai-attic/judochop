@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Store;
@@ -28,6 +29,11 @@ import static org.safehaus.chop.client.rest.RestRequests.status;
 @RunWith(JukitoRunner.class)
 @UseModules(ChopClientModule.class)
 public class RestRequestsTest {
+
+    static {
+        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject
     Store service;
@@ -66,12 +72,14 @@ public class RestRequestsTest {
     }
 
 
-    @Test
-    public void testStatus() {
+    @Test @Ignore
+    public void testStatus() throws Exception {
         Map<String, Runner> runners = service.getRunners();
 
         for ( Runner runner : runners.values() ) {
             if ( runner.getHostname() != null ) {
+                LOG.info( "Getting status for host: " + runner.getHostname() );
+                ChopUtils.installCert( runner.getHostname(), runner.getServerPort(), null );
                 Result result = status( runner );
                 LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );
             }

@@ -9,8 +9,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.sun.istack.internal.NotNull;
-
 
 /** The Store is used to register the node so other nodes in the same perftest formation can access it. */
 public interface Store {
@@ -70,7 +68,7 @@ public interface Store {
      * @param filter a filter used to filter out desired candidates to download
      * @throws Exception if there are problems downloading any items
      */
-    void download( @NotNull File resultsDirectory, @Nullable String prefix, FilenameFilter filter ) throws Exception;
+    void download( File resultsDirectory, @Nullable String prefix, FilenameFilter filter ) throws Exception;
 
     /**
      * Stores the summary and results file for a chop test run into the store.

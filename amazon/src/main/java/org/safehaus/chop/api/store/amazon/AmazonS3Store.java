@@ -493,22 +493,29 @@ public class AmazonS3Store implements Store, Runnable, Constants {
     public void download( File resultsDirectory, String prefix, FilenameFilter filter ) throws Exception {
         Preconditions.checkNotNull( resultsDirectory, "resultsDirectory cannot be null" );
 
-        ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), prefix );
+        ObjectListing listing;
+
+        if ( prefix == null ) {
+            listing = client.listObjects( amazonFig.getAwsBucket() );
+        }
+        else {
+            listing = client.listObjects( amazonFig.getAwsBucket(), prefix );
+        }
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
+                File file = new File( new File( resultsDirectory, amazonFig.getAwsBucket() ), key );
 
-                if ( key.startsWith( prefix ) && filter.accept( null, key ) ) {
-                    S3Object object = client.getObject( amazonFig.getAwsBucket(), key );
+                if ( key.startsWith( prefix ) && filter.accept( file.getParentFile(), key ) ) {
+                    S3Object object = client.getObject( amazonFig.getAwsBucket(),
+                            key.substring( key.lastIndexOf( '/' ) ) );
                     LOG.debug( "Downloading candidate with key {}", key );
 
                     S3ObjectInputStream in = object.getObjectContent();
-                    File file = new File( new File( resultsDirectory, amazonFig.getAwsBucket() ), key );
 
                     if ( ! file.getParentFile().mkdirs() ) {
-                        throw new RuntimeException( "Cannot create parent directory " + file.getParent()
-                                + " to download " + key );
+                        LOG.warn( "Failed to create parent directory {} for {}", file.getParent(), key );
                     }
 
                     FileOutputStream out = new FileOutputStream( file );
