@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 
 
 /**
@@ -23,7 +23,7 @@ import static junit.framework.Assert.fail;
  */
 @RunWith( JukitoRunner.class )
 @UseModules( MechanicalWatchModule.class )
-@TimeChop( time = 30000L, threads = 4, runners = 4 )
+@TimeChop( time = 30000L, threads = 4 )
 public class MechanicalWatchTest {
     private static final Logger LOG = LoggerFactory.getLogger( MechanicalWatchTest.class );
 

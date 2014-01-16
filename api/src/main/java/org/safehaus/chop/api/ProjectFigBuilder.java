@@ -35,6 +35,7 @@ public class ProjectFigBuilder {
     private String loadTime;
     private String managerUsername;
     private String managerPassword;
+    private String managerEndpoint;
 
 
     public ProjectFigBuilder() {
@@ -79,6 +80,7 @@ public class ProjectFigBuilder {
             this.loadTime = supplied.getLoadTime();
             this.managerPassword = supplied.getManagerPassword();
             this.managerUsername = supplied.getManagerUsername();
+            this.managerEndpoint = supplied.getManagerEndpoint();
         }
 
         if ( props != null ) {
@@ -120,6 +122,10 @@ public class ProjectFigBuilder {
 
             if ( props.containsKey( ProjectFig.MANAGER_USERNAME_KEY ) ) {
                 this.managerUsername = props.getProperty( ProjectFig.MANAGER_USERNAME_KEY );
+            }
+
+            if ( props.containsKey( ProjectFig.MANAGER_ENDPOINT_KEY ) ) {
+                this.managerEndpoint = props.getProperty( ProjectFig.MANAGER_ENDPOINT_KEY );
             }
 
             if ( props.containsKey( ProjectFig.PROJECT_VERSION_KEY ) ) {
@@ -228,6 +234,13 @@ public class ProjectFigBuilder {
     }
 
 
+    @JsonProperty
+    public ProjectFigBuilder setManagerEndpoint( final String managerEndpoint ) {
+        this.managerEndpoint = managerEndpoint;
+        return this;
+    }
+
+
     public ProjectFig getProject() {
         return new ProjectFig() {
             @Override
@@ -311,6 +324,12 @@ public class ProjectFigBuilder {
             @Override
             public String getManagerPassword() {
                 return managerPassword;
+            }
+
+
+            @Override
+            public String getManagerEndpoint() {
+                return managerEndpoint;
             }
 
 

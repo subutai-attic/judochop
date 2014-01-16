@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.safehaus.chop.api.InstallCert;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.ProjectFigBuilder;
 import org.safehaus.chop.api.Result;
@@ -28,6 +29,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
+import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -59,6 +61,8 @@ public class LoadMojo extends MainMojo {
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -95,6 +99,18 @@ public class LoadMojo extends MainMojo {
 
         EC2Manager ec2Manager =
                 new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName );
+
+        try {
+            InstanceType type = InstanceType.valueOf( instanceType );
+            ec2Manager.setDefaultType( type );
+        }
+        catch ( IllegalArgumentException e ) {
+            getLog().warn( "The instanceType provided " + instanceType + " was not a valid InstanceType String" );
+        }
+        catch ( NullPointerException e ) {
+            getLog().info( "Instance type value was not provided. Using EC2Manager default." );
+        }
+
         ec2Manager.setAvailabilityZone( availabilityZone );
         ec2Manager.setDefaultTimeout( setupTimeout );
         Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
@@ -184,7 +200,7 @@ public class LoadMojo extends MainMojo {
         }
 
         if ( !warExists || !testUpToDate ) {
-            getLog().info( "War on store is not up-to-date, calling perftest:deploy goal now..." );
+            getLog().info( "War on store is not up-to-date, calling chop:deploy goal now..." );
             DeployMojo deployMojo = new DeployMojo( this );
             deployMojo.execute();
         }
@@ -195,7 +211,14 @@ public class LoadMojo extends MainMojo {
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
         overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
         overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
+        overrides.put( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
+        overrides.put( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
 
+        // @todo need to figure out why the default value does not hold for the manager endpoint
+        // overrides.put( ProjectFig.MANAGER_ENDPOINT_KEY, projectFig.getManagerEndpoint() );
+
+        // This array holds the instances that have loaded a new runner, so absolutely requires restart on container
+        Collection<Instance> instancesToRestart = new ArrayList<Instance>( instances.size() );
 
         for ( Instance instance : instances ) {
             getLog().info( "Checking out instance " + instance.getPublicDnsName() );
@@ -223,7 +246,6 @@ public class LoadMojo extends MainMojo {
             if ( !result.getState().accepts( Signal.LOAD ) ) {
                 getLog().warn( "Instance " + instance.getPublicDnsName() + " not ready to load in state " + result
                         .getState() );
-                continue;
             }
 
             if ( result.getProject() != null && result.getProject().getWarMd5().equals( projectFig.getWarMd5() ) ) {
@@ -237,21 +259,32 @@ public class LoadMojo extends MainMojo {
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
             String loadKey = CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR;
-            result = client.load( runnerFig, loadKey, false, overrides );
+            result = client.load( runnerFig, loadKey, overrides );
 
-            if ( result.getStatus() ) {
-                getLog().warn(
-                        "Load problem on " + instance.getPublicDnsName() + " in state " + result.getState() + ": "
-                                + result.getMessage() );
+            instancesToRestart.add( instance );
+
+            if ( !result.getStatus() ) {
+                throw new MojoExecutionException( "Load problem on " + instance.getPublicDnsName() + " in state " +
+                        result.getState() + ": " + result.getMessage() );
             }
         }
 
-        // Restart tomcats on all instances
-        getLog().info( "Sending restart tomcat requests to all instances..." );
+        /**
+         * If coldRestartTomcat is true, we are restarting tomcats for all instances
+         * If not, only the newly loaded ones are restarted
+         */
+        if( coldRestartTomcat ) {
+            instancesToRestart.clear();
+            instancesToRestart = instances;
+            getLog().info( "Sending restart tomcat requests to all instances..." );
+        }
+        else {
+            getLog().info( "Sending restart tomcat requests to loaded instances..." );
+        }
 
-        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instances.size() );
+        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
 
-        for ( Instance instance : instances ) {
+        for ( Instance instance : instancesToRestart ) {
             SSHRequestThread restarter = new SSHRequestThread();
             restarter.setSshKeyFile( runnerSSHKeyFile );
             restarter.setInstanceURL( instance.getPublicDnsName() );
@@ -262,7 +295,7 @@ public class LoadMojo extends MainMojo {
 
         for ( SSHRequestThread restarter : restarters ) {
             try {
-                restarter.join( 30000 ); // Is this enough or too much, should this be an annotated parameter?
+                restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
             }
             catch ( InterruptedException e ) {
                 getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
@@ -276,10 +309,10 @@ public class LoadMojo extends MainMojo {
             response = restarter.getResult();
             if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
                 for ( String s : response.getMessages() ) {
-                    getLog().warn( s );
+                    getLog().info( s );
                 }
                 for ( String s : response.getErrorMessages() ) {
-                    getLog().warn( s );
+                    getLog().info( s );
                 }
                 failedRestart = true;
             }
@@ -290,7 +323,7 @@ public class LoadMojo extends MainMojo {
                     "There are instances that failed to restart properly, " + "verify the cluster before moving on" );
         }
 
-        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run perftest:start now"
+        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run chop:start now"
                 + " to start your tests" );
     }
 

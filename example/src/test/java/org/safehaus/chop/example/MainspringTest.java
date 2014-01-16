@@ -3,12 +3,12 @@ package org.safehaus.chop.example;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
 
 /**
- * Vanilla JUnit unit test without annotations.
+ * Vanilla JUnit test without annotations.
  */
 public class MainspringTest {
     @Test

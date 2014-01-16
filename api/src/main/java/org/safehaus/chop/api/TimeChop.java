@@ -33,14 +33,6 @@ public @interface TimeChop {
 
 
     /**
-     * The number of distributed drivers to use for the chop.
-     *
-     * @return the number of distributed drivers to use
-     */
-    int runners() default Constants.DEFAULT_RUNNERS;
-
-
-    /**
      * Whether or not to perform a saturation test before running this test and
      * use those discovered saturation parameters as overrides to the provided
      * parameters.

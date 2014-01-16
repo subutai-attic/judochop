@@ -27,7 +27,6 @@ public class Summary implements ISummary {
     private String testName;
     private String chopType;
     private int threads;
-    private int runners;
     private long delay;
     private long time;
     private long actualTime;
@@ -69,9 +68,8 @@ public class Summary implements ISummary {
 
         saturate = tracker.getSaturate();
         totalTestsRun = tracker.getTotalTestsRun();
-        testName = tracker.getTestClass().toString();
+        testName = tracker.getTestClass().getName();
         threads = tracker.getThreads();
-        runners = tracker.getRunners();
         delay = tracker.getDelay();
         actualTime = tracker.getActualTime();
         minTime = tracker.getMinTime();
@@ -123,13 +121,6 @@ public class Summary implements ISummary {
     @JsonProperty
     public int getThreads() {
         return threads;
-    }
-
-
-    @Override
-    @JsonProperty
-    public int getRunners() {
-        return runners;
     }
 
 

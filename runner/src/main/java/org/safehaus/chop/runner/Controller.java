@@ -1,10 +1,14 @@
 package org.safehaus.chop.runner;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.reflections.Reflections;
 import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.runner.drivers.Driver;
@@ -28,6 +32,9 @@ import com.google.inject.Singleton;
 @Singleton
 public class Controller implements IController, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger( Controller.class );
+
+    // @todo make this configurable and also put this into the project or runner fig
+    private static final long DEFAULT_LAGER_WAIT_TIMEOUT_MILLIS = 120000;
     private final Object lock = new Object();
 
     private Set<Class<?>> timeChopClasses;
@@ -35,12 +42,30 @@ public class Controller implements IController, Runnable {
     private State state = State.INACTIVE;
     private Driver<?> currentDriver;
 
+    private Map<String, RunnerFig> otherRunners;
     private StoreService service;
     private ProjectFig project;
     private int runNumber;
 
 
     @Inject
+    Controller( ProjectFig project, StoreService service, RunnerFig me ) {
+        setProject( project );
+        setStoreService( service );
+
+        if ( state != State.INACTIVE ) {
+            /*
+             * The call to getNextRunNumber will return a number greater than or
+             * equal to 1. This is the next run number that should be used, however
+             * the runNumber is also incremented every time start is called. So
+             * we need to decrement this value by 1 in order not to skip run numbers.
+             */
+            runNumber = service.getNextRunNumber( me, project ) - 1;
+            otherRunners = service.getRunners( me );
+        }
+    }
+
+
     private void setProject( ProjectFig project ) {
         // if the project is null which should never really happen we just return
         // and stay in the INACTIVE state waiting for a load to activate this runner
@@ -81,13 +106,11 @@ public class Controller implements IController, Runnable {
             return;
         }
 
-
         state = State.READY;
         LOG.info( "We have things to scan and a valid loadKey: controller going into READY state." );
     }
 
 
-    @Inject
     private void setStoreService( StoreService service ) {
         Preconditions.checkNotNull( service, "The StoreService cannot be null." );
         this.service = service;
@@ -156,19 +179,30 @@ public class Controller implements IController, Runnable {
     }
 
 
-    /*
-     * @TODO
+    /**
+     * Gets the collection of runners that are still executing a chop on a test class.
      *
-     * There is a potential for the distributed runners to fall out of synchronization where
-     * one runner may be running a different chop than the others because it is faster or
-     * slower. There needs to be a way to synchronize across runners so they can run the same
-     * chop together at the same time.
-     *
-     * Perhaps between chops we can make the runners stop and ask if they're ready to execute
-     * the next chop. Then they can start executing together synchronously. This will require
-     * an additional client call to determine if they're all ready to execute the same chop.
-     *
+     * @param runNumber the current run number
+     * @param testClass the current chop test
+     * @return the runners still executing a test class
      */
+    private Collection<RunnerFig> getLagers( int runNumber, Class<?> testClass ) {
+        Collection<RunnerFig> lagers = new ArrayList<RunnerFig>( otherRunners.size() );
+
+        for ( String runnerKey : otherRunners.keySet() ) {
+            RunnerFig runner = otherRunners.get( runnerKey );
+            if ( service.hasCompleted( runner, project, runNumber, testClass ) ) {
+                LOG.info( "Runner {} has completed test {}", runner.getHostname(), testClass.getName() );
+            }
+            else {
+                LOG.warn( "Waiting on runner {} to complete test {}", runner.getHostname(), testClass.getName() );
+                lagers.add( runner );
+            }
+        }
+
+        return lagers;
+    }
+
 
     @Override
     public void run() {
@@ -199,7 +233,39 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
-                service.store( project, summary, currentDriver.getResultsFile() );
+                service.store( project, summary, currentDriver.getResultsFile(),
+                        currentDriver.getTracker().getTestClass() );
+
+                long startWaitingForLagers = System.currentTimeMillis();
+                while ( state == State.RUNNING ) {
+                    Collection<RunnerFig> lagers = getLagers( runNumber, iterationTest );
+                    if ( lagers.size() > 0 ) {
+                        LOG.info( "IterationChop test {} completed but waiting on lagging runners:\n{}",
+                                iterationTest.getName(), lagers );
+                    }
+                    else {
+                        LOG.info( "IterationChop test {} completed and there are NO lagging runners.",
+                                iterationTest.getName() );
+                        break;
+                    }
+
+                    synchronized ( lock ) {
+                        try {
+                            lock.wait( project.getTestStopTimeout() );
+                        }
+                        catch ( InterruptedException e ) {
+                            LOG.error( "Awe snap! Someone woke me up before it was time!" );
+                        }
+                    }
+
+                    boolean waitTimeoutReached = ( System.currentTimeMillis() - startWaitingForLagers )
+                            > DEFAULT_LAGER_WAIT_TIMEOUT_MILLIS;
+
+                    if ( waitTimeoutReached && ( lagers.size() > 0 ) ) {
+                        LOG.warn( "Timeout reached. Not waiting anymore for lagers: {}", lagers );
+                        break;
+                    }
+                }
             }
         }
 
@@ -230,7 +296,39 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
-                service.store( project, summary, currentDriver.getResultsFile() );
+                service.store( project, summary, currentDriver.getResultsFile(),
+                        currentDriver.getTracker().getTestClass() );
+
+                long startWaitingForLagers = System.currentTimeMillis();
+                while ( state == State.RUNNING ) {
+                    Collection<RunnerFig> lagers = getLagers( runNumber, timeTest );
+                    if ( lagers.size() > 0 ) {
+                        LOG.warn( "TimeChop test {} completed but waiting on lagging runners:\n{}",
+                                timeTest.getName(), lagers );
+                    }
+                    else {
+                        LOG.info( "TimeChop test {} completed and there are NO lagging runners.",
+                                timeTest.getName() );
+                        break;
+                    }
+
+                    synchronized ( lock ) {
+                        try {
+                            lock.wait( project.getTestStopTimeout() );
+                        }
+                        catch ( InterruptedException e ) {
+                            LOG.error( "Awe snap! Someone woke me up before it was time!" );
+                        }
+                    }
+
+                    boolean waitTimeoutReached = ( System.currentTimeMillis() - startWaitingForLagers )
+                            > DEFAULT_LAGER_WAIT_TIMEOUT_MILLIS;
+
+                    if ( waitTimeoutReached && ( lagers.size() > 0 ) ) {
+                        LOG.warn( "Timeout reached. Not waiting anymore for lagers: {}", lagers );
+                        break;
+                    }
+                }
             }
         }
 

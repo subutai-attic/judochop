@@ -55,7 +55,7 @@ public class RestRequestsTest {
         }
 
         RunnerFig firstRunnerFig = runners.values().iterator().next();
-        Result result = RestRequests.start( firstRunnerFig, true );
+        Result result = RestRequests.start( firstRunnerFig );
 
         if ( !result.getStatus() ) {
             LOG.debug( "Could not get the result of start request" );

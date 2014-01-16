@@ -34,12 +34,6 @@ public class IterationTracker extends Tracker {
 
 
     @Override
-    public int getRunners() {
-        return iterationChop.runners();
-    }
-
-
-    @Override
     public boolean getSaturate() {
         return iterationChop.saturate();
     }

@@ -1,9 +1,10 @@
 package org.safehaus.chop.api.store.amazon;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.jukito.JukitoModule;
 import org.jukito.JukitoRunner;
@@ -87,9 +88,12 @@ public class AmazonS3StoreTest {
 
 
     @Test
-    public void testRegister() {
+    public void testRegisterUnregister() {
+        String oldHostname = runnerFig.getHostname();
         runnerFig.bypass( RunnerFig.HOSTNAME_KEY, "foobar-host" );
         service.register( runnerFig );
+        service.unregister( runnerFig );
+        runnerFig.bypass( RunnerFig.HOSTNAME_KEY, oldHostname );
     }
 
 
@@ -97,8 +101,9 @@ public class AmazonS3StoreTest {
     public void testDeleteGhostRunners() {
         final String runnerName = "chop-runnerFig";
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
-        Collection<String> instanceHosts = new ArrayList<String>( instances.size() );
+        Set<String> instanceHosts = new HashSet<String>( instances.size() );
         for ( Instance i : instances ) {
             instanceHosts.add( i.getPublicDnsName() );
         }

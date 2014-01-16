@@ -99,9 +99,6 @@ public abstract class Tracker {
     public abstract int getThreads();
 
     @JsonProperty
-    public abstract int getRunners();
-
-    @JsonProperty
     public abstract boolean getSaturate();
 
 

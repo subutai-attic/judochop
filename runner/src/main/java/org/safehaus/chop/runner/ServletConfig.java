@@ -25,10 +25,12 @@ import java.io.IOException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletRequest;
 
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,12 @@ public class ServletConfig extends GuiceServletContextListener {
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
         super.contextInitialized( servletContextEvent );
 
+        /*
+         * --------------------------------------------------------------------
+         * Archaius Configuration Settings
+         * --------------------------------------------------------------------
+         */
+
         ConcurrentCompositeConfiguration ccc = new ConcurrentCompositeConfiguration();
         Env env = Env.getEnvironment();
 
@@ -83,26 +91,74 @@ public class ServletConfig extends GuiceServletContextListener {
             throw new RuntimeException( "Cannot do much without properly loading our configuration.", e );
         }
 
+        /*
+         * --------------------------------------------------------------------
+         * Environment Based Configuration Property Adjustments
+         * --------------------------------------------------------------------
+         */
+
         final ServletFig servletFig = injector.getInstance( ServletFig.class );
+        final RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
         final ProjectFig projectFig = injector.getInstance( ProjectFig.class );
+        ServletContext context = servletContextEvent.getServletContext();
 
-        storeService = getInjector().getInstance( StoreService.class );
-        storeService.start();
+        /*
+         * --------------------------------------------------------------------
+         * Adjust RunnerFig Settings to Environment
+         * --------------------------------------------------------------------
+         */
 
-        final RunnerFig runnerFig = storeService.getMyMetadata();
+        Ec2Metadata.applyBypass( runnerFig );
 
-        if ( runnerFig != null && runnerFig.getHostname() != null ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "https://" )
+          .append( runnerFig.getHostname() )
+          .append( ':' )
+          .append( runnerFig.getServerPort() )
+          .append( context.getContextPath() );
+        String baseUrl = sb.toString();
+        runnerFig.bypass( RunnerFig.URL_KEY, baseUrl );
+        LOG.info( "Setting url key {} to base url {}", RunnerFig.URL_KEY, baseUrl );
+
+        File tempDir = ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY );
+        runnerFig.bypass( RunnerFig.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
+        LOG.info( "Setting runner temp directory key {} to context temp directory {}",
+                RunnerFig.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
+
+        /*
+         * --------------------------------------------------------------------
+         * Adjust ServletFig Settings to Environment
+         * --------------------------------------------------------------------
+         */
+
+        servletFig.bypass( ServletFig.SERVER_INFO_KEY, context.getServerInfo() );
+        LOG.info( "Setting server info key {} to {}", ServletFig.SERVER_INFO_KEY, context.getServerInfo() );
+
+        servletFig.bypass( ServletFig.CONTEXT_PATH, context.getContextPath() );
+        LOG.info( "Setting server context path key {} to {}", ServletFig.CONTEXT_PATH, context.getContextPath() );
+
+        // @todo Is this necessary?
+        servletFig.bypass( ServletFig.CONTEXT_TEMPDIR_KEY, tempDir.getAbsolutePath() );
+        LOG.info( "Setting runner context temp directory key {} to context temp directory {}",
+                ServletFig.CONTEXT_TEMPDIR_KEY, tempDir.getAbsolutePath() );
+
+        /*
+         * --------------------------------------------------------------------
+         * Start Up The StoreService
+         * --------------------------------------------------------------------
+         */
+
+        if ( runnerFig.getHostname() != null && projectFig.getLoadKey() != null ) {
+            storeService = getInjector().getInstance( StoreService.class );
+            storeService.start();
+            LOG.info( "Store service started." );
+
             storeService.register( runnerFig );
+            LOG.info( "Registered runner information in store." );
         }
         else {
-            LOG.warn( "Not registering this runner due no runnerFig hostname." );
+            LOG.warn( "Store not started, and not registered: insufficient configuration parameters." );
         }
-
-        ServletContext context = servletContextEvent.getServletContext();
-        servletFig.override( ServletFig.CONTEXT_PATH, context.getContextPath() );
-        servletFig.override( ServletFig.SERVER_INFO_KEY, context.getServerInfo() );
-        servletFig.override( ServletFig.CONTEXT_TEMPDIR_KEY,
-                ( ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY ) ).getAbsolutePath() );
     }
 
 

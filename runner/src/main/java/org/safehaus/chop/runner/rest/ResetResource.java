@@ -23,64 +23,47 @@ package org.safehaus.chop.runner.rest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
-
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/reset")
-public class ResetResource extends PropagatingResource {
+@Produces( MediaType.APPLICATION_JSON )
+@Path( ResetResource.ENDPOINT_URL )
+public class ResetResource {
+    public final static String ENDPOINT_URL = "/reset";
     private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
     private final IController runner;
 
 
     @Inject
-    public ResetResource( IController runner, StoreService service ) {
-        super( "/reset", service );
+    public ResetResource( IController runner ) {
         this.runner = runner;
     }
 
 
-    /**
-     * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
-     * the other drivers this parameter will be set to true.
-     *
-     * @param propagate when true call the same function on other drivers
-     *
-     * @return a summary message
-     */
     @POST
-    public Result reset( @QueryParam( PARAM_PROPAGATE ) Boolean propagate ) {
-        LOG.debug( "The propagate request parameter was set to {}", propagate );
-
+    public Result reset() {
         if ( runner.isRunning() ) {
-            return new BaseResult( getEndpointUrl(), false, "still running stop before resetting", runner.getState() );
+            return new BaseResult( ENDPOINT_URL, false, "still running stop before resetting", runner.getState() );
         }
 
         if ( runner.needsReset() ) {
             runner.reset();
 
-            if ( propagate == Boolean.FALSE ) {
-                return new BaseResult( getEndpointUrl(), true, "reset complete", runner.getState() );
-            }
-
-            return propagate( runner.getState(), true, "reset complete" );
+            return new BaseResult( ENDPOINT_URL, true, "reset complete", runner.getState() );
         }
 
-        return new BaseResult( getEndpointUrl(), false, "reset not required", runner.getState() );
+        LOG.warn( "Calling reset yet it's not needed." );
+        return new BaseResult( ENDPOINT_URL, false, "reset not required", runner.getState() );
     }
 }

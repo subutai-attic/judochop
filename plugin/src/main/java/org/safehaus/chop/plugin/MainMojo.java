@@ -19,7 +19,6 @@ import org.apache.maven.project.MavenProject;
  */
 public class MainMojo extends AbstractMojo implements Constants {
 
-
     static {
         System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
     }
@@ -136,6 +135,14 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected String availabilityZone;
 
 
+    @Parameter( property = "resetIfStopped", defaultValue = "true" )
+    protected boolean resetIfStopped;
+
+
+    @Parameter( property = "coldRestartTomcat", defaultValue = "true" )
+    protected boolean coldRestartTomcat;
+
+
     @Override
     public void execute() throws MojoExecutionException {
     }
@@ -162,6 +169,8 @@ public class MainMojo extends AbstractMojo implements Constants {
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -196,11 +205,11 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    /** @return Returns the full path of created perftest.war file */
+    /** @return Returns the full path of created runner.war file */
     public String getWarToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/runner.war";
+        return projectBaseDirectory + "/target/" + RUNNER_WAR;
     }
 
 
@@ -211,7 +220,7 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /**
-     * @return Returns the file path of perftest.war file inside the S3 bucket, using the current last commit uuid; S3
+     * @return Returns the file path of runner.war file inside the S3 bucket, using the current last commit uuid; S3
      *         bucketName is not included in the returned String
      */
     public String getWarOnS3Path() throws MojoExecutionException {
@@ -234,7 +243,7 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    /** @return Returns the full path of the original perftest-runner war file inside the local maven repository */
+    /** @return Returns the full path of the original chop-runner war file inside the local maven repository */
     public String getServerWarPath() {
         String path = localRepository;
         Artifact perftestArtifact = plugin.getPluginArtifact();

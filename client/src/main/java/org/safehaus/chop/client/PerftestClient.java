@@ -75,40 +75,27 @@ public interface PerftestClient extends Constants {
 
 
     /**
-     * Loads a new test to be run by the perftest cluster formation. When called will propagation enabled, all peers in
-     * the cluster should load the new test. The call will automatically handle verification to make sure the cluster
-     * formation is consistent and each node is in the State.READY state to start running tests. It will block until the
-     * verification is found to fail or until the cluster is consistent.
+     * Loads a new test to be run by the runner.
      *
      * @param runnerFig the runnerFig to use for propagating the load request
      * @param testKey the test information associated with the test to load
-     * @param propagate whether or not to make the call propagate
      * @param storeProps an optional set of store property overrides
      *
      * @return the results associated with the operation
      */
-    Result load( RunnerFig runnerFig, String testKey, Boolean propagate, Map<String,String> storeProps );
+    Result load( RunnerFig runnerFig, String testKey, Map<String,String> storeProps );
 
 
-    Result start( RunnerFig runnerFig, boolean propagate );
+    Result start( RunnerFig runnerFig );
 
 
-    /**
-     *
-     * @param runnerFig
-     * @param propagate
-     * @return
-     */
-    Result stop( RunnerFig runnerFig, boolean propagate );
+    Result stop( RunnerFig runnerFig );
 
 
     Result status( RunnerFig runnerFig );
 
 
-    Result reset( RunnerFig runnerFig, boolean propagate );
-
-
-    Result scan( RunnerFig runnerFig, boolean propagate );
+    Result reset( RunnerFig runnerFig );
 
 
     /**
@@ -120,7 +107,7 @@ public interface PerftestClient extends Constants {
      *
      * @return the results of the verification
      */
-    boolean verify();
+    Result verify();
 
 
     int compareTimestamps ( String ts1, String ts2 );

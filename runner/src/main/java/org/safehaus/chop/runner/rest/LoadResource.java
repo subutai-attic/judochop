@@ -22,12 +22,7 @@ package org.safehaus.chop.runner.rest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,14 +32,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.ProjectFig;
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.State;
@@ -57,65 +49,65 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.servlet.RequestParameters;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import static org.safehaus.chop.api.Constants.PARAM_PROJECT;
-import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
-import static org.safehaus.chop.api.Constants.PARAM_STORE_PROPERTIES;
 
 
 /** Loads a test configuration from the "tests" container. */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( "/load" )
-public class LoadResource extends PropagatingResource {
+@Path( LoadResource.ENDPOINT_URL )
+public class LoadResource {
+    public static final String ENDPOINT_URL = "/load";
     private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
 
     private final IController controller;
     private final ProjectFig projectFig;
     private final ServletFig servletFig;
+    private final RunnerFig runnerFig;
+    private final StoreService service;
 
 
     @Inject
-    public LoadResource( IController controller, StoreService service, ProjectFig projectFig, ServletFig servletFig ) {
-        super( "/load", service );
+    public LoadResource( IController controller,
+                         StoreService service,
+                         ProjectFig projectFig,
+                         ServletFig servletFig,
+                         RunnerFig runnerFig ) {
+        this.service = service;
         this.controller = controller;
         this.projectFig = projectFig;
         this.servletFig = servletFig;
+        this.runnerFig = runnerFig;
     }
 
 
     /**
-     * By default the propagate parameter is considered to be false unless set to true. To propagate this call to all
-     * the other drivers this parameter will be set to true.
+     * Also applies supplied set of parameters to various configurations.
      *
-     * @param propagate when true call the same function on other drivers
      * @param project the project to use specified by the string containing the <git-uuid>-<deploy-timestamp>
-     *
      * @return a summary message
      */
     @POST
-    public Result load( @QueryParam( PARAM_PROPAGATE ) Boolean propagate,
-                        @QueryParam( PARAM_PROJECT ) String project,
+    public Result load( @QueryParam( PARAM_PROJECT ) String project,
                         @Context UriInfo uriInfo ) {
-        LOG.debug( "The propagate request parameter was set to {}", propagate );
 
         if ( controller.isRunning() ) {
-            return new BaseResult( getEndpointUrl(), false, "still running stop and reset before loading a new test",
+            return new BaseResult( ENDPOINT_URL, false, "still running stop and reset before loading a new test",
                     controller.getState() );
         }
 
         if ( controller.needsReset() ) {
-            return new BaseResult( getEndpointUrl(), false, "reset before loading a new test", controller.getState() );
+            return new BaseResult( ENDPOINT_URL, false, "reset before loading a new test", controller.getState() );
         }
 
         if ( ! controller.getState().accepts( Signal.LOAD ) ) {
             LOG.error( "State of {} does not accept the LOAD signal.", controller.getState() );
-            return new BaseResult( getEndpointUrl(), false, "LOAD signal not accepted by state.", controller.getState() );
+            return new BaseResult( ENDPOINT_URL, false, "LOAD signal not accepted by state.", controller.getState() );
         }
 
         AmazonFig amazonFig = Guice.createInjector( new GuicyFigModule( AmazonFig.class ) )
@@ -125,51 +117,43 @@ public class LoadResource extends PropagatingResource {
         MultivaluedMap<String,String> parameters = uriInfo.getQueryParameters();
         for ( String key : parameters.keySet() ) {
             if ( amazonFig.getOption( key ) != null ) {
+                LOG.debug( "Applying parameter {} with value {} as bypass to amazonFig", key, parameters.get( key ) );
                 amazonFig.bypass( key, parameters.get( key ).get( 0 ) );
+            }
+
+            if ( projectFig.getOption( key ) != null ) {
+                LOG.debug( "Applying parameter {} with value {} as bypass to projectFig", key, parameters.get( key ) );
+                projectFig.bypass( key, parameters.get( key ).get( 0 ) );
             }
         }
 
         LOG.info( "About to shut down the store service." );
-        getService().stop();
+        service.stop();
         LOG.info( "About to restart the store service." );
-        getService().start();
-
-        // Handle loading the war here first for the peers we will propagate to since
-        // we do not want to be reloaded before issuing this operation to the other drivers.
-
-        if ( propagate == Boolean.TRUE ) {
-            Map<String, String> params = Collections.singletonMap( PARAM_PROJECT, project );
-            PropagatedResult result =
-                    propagate( controller.getState().next( Signal.LOAD ), true, "reload started", params );
-
-            try {
-                deploy( project );
-                result.setStatus( true );
-                return result;
-            }
-            catch ( Exception e ) {
-                LOG.error( "Encountered failure while reloading project", e );
-                result.setStatus( false );
-                result.setMessage( e.getMessage() );
-                return result;
-            }
-        }
+        service.start();
 
         try {
             deploy( project );
-            return new BaseResult( getEndpointUrl(), true, "reload started", controller.getState().next( Signal.LOAD ) );
+            return new BaseResult( ENDPOINT_URL, true, "reload started", controller.getState().next( Signal.LOAD ) );
         }
         catch ( Exception e ) {
             LOG.error( "Encountered failure while reloading project", e );
-            return new BaseResult( getEndpointUrl(), false, e.getMessage(), controller.getState() );
+            return new BaseResult( ENDPOINT_URL, false, e.getMessage(), controller.getState() );
         }
     }
 
 
     private void deploy( String project ) throws Exception {
-        // @Todo if the admin app reload does not work, do not store in app's temp are but in /tmp instead
-        File tempDir = new File( getService().getMyMetadata().getTempDir() );
-        File tempFile = getService().download( tempDir, project );
+        /*
+         * We need to make sure that we store this new runner war version we pull
+         * in to a place where it can be accessed properly by Tomcat's manager
+         * application. The temp directory needs to be a reachable area which
+         * is not the same for all the applications: some areas are blocked from
+         * servlet access.
+         */
+
+        File tempDir = new File( runnerFig.getTempDir() );
+        File tempFile = service.download( tempDir, project );
         final BlockingDeployTask uploadTask = new BlockingDeployTask( tempFile );
         new Thread( uploadTask ).start();
         uploadTask.returnOnLimit();   // ==> blocks until we hit the limit
@@ -191,70 +175,6 @@ public class LoadResource extends PropagatingResource {
         } ).start();
     }
 
-
-    @Override
-    protected Callable<Result> getRecoveryOperation( final PropagatingCall failingCaller ) {
-        return new RecoveryOperation( failingCaller );
-    }
-
-
-    /**
-     * Will try to recover by confirming that the peer is back up by attempting to contact the reloaded peer N number of
-     * times with X seconds delay in between on it's /status page. The version of the project will be checked against
-     * the project that was loaded in the /load operation that failed.
-     */
-    class RecoveryOperation implements Callable<Result> {
-        private final PropagatingCall failingCaller;
-
-
-        public RecoveryOperation( PropagatingCall failingCaller ) {
-            this.failingCaller = failingCaller;
-        }
-
-
-        @Override
-        public Result call() throws Exception {
-            Exception lastException = null;
-
-            for ( int retryCount = 0; retryCount < servletFig.getRecoveryRetryCount(); retryCount++ ) {
-                if ( servletFig.getRetryDelay() > 0 ) {
-                    try {
-                        Thread.sleep( servletFig.getRetryDelay() );
-                    }
-                    catch ( InterruptedException e ) {
-                        LOG.warn( "Got interrupted on recover retry sleep for delay. "
-                                + "Retry operation will happen less than expected delay" );
-                    }
-                }
-
-                try {
-                    Result result = checkStatus();
-                    LOG.info( "Retry SUCCESS! {}", result );
-                    return result;
-                }
-                catch ( Exception e ) {
-                    LOG.warn( "The {}th retry failed." );
-                    lastException = e;
-                }
-            }
-
-            if ( lastException != null ) {
-                throw lastException;
-            }
-
-            String errMsg = "The recovery operation should never really get here.";
-            LOG.error( errMsg );
-            throw new Exception( errMsg );
-        }
-
-
-        private Result checkStatus() throws Exception {
-            DefaultClientConfig clientConfig = new DefaultClientConfig();
-            Client client = Client.create( clientConfig );
-            WebResource resource = client.resource( failingCaller.getMetadata().getUrl() ).path( "/status" );
-            return resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( BaseResult.class );
-        }
-    }
 
 
     class BlockingDeployTask implements Runnable {
@@ -300,15 +220,15 @@ public class LoadResource extends PropagatingResource {
 
             if ( response.contains( "FAIL" ) ) {
                 LOG.error( "FAILED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), false, response, controller.getState() );
+                result = new BaseResult( ENDPOINT_URL, false, response, controller.getState() );
             }
             else if ( response.contains( "OK" ) ) {
                 LOG.info( "SUCCEEDED to deploy via tomcat manager: {}", response );
-                result = new BaseResult( getEndpointUrl(), true, response, State.READY );
+                result = new BaseResult( ENDPOINT_URL, true, response, State.READY );
             }
 
             LOG.warn( "Got back unknown response from the manager: {}", response );
-            result = new BaseResult( getEndpointUrl(), false, response, State.INACTIVE );
+            result = new BaseResult( ENDPOINT_URL, false, response, State.INACTIVE );
         }
     }
 }

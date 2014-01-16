@@ -6,12 +6,6 @@ public interface Constants {
     /** the project HTTP parameter */
     String PARAM_PROJECT = "project";
 
-    /** the propagate HTTP parameter */
-    String PARAM_PROPAGATE = "propagate";
-
-    /** store service properties */
-    String PARAM_STORE_PROPERTIES = "storeProps";
-
     /** the default name to use for the runner's war file */
     String RUNNER_WAR = "runner.war";
 
@@ -42,12 +36,10 @@ public interface Constants {
     /** Chop threads default */
     int DEFAULT_THREADS = 10;
 
-    /** Chop runners default */
-    int DEFAULT_RUNNERS = 6;
-
     /** Chop saturate default */
     boolean DEFAULT_SATURATE = false;
 
     /** Chop delay default */
     long DEFAULT_DELAY = 0;
+    String PRETTY_PRINT_RESULTS = "pretty.print.results";
 }

@@ -9,10 +9,10 @@ import org.safehaus.chop.api.IterationChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.assertEquals;
 
 
 /**
@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertEquals;
  */
 @RunWith( JukitoRunner.class )
 @UseModules( DigitalWatchModule.class )
-@IterationChop( iterations = 10, threads = 4, runners = 4 )
+@IterationChop( iterations = 10, threads = 4 )
 public class DigitalWatchTest {
     private static final Logger LOG = LoggerFactory.getLogger( DigitalWatchTest.class );
 

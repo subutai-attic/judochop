@@ -44,6 +44,8 @@ public class WarMojo extends MainMojo {
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -93,7 +95,8 @@ public class WarMojo extends MainMojo {
             }
             FileUtils.copyFileToDirectory( new File( getProjectOutputJarPath() ), libPathFile );
             FileUtils.copyFileToDirectory( new File( projectTestOutputJar ), libPathFile );
-            Utils.copyArtifactsTo( this.project, libPath, false );
+
+            Utils.copyArtifactsTo( this.project, libPath );
 
             // Create project.properties file
             InputStream inputStream;

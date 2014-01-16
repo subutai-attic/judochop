@@ -207,4 +207,18 @@ public interface ProjectFig extends GuicyFig {
     @JsonProperty
     @Key( MANAGER_PASSWORD_KEY )
     String getManagerPassword();
+
+
+    String MANAGER_ENDPOINT_KEY = "manager.endpoint";
+    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:8080/manager/text";
+
+    /**
+     * Gets the Tomcat manager base URL.
+     *
+     * @return the Tomcat Manager endpoint
+     */
+    @JsonProperty
+    @Key( MANAGER_ENDPOINT_KEY )
+    @Default( DEFAULT_MANAGER_ENDPOINT )
+    String getManagerEndpoint();
 }

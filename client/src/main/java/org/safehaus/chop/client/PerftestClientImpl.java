@@ -3,6 +3,7 @@ package org.safehaus.chop.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -84,21 +85,22 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
 
     @Override
-    public Result load( RunnerFig runnerFig, String projectKey, Boolean propagate, Map<String,String> storeProps ) {
+    public Result load( RunnerFig runnerFig, String projectKey, Map<String,String> props ) {
         ProjectFig project = getProject( projectKey );
         String md5 = project.getWarMd5();
 
-        LOG.warn( "Sending load request to " + runnerFig.getHostname() );
+        LOG.info( "Sending load request to " + runnerFig.getHostname() );
 
-        Result result = RestRequests.load( runnerFig, projectKey, propagate, storeProps );
+        Result result = RestRequests.load( runnerFig, projectKey, props );
 
         if ( ! result.getStatus() ) {
-            LOG.info( "Failed on load POST to {} response message was: {}" ,
-                    result.getEndpoint(), result.getMessage()  );
+            LOG.info( "Failed on load POST to {} response message was: {}", result.getEndpoint(), result.getMessage() );
             return result;
         }
 
-        Collection<RunnerFig> runnerFigs = getRunners();
+        Collection<RunnerFig> runnerFigs;
+        runnerFigs = new ArrayList<RunnerFig>( 1 );
+        runnerFigs.add( runnerFig );
         LinkedList<RunnerFig> failed = new LinkedList<RunnerFig>( runnerFigs );
 
         // Wait a little for the drivers to come back up
@@ -126,26 +128,26 @@ public class PerftestClientImpl implements PerftestClient, Constants {
                 ProjectFig remoteInfo = status.getProject();
 
                 if ( ! status.getStatus() ) {
-                    LOG.warn( "RunnerFig {} failed on status call", runnerFigInfo );
+                    LOG.info( "RunnerFig {} failed on status call", runnerFigInfo );
                     failed.addFirst( runnerFigInfo );
                 }
-
-                if ( status.getState() != State.READY ) {
-                    LOG.warn( "RunnerFig {} not yet in READY state", runnerFigInfo );
+                else if ( status.getState() != State.READY ) {
+                    LOG.info( "RunnerFig {} not yet in READY state", runnerFigInfo );
                     failed.addFirst( runnerFigInfo );
                 }
-
-                if ( remoteInfo != null && remoteInfo.getWarMd5() != null ) {
-                    if ( ! remoteInfo.getWarMd5().equals( md5 ) ) {
-                        LOG.warn( "RunnerFig {} has wrong md5 ... was expecting {}", runnerFigInfo, md5 );
-                        failed.addFirst( runnerFigInfo );
-                    }
+                else if ( remoteInfo == null || remoteInfo.getWarMd5() == null ) {
+                    failed.addFirst( runnerFigInfo );
                 }
-
-                LOG.info( "RunnerFig {} is backup and READY!", runnerFigInfo );
+                else if ( ! remoteInfo.getWarMd5().equals( md5 ) ) {
+                    throw new RuntimeException( "RunnerFig at " + runnerFigInfo.getHostname() +
+                            " has wrong md5, was expecting " + md5 );
+                }
+                else {
+                    LOG.info( "RunnerFig {} is backup and READY!", runnerFigInfo );
+                }
             }
             catch ( Exception e ) {
-                LOG.warn( "RunnerFig {} failed on status call", runnerFigInfo, e );
+                LOG.debug( "RunnerFig {} failed on status call", runnerFigInfo, e );
                 failed.addFirst( runnerFigInfo );
             }
         }
@@ -160,103 +162,67 @@ public class PerftestClientImpl implements PerftestClient, Constants {
 
 
     @Override
-    public Result status( RunnerFig runnerFig ) {
-        return RestRequests.status( runnerFig );
+    public Result status( RunnerFig runner ) {
+        return RestRequests.status( runner );
     }
 
 
     /**
-     * Sends the start rest request to runnerFig with given propagate value.
-     * Call verify() method first to make sure all drivers are ready and up-to-date, call status() if you're not
-     * going to propagate.
-     * @param runnerFig the runner configuration
-     * @param propagate whether or not to propagate the call
+     * Sends the start rest request to runner.
+     *
+     * @param runner the runner configuration
      * @return the result
      */
     @Override
-    public Result start( RunnerFig runnerFig, final boolean propagate ) {
-        return RestRequests.start( runnerFig, propagate );
+    public Result start( RunnerFig runner ) {
+        return RestRequests.start( runner );
     }
 
 
     /**
-     * If propagate is true, checks if there is at least one runnerFig in cluster in RUNNING state; if not, checks
-     * if the given runnerFig is in RUNNING state. If that check succeeds, sends the stop rest request
+     * Checks if the given runnerFig is in RUNNING state. If that check succeeds, sends the stop rest request
      * @param runnerFig the runner configuration
-     * @param propagate whether or not to propagate the call
      * @return the result
      */
     @Override
-    public Result stop( final RunnerFig runnerFig, final boolean propagate ) {
-        Result status = null;
+    public Result stop( final RunnerFig runnerFig ) {
+        Result status;
         boolean stoppable = false;
-        // if request is wished to be propagated, then we check if there is at least one runnerFig in RUNNING state
-        if ( propagate ) {
-            Collection<RunnerFig> runnerFigs = getRunners();
-            for ( RunnerFig r : runnerFigs ) {
-                status = status( r );
-                if ( status.getStatus() && status.getState() == State.RUNNING ) {
-                    stoppable = true;
-                    break;
-                }
-            }
-        }
-        else {
-            status = status( runnerFig );
-            if ( status.getStatus() && status.getState() == State.RUNNING ) {
-                stoppable = true;
-            }
+
+        status = status( runnerFig );
+        if ( status.getStatus() && status.getState() == State.RUNNING ) {
+            stoppable = true;
         }
 
         if ( ! stoppable ) {
-            LOG.info( "Cluster is not in a stoppable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot stop", status.getState() );
+            LOG.info( "Runner is not in a stoppable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot stop", status.getState() );
         }
 
         LOG.info( "Sending stop request to runnerFig at {}", runnerFig.getHostname() );
-        return RestRequests.stop( runnerFig, propagate );
+        return RestRequests.stop( runnerFig );
     }
 
 
     /**
-     * If propagate is true, checks if there is at least one runnerFig in cluster in STOPPED state; if not, checks
-     * if the given runnerFig is in STOPPED state. If that check succeeds, sends the reset rest request
+     * Checks if the given runnerFig is in STOPPED state. If that check succeeds, sends the reset
+     * rest request.
+     *
      * @param runnerFig the runner configuration
-     * @param propagate whether or not to propagate the call
      * @return the result
      */
     @Override
-    public Result reset( final RunnerFig runnerFig, final boolean propagate ) {
+    public Result reset( final RunnerFig runnerFig ) {
         Result status = status( runnerFig );
-        boolean resettable = false;
-        // if request is wished to be propagated, then we check if there is at least one runnerFig in STOPPED state
-        if ( propagate ) {
-            Collection<RunnerFig> runnerFigs = getRunners();
-            for ( RunnerFig r : runnerFigs ) {
-                status = status( r );
-                if ( status.getStatus() && status.getState() == State.STOPPED ) {
-                    resettable = true;
-                    break;
-                }
-            }
-        }
-        else {
-            resettable = ( status.getStatus() && status.getState() == State.STOPPED );
-        }
+        boolean resettable = ( status.getStatus() && status.getState() == State.STOPPED );
 
         if ( ! resettable ) {
-            LOG.info( "Cluster is not in a resettable state" );
-            return new BaseResult( status.getEndpoint(), true, "Cannot reset", status.getState() );
+            LOG.info( "Runner is not in a resettable state" );
+            return new BaseResult( status.getEndpoint(), false, "Cannot reset", status.getState() );
         }
 
         LOG.info( "Sending reset request to runnerFig at {}", runnerFig.getHostname() );
-        return RestRequests.reset( runnerFig, propagate );
-    }
-
-
-    @Override
-    public Result scan( final RunnerFig runnerFig, final boolean propagate ) {
-        return new BaseResult( "http://localhost:24981", true, "scan triggered", State.READY );
+        return RestRequests.reset( runnerFig );
     }
 
 
@@ -266,10 +232,12 @@ public class PerftestClientImpl implements PerftestClient, Constants {
      * @return Returns true if all instances on the cluster is ready to start the test
      */
     @Override
-    public boolean verify() {
+    public Result verify() {
         LOG.info( "Starting verify operation..." );
 
-        // Get the latest project information
+        String message;
+
+        // Get the latest project information from store
         ProjectFig project = null;
         try {
             Set<ProjectFig> projects = getProjectConfigs();
@@ -278,18 +246,19 @@ public class PerftestClientImpl implements PerftestClient, Constants {
                 if ( project == null ) {
                     project = projectCandidate;
                 }
-                else if ( compareTimestamps( projectCandidate.getCreateTimestamp(), project.getCreateTimestamp() ) > 0 ) {
+                else if ( compareTimestamps(
+                        projectCandidate.getCreateTimestamp(), project.getCreateTimestamp() ) > 0 ) {
                     project = projectCandidate;
                 }
             }
         } catch ( Exception e ) {
-            LOG.warn( "Error while getting project information from store", e );
-            return false;
+            message = "Error while getting project information from store";
+            LOG.warn( message, e );
+            return new BaseResult( null, false, message, State.INACTIVE );
         }
 
         if ( project == null ) {
-            LOG.info( "No projects were found in the store" );
-            return false;
+            return new BaseResult( null, false, "No projects were found in the store", State.INACTIVE );
         }
 
         LOG.info( "Got the latest project info from store" );
@@ -304,30 +273,33 @@ public class PerftestClientImpl implements PerftestClient, Constants {
                 if ( ! result.getStatus() ) {
                     LOG.info( "State of runnerFig could not be retrieved" );
                     LOG.info( "RunnerFig hostname: {}", runnerFig.getHostname() );
-                    return false;
+                    return result;
                 }
-                if ( result.getState().accepts( Signal.LOAD, State.READY ) ) {
+                if ( ! result.getState().accepts( Signal.START, State.RUNNING ) ) {
                     LOG.info( "RunnerFig is not in a ready state, State: {}", result.getState() );
                     LOG.info( "RunnerFig hostname: {}", runnerFig.getHostname() );
-                    return false;
+                    return result;
                 }
                 if ( ! result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
-                    LOG.info( "RunnerFig doesn't have the latest test loaded" );
+                    message = "RunnerFig doesn't have the latest test loaded";
+                    LOG.info( message );
                     LOG.info( "RunnerFig hostname: {}", runnerFig.getHostname() );
                     LOG.info( "Latest test MD5 is {}", project.getWarMd5() );
                     LOG.info( "RunnerFig's installed MD5 is {}", result.getProject().getWarMd5() );
-                    return false;
+                    return new BaseResult( result.getEndpoint(), false, message, result.getState() );
                 }
                 LOG.info( "RunnerFig is READY: {}", runnerFig );
             } catch ( Exception e ) {
-                LOG.warn( "Error while getting runnerFig states", e );
-                return false;
+                message = "Error while getting runner states";
+                LOG.warn( message, e );
+                return new BaseResult( runnerFig.getHostname(), false, message, State.INACTIVE );
             }
         }
 
-        LOG.info( "Cluster is ready to start..." );
+        message = "Cluster is ready to start...";
+        LOG.info( message );
 
-        return true;
+        return new BaseResult( null, true, message, State.READY );
     }
 
 

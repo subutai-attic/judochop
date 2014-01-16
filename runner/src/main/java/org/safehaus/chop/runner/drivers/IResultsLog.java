@@ -8,7 +8,6 @@ import org.junit.runner.Result;
 
 /** Logs results as they are produced asynchronously. */
 public interface IResultsLog {
-    String PRETTY_PRINT_RESULTS_LOG = "pretty.print.results.log";
     String RESULTS_FILE_KEY = "resultsLog.file";
     String WAIT_TIME_KEY = "resultsLog.waitTime";
 

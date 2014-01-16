@@ -47,10 +47,10 @@ public class PerftestClientTest {
     }
 
 
-    @Test @Ignore //TODO
+    @Test @Ignore( "make sure this is not hard coded and does not break" )
     public void testLoad() throws IOException {
         RunnerFig liveRunnerFig = client.getLiveRunner();
-        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", true, null );
+        client.load( liveRunnerFig, "tests/17440b961d287ead451916afaef7c2a22764423e/perftest.war", null );
     }
 
 
@@ -66,14 +66,14 @@ public class PerftestClientTest {
 
     @Test
     public void testVerify() throws Exception {
-        boolean verified = client.verify();
-        LOG.debug( "Verified: {}", verified );
+        Result result = client.verify();
+        LOG.debug( "Verification result: {} , with state: {}", result.getMessage(), result.getState() );
     }
 
 
     @Test @Ignore
     public void testStart() throws Exception {
-        Result result = client.start( client.getLiveRunner(), true );
+        Result result = client.start( client.getLiveRunner() );
         LOG.debug( "Start result is {}", result.getMessage() );
     }
 

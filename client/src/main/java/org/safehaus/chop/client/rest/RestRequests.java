@@ -6,46 +6,51 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.PropagatedResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.RunnerFig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import static org.safehaus.chop.api.Constants.PARAM_PROJECT;
-import static org.safehaus.chop.api.Constants.PARAM_PROPAGATE;
 
 
 /**
  * Client REST request functions.
  */
 public class RestRequests {
+    private static final Logger LOG = LoggerFactory.getLogger( RestRequests.class );
+
     /**
      * Performs a POST HTTP operation against the /load endpoint with the perftest query parameter, and propagate query
      * parameter.
      *
      * @param runnerFig the runnerFig to perform the load operation on
      * @param project the project query parameter value
-     * @param propagate whether or not to enable propagation
-     * @param storeProps optional set of store configuration parameters
+     * @param props optional set of store, and tomcat manager configuration parameters
      *
      * @return the result of the operation
      */
-    public static Result load( RunnerFig runnerFig, String project, Boolean propagate, Map<String,String> storeProps ) {
+    public static Result load( RunnerFig runnerFig, String project, Map<String,String> props ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/load" );
-        resource = resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).queryParam( PARAM_PROJECT, project );
+        resource = resource.queryParam( PARAM_PROJECT, project );
 
-        if ( storeProps != null ) {
-            for ( String key : storeProps.keySet() ) {
-                resource = resource.queryParam( key, storeProps.get( key ) );
+        if ( props != null ) {
+            for ( String key : props.keySet() ) {
+                assert key != null;
+                assert props.get( key ) != null;
+                LOG.info( "Added load request parameter {} = {}", key, props.get( key ) );
+                resource = resource.queryParam( key, props.get( key ) );
             }
         }
 
-        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( PropagatedResult.class );
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
     }
 
 
@@ -53,16 +58,13 @@ public class RestRequests {
      * Performs a POST HTTP operation against the /start endpoint with a propagate query parameter.
      *
      * @param runnerFig the runnerFig which will perform the start operation
-     * @param propagate whether or not to enable propagation
-     *
      * @return the result of the operation
      */
-    public static Result start( RunnerFig runnerFig, Boolean propagate ) {
+    public static Result start( RunnerFig runnerFig ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/start" );
-        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
-                       .post( PropagatedResult.class );
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
     }
 
 
@@ -70,16 +72,13 @@ public class RestRequests {
      * Performs a POST HTTP operation against the /reset endpoint with a propagate query parameter.
      *
      * @param runnerFig the runnerFig to perform the reset operation on
-     * @param propagate whether or not to enable propagation
-     *
      * @return the result of the operation
      */
-    public static Result reset( RunnerFig runnerFig, Boolean propagate ) {
+    public static Result reset( RunnerFig runnerFig ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/reset" );
-        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
-                       .post( PropagatedResult.class );
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
     }
 
 
@@ -87,16 +86,13 @@ public class RestRequests {
      * Performs a POST HTTP operation against the /stop endpoint with a propagate query parameter.
      *
      * @param runnerFig the runnerFig which will perform the stop operation
-     * @param propagate whether or not to enable propagation
-     *
      * @return the result of the operation
      */
-    public static Result stop( RunnerFig runnerFig, Boolean propagate ) {
+    public static Result stop( RunnerFig runnerFig ) {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/stop" );
-        return resource.queryParam( PARAM_PROPAGATE, propagate.toString() ).accept( MediaType.APPLICATION_JSON_TYPE )
-                       .post( PropagatedResult.class );
+        return resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
     }
 
 
@@ -108,6 +104,8 @@ public class RestRequests {
      * @return the result of the operation
      */
     public static Result status( RunnerFig runnerFig ) {
+        Preconditions.checkNotNull( runnerFig, "RunnerFig parameter cannot be null." );
+
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( runnerFig.getUrl() ).path( "/status" );

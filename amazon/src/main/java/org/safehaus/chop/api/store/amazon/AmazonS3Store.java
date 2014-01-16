@@ -28,7 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -53,10 +53,13 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import com.netflix.config.DynamicBooleanProperty;
+import com.netflix.config.DynamicPropertyFactory;
 
 
 /** Handles S3 interactions to interface with other test drivers. */
@@ -64,6 +67,7 @@ import com.google.inject.Singleton;
 public class AmazonS3Store implements StoreService, Runnable, Constants {
 
     private final static Logger LOG = LoggerFactory.getLogger( AmazonS3Store.class );
+    private static final String PRETTY_PRINT_RESULTS = "";
 
     private boolean started = false;
     private RunnerFig me;
@@ -72,6 +76,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     private final AmazonFig amazonFig;
     private final Injector injector;
     private AmazonS3Client client;
+    private DynamicBooleanProperty prettyPrint;
 
 
     @Inject
@@ -79,9 +84,12 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
         Preconditions.checkNotNull( injector );
 
         this.injector = injector;
-        this.client = injector.getInstance( AmazonS3Client.class );
-        this.me = new Ec2RunnerBuilder( injector.getInstance( RunnerFig.class ) ).getRunner();
-        this.amazonFig = injector.getInstance( AmazonFig.class );
+        client = injector.getInstance( AmazonS3Client.class );
+
+        // singleton should have bypasses added in ServletConfig for the EC2 environment
+        me = injector.getInstance( RunnerFig.class );
+        amazonFig = injector.getInstance( AmazonFig.class );
+        prettyPrint = DynamicPropertyFactory.getInstance().getBooleanProperty( PRETTY_PRINT_RESULTS, true );
     }
 
 
@@ -129,34 +137,9 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public void triggerScan() {
-        synchronized ( lock ) {
-            lock.notifyAll();
-        }
-    }
-
-
-    @Override
-    public Set<String> listRunners() {
-        return runners.keySet();
-    }
-
-
-    @Override
-    public RunnerFig getRunner( String key ) {
-        return runners.get( key );
-    }
-
-
-    @Override
-    public RunnerFig getMyMetadata() {
-        return me;
-    }
-
-
-    @Override
-    public void store( final ProjectFig project, final ISummary summary, final File resultsFile ) {
-        store( me, project, summary, resultsFile );
+    public void store( final ProjectFig project, final ISummary summary, final File resultsFile,
+                       final Class<?> testClass ) {
+        store( me, project, summary, resultsFile, testClass );
     }
 
 
@@ -167,8 +150,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      *
      * @param publicHostname the runner's publicHostname
      */
-    @Override
-    public String getRunnerKey( String publicHostname ) {
+    private String getRunnerKey( String publicHostname ) {
         Preconditions.checkNotNull( publicHostname, "The publicHostname cannot be null." );
         StringBuilder sb = new StringBuilder();
         sb.append( RUNNERS_PATH ).append( '/' )
@@ -177,25 +159,12 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    /**
-     * Gets the runner instance information from the store as a map of their keys to
-     * their RunnerFig information.
-     *
-     * @return the keys mapped to RunnerFig information
-     */
     @Override
     public Map<String, RunnerFig> getRunners() {
         return getRunners( null );
     }
 
 
-    /**
-     * Gets the runnerFig instance information from the store as a map of keys RunnerFig instances.
-     *
-     * @param runnerFig a runnerFig to exclude from results (none if null)
-     *
-     * @return the keys mapped to RunnerFig instance
-     */
     @Override
     public Map<String, RunnerFig> getRunners( RunnerFig runnerFig ) {
         Map<String, RunnerFig> runners = new HashMap<String, RunnerFig>();
@@ -216,7 +185,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
                 try {
                     Ec2RunnerBuilder builder = new Ec2RunnerBuilder( s3Object.getObjectContent() );
-                    runners.put( key,  builder.getRunner() );
+                    runners.put( key, builder.getRunner() );
                 }
                 catch ( IOException e ) {
                     LOG.error( "Failed to load metadata for runnerFig {}", key, e );
@@ -232,27 +201,19 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
 
     @Override
-    public void deleteGhostRunners( Collection<String> activeRunners ) {
+    public void deleteGhostRunners( Set<String> activeRunners ) {
         Map<String, RunnerFig> registeredRunners = getRunners();
         RunnerFig runnerFig;
         for( String key : registeredRunners.keySet() ) {
             runnerFig = registeredRunners.get( key );
             if ( ! activeRunners.contains( runnerFig.getHostname() ) ) {
-                String path = RUNNERS_PATH + "/" + runnerFig.getHostname() + ".properties";
+                String path = getRunnerKey( runnerFig.getHostname() );
                 client.deleteObject( amazonFig.getAwsBucket(), path );
             }
         }
     }
 
 
-    /**
-     * Registers this runnerFig's instance by adding its instance information into the
-     * store as a properties file into the bucket using the following key format:
-     *
-     * "$RUNNERS_PATH/publicHostname.properties"
-     *
-     * @param runnerFig the runnerFig's instance metadata to be registered
-     */
     @Override
     public void register( RunnerFig runnerFig ) {
         Preconditions.checkNotNull( runnerFig, "The runnerFig cannot be null." );
@@ -270,6 +231,19 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
         }
 
         LOG.info( "Successfully registered {}", key );
+    }
+
+
+    @Override
+    public void unregister( RunnerFig runnerFig ) {
+        Preconditions.checkNotNull( runnerFig );
+        Preconditions.checkNotNull( runnerFig, "The runnerFig cannot be null." );
+        Preconditions.checkNotNull( runnerFig.getHostname(), "The runners public hostname cannot be null." );
+
+        String key = getRunnerKey( runnerFig.getHostname() );
+
+        DeleteObjectRequest delRequest = new DeleteObjectRequest( amazonFig.getAwsBucket(), key );
+        client.deleteObject( delRequest );
     }
 
 
@@ -310,13 +284,6 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    /**
-     * Scans for projects with test information under the bucket as:
-     * </p>
-     * "$CONFIGS_PATH/.*\/$PROJECT_FILE
-     *
-     * @return a set of keys as Strings for test information
-     */
     @Override
     public Set<ProjectFig> getProjects() throws IOException {
         Set<ProjectFig> tests = new HashSet<ProjectFig>();
@@ -339,11 +306,6 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    /**
-     * Stores the project test information.
-     *
-     * @param project the Project object to be serialized and stored
-     */
     @Override
     public void store( ProjectFig project ) {
         Preconditions.checkNotNull( project, "The project cannot be null." );
@@ -366,13 +328,6 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    /**
-     * Tries to load a Project file based on prepackaged runner metadata: the runner's
-     * loadKey. If it cannot find it, null is returned.
-     *
-     * @param loadKey the load key for the runner war
-     * @return the Project object if it exists in the store or null if it does not
-     */
     @Override
     public ProjectFig getProject( String loadKey ) {
         Preconditions.checkNotNull( loadKey, "The key cannot be null" );
@@ -405,14 +360,89 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
+    @Override
+    public int getNextRunNumber( RunnerFig runner, ProjectFig project ) {
+        Preconditions.checkNotNull( project, "The project argument cannot be null." );
+        Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
+        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
+
+        String loadKey = project.getLoadKey();
+        LOG.info( "Using loadKey = {}", loadKey );
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        LOG.info( "Stripped loadKey to {}", loadKey );
+
+        int runNumber = 1;
+        StringBuilder sb = new StringBuilder();
+
+        do {
+            sb.setLength( 0 );
+            String prefix = sb.append( loadKey ).append( runNumber ).toString();
+
+            try {
+                ObjectListing listing = client.listObjects( amazonFig.getAwsBucket(), prefix );
+
+                if ( listing.getObjectSummaries().size() > 0 ) {
+                    // entries for the current runNumber exist so let's advance to the next candidate
+                    runNumber++;
+                }
+                else {
+                    /*
+                     * Entries for the current runNumber do not exist, so we return it as the next available
+                     * runNumber.
+                     *
+                     * I'm not certain if listObjects will blow chunks when no keys are found
+                     * with the common prefix. For a non existent runNumber (our candidate to return)
+                     * the supplied prefix should not exist. Just in case we also return the current
+                     * runNumber in the catch block below.
+                     */
+                    return runNumber;
+                }
+            }
+            catch ( Exception e ) {
+                return runNumber;
+            }
+        }
+        while ( true );
+    }
+
+
+    @Override
+    public boolean hasCompleted( RunnerFig runner, ProjectFig project, int runNumber, Class<?> testClass ) {
+        Preconditions.checkNotNull( project, "The project argument cannot be null." );
+        Preconditions.checkNotNull( runner, "The runner argument cannot be null." );
+        Preconditions.checkNotNull( testClass, "The testClass argument cannot be null." );
+        Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
+
+        String loadKey = project.getLoadKey();
+        LOG.info( "Using loadKey = {}", loadKey );
+        loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        LOG.info( "Stripped loadKey to {}", loadKey );
+
+        StringBuilder sb = new StringBuilder();
+        sb.append( loadKey )
+          .append( runNumber ).append( '/' )
+          .append( testClass.getName() ).append( '/' )
+          .append( runner.getHostname() ).append( SUMMARY_SUFFIX );
+        String blobName = sb.toString();
+
+        try {
+            S3Object object = client.getObject( amazonFig.getAwsBucket(), blobName );
+            object.getObjectContent().close();
+            return true;
+        }
+        catch ( Exception e ) {
+            return false;
+        }
+    }
+
+
     /**
      * Serializes a Summary object into Json and stores it.
      *
      * @param project the test the Summary object is associated with
      * @param summary the Summary object to store
      */
-    @Override
-    public void store( RunnerFig metadata, ProjectFig project, ISummary summary ) {
+    private void store( RunnerFig metadata, ProjectFig project, ISummary summary, Class<?> testClass ) {
         Preconditions.checkNotNull( project, "The project argument cannot be null." );
         Preconditions.checkNotNull( summary, "The summary argument cannot be null." );
         Preconditions.checkNotNull( project.getLoadKey(), "The project must have a valid load key." );
@@ -424,7 +454,8 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
-          .append( summary.getRunNumber() ).append( "/" )
+          .append( summary.getRunNumber() ).append( '/' )
+          .append( testClass.getName() ).append( '/' )
           .append( metadata.getHostname() ).append( SUMMARY_SUFFIX );
 
         String blobName = sb.toString();
@@ -442,9 +473,8 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param summary the run summary to also store
      * @param results the detailed results to store
      */
-    @Override
-    public void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results ) {
-        store( metadata, project, summary );
+    private void store( RunnerFig metadata, ProjectFig project, ISummary summary, File results, Class<?> testClass ) {
+        store( metadata, project, summary, testClass );
 
         String loadKey = project.getLoadKey();
         loadKey = loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
@@ -452,6 +482,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
           .append( summary.getRunNumber() ).append( '/' )
+          .append( testClass.getName() ).append( '/' )
           .append( metadata.getHostname() ).append( RESULTS_SUFFIX );
 
         putFile( sb.toString(), results );
@@ -478,16 +509,6 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    /**
-     * Downloads a file from the store by key, and places it in a temporary file returning
-     * the file. Use this to download big things like war files or results.
-     *
-     * @param tempDir the temporary directory to use
-     * @param key the blobs key
-     * @return the File object referencing the temporary file
-     *
-     * @throws IOException if there's a problem accessing the stream
-     */
     @Override
     public File download( File tempDir, String key ) throws IOException {
         File tempFile = File.createTempFile( "download", "file", tempDir );
@@ -538,13 +559,20 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
-    @Override
-    public <T> T putJsonObject( String key, Object obj ) {
+    private <T> T putJsonObject( String key, Object obj ) {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayInputStream in = null;
 
         try {
-            byte[] json = mapper.writeValueAsBytes( obj );
+            byte[] json;
+            if ( prettyPrint.get() ) {
+                ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+                json = writer.writeValueAsBytes( obj );
+            }
+            else {
+                json = mapper.writeValueAsBytes( obj );
+            }
+
             in = new ByteArrayInputStream( json );
         }
         catch ( JsonProcessingException e ) {
@@ -564,8 +592,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
      * @param key the supplied key
      * @param file the file to upload
      */
-    @Override
-    public void putFile( String key, File file ) {
+    private void putFile( String key, File file ) {
         PutObjectRequest putRequest = null;
         try {
             putRequest =
@@ -580,6 +607,7 @@ public class AmazonS3Store implements StoreService, Runnable, Constants {
     }
 
 
+    @Override
     public void run() {
         while ( started ) {
             try {

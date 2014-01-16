@@ -2,6 +2,7 @@ package org.safehaus.chop.api;
 
 
 import org.safehaus.guicyfig.Default;
+import org.safehaus.guicyfig.FigSingleton;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.Key;
 
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 /** Minimal requirements for runner information. */
+@FigSingleton
 public interface RunnerFig extends GuicyFig {
 
 

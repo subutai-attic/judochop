@@ -3,6 +3,8 @@ package org.safehaus.chop.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.safehaus.chop.api.RunnerFig;
 import org.safehaus.chop.api.StoreService;
@@ -45,6 +47,8 @@ public class SetupMojo extends MainMojo {
         this.maximumRunners = mojo.maximumRunners;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
     }
@@ -114,7 +118,8 @@ public class SetupMojo extends MainMojo {
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
             StoreService store = injector.getInstance( StoreService.class );
             Collection<Instance> activeInstances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
-            Collection<String> activeInstanceHostnames = new ArrayList<String>( activeInstances.size() );
+
+            Set<String> activeInstanceHostnames = new HashSet<String>( activeInstances.size() );
             for ( Instance instance : activeInstances ) {
                 activeInstanceHostnames.add( instance.getPublicDnsName() );
             }

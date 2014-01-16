@@ -34,12 +34,6 @@ public class TimeTracker extends Tracker {
 
 
     @Override
-    public int getRunners() {
-        return timeChop.runners();
-    }
-
-
-    @Override
     public boolean getSaturate() {
         return timeChop.saturate();
     }

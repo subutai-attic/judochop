@@ -62,7 +62,7 @@
           <accessKey>${aws.s3.key}</accessKey>
           <secretKey>${aws.s3.secret}</secretKey>
           <bucketName>${aws.s3.bucket}</bucketName>
-          <managerAppUsername>admin</managerAppUsername>
+          <managerAppUsername>${manager.app.username}</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
           <testPackageBase>org.safehaus.chop.example</testPackageBase>
           <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
@@ -70,7 +70,7 @@
           <amiID>${ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
           <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
-          <minimumRunners>1</minimumRunners>
+          <minimumRunners>3</minimumRunners>
           <maximumRunners>8</maximumRunners>
           <securityGroupExceptions>
             <param>${myip.address}/32:8080</param>
