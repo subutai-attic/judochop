@@ -25,16 +25,67 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 
-/** Class used to add the server's certificate to the KeyStore with your trusted certificates. */
-public class InstallCert {
-    private static final Logger LOG = LoggerFactory.getLogger( InstallCert.class );
+import static org.safehaus.chop.api.Constants.RUNNER_WAR;
+
+
+/**
+ * General useful utility methods used in the Chop System.
+ */
+public class ChopUtils {
+    private static final Logger LOG = LoggerFactory.getLogger( ChopUtils.class );
+    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
+
 
     static {
         System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
     }
 
 
+    /**
+     * Calculates the testBase: the portion of the key or the path to the test's
+     * runner.war but not including it. This usually has the 'tests'
+     * container/folder in it followed by the shortened version UUID: for
+     * example a project whose war is tests/70a4673b/runner.war will have
+     * the testBase of tests/70a4673b/. The last '/' will always be included.
+     *
+     * @param project the project who's testBase to calculate
+     * @return the testBase of the project
+     * @throws NullPointerException if the project is null or it's loadKey property is null
+     */
+    public static String getTestBase( Project project ) {
+        Preconditions.checkNotNull( project, "The project cannot be null." );
+        return getTestBase( project.getLoadKey() );
+    }
+
+
+    /**
+     * Calculates the testBase: the portion of the key or the path to the test's
+     * runner.war but not including it. This usually has the 'tests'
+     * container/folder in it followed by the shortened version UUID: for
+     * example a project whose war is 'tests/70a4673b/runner.war' will have
+     * the testBase of tests/70a4673b/. The last '/' will always be included.
+     *
+     * @param loadKey the loadKey of a project: i.e. 'tests/70a4673b/runner.war'
+     * @return the testBase of the project
+     * @throws NullPointerException if the loadKey is null
+     */
+    public static String getTestBase( String loadKey ) {
+        Preconditions.checkNotNull( loadKey, "The loadKey argument cannot be null." );
+        return loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+    }
+
+
+    /**
+     * Installs a certificate from the server into a local certificate store.
+     *
+     * @param host the HTTPS base server host to get the certificate from
+     * @param port the port of the server
+     * @param passphrase the passphrase to access/set the cert store if it does not
+     * exist, defaults to "changeit" if null is provided
+     * @throws Exception if something goes wrong
+     */
     public static void installCert( String host, int port, char[] passphrase ) throws Exception {
 
         if ( passphrase == null ) {
@@ -42,11 +93,11 @@ public class InstallCert {
         }
 
         File file = new File( "jssecacerts" );
-        if ( file.isFile() == false ) {
+        if ( !file.isFile() ) {
             char SEP = File.separatorChar;
             File dir = new File( System.getProperty( "java.home" ) + SEP + "lib" + SEP + "security" );
             file = new File( dir, "jssecacerts" );
-            if ( file.isFile() == false ) {
+            if ( !file.isFile() ) {
                 file = new File( dir, "cacerts" );
             }
         }
@@ -103,7 +154,7 @@ public class InstallCert {
             return;
         }
 
-        BufferedReader reader = new BufferedReader( new InputStreamReader( System.in ) );
+        new BufferedReader( new InputStreamReader( System.in ) );
 
         LOG.debug( "Server sent " + chain.length + " certificate(s):" );
         MessageDigest sha1 = MessageDigest.getInstance( "SHA1" );
@@ -133,15 +184,12 @@ public class InstallCert {
     }
 
 
-    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
-
-
     private static String toHexString( byte[] bytes ) {
         StringBuilder sb = new StringBuilder( bytes.length * 3 );
         for ( int b : bytes ) {
             b &= 0xff;
-            sb.append( HEXDIGITS[b >> 4] );
-            sb.append( HEXDIGITS[b & 15] );
+            sb.append( HEX_DIGITS[b >> 4] );
+            sb.append( HEX_DIGITS[b & 15] );
             sb.append( ' ' );
         }
         return sb.toString();

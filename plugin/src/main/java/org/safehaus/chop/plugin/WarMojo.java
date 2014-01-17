@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -126,26 +126,26 @@ public class WarMojo extends MainMojo {
             // Insert all properties acquired in runtime and overwrite existing ones
             String gitUrl = Utils.getGitRemoteUrl( gitConfigDirectory );
             String warMd5 = Utils.getMD5( timeStamp, commitId );
-            prop.setProperty( ProjectFig.GIT_UUID_KEY, commitId );
-            prop.setProperty( ProjectFig.GIT_URL_KEY, gitUrl );
-            prop.setProperty( ProjectFig.CREATE_TIMESTAMP_KEY, timeStamp );
-            prop.setProperty( ProjectFig.GROUP_ID_KEY, this.project.getGroupId() );
-            prop.setProperty( ProjectFig.ARTIFACT_ID_KEY, this.project.getArtifactId() );
-            prop.setProperty( ProjectFig.PROJECT_VERSION_KEY, this.project.getVersion() );
-            prop.setProperty( ProjectFig.TEST_PACKAGE_BASE, testPackageBase );
+            prop.setProperty( Project.GIT_UUID_KEY, commitId );
+            prop.setProperty( Project.GIT_URL_KEY, gitUrl );
+            prop.setProperty( Project.CREATE_TIMESTAMP_KEY, timeStamp );
+            prop.setProperty( Project.GROUP_ID_KEY, this.project.getGroupId() );
+            prop.setProperty( Project.ARTIFACT_ID_KEY, this.project.getArtifactId() );
+            prop.setProperty( Project.PROJECT_VERSION_KEY, this.project.getVersion() );
+            prop.setProperty( Project.TEST_PACKAGE_BASE, testPackageBase );
             prop.setProperty( AmazonFig.AWS_BUCKET_KEY, bucketName );
             prop.setProperty( AmazonFig.AWSKEY_KEY, accessKey );
             prop.setProperty( AmazonFig.AWS_SECRET_KEY, secretKey );
-            prop.setProperty( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
-            prop.setProperty( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
-            prop.setProperty( ProjectFig.WAR_MD5_KEY, warMd5 );
+            prop.setProperty( Project.MANAGER_USERNAME_KEY, managerAppUsername );
+            prop.setProperty( Project.MANAGER_PASSWORD_KEY, managerAppPassword );
+            prop.setProperty( Project.WAR_MD5_KEY, warMd5 );
 
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
 
-            prop.setProperty( ProjectFig.LOAD_KEY, CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR );
-            prop.setProperty( ProjectFig.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
-            prop.setProperty( ProjectFig.CHOP_VERSION_KEY, plugin.getVersion() );
+            prop.setProperty( Project.LOAD_KEY, TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR );
+            prop.setProperty( Project.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
+            prop.setProperty( Project.CHOP_VERSION_KEY, plugin.getVersion() );
 
             // Save the newly formed properties file under WEB-INF/classes/project.properties
             FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );

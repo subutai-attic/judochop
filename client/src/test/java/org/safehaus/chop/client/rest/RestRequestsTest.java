@@ -10,10 +10,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
-import org.safehaus.chop.api.StoreService;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Store;
+import org.safehaus.chop.client.ChopClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +27,16 @@ import static org.safehaus.chop.client.rest.RestRequests.status;
  *
  */
 @RunWith(JukitoRunner.class)
-@UseModules(PerftestClientModule.class)
+@UseModules(ChopClientModule.class)
 public class RestRequestsTest {
+
+    static {
+        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject
-    StoreService service;
+    Store service;
 
 
     @Before
@@ -47,15 +53,15 @@ public class RestRequestsTest {
 
     @Test @Ignore
     public void testStart() {
-        Map<String, RunnerFig> runners = service.getRunners();
+        Map<String, Runner> runners = service.getRunners();
 
         if ( runners.size() == 0 ) {
             LOG.debug( "No drivers found, cannot start test" );
             return;
         }
 
-        RunnerFig firstRunnerFig = runners.values().iterator().next();
-        Result result = RestRequests.start( firstRunnerFig );
+        Runner firstRunner = runners.values().iterator().next();
+        Result result = RestRequests.start( firstRunner );
 
         if ( !result.getStatus() ) {
             LOG.debug( "Could not get the result of start request" );
@@ -66,14 +72,16 @@ public class RestRequestsTest {
     }
 
 
-    @Test
-    public void testStatus() {
-        Map<String, RunnerFig> runners = service.getRunners();
+    @Test @Ignore
+    public void testStatus() throws Exception {
+        Map<String, Runner> runners = service.getRunners();
 
-        for ( RunnerFig runnerFig : runners.values() ) {
-            if ( runnerFig.getHostname() != null ) {
-                Result result = status( runnerFig );
-                LOG.debug( "Status result of runnerFig {} = {}", runnerFig.getHostname(), result );
+        for ( Runner runner : runners.values() ) {
+            if ( runner.getHostname() != null ) {
+                LOG.info( "Getting status for host: " + runner.getHostname() );
+                ChopUtils.installCert( runner.getHostname(), runner.getServerPort(), null );
+                Result result = status( runner );
+                LOG.debug( "Status result of runner {} = {}", runner.getHostname(), result );
             }
         }
     }

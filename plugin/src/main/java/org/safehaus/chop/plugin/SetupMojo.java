@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.safehaus.chop.api.RunnerFig;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 
@@ -79,7 +79,7 @@ public class SetupMojo extends MainMojo {
                 throw new MojoExecutionException( "Setting up instances failed" );
             }
 
-            int port = Integer.parseInt( RunnerFig.DEFAULT_SERVER_PORT );
+            int port = Integer.parseInt( Runner.DEFAULT_SERVER_PORT );
             ArrayList<Integer> ports = new ArrayList<Integer>();
             ports.add( port );
             ec2Manager.updateSecurityGroupRecords( ports, false );
@@ -116,7 +116,7 @@ public class SetupMojo extends MainMojo {
             }
 
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
-            StoreService store = injector.getInstance( StoreService.class );
+            Store store = injector.getInstance( Store.class );
             Collection<Instance> activeInstances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
 
             Set<String> activeInstanceHostnames = new HashSet<String>( activeInstances.size() );

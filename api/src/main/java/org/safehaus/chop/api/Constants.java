@@ -19,7 +19,7 @@ public interface Constants {
     String RUNNERS_PATH = "runners";
 
     /** path to the tests */
-    String CONFIGS_PATH = "tests";
+    String TESTS_PATH = "tests";
 
     /** the suffix used for the run summary json file */
     String SUMMARY_SUFFIX = "-summary.json";

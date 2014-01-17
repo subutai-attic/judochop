@@ -10,7 +10,7 @@ public class BaseResult implements Result {
     private String message;
     private boolean status;
     private State state;
-    private ProjectFig project;
+    private Project project;
 
 
     public BaseResult( String endpoint, boolean status, String message, State state ) {
@@ -21,7 +21,7 @@ public class BaseResult implements Result {
     }
 
 
-    public BaseResult( String endpoint, boolean status, String message, State state, ProjectFig project ) {
+    public BaseResult( String endpoint, boolean status, String message, State state, Project project ) {
         this.endpoint = endpoint;
         this.status = status;
         this.message = message;
@@ -83,12 +83,12 @@ public class BaseResult implements Result {
 
     @Override
     @JsonProperty
-    public ProjectFig getProject() {
+    public Project getProject() {
         return project;
     }
 
 
-    public void setProject( final ProjectFig project ) {
+    public void setProject( final Project project ) {
         this.project = project;
     }
 }

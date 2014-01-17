@@ -1,7 +1,6 @@
 package org.safehaus.chop.runner;
 
 
-import org.safehaus.chop.api.ISummary;
 import org.safehaus.chop.runner.drivers.IterationTracker;
 import org.safehaus.chop.runner.drivers.TimeTracker;
 import org.safehaus.chop.runner.drivers.Tracker;
@@ -19,7 +18,7 @@ import com.google.common.base.Preconditions;
  * Feel free to stuff any kind of cumulative summary information into this entity.
  * It might be nice to include some percentile information as well.
  */
-public class Summary implements ISummary {
+public class Summary implements org.safehaus.chop.api.Summary {
     private final int runNumber;
 
     private long iterations;

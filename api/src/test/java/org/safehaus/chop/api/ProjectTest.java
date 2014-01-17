@@ -15,14 +15,14 @@ import static junit.framework.TestCase.assertNotNull;
 /**
  * Tests basic project creation.
  */
-public class ProjectFigTest {
-    private static final Logger LOG = LoggerFactory.getLogger( ProjectFigTest.class );
+public class ProjectTest {
+    private static final Logger LOG = LoggerFactory.getLogger( ProjectTest.class );
 
 
     @Test
     public void testProject() {
-        Injector injector = Guice.createInjector( new GuicyFigModule( ProjectFig.class ) );
-        ProjectFig project = injector.getInstance( ProjectFig.class );
+        Injector injector = Guice.createInjector( new GuicyFigModule( Project.class ) );
+        Project project = injector.getInstance( Project.class );
         assertNotNull( project );
         LOG.debug( "project =\n{}", project );
     }

@@ -13,8 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.RunnerFig;
-import org.safehaus.chop.api.StoreService;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Store;
 import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,36 +39,36 @@ public class AmazonS3StoreTest {
     private String keyName = System.getProperty( "keyName" );
 
 
-    public RunnerFig runnerFig;
+    public Runner runner;
 
 
     @Inject
-    StoreService service;
+    Store service;
 
 
     @Before
     public void setup() {
-        runnerFig = Guice.createInjector( new GuicyFigModule( RunnerFig.class ) ).getInstance( RunnerFig.class );
+        runner = Guice.createInjector( new GuicyFigModule( Runner.class ) ).getInstance( Runner.class );
         service.start();
     }
 
 
     @After
     public void tearDown() {
-        runnerFig = null;
+        runner = null;
         service.stop();
     }
 
 
     @Test
     public void testGetRunners() {
-        Map<String, RunnerFig> runners = service.getRunners();
+        Map<String, Runner> runners = service.getRunners();
         assertNotNull( runners );
         int runnerCount = 0;
 
-        for ( RunnerFig runnerFig : runners.values() ) {
+        for ( Runner runner : runners.values() ) {
             runnerCount++;
-            LOG.debug( "Got runnerFig {}", runnerFig );
+            LOG.debug( "Got runner {}", runner );
         }
 
         if ( runnerCount == 0 ) {
@@ -79,27 +79,27 @@ public class AmazonS3StoreTest {
 
     @Test
     public void testRunnersListing() {
-        Map<String, RunnerFig> runners = service.getRunners( runnerFig );
+        Map<String, Runner> runners = service.getRunners( runner );
 
-        for ( RunnerFig runnerFig : runners.values() ) {
-            LOG.debug( "Got runnerFig {}", runnerFig );
+        for ( Runner runner : runners.values() ) {
+            LOG.debug( "Got runner {}", runner );
         }
     }
 
 
     @Test
     public void testRegisterUnregister() {
-        String oldHostname = runnerFig.getHostname();
-        runnerFig.bypass( RunnerFig.HOSTNAME_KEY, "foobar-host" );
-        service.register( runnerFig );
-        service.unregister( runnerFig );
-        runnerFig.bypass( RunnerFig.HOSTNAME_KEY, oldHostname );
+        String oldHostname = runner.getHostname();
+        runner.bypass( Runner.HOSTNAME_KEY, "foobar-host" );
+        service.register( runner );
+        service.unregister( runner );
+        runner.bypass( Runner.HOSTNAME_KEY, oldHostname );
     }
 
 
     @Test
     public void testDeleteGhostRunners() {
-        final String runnerName = "chop-runnerFig";
+        final String runnerName = "chop-runner";
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
 
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
@@ -115,7 +115,7 @@ public class AmazonS3StoreTest {
     public static class TestModule extends JukitoModule {
         @Override
         protected void configureTest() {
-            install( new GuicyFigModule( RunnerFig.class) );
+            install( new GuicyFigModule( Runner.class) );
         }
     }
 }

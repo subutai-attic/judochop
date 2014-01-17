@@ -17,11 +17,11 @@ import com.google.inject.Inject;
 
 
 /**
- * Builds a ProjectFig for use many by the plugin.
+ * Builds a Project for use many by the plugin.
  */
-public class ProjectFigBuilder {
+public class ProjectBuilder {
     private Properties props;
-    private ProjectFig supplied;
+    private Project supplied;
     private String testPackageBase;
     private String createTimestamp;
     private String artifactId;
@@ -38,18 +38,18 @@ public class ProjectFigBuilder {
     private String managerEndpoint;
 
 
-    public ProjectFigBuilder() {
+    public ProjectBuilder() {
         // do nothing - supplied will be injected if in Guice env
     }
 
 
-    public ProjectFigBuilder( Properties props ) {
+    public ProjectBuilder( Properties props ) {
         this.props = props;
         updateValues();
     }
 
 
-    public ProjectFigBuilder( ProjectFig project ) {
+    public ProjectBuilder( Project project ) {
         // set the supplied project - this is manually provided
         this.supplied = project;
         updateValues();
@@ -57,7 +57,7 @@ public class ProjectFigBuilder {
 
 
     @Inject
-    public void setProject( ProjectFig project ) {
+    public void setProject( Project project ) {
         if ( supplied == null ) {
             supplied = project;
             updateValues();
@@ -84,165 +84,165 @@ public class ProjectFigBuilder {
         }
 
         if ( props != null ) {
-            if ( props.containsKey( ProjectFig.LOAD_TIME_KEY ) ) {
-                this.loadTime = props.getProperty( ProjectFig.LOAD_TIME_KEY );
+            if ( props.containsKey( Project.LOAD_TIME_KEY ) ) {
+                this.loadTime = props.getProperty( Project.LOAD_TIME_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.LOAD_KEY ) ) {
-                this.loadKey = props.getProperty( ProjectFig.LOAD_KEY );
+            if ( props.containsKey( Project.LOAD_KEY ) ) {
+                this.loadKey = props.getProperty( Project.LOAD_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.ARTIFACT_ID_KEY ) ) {
-                this.artifactId = props.getProperty( ProjectFig.ARTIFACT_ID_KEY );
+            if ( props.containsKey( Project.ARTIFACT_ID_KEY ) ) {
+                this.artifactId = props.getProperty( Project.ARTIFACT_ID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.CHOP_VERSION_KEY ) ) {
-                this.chopVersion = props.getProperty( ProjectFig.CHOP_VERSION_KEY );
+            if ( props.containsKey( Project.CHOP_VERSION_KEY ) ) {
+                this.chopVersion = props.getProperty( Project.CHOP_VERSION_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.CREATE_TIMESTAMP_KEY ) ) {
-                this.createTimestamp = props.getProperty( ProjectFig.CREATE_TIMESTAMP_KEY );
+            if ( props.containsKey( Project.CREATE_TIMESTAMP_KEY ) ) {
+                this.createTimestamp = props.getProperty( Project.CREATE_TIMESTAMP_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GIT_URL_KEY ) ) {
-                this.vcsRepoUrl = props.getProperty( ProjectFig.GIT_URL_KEY );
+            if ( props.containsKey( Project.GIT_URL_KEY ) ) {
+                this.vcsRepoUrl = props.getProperty( Project.GIT_URL_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GIT_UUID_KEY ) ) {
-                this.commitId = props.getProperty( ProjectFig.GIT_UUID_KEY );
+            if ( props.containsKey( Project.GIT_UUID_KEY ) ) {
+                this.commitId = props.getProperty( Project.GIT_UUID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.GROUP_ID_KEY ) ) {
-                this.groupId = props.getProperty( ProjectFig.GROUP_ID_KEY );
+            if ( props.containsKey( Project.GROUP_ID_KEY ) ) {
+                this.groupId = props.getProperty( Project.GROUP_ID_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_PASSWORD_KEY ) ) {
-                this.managerPassword = props.getProperty( ProjectFig.MANAGER_PASSWORD_KEY );
+            if ( props.containsKey( Project.MANAGER_PASSWORD_KEY ) ) {
+                this.managerPassword = props.getProperty( Project.MANAGER_PASSWORD_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_USERNAME_KEY ) ) {
-                this.managerUsername = props.getProperty( ProjectFig.MANAGER_USERNAME_KEY );
+            if ( props.containsKey( Project.MANAGER_USERNAME_KEY ) ) {
+                this.managerUsername = props.getProperty( Project.MANAGER_USERNAME_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.MANAGER_ENDPOINT_KEY ) ) {
-                this.managerEndpoint = props.getProperty( ProjectFig.MANAGER_ENDPOINT_KEY );
+            if ( props.containsKey( Project.MANAGER_ENDPOINT_KEY ) ) {
+                this.managerEndpoint = props.getProperty( Project.MANAGER_ENDPOINT_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.PROJECT_VERSION_KEY ) ) {
-                this.version = props.getProperty( ProjectFig.PROJECT_VERSION_KEY );
+            if ( props.containsKey( Project.PROJECT_VERSION_KEY ) ) {
+                this.version = props.getProperty( Project.PROJECT_VERSION_KEY );
             }
 
-            if ( props.containsKey( ProjectFig.TEST_PACKAGE_BASE ) ) {
-                this.testPackageBase = props.getProperty( ProjectFig.TEST_PACKAGE_BASE );
+            if ( props.containsKey( Project.TEST_PACKAGE_BASE ) ) {
+                this.testPackageBase = props.getProperty( Project.TEST_PACKAGE_BASE );
             }
 
-            if ( props.containsKey( ProjectFig.WAR_MD5_KEY ) ) {
-                this.warMd5 = props.getProperty( ProjectFig.WAR_MD5_KEY );
+            if ( props.containsKey( Project.WAR_MD5_KEY ) ) {
+                this.warMd5 = props.getProperty( Project.WAR_MD5_KEY );
             }
         }
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setTestPackageBase( final String testPackageBase ) {
+    public ProjectBuilder setTestPackageBase( final String testPackageBase ) {
         this.testPackageBase = testPackageBase;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setCreateTimestamp( final String timeStamp ) {
+    public ProjectBuilder setCreateTimestamp( final String timeStamp ) {
         this.createTimestamp = timeStamp;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setArtifactId( final String artifactId ) {
+    public ProjectBuilder setArtifactId( final String artifactId ) {
         this.artifactId = artifactId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setProjectVersion( final String version ) {
+    public ProjectBuilder setProjectVersion( final String version ) {
         this.version = version;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setGroupId( final String groupId ) {
+    public ProjectBuilder setGroupId( final String groupId ) {
         this.groupId = groupId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setVcsRepoUrl( final String vcsRepoUrl ) {
+    public ProjectBuilder setVcsRepoUrl( final String vcsRepoUrl ) {
         this.vcsRepoUrl = vcsRepoUrl;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setVcsVersion( final String commitId ) {
+    public ProjectBuilder setVcsVersion( final String commitId ) {
         this.commitId = commitId;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setLoadKey( final String loadKey ) {
+    public ProjectBuilder setLoadKey( final String loadKey ) {
         this.loadKey = loadKey;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setChopVersion( final String version ) {
+    public ProjectBuilder setChopVersion( final String version ) {
         this.chopVersion = version;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setWarMd5( final String warMd5 ) {
+    public ProjectBuilder setWarMd5( final String warMd5 ) {
         this.warMd5 = warMd5;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setLoadTime( final String loadTime ) {
+    public ProjectBuilder setLoadTime( final String loadTime ) {
         this.loadTime = loadTime;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerUsername( final String managerUsername ) {
+    public ProjectBuilder setManagerUsername( final String managerUsername ) {
         this.managerUsername = managerUsername;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerPassword( final String managerPassword ) {
+    public ProjectBuilder setManagerPassword( final String managerPassword ) {
         this.managerPassword = managerPassword;
         return this;
     }
 
 
     @JsonProperty
-    public ProjectFigBuilder setManagerEndpoint( final String managerEndpoint ) {
+    public ProjectBuilder setManagerEndpoint( final String managerEndpoint ) {
         this.managerEndpoint = managerEndpoint;
         return this;
     }
 
 
-    public ProjectFig getProject() {
-        return new ProjectFig() {
+    public Project getProject() {
+        return new Project() {
             @Override
             public String getChopVersion() {
                 return chopVersion;
@@ -434,7 +434,7 @@ public class ProjectFigBuilder {
             @JsonIgnore
             @Override
             public Class getFigInterface() {
-                return ProjectFig.class;
+                return Project.class;
             }
 
 

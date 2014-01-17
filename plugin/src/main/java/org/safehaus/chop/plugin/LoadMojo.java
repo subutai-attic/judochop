@@ -1,26 +1,22 @@
 package org.safehaus.chop.plugin;
 
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
-import org.safehaus.chop.api.InstallCert;
-import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.ChopUtils;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.client.ResponseInfo;
 import org.safehaus.chop.client.ssh.SSHCommands;
 
@@ -87,8 +83,8 @@ public class LoadMojo extends MainMojo {
         setupMojo.execute();
         getLog().info( "Cluster is prepared" );
 
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         /* ------------------------------------------------------------------------------
          * Instances may be running but may not be registered their runner information in
@@ -120,36 +116,8 @@ public class LoadMojo extends MainMojo {
          * need to build the war and thus invoke the war mojo.
          */
 
-
-        File projectFile = new File( getProjectFileToUploadPath() );
-        if ( ! projectFile.exists() ) {
-            getLog().warn( "It seems as though the project properties file " + projectFile
-                    + " does not exist. Creating it and the war now." );
-            WarMojo warMojo = new WarMojo( this );
-            warMojo.execute();
-
-            if ( projectFile.exists() ) {
-                getLog().info( "War is generated and project file exists." );
-            }
-            else {
-                throw new MojoExecutionException( "Failed to generate the project.properties." );
-            }
-        }
-
         // Load the project configuration from the file system
-        ProjectFig projectFig;
-        try {
-            Properties props = new Properties();
-            props.load( new FileInputStream( projectFile ) );
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
-            projectFig = builder.getProject();
-        }
-        catch ( Exception e ) {
-            getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
-                    e );
-            throw new MojoExecutionException(
-                    "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
-        }
+        Project project = loadProjectConfiguration();
 
         /* ------------------------------------------------------------------------------
          * Before dealing with instances let's check and make sure the latest runner
@@ -174,12 +142,12 @@ public class LoadMojo extends MainMojo {
         // Check if the latest war is deployed on Store
         boolean testUpToDate = false;
         try {
-            Set<ProjectFig> tests = client.getProjectConfigs();
-            for ( ProjectFig test : tests ) {
-                if ( projectFig.getVcsRepoUrl() != null &&
-                        projectFig.getWarMd5() != null &&
-                        projectFig.getVcsVersion().equals( test.getVcsVersion() ) &&
-                        projectFig.getWarMd5().equals( test.getWarMd5() ) ) {
+            Set<Project> tests = client.getProjectConfigs();
+            for ( Project test : tests ) {
+                if ( project.getVcsRepoUrl() != null &&
+                        project.getWarMd5() != null &&
+                        project.getVcsVersion().equals( test.getVcsVersion() ) &&
+                        project.getWarMd5().equals( test.getWarMd5() ) ) {
                     testUpToDate = true;
                     break;
                 }
@@ -211,11 +179,11 @@ public class LoadMojo extends MainMojo {
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
         overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
         overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
-        overrides.put( ProjectFig.MANAGER_USERNAME_KEY, managerAppUsername );
-        overrides.put( ProjectFig.MANAGER_PASSWORD_KEY, managerAppPassword );
+        overrides.put( Project.MANAGER_USERNAME_KEY, managerAppUsername );
+        overrides.put( Project.MANAGER_PASSWORD_KEY, managerAppPassword );
 
         // @todo need to figure out why the default value does not hold for the manager endpoint
-        // overrides.put( ProjectFig.MANAGER_ENDPOINT_KEY, projectFig.getManagerEndpoint() );
+        // overrides.put( Project.MANAGER_ENDPOINT_KEY, project.getManagerEndpoint() );
 
         // This array holds the instances that have loaded a new runner, so absolutely requires restart on container
         Collection<Instance> instancesToRestart = new ArrayList<Instance>( instances.size() );
@@ -223,22 +191,22 @@ public class LoadMojo extends MainMojo {
         for ( Instance instance : instances ) {
             getLog().info( "Checking out instance " + instance.getPublicDnsName() );
 
-            RunnerFig runnerFig = injector.getInstance( RunnerFig.class );
-            runnerFig.bypass( RunnerFig.HOSTNAME_KEY, instance.getPublicDnsName() );
-            runnerFig.bypass( RunnerFig.SERVER_PORT_KEY, RunnerFig.DEFAULT_SERVER_PORT );
-            runnerFig.bypass( RunnerFig.IPV4_KEY, instance.getPublicIpAddress() );
-            runnerFig.bypass( RunnerFig.URL_KEY,
-                    "https://" + instance.getPublicDnsName() + ":" + RunnerFig.DEFAULT_SERVER_PORT + "/" );
+            Runner runner = injector.getInstance( Runner.class );
+            runner.bypass( Runner.HOSTNAME_KEY, instance.getPublicDnsName() );
+            runner.bypass( Runner.SERVER_PORT_KEY, Runner.DEFAULT_SERVER_PORT );
+            runner.bypass( Runner.IPV4_KEY, instance.getPublicIpAddress() );
+            runner.bypass( Runner.URL_KEY,
+                    "https://" + instance.getPublicDnsName() + ":" + Runner.DEFAULT_SERVER_PORT + "/" );
 
             try {
-                InstallCert.installCert( runnerFig.getHostname(), runnerFig.getServerPort(), null );
+                ChopUtils.installCert( runner.getHostname(), runner.getServerPort(), null );
             }
             catch ( Exception e ) {
                 getLog().error( "Failed to install the server cert.", e );
             }
 
             // First let's check the instance's status and what it is running
-            Result result = client.status( runnerFig );
+            Result result = client.status( runner );
             getLog().info( "Instance " + instance.getPublicDnsName() + " is in state " + result.getState() );
             getLog().info( "Instance " + instance.getPublicDnsName() + " is has the following project setup " + result
                     .getProject() );
@@ -248,7 +216,7 @@ public class LoadMojo extends MainMojo {
                         .getState() );
             }
 
-            if ( result.getProject() != null && result.getProject().getWarMd5().equals( projectFig.getWarMd5() ) ) {
+            if ( result.getProject() != null && result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
                 getLog().info(
                         "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
                 continue;
@@ -258,8 +226,8 @@ public class LoadMojo extends MainMojo {
             String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
-            String loadKey = CONFIGS_PATH + '/' + uuid + '/' + RUNNER_WAR;
-            result = client.load( runnerFig, loadKey, overrides );
+            String loadKey = TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR;
+            result = client.load( runner, loadKey, overrides );
 
             instancesToRestart.add( instance );
 

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.safehaus.chop.api.InstallCert;
+import org.safehaus.chop.api.ChopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,6 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
@@ -577,7 +576,7 @@ public class EC2Manager {
         }
 
         try {
-            InstallCert.installCert( "ec2.us-east-1.amazonaws.com", 443, null );
+            ChopUtils.installCert( "ec2.us-east-1.amazonaws.com", 443, null );
         }
         catch ( Exception e ) {
             e.printStackTrace();

@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.ISummary;
-import org.safehaus.chop.api.ProjectFig;
+import org.safehaus.chop.api.Summary;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 
 
 /**
@@ -20,7 +20,7 @@ import org.safehaus.chop.api.RunnerFig;
  * <ul> <li>listing registered drivers in the cluster</li> <li>listing and deleting uploaded test jars and their test
  * information</li> <li>downloading and collating test run results from drivers</li> </ul>
  */
-public interface PerftestClient extends Constants {
+public interface ChopClient extends Constants {
 
     void deleteTests();
 
@@ -29,7 +29,7 @@ public interface PerftestClient extends Constants {
      *
      * @return the set of Perftest runner nodes
      */
-    Collection<RunnerFig> getRunners();
+    Collection<Runner> getRunners();
 
 
     /**
@@ -37,7 +37,7 @@ public interface PerftestClient extends Constants {
      *
      * @return the set of performance tests
      */
-    Set<ProjectFig> getProjectConfigs() throws IOException;
+    Set<Project> getProjectConfigs() throws IOException;
 
 
     /**
@@ -45,7 +45,7 @@ public interface PerftestClient extends Constants {
      *
      * @return the set of runs that have taken place on a test.
      */
-    Set<ISummary> getRuns( ProjectFig test );
+    Set<Summary> getRuns( Project test );
 
 
     /**
@@ -55,7 +55,7 @@ public interface PerftestClient extends Constants {
      *
      * @return a collated version of the results from each runner
      */
-    File getResults( ISummary run ) throws IOException;
+    File getResults( Summary run ) throws IOException;
 
 
     /**
@@ -63,7 +63,7 @@ public interface PerftestClient extends Constants {
      *
      * @param run the run information and its results to delete.
      */
-    void delete( ISummary run );
+    void delete( Summary run );
 
 
     /**
@@ -71,31 +71,31 @@ public interface PerftestClient extends Constants {
      *
      * @param test the test to
      */
-    void delete( ProjectFig test );
+    void delete( Project test );
 
 
     /**
      * Loads a new test to be run by the runner.
      *
-     * @param runnerFig the runnerFig to use for propagating the load request
+     * @param runner the runner to use for propagating the load request
      * @param testKey the test information associated with the test to load
      * @param storeProps an optional set of store property overrides
      *
      * @return the results associated with the operation
      */
-    Result load( RunnerFig runnerFig, String testKey, Map<String,String> storeProps );
+    Result load( Runner runner, String testKey, Map<String,String> storeProps );
 
 
-    Result start( RunnerFig runnerFig );
+    Result start( Runner runner );
 
 
-    Result stop( RunnerFig runnerFig );
+    Result stop( Runner runner );
 
 
-    Result status( RunnerFig runnerFig );
+    Result status( Runner runner );
 
 
-    Result reset( RunnerFig runnerFig );
+    Result reset( Runner runner );
 
 
     /**
@@ -118,5 +118,5 @@ public interface PerftestClient extends Constants {
      *
      * @return the first available live runner
      */
-    RunnerFig getLiveRunner();
+    Runner getLiveRunner();
 }

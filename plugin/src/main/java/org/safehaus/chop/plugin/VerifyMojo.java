@@ -6,12 +6,12 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Set;
 
-import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.api.ProjectFigBuilder;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -25,19 +25,19 @@ public class VerifyMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         // Check if the latest war is deployed on Store
         boolean result = false;
         try {
             Properties props = new Properties();
             props.load( new FileInputStream( new File( getProjectFileToUploadPath() ) ) );
-            ProjectFigBuilder builder = new ProjectFigBuilder( props );
-            ProjectFig currentProject = builder.getProject();
-            Set<ProjectFig> tests = client.getProjectConfigs();
+            ProjectBuilder builder = new ProjectBuilder( props );
+            Project currentProject = builder.getProject();
+            Set<Project> tests = client.getProjectConfigs();
 
-            for ( ProjectFig test : tests ) {
+            for ( Project test : tests ) {
                 if ( currentProject.getVcsVersion().equals( test.getVcsVersion() ) &&
                         currentProject.getWarMd5().equals( test.getWarMd5() ) ) {
                     result = true;

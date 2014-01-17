@@ -4,10 +4,10 @@ package org.safehaus.chop.plugin;
 import java.util.Collection;
 
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.RunnerFig;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.client.PerftestClient;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClient;
+import org.safehaus.chop.client.ChopClientModule;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -55,12 +55,12 @@ public class ResetMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        Injector injector = Guice.createInjector( new PerftestClientModule() );
-        PerftestClient client = injector.getInstance( PerftestClient.class );
+        Injector injector = Guice.createInjector( new ChopClientModule() );
+        ChopClient client = injector.getInstance( ChopClient.class );
 
         getLog().info( "Resetting stopped runner(s)" );
 
-        Collection<RunnerFig> runners = client.getRunners();
+        Collection<Runner> runners = client.getRunners();
 
         if ( runners.size() == 0 ) {
             throw new MojoExecutionException( "There is no runner found" );
@@ -68,7 +68,7 @@ public class ResetMojo extends MainMojo {
 
         Result result;
         int resetCount = 0;
-        for ( RunnerFig runner : runners ) {
+        for ( Runner runner : runners ) {
             result = client.reset( runner );
             if( ! result.getStatus() || result.getState() != State.READY ) {
                 getLog().info( "Could not reset runner at " + result.getEndpoint() );

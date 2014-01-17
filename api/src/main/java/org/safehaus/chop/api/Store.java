@@ -2,47 +2,50 @@ package org.safehaus.chop.api;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 
-/** The S3 Service is used to register the node so other nodes in the same perftest formation can access it. */
-public interface StoreService {
+
+/** The Store is used to register the node so other nodes in the same perftest formation can access it. */
+public interface Store {
 
     /**
-     * Starts up this StoreService.
+     * Starts up this Store.
      */
     void start();
 
     /**
-     * Checks if this StoreService has started.
+     * Checks if this Store has started.
      *
      * @return true if started, false otherwise
      */
     boolean isStarted();
 
     /**
-     * Stops this StoreService.
+     * Stops this Store.
      */
     void stop();
 
     /**
      * Gets the runner instance information from the store as a map of their keys to
-     * their RunnerFig information.
+     * their Runner information.
      *
-     * @return the keys mapped to RunnerFig information
+     * @return the keys mapped to Runner information
      */
-    Map<String, RunnerFig> getRunners();
+    Map<String, Runner> getRunners();
 
     /**
-     * Gets the runnerFig instance information from the store as a map of keys RunnerFig instances.
+     * Gets the runner instance information from the store as a map of keys Runner instances.
      *
-     * @param runnerFig a runnerFig to exclude from results (none if null)
+     * @param runner a runner to exclude from results (none if null)
      *
-     * @return the keys mapped to RunnerFig instance
+     * @return the keys mapped to Runner instance
      */
-    Map<String, RunnerFig> getRunners( RunnerFig runnerFig );
+    Map<String, Runner> getRunners( Runner runner );
 
     /**
      * Downloads a file from the store by key, and places it in a temporary file returning
@@ -57,6 +60,17 @@ public interface StoreService {
     File download( File tempDir, String runnerWar ) throws Exception;
 
     /**
+     * Downloads files from the store as a folder structure under the specified
+     * results directory with the top most folder being the bucket name.
+     *
+     * @param resultsDirectory the directory to dump all results and summaries into
+     * @param prefix the key or path prefix to use, null applies no prefix
+     * @param filter a filter used to filter out desired candidates to download
+     * @throws Exception if there are problems downloading any items
+     */
+    void download( File resultsDirectory, @Nullable String prefix, FilenameFilter filter ) throws Exception;
+
+    /**
      * Stores the summary and results file for a chop test run into the store.
      *
      * @param project the project associated with the run
@@ -64,14 +78,14 @@ public interface StoreService {
      * @param resultsFile the results log file
      * @param testClass the chopped test class
      */
-    void store( ProjectFig project, ISummary summary, File resultsFile, Class<?> testClass );
+    void store( Project project, Summary summary, File resultsFile, Class<?> testClass );
 
     /**
      * Stores the project test information.
      *
      * @param project the Project object to be serialized and stored
      */
-    void store( ProjectFig project );
+    void store( Project project );
 
     /**
      * Tries to load a Project file based on prepackaged runner metadata: the runner's
@@ -80,7 +94,7 @@ public interface StoreService {
      * @param runnerWar the load key for the runner war
      * @return the Project object if it exists in the store or null if it does not
      */
-    ProjectFig getProject( String runnerWar );
+    Project getProject( String runnerWar );
 
     /**
      * Registers this runner instance by adding its instance information into the
@@ -90,23 +104,23 @@ public interface StoreService {
      *
      * @param runner the runner's configuration instance to be registered
      */
-    void register( RunnerFig runner );
+    void register( Runner runner );
 
     /**
      * Removes this Runner's registration.
      *
      * @param runner the runners information
      */
-    void unregister( RunnerFig runner );
+    void unregister( Runner runner );
 
     /**
      * Scans for projects with test information under the bucket as:
      * </p>
-     * "$CONFIGS_PATH/.*\/$PROJECT_FILE
+     * "$TESTS_PATH/.*\/$PROJECT_FILE
      *
      * @return a set of keys as Strings for test information
      */
-    Set<ProjectFig> getProjects() throws IOException;
+    Set<Project> getProjects() throws IOException;
 
     /**
      * Deletes all the projects in the store.
@@ -130,7 +144,7 @@ public interface StoreService {
      * @param testClass the chopped test to check for completion on
      * @return true if the summary information has been deposited, false otherwise
      */
-    boolean hasCompleted( RunnerFig runner, ProjectFig project, int runNumber, Class<?> testClass );
+    boolean hasCompleted( Runner runner, Project project, int runNumber, Class<?> testClass );
 
     /**
      * Checks the store to find the next available run number starting at 1. This method
@@ -143,9 +157,8 @@ public interface StoreService {
      * in race conditions. During runner initialization this is not a possibility on the
      * same project.
      *
-     * @param runner the runner configuration
      * @param project the project configuration
      * @return the next available run number
      */
-    int getNextRunNumber( RunnerFig runner, ProjectFig project );
+    int getNextRunNumber( Project project );
 }

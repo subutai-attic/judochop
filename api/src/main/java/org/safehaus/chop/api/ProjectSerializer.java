@@ -11,10 +11,10 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 /**
  * Custom serializer for ProjectFigs.
  */
-public class ProjectSerializer extends JsonSerializer<ProjectFig> {
+public class ProjectSerializer extends JsonSerializer<Project> {
 
     @Override
-    public void serialize( final ProjectFig value, final JsonGenerator jgen, final SerializerProvider provider )
+    public void serialize( final Project value, final JsonGenerator jgen, final SerializerProvider provider )
             throws IOException {
         jgen.writeStartObject();
 

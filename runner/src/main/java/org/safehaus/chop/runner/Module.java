@@ -10,8 +10,7 @@ package org.safehaus.chop.runner;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.safehaus.chop.api.ProjectFig;
-import org.safehaus.chop.client.PerftestClientModule;
+import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.runner.rest.ResetResource;
 import org.safehaus.chop.runner.rest.StartResource;
 import org.safehaus.chop.runner.rest.StatsResource;
@@ -30,7 +29,7 @@ public class Module extends ServletModule {
 
     protected void configureServlets() {
         install( new GuicyFigModule( ServletFig.class ) );
-        install( new PerftestClientModule() );
+        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );
