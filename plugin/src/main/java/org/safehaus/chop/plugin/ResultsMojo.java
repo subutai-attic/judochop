@@ -122,7 +122,7 @@ public class ResultsMojo extends MainMojo {
                 }
                 else {
                     StringBuilder sb = new StringBuilder();
-                    sb.append( TESTS_PATH ).append( '/' )
+                    sb.append( ChopUtils.getTestBase( project ) )
                       .append( String.valueOf( nextRunNumber - 1 ) ).append( '/' );
                     try {
                         store.download( resultsDirectory, sb.toString(), summaryAndResults );

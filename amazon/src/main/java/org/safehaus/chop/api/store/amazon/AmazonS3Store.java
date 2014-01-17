@@ -494,27 +494,35 @@ public class AmazonS3Store implements Store, Runnable, Constants {
         Preconditions.checkNotNull( resultsDirectory, "resultsDirectory cannot be null" );
 
         ObjectListing listing;
-
         if ( prefix == null ) {
+            LOG.debug( "Starting scan to download into directory {} without a prefix.",
+                    resultsDirectory.getAbsolutePath() );
             listing = client.listObjects( amazonFig.getAwsBucket() );
         }
         else {
+            LOG.debug( "Starting scan to download into directory {} with a prefix: {}.",
+                    resultsDirectory.getAbsolutePath(), prefix );
             listing = client.listObjects( amazonFig.getAwsBucket(), prefix );
         }
 
         do {
             for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
                 String key = summary.getKey();
+                String lastComponent = key.substring( key.lastIndexOf( '/' ) + 1 );
                 File file = new File( new File( resultsDirectory, amazonFig.getAwsBucket() ), key );
 
-                if ( key.startsWith( prefix ) && filter.accept( file.getParentFile(), key ) ) {
-                    S3Object object = client.getObject( amazonFig.getAwsBucket(),
-                            key.substring( key.lastIndexOf( '/' ) ) );
+                if ( key.startsWith( prefix ) && filter.accept( file.getParentFile(), lastComponent ) ) {
+                    if ( file.exists() ) {
+                        LOG.info( "File {} already exists, skipping download.", file.getAbsolutePath() );
+                        continue;
+                    }
+
+                    S3Object object = client.getObject( amazonFig.getAwsBucket(), key );
                     LOG.debug( "Downloading candidate with key {}", key );
 
                     S3ObjectInputStream in = object.getObjectContent();
 
-                    if ( ! file.getParentFile().mkdirs() ) {
+                    if ( ! file.getParentFile().exists() && ! file.getParentFile().mkdirs() ) {
                         LOG.warn( "Failed to create parent directory {} for {}", file.getParent(), key );
                     }
 
