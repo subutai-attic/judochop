@@ -1,6 +1,6 @@
-package org.chop.service.value
+package org.chop.service.metric
 
-class MaxValue extends Value {
+class MaxMetric extends Metric {
 
     protected void calc(Map<String, String> json) {
         if (json.maxTime > value) {

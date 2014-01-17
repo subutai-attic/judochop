@@ -1,8 +1,8 @@
-package org.chop.service.value
+package org.chop.service.metric
 
-class MinValue extends Value {
+class MinMetric extends Metric {
 
-    MinValue() {
+    MinMetric() {
         value = Double.MAX_VALUE
     }
 

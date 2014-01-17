@@ -1,10 +1,11 @@
 package org.chop.web
 
-import org.chop.service.value.Value
+import org.chop.service.metric.AggregatedMetric
+import org.chop.service.metric.Metric
 
 class Format {
 
-    static String formatCommit(int x, String commitId, List<Value> values) {
+    static String formatCommit(int x, String commitId, List<Metric> values) {
 
         List data = values.collect {
             formatPoint(x, it)
@@ -35,24 +36,37 @@ class Format {
         }"""
     }
 
-    private static String formatPoint(int x, Value value) {
+    private static String formatPoint(int x, Metric value) {
 
-        String pointColor = value.failures > 0 ? 'red' : 'white'
+        String pointColor = 'white'
+        int markerRadius = 4
 
-        if (value.failures == 0) {
-            pointColor = value.ignores > 0 ? 'yellow' : 'white'
+        if (value.ignores > 0) {
+            pointColor = 'yellow'
+        }
+
+        if (value.failures > 0) {
+            pointColor = 'red'
+            markerRadius = 6
+        }
+
+        if (value instanceof AggregatedMetric) {
+            markerRadius = 10
         }
 
         """{
                 x: $x,
                 y: ${value.value},
-                marker: { fillColor: '$pointColor' },
+                marker: {
+                    radius: ${markerRadius},
+                    fillColor: '$pointColor'
+                },
                 info: ${getPointInfo(value)}
         }"""
     }
 
-    private static String getPointInfo(Value value) {
-        """'failures: ${value.failures}, ignores: ${value.ignores}'"""
+    private static String getPointInfo(Metric value) {
+        """'- chopType: ${value.chopType} <br/>- runNumber: ${value.runNumber} <br/>- totalTestsRun: ${value.totalTestsRun} <br/>- iterations: ${value.iterations} <br/>- failures: ${value.failures} <br/>- ignores: ${value.ignores}'"""
     }
 
 }

@@ -1,6 +1,6 @@
-package org.chop.service.value
+package org.chop.service.metric
 
-class ActualValue extends Value {
+class ActualMetric extends Metric {
 
     protected void calc(Map<String, String> json) {
         value += json.actualTime

@@ -1,62 +1,54 @@
 package org.chop.service.data
 
-import org.chop.service.value.*
+import org.chop.service.metric.*
 
 class CommitCalc {
 
     private String className
-    private String metric
+    private MetricType metricType
 
-    CommitCalc(String className, String metric) {
+    CommitCalc(String className, MetricType metricType) {
         this.className = className
-        this.metric = metric
+        this.metricType = metricType
     }
 
-    Map<String, List<Value>> get() {
+    Map<String, List<Metric>> get() {
 
         // <commitId, list>
-        Map<String, List<Value>> map = new LinkedHashMap()
+        Map<String, List<Metric>> map = new LinkedHashMap()
+        Map data = Storage.getData()
 
-        Storage.getData().each { commitId, jsonList ->
-            map.put(commitId, collect(jsonList) )
+        data.each { commitId, jsonList ->
+            map.put(commitId, collectMetrics(jsonList, className) )
         }
 
         return map
     }
 
-    private List<Value> collect(List<Map<String, String>> jsonList) {
+    private List<Metric> collectMetrics(List<Map<String, String>> jsonList, String className) {
 
         // <runNumber, value>
-        Map<String, Value> valueMap = new HashMap()
+        Map<String, Metric> valueMap = new HashMap()
 
-        List list = jsonList.findAll { it.testName == className }
-
-        list.each { json ->
-            putValue(valueMap, json)
+        jsonList.each { json ->
+            if (json.testName == className) {
+                putValue(valueMap, json)
+            }
         }
 
         return valueMap.values().collect()
     }
 
-    private void putValue(Map<String, Value> valueMap, Map<String, String> json) {
-        Value value = valueMap.get(json.runNumber,  createValue(metric) )
+    private void putValue(Map<String, Metric> valueMap, Map<String, String> json) {
+
+        Metric value = valueMap.get(json.runNumber)
+
+        if (value == null) {
+            value = MetricFactory.create(metricType, json)
+            valueMap.put(json.runNumber, value)
+        }
+
         value.merge(json)
     }
 
-    private static Value createValue(String metric) {
-
-        Value value
-
-        if (metric == "minTime") {
-            value = new MinValue()
-        } else if (metric == "maxTime") {
-            value = new MaxValue()
-        } else if (metric == "actualTime") {
-            value = new ActualValue()
-        } else {
-            value = new AvgValue()
-        }
-
-        return value
-    }
 }
