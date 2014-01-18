@@ -8,15 +8,16 @@ class AggregatedMetric extends Metric {
 
     void add(Metric metric) {
 
-        count++
-        value = (value + metric.value) / count
+        collect(metric.data)
 
-        chopType = metric.chopType
-        runNumber = "ALL"
-        iterations += metric.iterations
-        totalTestsRun += metric.totalTestsRun
-        failures += metric.failures
-        ignores += metric.ignores
+        count++
+        data.value = data.value + metric.getValue()
+        data.runNumber = "ALL"
+        data.runners = "N/A"
     }
 
+    @Override
+    double getValue() {
+        return data.value / count
+    }
 }

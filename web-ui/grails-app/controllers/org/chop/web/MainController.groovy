@@ -2,22 +2,43 @@ package org.chop.web
 
 import org.apache.commons.lang.StringUtils
 import org.chop.service.data.CommitCalc
-
 import org.chop.service.data.FileScanner
 import org.chop.service.data.Storage
-import org.chop.service.metric.*
+import org.chop.service.metric.AggregatedMetric
+import org.chop.service.metric.Metric
+import org.chop.service.metric.MetricType
+import org.chop.service.store.ResultFileScanner
+import org.chop.service.store.ResultStore
+import org.chop.web.util.Format
 
-class IndexController {
+import javax.servlet.ServletContext
+
+class MainController {
+
+    private static boolean initDone = false
+
+    private static void init(ServletContext ctx) {
+
+        if (initDone) {
+            return
+        }
+
+        FileScanner.setup(ctx)
+        ResultFileScanner.update()
+        initDone = true
+    }
 
     def index() {
 
-        FileScanner.setup(session.getServletContext())
+        init(session.getServletContext())
 
         List<String> commitDirs = FileScanner.updateStorage()
         Set<String> classNames = Storage.getClassNames()
 
         String className = getSelectedClassName(classNames)
-        MetricType metricType = getSelectedMetricType()
+        MetricType metricType = StringUtils.isEmpty(params.metric) ? MetricType.AVG : (params.metric as MetricType)
+
+        setSessionParams(className, metricType)
 
         CommitCalc commitCalc = new CommitCalc(className, metricType)
         Map<String, List<Metric>> commits = commitCalc.get()
@@ -37,22 +58,12 @@ class IndexController {
 
         str += "," + Format.formatValues( getMainValues(commits) )
 
-        render(view: "/index", model: [commitDirs: commitDirs, classNames: classNames, series: str])
+        render(view: "/main-view", model: [commitDirs: commitDirs, classNames: classNames, series: str])
     }
 
-    private MetricType getSelectedMetricType() {
-
-        MetricType metricType = MetricType.AVG
-
-        if ("minTime" == params.metric) {
-            metricType = MetricType.MIN
-        } else if ("maxTime" == params.metric) {
-            metricType = MetricType.MAX
-        } else if ("actualTime" == params.metric) {
-            metricType = MetricType.ACTUAL
-        }
-
-        return metricType
+    private void setSessionParams(String className, MetricType metricType) {
+        session.className = className
+        session.metricType = metricType
     }
 
     private String getSelectedClassName(Set<String> classNames) {
@@ -66,8 +77,8 @@ class IndexController {
         commits.each { commitId, list ->
             AggregatedMetric aggr = new AggregatedMetric()
 
-            list.each { value ->
-                aggr.add(value)
+            list.each { metric ->
+                aggr.add(metric)
             }
 
             values.add(aggr)

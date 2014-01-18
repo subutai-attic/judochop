@@ -1,54 +1,63 @@
 <html>
 <head>
     <title>Judo Chop</title>
-
-    <r:require modules='styles'/>
-    <r:require modules='scripts'/>
-    <r:layoutResources/>
-
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1><img src="${createLinkTo(dir: 'img', file: 'judo-chop.jpeg')}"/> Judo Chop</h1>
+<center>
+    <form id="form" method="get">
+        <g:select id="className" name="className" from="${classNames}" value="name" optionValue="value" optionKey="value" style="width: 400px;" onchange="reload()"/>
+
+        <select id="metric" name="metric" onchange="reload()">
+            <option value="AVG">Avg Time</option>
+            <option value="MIN">Min Time</option>
+            <option value="MAX">Max Time</option>
+            <option value="ACTUAL">Actual Time</option>
+        </select>
+    </form>
+</center>
+
+<div class="row">
+    <div class="span9">
+        <div id="chart"></div>
     </div>
-
-    <center>
-        <form id="form" method="get">
-            <g:select id="className" name="className" from="${classNames}" value="name" optionValue="value" optionKey="value" style="width: 400px;" onchange="reload()"/>
-
-            <select id="metric" name="metric" onchange="reload()">
-                <option value="avgTime">Avg Time</option>
-                <option value="minTime">Min Time</option>
-                <option value="maxTime">Max Time</option>
-                <option value="actualTime">Actual Time</option>
-            </select>
-        </form>
-    </center>
-
-    <div class="row">
-        <div class="span9">
-            <div id="chart"></div>
-        </div>
-        <div class="span3">
-            <span id="run-info" style="color: blue;">
-                Click a point to see details
-            </span>
-        </div>
+    <div class="span3">
+        <span id="info" style="color: #000000;">
+            Click a point to see details
+        </span>
     </div>
 </div>
 
-<r:layoutResources/>
-
 <script class="code" type="text/javascript">
+
+    var COMMIT_LINK = "<a href='javascript:void(0);' onclick='openCommitDetails(\"commitId\");'>commitId</a>";
 
     function reload() {
         $('#form').submit()
     }
 
-    function showPointInfo(point) {
-        $("#run-info").html(point.info);
+    function pointClicked(point) {
+        showPointInfo(point.info);
+    }
+
+    function showPointInfo(info) {
+
+        console.log(info);
+        var text = "- chopType: " + info.chopType
+            + "<br/>- commitId: " + COMMIT_LINK.replace(/commitId/g, info.commitId)
+            + "<br/>- runNumber: " + info.runNumber
+            + "<br/>- runners: " + info.runners
+            + "<br/>- totalTestsRun: " + info.totalTestsRun
+            + "<br/>- iterations: " + info.iterations
+            + "<br/>- failures: " + info.failures
+            + "<br/>- ignores: " + info.ignores
+            + "<br/>- value: " + info.value;
+
+        $("#info").html(text);
+    }
+
+    function openCommitDetails(commitId) {
+        document.location = "commit?commitId=" + commitId;
     }
 
     $(document).ready(function() {
@@ -99,7 +108,7 @@
                     point: {
                         events: {
                             click: function() {
-                                showPointInfo(this)
+                                pointClicked(this)
                             }
                         }
                     }
@@ -109,8 +118,6 @@
         });
 
     });
-
 </script>
 
 </body>
-</html>
