@@ -1,15 +1,18 @@
 package org.chop.service.data
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
 import org.chop.service.metric.*
 
 class CommitCalc {
 
     private String className
     private MetricType metricType
+    private int percentile
 
-    CommitCalc(String className, MetricType metricType) {
+    CommitCalc(String className, MetricType metricType, int percentile) {
         this.className = className
         this.metricType = metricType
+        this.percentile = percentile
     }
 
     Map<String, List<Metric>> get() {
@@ -36,19 +39,37 @@ class CommitCalc {
             }
         }
 
-        return valueMap.values().collect()
+        List<Metric> resultList = valueMap.values().collect()
+
+        return filterByPercentile(resultList)
+    }
+
+    private List<Metric> filterByPercentile(List<Metric> list) {
+
+        List<Double> listArr = []
+
+        list.each { metric ->
+            listArr.add( metric.getValue() )
+        }
+
+        double[] arr = listArr.toArray()
+        double p = new DescriptiveStatistics(arr).getPercentile(percentile)
+
+        return list.findAll { metric ->
+            metric.getValue() <= p
+        }
     }
 
     private void putValue(Map<String, Metric> valueMap, Map<String, String> json) {
 
-        Metric value = valueMap.get(json.runNumber)
+        Metric metric = valueMap.get(json.runNumber)
 
-        if (value == null) {
-            value = MetricFactory.create(metricType, json)
-            valueMap.put(json.runNumber, value)
+        if (metric == null) {
+            metric = MetricFactory.create(metricType, json)
+            valueMap.put(json.runNumber, metric)
         }
 
-        value.merge(json)
+        metric.merge(json)
     }
 
 }
