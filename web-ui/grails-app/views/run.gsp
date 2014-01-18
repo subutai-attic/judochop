@@ -1,18 +1,17 @@
 <html>
 <head>
     <meta name="layout" content="main">
-    <title>Commit ${params.commitId}</title>
+    <title>Run #${params.runNumber}</title>
 </head>
 <body>
 
+<h4>${params.commitId} / Run #${params.runNumber}</h4>
+<b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
+<b>Metric</b>: ${session.metricType}<br/>
+
+<br/><br/>
+
 <div class="row">
-
-    <h4>${params.commitId}</h4>
-    <b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
-    <b>Metric</b>: ${session.metricType}<br/>
-
-    <br/>
-    <br/>
 
     <div class="span9">
         <div id="chart"></div>
@@ -22,32 +21,46 @@
             Click a point to see details
         </span>
     </div>
+
 </div>
+
+<hr/>
+<div id="failures"></div>
 
 <script class="code" type="text/javascript">
 
-    var RUN_LINK = "<a href='javascript:void(0);' onclick='openRunDetails(\"runNumber\");'>run#: runNumber</a>";
-
     function pointClicked(point) {
-        showPointInfo(point.info);
-    }
 
-    function showPointInfo(info) {
+        var info = point.info
 
         console.log(info);
-        var text = "- chopType: " + info.chopType
-                + "<br/>- " + RUN_LINK.replace(/runNumber/g, info.runNumber)
-                + "<br/>- totalTestsRun: " + info.totalTestsRun
-                + "<br/>- iterations: " + info.iterations
-                + "<br/>- failures: " + info.failures
-                + "<br/>- ignores: " + info.ignores
-                + "<br/>- value: " + info.value;
+
+        var text = "<br/>- value: " + info.runTime
+                + "<br/>- failureCount: " + info.failureCount
+                + "<br/>- ignoreCount: " + info.ignoreCount
+
+        showFailures(info.failures);
 
         $("#info").html(text);
     }
 
-    function openRunDetails(runNumber) {
-        document.location = "run?commitId=${params.commitId}&runNumber=" + runNumber;
+    function showFailures(failures) {
+
+        var s = "";
+
+        for (var i = 0; i < failures.length; i++) {
+
+            s += "message: <b>" + failures[i].message
+                    + "</b><br/>testHeader: <b>" + failures[i].testHeader
+                    + "</b><br/>trace: " + failures[i].trace
+                    + "<hr/>"
+
+            /*message: "Unable to perform migration"
+            testHeader: "writeParamsEntity(org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest)"
+            trace: "org.a*/
+        }
+
+        $("#failures").html(s);
     }
 
     $(document).ready(function() {
@@ -76,7 +89,7 @@
                 }
             },
             legend: {
-                enabled: false
+                enabled: true
             },
             tooltip: {
                 enabled: false

@@ -7,7 +7,7 @@ import javax.servlet.ServletContext
 class FileScanner {
 
     private static final JsonSlurper JSON_SLURPER = new JsonSlurper()
-    private static File dataDir
+    static File dataDir
     private static final String FILE_NAME_SUFFIX = "-summary.json"
 
     static void setup(ServletContext ctx) {

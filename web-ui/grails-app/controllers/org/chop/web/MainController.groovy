@@ -7,13 +7,30 @@ import org.chop.service.data.Storage
 import org.chop.service.metric.AggregatedMetric
 import org.chop.service.metric.Metric
 import org.chop.service.metric.MetricType
+import org.chop.service.store.ResultFileScanner
+import org.chop.service.store.ResultStore
 import org.chop.web.util.Format
+
+import javax.servlet.ServletContext
 
 class MainController {
 
+    private static boolean initDone = false
+
+    private static void init(ServletContext ctx) {
+
+        if (initDone) {
+            return
+        }
+
+        FileScanner.setup(ctx)
+        ResultFileScanner.update()
+        initDone = true
+    }
+
     def index() {
 
-        FileScanner.setup(session.getServletContext())
+        init(session.getServletContext())
 
         List<String> commitDirs = FileScanner.updateStorage()
         Set<String> classNames = Storage.getClassNames()
@@ -60,8 +77,8 @@ class MainController {
         commits.each { commitId, list ->
             AggregatedMetric aggr = new AggregatedMetric()
 
-            list.each { value ->
-                aggr.add(value)
+            list.each { metric ->
+                aggr.add(metric)
             }
 
             values.add(aggr)

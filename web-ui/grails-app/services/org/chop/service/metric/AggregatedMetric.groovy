@@ -11,8 +11,12 @@ class AggregatedMetric extends Metric {
         collect(metric.data)
 
         count++
-        data.value = (data.value + metric.data.value) / count
-
+        data.value = data.value + metric.getValue()
         data.runNumber = "ALL"
+    }
+
+    @Override
+    double getValue() {
+        return data.value / count
     }
 }
