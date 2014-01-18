@@ -2,10 +2,12 @@ package org.safehaus.chop.plugin;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
@@ -62,12 +64,21 @@ public class SetupMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+        initCertStore();
+
         try {
             EC2Manager ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName,
-                    runnerName );
+                    runnerName, endpoint );
 
             if( instanceType != null && ! instanceType.isEmpty() ) {
-                ec2Manager.setDefaultType( InstanceType.fromValue( instanceType ) );
+                try {
+                    ec2Manager.setDefaultType( InstanceType.fromValue( instanceType ) );
+                }
+                catch ( IllegalArgumentException iae ) {
+                    getLog().warn( "Instance type value " + instanceType +
+                            " does not correspond to a valid type string like any of the following:\n\t" +
+                            Arrays.toString( InstanceType.values() ) );
+                }
             }
             ec2Manager.setDefaultTimeout( setupTimeout );
 
@@ -124,6 +135,15 @@ public class SetupMojo extends MainMojo {
                 activeInstanceHostnames.add( instance.getPublicDnsName() );
             }
             store.deleteGhostRunners( activeInstanceHostnames );
+
+            for ( String hostname : activeInstanceHostnames ) {
+                try {
+                    ChopUtils.installRunnerKey( null, hostname );
+                }
+                catch ( Exception e ) {
+                    getLog().error( "Failed to install runner key.", e );
+                }
+            }
         }
         catch ( MojoExecutionException e ) {
             throw e;
@@ -134,4 +154,21 @@ public class SetupMojo extends MainMojo {
     }
 
 
+    protected void initCertStore() {
+        if ( ChopUtils.isStoreInitialized() ) {
+            return;
+        }
+
+        try {
+            if ( certStorePassphrase == null ) {
+                ChopUtils.installCert( endpoint, 443, null );
+            }
+            else {
+                ChopUtils.installCert( endpoint, 443, certStorePassphrase.toCharArray() );
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package org.safehaus.chop.plugin;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
@@ -9,6 +11,8 @@ import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
+import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -37,8 +41,8 @@ public class StartMojo extends MainMojo {
          */
         getLog().info( "Checking and waiting maximum " + setupTimeout +
                 " msecs. until all runners register themselves to the store" );
-        EC2Manager ec2Manager =
-                        new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName );
+        EC2Manager ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
+                runnerKeyPairName, runnerName, endpoint );
         Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
         long startTime = System.currentTimeMillis();
         boolean runnersRegistered = false;
@@ -89,7 +93,60 @@ public class StartMojo extends MainMojo {
             getLog().info( "Start request resulted with: " + result.getMessage() );
         }
 
-        getLog().info( "All tests are started!" );
+        getLog().info( "All runners have started!" );
+    }
 
+
+    private void coldRestart( Collection<Instance> instancesToRestart ) throws MojoExecutionException {
+        if ( ! coldRestartTomcat ) {
+            return;
+        }
+
+        getLog().info( "Sending restart tomcat requests to all instances..." );
+
+        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
+
+        for ( Instance instance : instancesToRestart ) {
+            SSHRequestThread restarter = new SSHRequestThread();
+            restarter.setSshKeyFile( runnerSSHKeyFile );
+            restarter.setInstanceURL( instance.getPublicDnsName() );
+            restarter.setInstance( instance );
+            restarters.add( restarter );
+            restarter.start();
+        }
+
+        for ( SSHRequestThread restarter : restarters ) {
+            try {
+                restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
+            }
+            catch ( InterruptedException e ) {
+                getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
+                        + " is interrupted before finish", e );
+            }
+        }
+
+        ResponseInfo response;
+        boolean failedRestart = false;
+        for ( SSHRequestThread restarter : restarters ) {
+            response = restarter.getResult();
+            if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
+                for ( String s : response.getMessages() ) {
+                    getLog().info( s );
+                }
+                for ( String s : response.getErrorMessages() ) {
+                    getLog().info( s );
+                }
+                failedRestart = true;
+            }
+        }
+
+        if ( failedRestart ) {
+            throw new MojoExecutionException(
+                    "There are instances that failed to restart properly, " + "verify the cluster before moving on" );
+        }
+
+        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run chop:start now"
+                + " to start your tests" );
     }
 }
+

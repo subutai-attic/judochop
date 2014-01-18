@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.safehaus.chop.api.ChopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +103,7 @@ public class EC2Manager {
 
 
     public EC2Manager( String accessKey, String secretKey, String amiId, String securityGroup, String keyName,
-                     String runnerName ) {
+                     String runnerName, String endpoint ) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.amiId = amiId;
@@ -112,7 +111,7 @@ public class EC2Manager {
         this.keyName = keyName;
         this.runnerName = runnerName;
 
-        client = getEC2Client( accessKey, secretKey );
+        client = getEC2Client( accessKey, secretKey, endpoint );
 
         if( ! securityGroupExists( securityGroup ) ) {
             createSecurityGroup( securityGroup );
@@ -310,7 +309,7 @@ public class EC2Manager {
         if ( state != null ) {
             List<String> valuesT1 = new ArrayList<String>();
             valuesT1.add( state.toString() );
-            Filter filter = new Filter("instance-state-name", valuesT1);
+            Filter filter = new Filter( "instance-state-name", valuesT1 );
             request = request.withFilters( filter );
         }
         DescribeInstancesResult result = client.describeInstances( request );
@@ -529,7 +528,7 @@ public class EC2Manager {
      * @param secretKey
      * @return
      */
-    protected AmazonEC2Client getEC2Client( String accessKey, String secretKey ) {
+    protected AmazonEC2Client getEC2Client( String accessKey, String secretKey, String endpoint ) {
         AWSCredentialsProvider provider;
         if ( accessKey != null && secretKey != null ) {
             AWSCredentials credentials = new BasicAWSCredentials( accessKey, secretKey );
@@ -540,47 +539,7 @@ public class EC2Manager {
         }
 
         AmazonEC2Client client = new AmazonEC2Client( provider );
-
-        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
-        if ( availabilityZone != null ) {
-            if ( availabilityZone.contains( "us-east-1" ) ) {
-                client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "us-west-1" ) ) {
-                client.setEndpoint( "ec2.us-west-1.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "us-west-2" ) ) {
-                client.setEndpoint( "ec2.us-west-2.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "eu-west-1" ) ) {
-                client.setEndpoint( "ec2.eu-west-1.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
-                client.setEndpoint( "ec2.ap-southeast-1.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
-                client.setEndpoint( "ec2.ap-southeast-2.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
-                client.setEndpoint( "ec2.ap-northeast-1.amazonaws.com" );
-            }
-            else if ( availabilityZone.contains( "sa-east-1" ) ) {
-                client.setEndpoint( "ec2.sa-east-1.amazonaws.com" );
-            }
-            else {
-                client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
-            }
-        }
-        else {
-            client.setEndpoint( "ec2.us-east-1.amazonaws.com" );
-        }
-
-        try {
-            ChopUtils.installCert( "ec2.us-east-1.amazonaws.com", 443, null );
-        }
-        catch ( Exception e ) {
-            e.printStackTrace();
-        }
+        client.setEndpoint( endpoint );
 
         ClientConfiguration configuration = new ClientConfiguration();
         configuration.setProtocol( Protocol.HTTPS );

@@ -7,18 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import org.safehaus.chop.api.ChopUtils;
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
+import org.safehaus.chop.api.store.amazon.RunnerInstance;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.client.ResponseInfo;
-import org.safehaus.chop.client.ssh.SSHCommands;
+import org.safehaus.chop.client.rest.AsyncRequest;
+import org.safehaus.chop.client.rest.LoadOp;
+import org.safehaus.chop.client.rest.StatusOp;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -94,11 +99,18 @@ public class LoadMojo extends MainMojo {
          */
 
         EC2Manager ec2Manager =
-                new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName );
+                new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName, endpoint );
 
         try {
-            InstanceType type = InstanceType.valueOf( instanceType );
-            ec2Manager.setDefaultType( type );
+
+            // seems to be a bug here where InstanceType.valueOf is not recognizing the m1.large
+            if ( "m1.large".equals( instanceType ) ) {
+                ec2Manager.setDefaultType( InstanceType.M1Large );
+            }
+            else {
+                InstanceType type = InstanceType.valueOf( instanceType );
+                ec2Manager.setDefaultType( type );
+            }
         }
         catch ( IllegalArgumentException e ) {
             getLog().warn( "The instanceType provided " + instanceType + " was not a valid InstanceType String" );
@@ -174,6 +186,43 @@ public class LoadMojo extends MainMojo {
         }
 
 
+        /* ------------------------------------------------------------------------------
+         * Here we setup all the asynchronous status requests to be issued in parallel
+         * to runner instances and invoke them all at the same time.
+         * ------------------------------------------------------------------------------
+         */
+
+        // This array holds the instances that have loaded a new runner, so absolutely requires restart on container
+        Collection<Instance> instancesToRestart = new ArrayList<Instance>( instances.size() );
+        ArrayList<AsyncRequest<RunnerInstance,StatusOp>> statuses =
+                new ArrayList<AsyncRequest<RunnerInstance, StatusOp>>( instances.size() );
+
+        for ( Instance instance : instances ) {
+            statuses.add( new AsyncRequest<RunnerInstance, StatusOp>( new RunnerInstance( instance ), new StatusOp( instance ) ) );
+        }
+
+        List<Future<Result>> futures;
+        ExecutorService service = Executors.newFixedThreadPool( instances.size() );
+        try {
+            futures = service.invokeAll( statuses );
+        }
+        catch ( InterruptedException e ) {
+            throw new MojoExecutionException( "Failed on status invocations.", e );
+        }
+
+
+        /* ------------------------------------------------------------------------------
+         * Based on the status results we will issue a load in parallel. However before
+         * we can do that we need to calculate some values that we need for the load
+         * request parameters like the loadKey and other parameters.
+         * ------------------------------------------------------------------------------
+         */
+
+        String gitConfigDirectory = Utils.getGitConfigFolder( getProjectBaseDirectory() );
+        String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
+        String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
+                commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
+        String loadKey = TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR;
         // These are the values we're going to send to load to setup S3 properly
         Map<String, String> overrides = new HashMap<String, String>( 3 );
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
@@ -181,74 +230,81 @@ public class LoadMojo extends MainMojo {
         overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
         overrides.put( Project.MANAGER_USERNAME_KEY, managerAppUsername );
         overrides.put( Project.MANAGER_PASSWORD_KEY, managerAppPassword );
+        overrides.put( Constants.PARAM_PROJECT, loadKey );
 
         // @todo need to figure out why the default value does not hold for the manager endpoint
         // overrides.put( Project.MANAGER_ENDPOINT_KEY, project.getManagerEndpoint() );
 
-        // This array holds the instances that have loaded a new runner, so absolutely requires restart on container
-        Collection<Instance> instancesToRestart = new ArrayList<Instance>( instances.size() );
 
-        for ( Instance instance : instances ) {
-            getLog().info( "Checking out instance " + instance.getPublicDnsName() );
+        /* ------------------------------------------------------------------------------
+         * Here we iterate through the asynchronous requests for the status operation
+         * and depending on the results leave the runner as is or prepare to issue a
+         * load operation against it. Runner instances to be loaded are also added to
+         * the list of instances to be restarted. If any of the status requests failed
+         * with an exception the mojo fails.
+         * ------------------------------------------------------------------------------
+         */
 
-            Runner runner = injector.getInstance( Runner.class );
-            runner.bypass( Runner.HOSTNAME_KEY, instance.getPublicDnsName() );
-            runner.bypass( Runner.SERVER_PORT_KEY, Runner.DEFAULT_SERVER_PORT );
-            runner.bypass( Runner.IPV4_KEY, instance.getPublicIpAddress() );
-            runner.bypass( Runner.URL_KEY,
-                    "https://" + instance.getPublicDnsName() + ":" + Runner.DEFAULT_SERVER_PORT + "/" );
+        ArrayList<AsyncRequest<RunnerInstance,LoadOp>> loads = new ArrayList<AsyncRequest<RunnerInstance, LoadOp>>();
+        for ( AsyncRequest<RunnerInstance,StatusOp> status : statuses ) {
+            Result result = status.getRestOperation().getResult();
 
-            try {
-                ChopUtils.installCert( runner.getHostname(), runner.getServerPort(), null );
-            }
-            catch ( Exception e ) {
-                getLog().error( "Failed to install the server cert.", e );
-            }
-
-            // First let's check the instance's status and what it is running
-            Result result = client.status( runner );
-            getLog().info( "Instance " + instance.getPublicDnsName() + " is in state " + result.getState() );
-            getLog().info( "Instance " + instance.getPublicDnsName() + " is has the following project setup " + result
-                    .getProject() );
-
-            if ( !result.getState().accepts( Signal.LOAD ) ) {
-                getLog().warn( "Instance " + instance.getPublicDnsName() + " not ready to load in state " + result
-                        .getState() );
+            if ( status.failed() || ! result.getStatus() ) {
+                throw new MojoExecutionException( "Status on Runner " + status.getAssociate().getHostname() +
+                        " failed:", status.getException() );
             }
 
-            if ( result.getProject() != null && result.getProject().getWarMd5().equals( project.getWarMd5() ) ) {
-                getLog().info(
-                        "Skipping instance " + instance.getPublicDnsName() + " it is loaded with the same project." );
+            Project current = result.getProject();
+            if ( current != null && current.getWarMd5().equals( project.getWarMd5() ) ) {
+                getLog().info( "Runner " + status.getAssociate().getHostname() +
+                        " has the same test already loaded: MD5 signatures match." );
                 continue;
             }
 
-            String gitConfigDirectory = Utils.getGitConfigFolder( getProjectBaseDirectory() );
-            String commitId = Utils.getLastCommitUuid( gitConfigDirectory );
-            String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
-                    commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
-            String loadKey = TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR;
-            result = client.load( runner, loadKey, overrides );
-
-            instancesToRestart.add( instance );
-
-            if ( !result.getStatus() ) {
-                throw new MojoExecutionException( "Load problem on " + instance.getPublicDnsName() + " in state " +
-                        result.getState() + ": " + result.getMessage() );
+            if ( result.getState().accepts( Signal.LOAD ) ) {
+                getLog().info( "Runner " + status.getAssociate().getHostname() +
+                        " needs to be updated with the latest test: MD5 signatures do NOT match." );
+                loads.add( new AsyncRequest<RunnerInstance, LoadOp>( status.getAssociate(),
+                        new LoadOp( status.getAssociate(), overrides ) ) );
+                instancesToRestart.add( status.getAssociate().getInstance() );
+            }
+            else {
+                throw new MojoExecutionException( "Runner " + status.getAssociate().getHostname() +
+                    " must be updated, however it cannot be loaded in state " + result.getState() );
             }
         }
 
-        /**
-         * If coldRestartTomcat is true, we are restarting tomcats for all instances
-         * If not, only the newly loaded ones are restarted
+
+        /* ------------------------------------------------------------------------------
+         * Here we run all load operations in parallel if there exist runner instances
+         * that are not up to date with the latest runner war file. If all are up to date
+         * no parallel load is issued. If some need an update the load is issued.
+         * ------------------------------------------------------------------------------
          */
-        if( coldRestartTomcat ) {
-            instancesToRestart.clear();
-            instancesToRestart = instances;
-            getLog().info( "Sending restart tomcat requests to all instances..." );
+
+        getLog().info( "Updating Runners:\n\t" + instancesToRestart );
+        if ( loads.size() > 0 ) {
+            try {
+                futures = service.invokeAll( loads );
+            }
+            catch ( InterruptedException e ) {
+                throw new MojoExecutionException( "Failed on status invocations.", e );
+            }
         }
         else {
-            getLog().info( "Sending restart tomcat requests to loaded instances..." );
+            getLog().info( "No load requests issued." );
         }
+
+        for ( AsyncRequest<RunnerInstance, LoadOp> load : loads ) {
+            Result result = load.getRestOperation().getResult();
+
+            if ( load.failed() || ! result.getStatus() ) {
+                throw new MojoExecutionException( "Load on Runner " + load.getAssociate().getHostname() +
+                        " failed:", load.getException() );
+            }
+        }
+
+        getLog().info( "Sending restart tomcat requests updated instances..." );
 
         List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
 
@@ -288,67 +344,9 @@ public class LoadMojo extends MainMojo {
 
         if ( failedRestart ) {
             throw new MojoExecutionException(
-                    "There are instances that failed to restart properly, " + "verify the cluster before moving on" );
+                    "There are instances that failed to restart properly, verify the cluster before moving on" );
         }
 
-        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run chop:start now"
-                + " to start your tests" );
-    }
-
-
-    private static class SSHRequestThread implements Runnable {
-
-
-        private String instanceURL;
-
-        private String sshKeyFile;
-
-        private ResponseInfo result;
-
-        private Instance instance;
-
-        private Thread thread;
-
-
-        public void start() {
-            thread = new Thread( this );
-            thread.start();
-        }
-
-
-        public void join( long timeout ) throws InterruptedException {
-            thread.join( timeout );
-        }
-
-
-        public Instance getInstance() {
-            return instance;
-        }
-
-
-        public void setInstance( Instance instance ) {
-            this.instance = instance;
-        }
-
-
-        public void setInstanceURL( final String instanceURL ) {
-            this.instanceURL = instanceURL;
-        }
-
-
-        private void setSshKeyFile( final String sshKeyFile ) {
-            this.sshKeyFile = sshKeyFile;
-        }
-
-
-        public ResponseInfo getResult() {
-            return result;
-        }
-
-
-        @Override
-        public void run() {
-            result = SSHCommands.restartTomcatOnInstance( sshKeyFile, instanceURL );
-        }
+        getLog().info( "Test war is loaded on each runner instance and in READY state." );
     }
 }

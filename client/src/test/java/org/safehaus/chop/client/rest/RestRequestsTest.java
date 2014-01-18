@@ -30,10 +30,6 @@ import static org.safehaus.chop.client.rest.RestRequests.status;
 @UseModules(ChopClientModule.class)
 public class RestRequestsTest {
 
-    static {
-        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger( RestRequestsTest.class );
     @Inject
     Store service;

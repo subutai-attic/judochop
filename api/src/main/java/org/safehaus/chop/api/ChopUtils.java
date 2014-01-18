@@ -1,18 +1,24 @@
 package org.safehaus.chop.api;
 
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -34,13 +40,16 @@ import static org.safehaus.chop.api.Constants.RUNNER_WAR;
  * General useful utility methods used in the Chop System.
  */
 public class ChopUtils {
-    private static final Logger LOG = LoggerFactory.getLogger( ChopUtils.class );
-    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
-
 
     static {
-        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+        System.setProperty( "javax.net.ssl.trustStore", "jssecacerts" );
     }
+
+    private static final Logger LOG = LoggerFactory.getLogger( ChopUtils.class );
+    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
+    private static final Set<String> trustedHosts = new HashSet<String>();
+    private static final Object lock = new Object();
+    private static File certStore;
 
 
     /**
@@ -77,6 +86,87 @@ public class ChopUtils {
     }
 
 
+    public static boolean isTrusted( String hostname ) {
+        synchronized ( lock ) {
+            return trustedHosts.contains( hostname );
+        }
+    }
+
+
+    public static boolean isTrusted( Runner runner ) {
+        synchronized ( lock ) {
+            return trustedHosts.contains( runner.getHostname() );
+        }
+    }
+
+
+    public static boolean isStoreInitialized() {
+        return certStore != null;
+    }
+
+    public static void installRunnerKey( char[] passphrase, Runner... runners ) throws Exception {
+    }
+
+
+    public static void installRunnerKey( char[] passphrase, String... hostnames ) throws Exception {
+        if ( passphrase == null ) {
+            passphrase = "changeit".toCharArray();
+        }
+
+        File file;
+        if ( certStore != null ) {
+            file = certStore;
+        }
+        else {
+            file = new File( "jssecacerts" );
+        }
+
+        if ( ! file.isFile() ) {
+            char SEP = File.separatorChar;
+            File dir = new File( System.getProperty( "java.home" ) + SEP + "lib" + SEP + "security" );
+            file = new File( dir, "jssecacerts" );
+            if ( !file.isFile() ) {
+                file = new File( dir, "cacerts" );
+            }
+        }
+
+        certStore = file;
+
+        LOG.debug( "Loading KeyStore {}", file );
+
+        InputStream in = new FileInputStream( file );
+        KeyStore ks = KeyStore.getInstance( KeyStore.getDefaultType() );
+        ks.load( in, passphrase );
+        in.close();
+
+        CertificateFactory cf = CertificateFactory.getInstance( "X.509" );
+        Certificate cert =  cf.generateCertificate( getCertificateStream() );
+
+        for ( String hostname : hostnames ) {
+            ks.setCertificateEntry( hostname, cert );
+            LOG.debug( "Added certificate to keystore 'jssecacerts' using alias '" + hostname + "'" );
+        }
+
+        OutputStream out = new FileOutputStream( "jssecacerts" );
+        ks.store( out, passphrase );
+        out.close();
+
+        synchronized ( lock ) {
+            Collections.addAll( trustedHosts, hostnames );
+        }
+    }
+
+
+    private static InputStream getCertificateStream () throws IOException {
+        InputStream in = ChopUtils.class.getClassLoader().getResourceAsStream( "runner.cer" );
+        DataInputStream dis = new DataInputStream( in );
+        byte[] bytes = new byte[ dis.available() ];
+        dis.readFully( bytes );
+        return new ByteArrayInputStream( bytes );
+    }
+
+
+
     /**
      * Installs a certificate from the server into a local certificate store.
      *
@@ -92,8 +182,15 @@ public class ChopUtils {
             passphrase = "changeit".toCharArray();
         }
 
-        File file = new File( "jssecacerts" );
-        if ( !file.isFile() ) {
+        File file;
+        if ( certStore != null ) {
+            file = certStore;
+        }
+        else {
+            file = new File( "jssecacerts" );
+        }
+
+        if ( ! file.isFile() ) {
             char SEP = File.separatorChar;
             File dir = new File( System.getProperty( "java.home" ) + SEP + "lib" + SEP + "security" );
             file = new File( dir, "jssecacerts" );
@@ -101,6 +198,9 @@ public class ChopUtils {
                 file = new File( dir, "cacerts" );
             }
         }
+
+        certStore = file;
+
         LOG.debug( "Loading KeyStore {}", file );
         InputStream in = new FileInputStream( file );
         KeyStore ks = KeyStore.getInstance( KeyStore.getDefaultType() );
@@ -154,8 +254,6 @@ public class ChopUtils {
             return;
         }
 
-        new BufferedReader( new InputStreamReader( System.in ) );
-
         LOG.debug( "Server sent " + chain.length + " certificate(s):" );
         MessageDigest sha1 = MessageDigest.getInstance( "SHA1" );
         MessageDigest md5 = MessageDigest.getInstance( "MD5" );
@@ -172,15 +270,15 @@ public class ChopUtils {
         int k = 0;
 
         X509Certificate cert = chain[k];
-        String alias = host + "-" + ( k + 1 );
-        ks.setCertificateEntry( alias, cert );
+        // now just using the hostname instead of : String alias = host + "-" + ( k + 1 );
+        ks.setCertificateEntry( host, cert );
 
         OutputStream out = new FileOutputStream( "jssecacerts" );
         ks.store( out, passphrase );
         out.close();
 
         LOG.debug( "cert = {}", cert );
-        LOG.debug( "Added certificate to keystore 'jssecacerts' using alias '" + alias + "'" );
+        LOG.debug( "Added certificate to keystore 'jssecacerts' using alias '" + host + "'" );
     }
 
 

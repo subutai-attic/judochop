@@ -3,8 +3,10 @@ package org.safehaus.chop.api.store.amazon;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.safehaus.chop.api.ChopUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import static junit.framework.TestCase.assertTrue;
 
 public class EC2ManagerTest {
 
+    private static final String ENDPOINT = "ec2.us-east-1.amazonaws.com";
     private static final Logger LOG = LoggerFactory.getLogger( EC2Manager.class );
 
     private String accessKey = System.getProperty( "accessKey" );
@@ -27,10 +30,16 @@ public class EC2ManagerTest {
     private String keyName = System.getProperty( "keyName" );
     private String runnerName = "chop-runner";
 
+    @BeforeClass
+    public static void setup() throws Exception {
+        ChopUtils.installCert( ENDPOINT, 443, null );
+    }
+
+
     @Test @Ignore
     public void testLaunchInstances()
     {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         ec2.setAvailabilityZone( "us-east-1d" );
         ec2.launchEC2Instances( InstanceType.M1Medium, 2 );
         ec2.close();
@@ -39,7 +48,7 @@ public class EC2ManagerTest {
     @Test @Ignore
     public void testGetInstances1()
     {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<Instance> instances = ec2.getInstances();
         for ( Instance i : instances ) {
             LOG.info("Instance {} {}", i.getInstanceId(), i.getState().getName().toString() );
@@ -50,7 +59,7 @@ public class EC2ManagerTest {
     @Test @Ignore
     public void testGetInstances2()
     {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<Instance> instances = ec2.getInstances( runnerName );
         for ( Instance i : instances ) {
             LOG.info("Instance {} {}", i.getInstanceId(), i.getState().getName().toString() );
@@ -61,7 +70,7 @@ public class EC2ManagerTest {
     @Test @Ignore
     public void testGetInstances3()
     {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<Instance> instances = ec2.getInstances( InstanceStateName.Running );
         for ( Instance i : instances ) {
             LOG.info("Instance {} {}", i.getInstanceId(), i.getState().getName().toString() );
@@ -72,7 +81,7 @@ public class EC2ManagerTest {
     @Test @Ignore
     public void testGetInstances4()
     {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
         for ( Instance i : instances ) {
             LOG.info("Instance {} {}", i.getInstanceId(), i.getState().getName().toString() );
@@ -82,7 +91,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testAddRecordToSecurityGroup() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<String> ipRanges = new ArrayList<String>();
         ipRanges.add( "213.74.31.18/32" );
         ec2.deleteSecurityGroupRecord( ipRanges, "tcp", 8080 );
@@ -92,7 +101,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testDeleteSecurityGroupRecord() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<String> ipRanges = new ArrayList<String>();
         ipRanges.add( "10.235.6.227/32" );
         ec2.deleteSecurityGroupRecord( ipRanges, "tcp", 80 );
@@ -101,7 +110,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testGetSecurityGroupRecords() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<IpPermission> permissions = ec2.getSecurityGroupRecords();
         for( IpPermission permission : permissions ) {
             LOG.info( "Port: {} = {}", permission.getFromPort(), permission.getToPort() );
@@ -114,7 +123,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testUpdateSecurityGroupRecords() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<Integer> ports = new ArrayList<Integer> ( 2 );
         ports.add( 8080 );
         ec2.updateSecurityGroupRecords( ports, false );
@@ -124,7 +133,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testEnsureRunningInstancesMin() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         boolean res = ec2.ensureRunningInstancesMin( 4 );
         LOG.info( "Result: ", res );
         ec2.close();
@@ -132,7 +141,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testEnsureRunningInstancesMax() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         boolean res = ec2.ensureRunningInstancesMax( 1 );
         LOG.info( "Result: " + res );
         ec2.close();
@@ -140,7 +149,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testEnsureRunningInstances() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         boolean res = ec2.ensureRunningInstances( 3, 5 );
         LOG.info( "Result: " + res );
         ec2.close();
@@ -148,7 +157,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testListSecurityGroups() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         Collection<String> groups = ec2.listSecurityGroups();
         LOG.info( "Security Groups are:" );
         for( String g : groups ) {
@@ -159,7 +168,7 @@ public class EC2ManagerTest {
 
     @Test @Ignore
     public void testCreateDeleteSecurityGroup() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
         String groupName = "perftest-security-create-delete-test";
         if( ec2.securityGroupExists( groupName ) ) {
             ec2.deleteSecurityGroup( groupName );

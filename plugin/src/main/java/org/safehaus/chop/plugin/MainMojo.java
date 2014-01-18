@@ -4,11 +4,16 @@ package org.safehaus.chop.plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Store;
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -16,6 +21,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 
 /**
@@ -25,7 +33,7 @@ import org.apache.maven.project.MavenProject;
 public class MainMojo extends AbstractMojo implements Constants {
 
     static {
-        System.setProperty ( "javax.net.ssl.trustStore", "jssecacerts" );
+        System.setProperty( "javax.net.ssl.trustStore", "jssecacerts" );
     }
 
     @Parameter( defaultValue = "${project}", readonly = true )
@@ -148,9 +156,11 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected boolean coldRestartTomcat;
 
 
-    // ------------------------------------------------------------------------
-    // ------------------------ ResultsMojo Parameters ------------------------
-    // ------------------------------------------------------------------------
+    /**
+     * Leaving this null will default to the use of "changeit" for the passphrase.
+     */
+    @Parameter( property = "certStorePassphrase" )
+    protected String certStorePassphrase;
 
 
     /**
@@ -180,8 +190,10 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     // ------------------------------------------------------------------------
-    // ------------------------ ResultsMojo Parameters ------------------------
-    // ------------------------------------------------------------------------
+
+
+    protected String endpoint;
+    protected Store store;
 
 
     @Override
@@ -189,7 +201,9 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     protected MainMojo( MainMojo mojo ) {
+        this.certStorePassphrase = mojo.certStorePassphrase;
         this.resultsDirectory = mojo.resultsDirectory;
         this.dumpType = mojo.dumpType;
         this.failIfCommitNecessary = mojo.failIfCommitNecessary;
@@ -216,11 +230,53 @@ public class MainMojo extends AbstractMojo implements Constants {
         this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+
+        setEndpoint();
     }
 
 
     protected MainMojo() {
+        setEndpoint();
+    }
 
+
+    private void setEndpoint() {
+        Injector injector = Guice.createInjector( new AmazonStoreModule() );
+        store = injector.getInstance( Store.class );
+
+        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
+        if ( availabilityZone != null ) {
+            if ( availabilityZone.contains( "us-east-1" ) ) {
+                endpoint = "ec2.us-east-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "us-west-1" ) ) {
+                endpoint = "ec2.us-west-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "us-west-2" ) ) {
+                endpoint = "ec2.us-west-2.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "eu-west-1" ) ) {
+                endpoint = "ec2.eu-west-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
+                endpoint = "ec2.ap-southeast-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
+                endpoint = "ec2.ap-southeast-2.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
+                endpoint = "ec2.ap-northeast-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "sa-east-1" ) ) {
+                endpoint = "ec2.sa-east-1.amazonaws.com";
+            }
+            else {
+                endpoint = "ec2.us-east-1.amazonaws.com";
+            }
+        }
+        else {
+            endpoint = "ec2.us-east-1.amazonaws.com";
+        }
     }
 
 

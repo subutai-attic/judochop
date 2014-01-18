@@ -100,7 +100,8 @@ public class AmazonS3StoreTest {
     @Test
     public void testDeleteGhostRunners() {
         final String runnerName = "chop-runner";
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName );
+        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName,
+                "ec2.us-east-1.amazonaws.com" );
 
         Collection<Instance> instances = ec2.getInstances( runnerName, InstanceStateName.Running );
         Set<String> instanceHosts = new HashSet<String>( instances.size() );
