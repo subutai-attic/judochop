@@ -27,6 +27,7 @@ import org.safehaus.chop.client.rest.StatusOp;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
@@ -38,7 +39,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
-@Mojo( name = "load" )
+@Mojo( name = "load", requiresDependencyResolution = ResolutionScope.TEST,
+        requiresDependencyCollection = ResolutionScope.TEST )
 public class LoadMojo extends MainMojo {
 
     protected LoadMojo( MainMojo mojo ) {
