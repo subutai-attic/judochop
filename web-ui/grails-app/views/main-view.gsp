@@ -9,10 +9,10 @@
         <g:select id="className" name="className" from="${classNames}" value="name" optionValue="value" optionKey="value" style="width: 400px;" onchange="reload()"/>
 
         <select id="metric" name="metric" onchange="reload()">
-            <option value="avgTime">Avg Time</option>
-            <option value="minTime">Min Time</option>
-            <option value="maxTime">Max Time</option>
-            <option value="actualTime">Actual Time</option>
+            <option value="AVG">Avg Time</option>
+            <option value="MIN">Min Time</option>
+            <option value="MAX">Max Time</option>
+            <option value="ACTUAL">Actual Time</option>
         </select>
     </form>
 </center>

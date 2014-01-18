@@ -36,32 +36,32 @@ class Format {
         }"""
     }
 
-    private static String formatPoint(int x, Metric value) {
+    private static String formatPoint(int x, Metric metric) {
 
         String pointColor = 'white'
         int markerRadius = 4
 
-        if (value.data.ignores > 0) {
+        if (metric.data.ignores > 0) {
             pointColor = 'yellow'
         }
 
-        if (value.data.failures > 0) {
+        if (metric.data.failures > 0) {
             pointColor = 'red'
             markerRadius = 6
         }
 
-        if (value instanceof AggregatedMetric) {
+        if (metric instanceof AggregatedMetric) {
             markerRadius = 10
         }
 
         """{
                 x: $x,
-                y: ${value.data.value},
+                y: ${metric.getValue()},
                 marker: {
                     radius: ${markerRadius},
                     fillColor: '$pointColor'
                 },
-                info: ${value.toJson()}
+                info: ${metric.toJson()}
         }"""
     }
 }

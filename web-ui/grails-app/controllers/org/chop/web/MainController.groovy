@@ -19,7 +19,7 @@ class MainController {
         Set<String> classNames = Storage.getClassNames()
 
         String className = getSelectedClassName(classNames)
-        MetricType metricType = getSelectedMetricType()
+        MetricType metricType = StringUtils.isEmpty(params.metric) ? MetricType.AVG : (params.metric as MetricType)
 
         setSessionParams(className, metricType)
 
@@ -47,21 +47,6 @@ class MainController {
     private void setSessionParams(String className, MetricType metricType) {
         session.className = className
         session.metricType = metricType
-    }
-
-    private MetricType getSelectedMetricType() {
-
-        MetricType metricType = MetricType.AVG
-
-        if ("minTime" == params.metric) {
-            metricType = MetricType.MIN
-        } else if ("maxTime" == params.metric) {
-            metricType = MetricType.MAX
-        } else if ("actualTime" == params.metric) {
-            metricType = MetricType.ACTUAL
-        }
-
-        return metricType
     }
 
     private String getSelectedClassName(Set<String> classNames) {

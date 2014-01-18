@@ -41,7 +41,7 @@ class FormatCommit {
 
         """{
                 x: $runNumber,
-                y: ${metric.data.value},
+                y: ${metric.getValue()},
                 marker: {
                     radius: ${markerRadius},
                     fillColor: '$pointColor'

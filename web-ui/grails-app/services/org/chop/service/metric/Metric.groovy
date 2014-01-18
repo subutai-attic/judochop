@@ -40,7 +40,18 @@ abstract class Metric {
     }
 
     String toJson() {
-        BUILDER(data)
+
+        Map tempMap = [:]
+
+        tempMap.putAll(data)
+        tempMap.value = getValue()
+
+        BUILDER(tempMap)
+
         return BUILDER.toString()
+    }
+
+    double getValue() {
+        return data.value
     }
 }

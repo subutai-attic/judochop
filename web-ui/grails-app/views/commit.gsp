@@ -7,7 +7,7 @@
 
 <div class="row">
 
-    <b>Class</b>: ${session.className}<br/>
+    <b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
     <b>Metric</b>: ${session.metricType}
     <br/>
     <br/>
