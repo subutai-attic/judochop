@@ -2,12 +2,14 @@ package org.chop.web
 
 import org.apache.commons.lang.StringUtils
 import org.chop.service.data.CommitCalc
-
 import org.chop.service.data.FileScanner
 import org.chop.service.data.Storage
-import org.chop.service.metric.*
+import org.chop.service.metric.AggregatedMetric
+import org.chop.service.metric.Metric
+import org.chop.service.metric.MetricType
+import org.chop.web.util.Format
 
-class IndexController {
+class MainController {
 
     def index() {
 
@@ -18,6 +20,8 @@ class IndexController {
 
         String className = getSelectedClassName(classNames)
         MetricType metricType = getSelectedMetricType()
+
+        setSessionParams(className, metricType)
 
         CommitCalc commitCalc = new CommitCalc(className, metricType)
         Map<String, List<Metric>> commits = commitCalc.get()
@@ -37,7 +41,12 @@ class IndexController {
 
         str += "," + Format.formatValues( getMainValues(commits) )
 
-        render(view: "/index", model: [commitDirs: commitDirs, classNames: classNames, series: str])
+        render(view: "/main-view", model: [commitDirs: commitDirs, classNames: classNames, series: str])
+    }
+
+    private void setSessionParams(String className, MetricType metricType) {
+        session.className = className
+        session.metricType = metricType
     }
 
     private MetricType getSelectedMetricType() {

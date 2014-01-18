@@ -6,6 +6,6 @@ class AvgMetric extends Metric {
 
     protected void calc(Map<String, String> json) {
         count++
-        this.value = (value + json.meanTime) / count
+        data.value = (data.value + json.meanTime) / count
     }
 }

@@ -3,12 +3,12 @@ package org.chop.service.metric
 class MinMetric extends Metric {
 
     MinMetric() {
-        value = Double.MAX_VALUE
+        data.value = Double.MAX_VALUE
     }
 
     protected void calc(Map<String, String> json) {
-        if (json.minTime < value) {
-            value = json.minTime
+        if (json.minTime < data.value) {
+            data.value = json.minTime
         }
     }
 }
