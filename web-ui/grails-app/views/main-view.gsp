@@ -46,6 +46,7 @@
         var text = "- chopType: " + info.chopType
             + "<br/>- commitId: " + COMMIT_LINK.replace(/commitId/g, info.commitId)
             + "<br/>- runNumber: " + info.runNumber
+            + "<br/>- runners: " + info.runners
             + "<br/>- totalTestsRun: " + info.totalTestsRun
             + "<br/>- iterations: " + info.iterations
             + "<br/>- failures: " + info.failures

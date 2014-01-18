@@ -37,6 +37,7 @@
         console.log(info);
         var text = "- chopType: " + info.chopType
                 + "<br/>- " + RUN_LINK.replace(/runNumber/g, info.runNumber)
+                + "<br/>- runners: " + info.runners
                 + "<br/>- totalTestsRun: " + info.totalTestsRun
                 + "<br/>- iterations: " + info.iterations
                 + "<br/>- failures: " + info.failures

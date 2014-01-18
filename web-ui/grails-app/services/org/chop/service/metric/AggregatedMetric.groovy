@@ -13,6 +13,7 @@ class AggregatedMetric extends Metric {
         count++
         data.value = data.value + metric.getValue()
         data.runNumber = "ALL"
+        data.runners = "N/A"
     }
 
     @Override

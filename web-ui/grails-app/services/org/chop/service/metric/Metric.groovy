@@ -14,6 +14,7 @@ abstract class Metric {
         iterations: 0,
         failures: 0,
         ignores: 0,
+        runners: 0,
         value: 0
     ]
 
@@ -32,6 +33,7 @@ abstract class Metric {
         data.totalTestsRun += json.totalTestsRun
         data.failures += json.failures
         data.ignores += json.ignores
+        data.runners++
 
         if (json.containsKey("threads") && json.containsKey("iterations")) {
             data.iterations += json.threads * json.iterations
