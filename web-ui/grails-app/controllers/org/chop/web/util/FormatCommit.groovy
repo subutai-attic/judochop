@@ -32,11 +32,14 @@ class FormatCommit {
 
         if (metric.data.failures > 0) {
             pointColor = 'red'
-            markerRadius = 6
-        }
 
-        if (metric instanceof AggregatedMetric) {
-            markerRadius = 10
+            if (metric.data.failures > 100) {
+                markerRadius = 10
+            }
+
+            if (metric.data.failures > 1000) {
+                markerRadius = 15
+            }
         }
 
         """{

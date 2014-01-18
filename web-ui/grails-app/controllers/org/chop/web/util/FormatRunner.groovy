@@ -37,7 +37,18 @@ class FormatRunner {
 
         if (json.failureCount > 0) {
             pointColor = 'red'
-            markerRadius = 6
+
+            if (json.failureCount > 5) {
+                markerRadius = 7
+            }
+
+            if (json.failureCount > 10) {
+                markerRadius = 10
+            }
+
+            if (json.failureCount > 20) {
+                markerRadius = 15
+            }
         }
 
         BUILDER(json)

@@ -47,11 +47,24 @@ class Format {
 
         if (metric.data.failures > 0) {
             pointColor = 'red'
-            markerRadius = 6
+
+            if (metric.data.failures > 100) {
+                markerRadius = 7
+            }
+
+            if (metric.data.failures > 500) {
+                markerRadius = 10
+            }
+
+            if (metric.data.failures > 1000) {
+                markerRadius = 15
+            }
         }
 
+        String main = ''
+
         if (metric instanceof AggregatedMetric) {
-            markerRadius = 10
+            main = ", symbol: 'diamond', lineColor: 'yellow', lineWidth: '2'"
         }
 
         """{
@@ -60,6 +73,7 @@ class Format {
                 marker: {
                     radius: ${markerRadius},
                     fillColor: '$pointColor'
+                    ${main}
                 },
                 info: ${metric.toJson()}
         }"""
