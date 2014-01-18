@@ -28,10 +28,10 @@
     </center>
 
     <div class="row">
-        <div class="span10">
+        <div class="span9">
             <div id="chart"></div>
         </div>
-        <div class="span2">
+        <div class="span3">
             <span id="run-info" style="color: blue;">
                 Click a point to see details
             </span>
@@ -48,7 +48,7 @@
     }
 
     function showPointInfo(point) {
-        $("#run-info").text(point.info);
+        $("#run-info").html(point.info);
     }
 
     $(document).ready(function() {
