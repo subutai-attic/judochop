@@ -60,14 +60,15 @@ public class LoadMojo extends MainMojo {
         this.runnerName = mojo.runnerName;
         this.instanceType = mojo.instanceType;
         this.setupTimeout = mojo.setupTimeout;
-        this.minimumRunners = mojo.minimumRunners;
-        this.maximumRunners = mojo.maximumRunners;
+        this.runnerCount = mojo.runnerCount;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.sleepAfterCreation = mojo.sleepAfterCreation;
     }
 
 
@@ -89,6 +90,25 @@ public class LoadMojo extends MainMojo {
         SetupMojo setupMojo = new SetupMojo( this );
         setupMojo.execute();
         getLog().info( "Cluster is prepared" );
+
+        /*
+         * Sometimes load gets a net connection exception due to the runners not being up
+         * after a setup has created instances. In this case we want to wait a little bit
+         * until those runners are up.
+         */
+
+        if ( setupMojo.setupCreatedInstances ) {
+            getLog().info( "Seems setup created instances, so we'll wait " + sleepAfterCreation
+                    + " milliseconds to make sure they come up." );
+
+            try {
+                Thread.sleep( sleepAfterCreation );
+            }
+            catch ( InterruptedException e ) {
+                getLog().warn( "Awe snap! Could not wait the full " + sleepAfterCreation
+                        + " milliseconds after instance creation." );
+            }
+        }
 
         Injector injector = Guice.createInjector( new ChopClientModule() );
         ChopClient client = injector.getInstance( ChopClient.class );
@@ -284,7 +304,11 @@ public class LoadMojo extends MainMojo {
          * ------------------------------------------------------------------------------
          */
 
-        getLog().info( "Updating Runners:\n\t" + instancesToRestart );
+        getLog().info( "Updating Runners:" );
+        for ( Instance instance : instancesToRestart ) {
+            getLog().info( "\t\t" + instance.getPublicDnsName() + " (" + instance.getInstanceId() + ")" );
+        }
+
         if ( loads.size() > 0 ) {
             try {
                 futures = service.invokeAll( loads );

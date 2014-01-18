@@ -45,14 +45,15 @@ public class SetupMojo extends MainMojo {
         this.runnerName = mojo.runnerName;
         this.instanceType = mojo.instanceType;
         this.setupTimeout = mojo.setupTimeout;
-        this.minimumRunners = mojo.minimumRunners;
-        this.maximumRunners = mojo.maximumRunners;
+        this.runnerCount = mojo.runnerCount;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.sleepAfterCreation = mojo.sleepAfterCreation;
     }
 
 
@@ -86,8 +87,8 @@ public class SetupMojo extends MainMojo {
                 ec2Manager.setAvailabilityZone( availabilityZone );
             }
 
-            if( ! ec2Manager.ensureRunningInstances( minimumRunners, maximumRunners ) ) {
-                throw new MojoExecutionException( "Setting up instances failed" );
+            if ( ec2Manager.ensureRunningInstances( runnerCount ) > 0 ) {
+                super.setupCreatedInstances = true;
             }
 
             int port = Integer.parseInt( Runner.DEFAULT_SERVER_PORT );
@@ -144,9 +145,6 @@ public class SetupMojo extends MainMojo {
                     getLog().error( "Failed to install runner key.", e );
                 }
             }
-        }
-        catch ( MojoExecutionException e ) {
-            throw e;
         }
         catch ( Exception e ) {
             throw new MojoExecutionException( "Error in setup cluster", e );

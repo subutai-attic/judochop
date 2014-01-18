@@ -44,14 +44,15 @@ public class DeployMojo extends MainMojo {
         this.runnerName = mojo.runnerName;
         this.instanceType = mojo.instanceType;
         this.setupTimeout = mojo.setupTimeout;
-        this.minimumRunners = mojo.minimumRunners;
-        this.maximumRunners = mojo.maximumRunners;
+        this.runnerCount = mojo.runnerCount;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.sleepAfterCreation = mojo.sleepAfterCreation;
     }
 
 

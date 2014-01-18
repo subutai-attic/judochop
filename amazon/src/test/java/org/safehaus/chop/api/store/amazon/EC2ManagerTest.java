@@ -132,26 +132,10 @@ public class EC2ManagerTest {
 
 
     @Test @Ignore
-    public void testEnsureRunningInstancesMin() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
-        boolean res = ec2.ensureRunningInstancesMin( 4 );
-        LOG.info( "Result: ", res );
-        ec2.close();
-    }
-
-    @Test @Ignore
-    public void testEnsureRunningInstancesMax() {
-        EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
-        boolean res = ec2.ensureRunningInstancesMax( 1 );
-        LOG.info( "Result: " + res );
-        ec2.close();
-    }
-
-    @Test @Ignore
     public void testEnsureRunningInstances() {
         EC2Manager ec2 = new EC2Manager( accessKey, secretKey, amiID, securityGroup, keyName, runnerName, ENDPOINT );
-        boolean res = ec2.ensureRunningInstances( 3, 5 );
-        LOG.info( "Result: " + res );
+        int count = ec2.ensureRunningInstances( 3 );
+        LOG.info( "Result: " + count );
         ec2.close();
     }
 

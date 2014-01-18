@@ -138,61 +138,51 @@ public class EC2Manager {
     }
 
 
-    public boolean ensureRunningInstancesExact( int count ) {
-        return ensureRunningInstances( count, count );
-    }
-
-
-    public boolean ensureRunningInstancesMin( int minimumCount ) {
-        return ensureRunningInstances( minimumCount, Integer.MAX_VALUE );
-    }
-
-
-    public boolean ensureRunningInstancesMax( int maximumCount ) {
-        return ensureRunningInstances( 1, maximumCount );
-    }
-
-
     /**
-     * @param minCount Must be positive, inclusive
-     * @param maxCount Must be bigger than or equal to minCount, inclusive
-     * @return true if running instance count is already within limits or successfully
+     * @param runnerCount Must be positive
+     * @return the number of instances we had to create or destroy (negative number)
      */
-    public boolean ensureRunningInstances( int minCount, int maxCount ) {
-        if ( minCount <= 0 ) {
+    public int ensureRunningInstances( int runnerCount ) {
+        if ( runnerCount <= 0 ) {
             throw new IllegalArgumentException( "Count should be positive" );
-        }
-        if ( maxCount < minCount ) {
-            throw new IllegalArgumentException( "Maximum count can't be negative or smaller than minimum" );
         }
 
         Collection<Instance> activeInstances = getInstances( runnerName, InstanceStateName.Running );
-        if ( activeInstances.size() >= minCount && activeInstances.size() <= maxCount ) {
-            return true;
+        if ( activeInstances.size() == runnerCount ) {
+            return 0;
         }
 
-        if ( activeInstances.size() < minCount ) {
-            int increaseCount = minCount - activeInstances.size();
-            LOG.info( "Adding {} more instance(s)", increaseCount );
-            launchEC2Instances( defaultType, increaseCount );
+        int count = 0;
+
+        if ( activeInstances.size() < runnerCount ) {
+            count = runnerCount - activeInstances.size();
+            LOG.info( "Adding {} more instance(s)", count );
+            launchEC2Instances( defaultType, count );
         }
 
-        if ( activeInstances.size() > maxCount ) {
-            int decreaseCount = activeInstances.size() - maxCount;
-            LOG.info( "Terminating {} instance(s)", decreaseCount );
+        if ( activeInstances.size() > runnerCount ) {
+            count = activeInstances.size() - runnerCount;
+            LOG.info( "Terminating {} instance(s)", count );
             Collection<String> instances = new ArrayList<String>();
             int i = 1;
             for ( Instance instance : activeInstances ) {
                 instances.add( instance.getInstanceId() );
-                if ( ++i > decreaseCount ) {
+                if ( ++i > count ) {
                     break;
                 }
             }
             terminateEC2Instances( instances );
+
+            count = - count;
         }
 
         activeInstances = getInstances( runnerName, InstanceStateName.Running );
-        return ( activeInstances.size() >= minCount && activeInstances.size() <= maxCount );
+        if ( activeInstances.size() != runnerCount ) {
+            throw new IllegalStateException( "The required runnerCount of " + runnerCount +
+                    " could not be set " + activeInstances.size() + " instances are still running." );
+        }
+
+        return count;
     }
 
 

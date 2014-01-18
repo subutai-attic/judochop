@@ -4,14 +4,11 @@ package org.safehaus.chop.plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
-import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 
@@ -132,12 +129,8 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected Integer setupTimeout;
 
 
-    @Parameter( property = "minimumRunners", defaultValue = "1" )
-    protected Integer minimumRunners;
-
-
-    @Parameter( property = "maximumRunners", defaultValue = "10" )
-    protected Integer maximumRunners;
+    @Parameter( property = "runnerCount", defaultValue = "3" )
+    protected Integer runnerCount;
 
 
     @Parameter( property = "securityGroupExceptions" )
@@ -189,11 +182,20 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected String dumpType;
 
 
+    /**
+     * The amount of time to sleep after creating instances to wait until they're up
+     * and ready to be connected to.
+     */
+    @Parameter( property = "sleepAfterCreation", defaultValue = "30000" )
+    protected long sleepAfterCreation;
+
+
     // ------------------------------------------------------------------------
 
 
     protected String endpoint;
     protected Store store;
+    protected boolean setupCreatedInstances = false;
 
 
     @Override
@@ -222,14 +224,15 @@ public class MainMojo extends AbstractMojo implements Constants {
         this.runnerName = mojo.runnerName;
         this.instanceType = mojo.instanceType;
         this.setupTimeout = mojo.setupTimeout;
-        this.minimumRunners = mojo.minimumRunners;
-        this.maximumRunners = mojo.maximumRunners;
+        this.runnerCount = mojo.runnerCount;
         this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
         this.resetIfStopped = mojo.resetIfStopped;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.sleepAfterCreation = mojo.sleepAfterCreation;
 
         setEndpoint();
     }
