@@ -37,10 +37,11 @@ class MainController {
 
         String className = getSelectedClassName(classNames)
         MetricType metricType = StringUtils.isEmpty(params.metric) ? MetricType.AVG : (params.metric as MetricType)
+        int percentile = StringUtils.isEmpty(params.percentile) ? 100 : Integer.parseInt(params.percentile)
 
         setSessionParams(className, metricType)
 
-        CommitCalc commitCalc = new CommitCalc(className, metricType)
+        CommitCalc commitCalc = new CommitCalc(className, metricType, percentile)
         Map<String, List<Metric>> commits = commitCalc.get()
 
         int i = 0
