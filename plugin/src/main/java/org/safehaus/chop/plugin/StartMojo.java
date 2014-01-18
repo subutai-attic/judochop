@@ -12,10 +12,10 @@ import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.client.ResponseInfo;
-import org.safehaus.chop.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
@@ -23,7 +23,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 
-@Mojo ( name = "start" )
+@Mojo ( name = "start", requiresDependencyResolution = ResolutionScope.TEST,
+        requiresDependencyCollection = ResolutionScope.TEST )
 public class StartMojo extends MainMojo {
 
     @Override
@@ -83,6 +84,10 @@ public class StartMojo extends MainMojo {
         if( !verifyResult.getStatus() || !verifyResult.getState().equals( State.READY ) ) {
             throw new MojoExecutionException( "Runners could not be verified to run" );
         }
+
+        // Let's cold restart after full verification if the coldRestartRunners option is set
+        // @todo - enable later and test - first fix war issue
+        // coldRestart( instances );
 
         for( Runner runner : runners ) {
             Result result = client.start( runner );

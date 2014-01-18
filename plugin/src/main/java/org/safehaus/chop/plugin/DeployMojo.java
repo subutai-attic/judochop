@@ -14,6 +14,7 @@ import org.safehaus.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
@@ -21,7 +22,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 
 /** Deploys the perftest.war created by war goal to S3 bucket using supplied configuration parameters */
-@Mojo(name = "deploy" )
+@Mojo(name = "deploy", requiresDependencyResolution = ResolutionScope.TEST,
+        requiresDependencyCollection = ResolutionScope.TEST )
 public class DeployMojo extends MainMojo {
 
 
