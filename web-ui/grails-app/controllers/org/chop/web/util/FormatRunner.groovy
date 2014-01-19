@@ -6,14 +6,14 @@ class FormatRunner {
 
     private static final JsonBuilder BUILDER = new JsonBuilder()
 
-    static String format(String runner, List<Map> runResults) {
+    static String format(String runner, List<Map> runResults, double percentileValue) {
 
         List<String> data = []
 
         int i = 0
         runResults.each { json ->
             if (i < 500) {
-                data.add(formatPoint(json))
+                data.add( formatPoint(json, percentileValue) )
             }
             i++
         }
@@ -26,7 +26,7 @@ class FormatRunner {
         return s
     }
 
-    private static String formatPoint(Map json) {
+    private static String formatPoint(Map json, double percentileValue) {
 
         String pointColor = 'white'
         int markerRadius = 4
@@ -54,8 +54,10 @@ class FormatRunner {
         BUILDER(json)
         String strJson = BUILDER.toString()
 
+        Double y = json.runTime <= percentileValue ? json.runTime : null
+
         """{
-                y: ${json.runTime},
+                y: ${y},
                 marker: {
                     radius: ${markerRadius},
                     fillColor: '$pointColor'

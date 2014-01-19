@@ -9,7 +9,27 @@
 <b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
 <b>Metric</b>: ${session.metricType}<br/>
 
-<br/><br/>
+<form id="form" method="get">
+    <input type="hidden" name="commitId" value="${params.commitId}"/>
+    <input type="hidden" name="runNumber" value="${params.runNumber}"/>
+
+    Percentile:
+    <select id="percentile" name="percentile" onchange="reload()">
+        <option value="100">100</option>
+        <option value="90">90</option>
+        <option value="80">80</option>
+        <option value="70">70</option>
+        <option value="60">60</option>
+        <option value="50">50</option>
+        <option value="40">40</option>
+        <option value="30">30</option>
+        <option value="20">20</option>
+        <option value="10">10</option>
+    </select>
+</form>
+
+<br/>
+<br/>
 
 <div class="row">
 
@@ -54,16 +74,18 @@
                     + "</b><br/>testHeader: <b>" + failures[i].testHeader
                     + "</b><br/>trace: " + failures[i].trace
                     + "<hr/>"
-
-            /*message: "Unable to perform migration"
-            testHeader: "writeParamsEntity(org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest)"
-            trace: "org.a*/
         }
 
         $("#failures").html(s);
     }
 
+    function reload() {
+        $('#form').submit()
+    }
+
     $(document).ready(function() {
+
+        $('#percentile').val('${params.percentile}');
 
         $('#chart').highcharts({
             chart: {

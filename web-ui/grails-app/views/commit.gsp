@@ -11,6 +11,24 @@
     <b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
     <b>Metric</b>: ${session.metricType}<br/>
 
+    <form id="form" method="get">
+        <input type="hidden" name="commitId" value="${params.commitId}"/>
+
+        Percentile:
+        <select id="percentile" name="percentile" onchange="reload()">
+            <option value="100">100</option>
+            <option value="90">90</option>
+            <option value="80">80</option>
+            <option value="70">70</option>
+            <option value="60">60</option>
+            <option value="50">50</option>
+            <option value="40">40</option>
+            <option value="30">30</option>
+            <option value="20">20</option>
+            <option value="10">10</option>
+        </select>
+    </form>
+
     <br/>
     <br/>
 
@@ -27,6 +45,10 @@
 <script class="code" type="text/javascript">
 
     var RUN_LINK = "<a href='javascript:void(0);' onclick='openRunDetails(\"runNumber\");'>run#: runNumber</a>";
+
+    function reload() {
+        $('#form').submit()
+    }
 
     function pointClicked(point) {
         showPointInfo(point.info);
@@ -52,6 +74,8 @@
     }
 
     $(document).ready(function() {
+
+        $('#percentile').val('${params.percentile}');
 
         $('#chart').highcharts({
             chart: {

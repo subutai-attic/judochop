@@ -64,7 +64,7 @@ class Format {
         String main = ''
 
         if (metric instanceof AggregatedMetric) {
-            main = ", symbol: 'diamond', lineColor: 'yellow', lineWidth: '2'"
+            main = ", symbol: 'circle', lineColor: 'yellow', lineWidth: '2'"
         }
 
         """{
