@@ -1,6 +1,7 @@
 package org.chop.service.data
 
 import groovy.json.JsonSlurper
+import org.apache.commons.lang.StringUtils
 
 import javax.servlet.ServletContext
 
@@ -44,6 +45,9 @@ class FileScanner {
 
         Map<String, String> json = JSON_SLURPER.parseText(file.text)
         json.put("commitId", commitId)
+
+        String runner = StringUtils.substringBeforeLast(file.name, "-")
+        json.put("runner", runner)
 
         Storage.add(commitId, json)
     }
