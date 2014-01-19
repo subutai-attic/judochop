@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.safehaus.chop.api.ChopUtils;
@@ -12,6 +13,8 @@ import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
+import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -130,6 +133,63 @@ public class SetupMojo extends MainMojo {
             Injector injector = Guice.createInjector( new AmazonStoreModule() );
             Store store = injector.getInstance( Store.class );
             Collection<Instance> activeInstances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
+
+
+            // restart tomcat on instances with new password
+            getLog().info( "Waiting for ssh daemon to come up" );
+            for ( Instance instance : activeInstances ) {
+                SSHCommands.blockForSshServer( runnerSSHKeyFile, instance.getPublicDnsName() );
+                getLog().info( "Ssh server on " + instance.getPublicDnsName() + " is up!" );
+            }
+
+            getLog().info( "Sending admin password reset and restart tomcat to instances..." );
+
+            List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( activeInstances.size() );
+
+            for ( Instance instance : activeInstances ) {
+                SSHRequestThread restarter = new SSHRequestThread();
+                restarter.setSshKeyFile( runnerSSHKeyFile );
+                restarter.setInstanceURL( instance.getPublicDnsName() );
+                restarter.setTomcatAdminPassword( managerAppPassword );
+                restarter.setInstance( instance );
+                restarters.add( restarter );
+                restarter.start();
+            }
+
+            for ( SSHRequestThread restarter : restarters ) {
+                try {
+                    restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
+                }
+                catch ( InterruptedException e ) {
+                    getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
+                            + " is interrupted before finish", e );
+                }
+            }
+
+            ResponseInfo response;
+            boolean failedRestart = false;
+            for ( SSHRequestThread restarter : restarters ) {
+                response = restarter.getResult();
+                if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
+                    for ( String s : response.getMessages() ) {
+                        getLog().info( s );
+                    }
+                    for ( String s : response.getErrorMessages() ) {
+                        getLog().info( s );
+                    }
+                    failedRestart = true;
+                }
+            }
+
+            if ( failedRestart ) {
+                throw new MojoExecutionException(
+                        "There are instances that failed to restart properly, verify the cluster before moving on" );
+            }
+
+            getLog().info( "Each Runner's Tomcat admin password has been reset and Tomcat has been restarted." );
+
+
+            // ---
 
             Set<String> activeInstanceHostnames = new HashSet<String>( activeInstances.size() );
             for ( Instance instance : activeInstances ) {

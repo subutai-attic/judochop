@@ -114,6 +114,7 @@ public class StartMojo extends MainMojo {
         for ( Instance instance : instancesToRestart ) {
             SSHRequestThread restarter = new SSHRequestThread();
             restarter.setSshKeyFile( runnerSSHKeyFile );
+            restarter.setTomcatAdminPassword( managerAppPassword );
             restarter.setInstanceURL( instance.getPublicDnsName() );
             restarter.setInstance( instance );
             restarters.add( restarter );

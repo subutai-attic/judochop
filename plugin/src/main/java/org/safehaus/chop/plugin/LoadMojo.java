@@ -330,7 +330,18 @@ public class LoadMojo extends MainMojo {
             }
         }
 
-        getLog().info( "Sending restart tomcat requests updated instances..." );
+        /**
+         * There's a 2s pause in the Runner's load REST operation returns, but before the
+         * reload of the application is issued for safety purposes. We must make sure we
+         * give the Tomcat Admin Application to reload the file.
+         */
+        getLog().info( "Sending restart tomcat requests updated instances after 5 seconds ..." );
+        try {
+            Thread.sleep( 5000L );
+        }
+        catch ( InterruptedException e ) {
+            getLog().warn( "Got interrupted.", e );
+        }
 
         List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
 
@@ -338,6 +349,7 @@ public class LoadMojo extends MainMojo {
             SSHRequestThread restarter = new SSHRequestThread();
             restarter.setSshKeyFile( runnerSSHKeyFile );
             restarter.setInstanceURL( instance.getPublicDnsName() );
+            restarter.setTomcatAdminPassword( managerAppPassword );
             restarter.setInstance( instance );
             restarters.add( restarter );
             restarter.start();

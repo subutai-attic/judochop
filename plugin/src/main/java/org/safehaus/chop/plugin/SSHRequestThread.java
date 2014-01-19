@@ -18,6 +18,8 @@ class SSHRequestThread implements Runnable {
 
     private String sshKeyFile;
 
+    private String tomcatAdminPassword;
+
     private ResponseInfo result;
 
     private Instance instance;
@@ -61,8 +63,13 @@ class SSHRequestThread implements Runnable {
     }
 
 
+    public void setTomcatAdminPassword( String tomcatAdminPassword ) {
+        this.tomcatAdminPassword = tomcatAdminPassword;
+    }
+
+
     @Override
     public void run() {
-        result = SSHCommands.restartTomcatOnInstance( sshKeyFile, instanceURL );
+        result = SSHCommands.restartTomcatOnInstance( tomcatAdminPassword, sshKeyFile, instanceURL );
     }
 }

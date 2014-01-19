@@ -24,6 +24,12 @@ public class DestroyMojo extends MainMojo {
         EC2Manager ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
                 runnerKeyPairName, runnerName, endpoint );
         Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
+
+        if ( instances.size() == 0 ) {
+            getLog().info( "No running " + runnerName + " instances to destroy." );
+            return;
+        }
+
         Set<String> instanceIds = new HashSet<String>( instances.size() );
 
         for ( Instance instance : instances ) {
