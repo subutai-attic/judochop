@@ -3,16 +3,30 @@ package org.safehaus.chop.plugin;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.api.store.amazon.EC2Manager;
+import org.safehaus.chop.api.store.amazon.RunnerInstance;
+import org.safehaus.chop.client.rest.AsyncRequest;
+import org.safehaus.chop.client.rest.StatusOp;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -80,13 +94,17 @@ public class ResultsMojo extends MainMojo {
         FilenameFilter summaryAndResults = new FilenameFilter() {
             @Override
             public boolean accept( final File dir, final String name ) {
-                return name.endsWith( SUMMARY_SUFFIX ) || name.endsWith( RESULTS_SUFFIX );
+                return name.endsWith( SUMMARY_SUFFIX )
+                        ||
+                        name.endsWith( RESULTS_SUFFIX )
+                        ||
+                        name.endsWith( PROJECT_FILE );
             }
         };
         FilenameFilter summaryOnly = new FilenameFilter() {
             @Override
             public boolean accept( final File dir, final String name ) {
-                return name.endsWith( SUMMARY_SUFFIX );
+                return name.endsWith( SUMMARY_SUFFIX ) || name.endsWith( PROJECT_FILE );
             }
         };
 
@@ -127,6 +145,9 @@ public class ResultsMojo extends MainMojo {
                       .append( String.valueOf( nextRunNumber - 1 ) ).append( '/' );
                     try {
                         store.download( resultsDirectory, sb.toString(), summaryAndResults );
+                        sb.setLength( 0 );
+                        sb.append( ChopUtils.getTestBase( project ) ).append( PROJECT_FILE );
+                        store.download( resultsDirectory, sb.toString(), summaryAndResults );
                     }
                     catch ( Exception e ) {
                         throw new MojoExecutionException( "Failed to download summaries and results for test run: "
@@ -165,6 +186,57 @@ public class ResultsMojo extends MainMojo {
                     + "' for dumpType does not match a valid dumpType enum: "
                     + Arrays.toString( DumpType.values() ), iae );
         }
+
+        if ( blockUntilComplete ) {
+            while ( testInProgress() ) {
+                getLog().info( "Tests in progress, blocking until they complete." );
+
+                try {
+                    Thread.sleep( 120000 );
+                }
+                catch ( InterruptedException e ) {
+                    getLog().warn( "Thread interrupted." );
+                }
+            }
+
+            getLog().info( "It seems the tests have completed, resuming results download." );
+        }
+        else {
+            if ( testInProgress() ) {
+                throw new MojoExecutionException( "Tests in progress, results download aborted." );
+            }
+        }
+    }
+
+
+    private boolean testInProgress() throws MojoExecutionException {
+        EC2Manager ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
+                runnerKeyPairName, runnerName, endpoint );
+        Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
+
+        ArrayList<AsyncRequest<RunnerInstance,StatusOp>> statuses =
+                new ArrayList<AsyncRequest<RunnerInstance, StatusOp>>( instances.size() );
+
+        for ( Instance instance : instances ) {
+            statuses.add( new AsyncRequest<RunnerInstance, StatusOp>( new RunnerInstance( instance ), new StatusOp( instance ) ) );
+        }
+
+        List<Future<Result>> futures;
+        ExecutorService service = Executors.newFixedThreadPool( instances.size() );
+        try {
+            futures = service.invokeAll( statuses );
+        }
+        catch ( InterruptedException e ) {
+            throw new MojoExecutionException( "Failed on status invocations.", e );
+        }
+
+        for ( AsyncRequest<RunnerInstance,StatusOp> request : statuses ) {
+            if ( request.getRestOperation().getResult().getState() == State.RUNNING ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

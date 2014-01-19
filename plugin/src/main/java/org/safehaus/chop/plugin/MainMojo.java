@@ -190,6 +190,10 @@ public class MainMojo extends AbstractMojo implements Constants {
     protected long sleepAfterCreation;
 
 
+    @Parameter( property = "blockUntilComplete", defaultValue = "true" )
+    protected boolean blockUntilComplete;
+
+
     // ------------------------------------------------------------------------
 
 
