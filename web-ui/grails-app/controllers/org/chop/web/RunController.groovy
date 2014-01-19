@@ -60,7 +60,7 @@ class RunController {
 
         for (int j = 0; j < columns; j++) {
             Map json = [
-                    "runTime": 0,
+                    "runTime": null,
                     "ignoreCount": 0,
                     "failureCount": 0,
                     "failures": [ ]
