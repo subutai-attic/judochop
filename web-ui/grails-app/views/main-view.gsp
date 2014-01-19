@@ -87,12 +87,12 @@
                 type: 'spline'
             },
             title: {
-                text: ' '
-            },
-            subtitle: {
-                text: ' '
+                text: 'Commits / Runs'
             },
             xAxis: {
+                title: {
+                    text: 'Commits'
+                },
                 categories: ${commitDirs}
             },
             yAxis: {

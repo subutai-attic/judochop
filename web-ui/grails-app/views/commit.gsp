@@ -82,13 +82,12 @@
                 type: 'spline'
             },
             title: {
-                text: ' '
-            },
-            subtitle: {
-                text: ' '
+                text: 'Runs in commit ${params.commitId}'
             },
             xAxis: {
-                //categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                title: {
+                    text: 'Runs'
+                }
             },
             yAxis: {
                 title: {

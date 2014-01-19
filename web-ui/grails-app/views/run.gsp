@@ -92,13 +92,12 @@
                 type: 'spline'
             },
             title: {
-                text: ' '
-            },
-            subtitle: {
-                text: ' '
+                text: "Runners' actual iterations in run #${params.runNumber}"
             },
             xAxis: {
-                //categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                title: {
+                    text: 'Actual Iterations'
+                }
             },
             yAxis: {
                 title: {
