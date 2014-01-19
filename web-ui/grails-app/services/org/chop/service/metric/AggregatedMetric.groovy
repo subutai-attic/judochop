@@ -17,7 +17,7 @@ class AggregatedMetric extends Metric {
     }
 
     @Override
-    double getValue() {
-        return data.value / count
+    Double getValue() {
+        return count == 0 ? null : (data.value / count)
     }
 }

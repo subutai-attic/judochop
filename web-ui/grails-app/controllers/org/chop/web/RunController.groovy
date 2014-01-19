@@ -2,6 +2,7 @@ package org.chop.web
 
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
+import org.chop.service.data.PointType
 import org.chop.service.metric.AggregatedMetric
 import org.chop.service.metric.Metric
 import org.chop.service.store.ResultStore
@@ -17,6 +18,8 @@ class RunController {
         int percentile = StringUtils.isEmpty(params.percentile) ? 100 : Integer.parseInt(params.percentile)
         double percentileValue = getPercentile(jsonList, percentile)
 
+        PointType pointType = StringUtils.isEmpty(params.pointFilter) ? PointType.ALL : (params.pointFilter as PointType)
+
         String series = ""
 
         jsonList.each { json ->
@@ -24,10 +27,10 @@ class RunController {
                 series += ","
             }
 
-            series += FormatRunner.format(json.runner, json.runResults, percentileValue)
+            series += FormatRunner.format(json.runner, json.runResults, percentileValue, pointType)
         }
 
-        series += "," + FormatRunner.format("AVG", getMainValues(jsonList, percentileValue), percentileValue)
+        series += "," + FormatRunner.format("AVG", getMainValues(jsonList, percentileValue), percentileValue, pointType)
 
         render(view: "/run", model: [series: series])
     }

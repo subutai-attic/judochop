@@ -8,11 +8,13 @@ class CommitCalc {
     private String className
     private MetricType metricType
     private int percentile
+    PointType pointType
 
-    CommitCalc(String className, MetricType metricType, int percentile) {
+    CommitCalc(String className, MetricType metricType, int percentile, PointType pointType) {
         this.className = className
         this.metricType = metricType
         this.percentile = percentile
+        this.pointType = pointType
     }
 
     Map<String, List<Metric>> get() {
@@ -40,8 +42,29 @@ class CommitCalc {
         }
 
         List<Metric> resultList = valueMap.values().collect()
+        resultList = filterByPercentile(resultList)
+        resultList = filterByPointType(resultList)
 
-        return filterByPercentile(resultList)
+        return resultList
+    }
+
+    private List<Metric> filterByPointType(List<Metric> list) {
+
+        List<Metric> resultList = []
+
+        list.each { metric ->
+
+            int failures = metric.data.failures
+
+            if (pointType == PointType.ALL
+                    || (pointType == PointType.FAILED && failures > 0)
+                    || (pointType == PointType.SUCCESS && failures == 0)
+            ) {
+                resultList.add(metric)
+            }
+        }
+
+        return resultList
     }
 
     private List<Metric> filterByPercentile(List<Metric> list) {

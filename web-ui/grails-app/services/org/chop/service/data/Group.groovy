@@ -7,7 +7,7 @@ import org.chop.service.metric.MetricType
 
 class Group {
 
-    static Map<Integer, Metric> byRun(List<Map> jsonList, MetricType metricType, int percentile) {
+    static Map<Integer, Metric> byRun(List<Map> jsonList, MetricType metricType, int percentile, PointType pointType) {
 
         Map<Integer, Metric> resultMap = new HashMap()
 
@@ -15,7 +15,29 @@ class Group {
             put(resultMap, json, metricType)
         }
 
-        return filterByPercentile(resultMap, percentile)
+        resultMap = filterByPercentile(resultMap, percentile)
+        resultMap = filterByPointType(resultMap, pointType)
+
+        return resultMap
+    }
+
+    private static Map<Integer, Metric> filterByPointType(Map<Integer, Metric> map, PointType pointType) {
+
+        Map<Integer, Metric> resultMap = new HashMap()
+
+        map.each { runNumber, metric ->
+
+            int failures = metric.data.failures
+
+            if (pointType == PointType.ALL
+                    || (pointType == PointType.FAILED && failures > 0)
+                    || (pointType == PointType.SUCCESS && failures == 0)
+            ) {
+                resultMap.put(runNumber, metric)
+            }
+        }
+
+        return resultMap
     }
 
     private static Map<Integer, Metric> filterByPercentile(Map<Integer, Metric> resultMap, int percentile) {
