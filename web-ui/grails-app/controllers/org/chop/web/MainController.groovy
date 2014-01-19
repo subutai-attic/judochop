@@ -1,14 +1,14 @@
 package org.chop.web
 
+import groovy.json.JsonBuilder
 import org.apache.commons.lang.StringUtils
 import org.chop.service.data.CommitCalc
 import org.chop.service.data.FileScanner
+import org.chop.service.data.ProjectInfo
 import org.chop.service.data.Storage
 import org.chop.service.metric.AggregatedMetric
 import org.chop.service.metric.Metric
 import org.chop.service.metric.MetricType
-import org.chop.service.store.ResultFileScanner
-import org.chop.service.store.ResultStore
 import org.chop.web.util.Format
 
 import javax.servlet.ServletContext
@@ -24,7 +24,7 @@ class MainController {
         }
 
         FileScanner.setup(ctx)
-        ResultFileScanner.update()
+        //ResultFileScanner.update()
         initDone = true
     }
 
@@ -45,21 +45,25 @@ class MainController {
         Map<String, List<Metric>> commits = commitCalc.get()
 
         int i = 0
-        String str = ""
+        String series = ""
 
         commits.each { commitId, list ->
 
-            if (str != "") {
-                str += ","
+            if (series != "") {
+                series += ","
             }
 
-            str += Format.formatCommit(i, commitId, list)
+            series += Format.formatCommit(i, commitId, list)
             i++
         }
 
-        str += "," + Format.formatValues( getMainValues(commits) )
+        series += "," + Format.formatValues( getMainValues(commits) )
 
-        render(view: "/main-view", model: [commitDirs: commitDirs, classNames: classNames, series: str])
+        render(view: "/main-view", model: [
+                commitDirs: commitDirs,
+                classNames: classNames,
+                series: series
+        ])
     }
 
     private void setSessionParams(String className, MetricType metricType) {

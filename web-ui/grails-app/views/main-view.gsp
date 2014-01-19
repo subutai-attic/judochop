@@ -1,3 +1,5 @@
+<%@ page import="org.chop.service.data.ProjectInfo" %>
+
 <html>
 <head>
     <title>Judo Chop</title>
@@ -44,7 +46,15 @@
     </div>
 </div>
 
+<b>Project Version:</b> ${ProjectInfo.PROPS.get("project.version")}<br/>
+<b>Artifact Id:</b> ${ProjectInfo.PROPS.get("artifact.id")}<br/>
+<b>Group Id:</b> ${ProjectInfo.PROPS.get("group.id")}<br/>
+<b>Url:</b> http://${ProjectInfo.PROPS.get('git.url')}/commits/<span id="urlCommitId"></span>
+<br/>
+
 <script class="code" type="text/javascript">
+
+    var commitInfo = ${ProjectInfo.getCommitInfo()};
 
     var COMMIT_LINK = "<a href='javascript:void(0);' onclick='openCommitDetails(\"commitId\");'>commitId</a>";
 
@@ -54,11 +64,16 @@
 
     function pointClicked(point) {
         showPointInfo(point.info);
+        updateCommitUrl(point.info.commitId);
+    }
+
+    function updateCommitUrl(commitId) {
+        var commitFullId = commitInfo[commitId]
+        $("#urlCommitId").text(commitFullId);
     }
 
     function showPointInfo(info) {
 
-        console.log(info);
         var text = "- chopType: " + info.chopType
             + "<br/>- commitId: " + COMMIT_LINK.replace(/commitId/g, info.commitId)
             + "<br/>- runNumber: " + info.runNumber

@@ -31,5 +31,7 @@ class CommitOrder {
         props.load(propFile.newDataInputStream())
 
         orderMap.put( props.getProperty(CREATE_TIMESTAMP), dir)
+
+        ProjectInfo.handle(dir.name, props)
     }
 }
