@@ -13,7 +13,7 @@ import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
-import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.ResponseInfo;
 import org.safehaus.chop.client.ssh.SSHCommands;
 
 import org.apache.maven.plugin.MojoExecutionException;

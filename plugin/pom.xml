@@ -60,6 +60,28 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <systemPropertyVariables>
+            <aws.s3.key>${aws.s3.key}</aws.s3.key>
+            <aws.s3.secret>${aws.s3.secret}</aws.s3.secret>
+            <aws.s3.bucket>${aws.s3.bucket}</aws.s3.bucket>
+            <manager.app.username>${manager.app.username}</manager.app.username>
+            <manager.app.password>${manager.app.password}}</manager.app.password>
+            <manager.endpoint>${manager.endpoint}</manager.endpoint>
+            <runner.ssh.key.file>${runner.ssh.key.file}</runner.ssh.key.file>
+            <runner.keypair.name>${runner.keypair.name}</runner.keypair.name>
+            <availabilityZone>${availabilityZone}</availabilityZone>
+            <ami.id>${ami.id}</ami.id>
+            <security.group>${security.group}</security.group>
+            <runner.name>chop-runner</runner.name>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

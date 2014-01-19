@@ -11,7 +11,7 @@ import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
-import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.ResponseInfo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

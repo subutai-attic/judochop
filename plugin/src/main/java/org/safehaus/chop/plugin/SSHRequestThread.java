@@ -1,7 +1,7 @@
 package org.safehaus.chop.plugin;
 
 
-import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.ResponseInfo;
 import org.safehaus.chop.client.ssh.SSHCommands;
 
 import com.amazonaws.services.ec2.model.Instance;

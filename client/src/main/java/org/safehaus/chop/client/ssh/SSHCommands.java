@@ -7,7 +7,6 @@ import java.net.ConnectException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.safehaus.chop.client.ResponseInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

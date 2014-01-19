@@ -20,7 +20,7 @@ import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.api.store.amazon.RunnerInstance;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
-import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.ssh.ResponseInfo;
 import org.safehaus.chop.client.rest.AsyncRequest;
 import org.safehaus.chop.client.rest.LoadOp;
 import org.safehaus.chop.client.rest.StatusOp;
