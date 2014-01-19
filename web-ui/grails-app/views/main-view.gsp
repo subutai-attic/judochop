@@ -32,6 +32,14 @@
             <option value="20">20</option>
             <option value="10">10</option>
         </select>
+
+        Interation Points to Plot:
+        <select id="pointFilter" name="pointFilter" onchange="reload()">
+            <option value="ALL">All</option>
+            <option value="FAILED">Only Failure</option>
+            <option value="SUCCESS">Only Success</option>
+        </select>
+
     </form>
 </center>
 
@@ -96,6 +104,7 @@
         $('#className').val('${params.className}');
         $('#metric').val('${params.metric}');
         $('#percentile').val('${params.percentile}');
+        $('#pointFilter').val('${params.pointFilter}');
 
         $('#chart').highcharts({
             chart: {

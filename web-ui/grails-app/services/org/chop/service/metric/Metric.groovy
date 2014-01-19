@@ -53,7 +53,7 @@ abstract class Metric {
         return BUILDER.toString()
     }
 
-    double getValue() {
+    Double getValue() {
         return data.value
     }
 }
