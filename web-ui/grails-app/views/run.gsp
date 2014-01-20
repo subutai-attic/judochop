@@ -44,9 +44,12 @@
         <div id="chart"></div>
     </div>
     <div class="span3">
-        <span id="info" style="color: #000000;">
-            Click a point to see details
-        </span>
+        <b>Details</b>:
+        <div id="info"></div>
+        <br/>
+
+        <b>Note</b>:
+        <textarea id="note" rows="10" cols="45" readonly>${note}</textarea>
     </div>
 
 </div>
