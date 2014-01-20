@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.client.ssh.AsyncSsh;
-import org.safehaus.chop.client.ssh.SshValues;
+import org.safehaus.chop.api.SshValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

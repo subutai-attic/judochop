@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.safehaus.chop.api.SshValues;
 import org.slf4j.LoggerFactory;
 
 
@@ -22,7 +23,7 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
     private final String server;
 
-    private ResponseInfo response;
+    protected ResponseInfo response;
 
     private String command;
 
@@ -71,6 +72,10 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
 
     public boolean isSuccess() {
+        if ( response == null ) {
+            return false;
+        }
+
         return response.isOperationSuccessful() && response.isRequestSuccessful();
     }
 
@@ -90,6 +95,16 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
     @Override
     public int hashCode() {
         return server.hashCode();
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "ssh -i " ).append( sshKeyFile )
+          .append( " ubuntu@" ).append( server )
+          .append( " " ).append( command );
+        return sb.toString();
     }
 
 

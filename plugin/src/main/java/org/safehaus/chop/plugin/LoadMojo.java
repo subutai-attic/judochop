@@ -4,37 +4,33 @@ package org.safehaus.chop.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
-import org.safehaus.chop.api.store.amazon.EC2Manager;
+import org.safehaus.chop.api.store.amazon.InstanceValues;
 import org.safehaus.chop.api.store.amazon.RunnerInstance;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
-import org.safehaus.chop.client.ssh.ResponseInfo;
+import org.safehaus.chop.client.ssh.AsyncSsh;
 import org.safehaus.chop.client.rest.AsyncRequest;
 import org.safehaus.chop.client.rest.LoadOp;
 import org.safehaus.chop.client.rest.StatusOp;
+import org.safehaus.chop.client.ssh.TomcatRestart;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceStateName;
-import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -44,31 +40,37 @@ import com.google.inject.Injector;
 public class LoadMojo extends MainMojo {
 
     protected LoadMojo( MainMojo mojo ) {
-        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
-        this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
-        this.secretKey = mojo.secretKey;
-        this.bucketName = mojo.bucketName;
-        this.destinationParentDir = mojo.destinationParentDir;
-        this.managerAppUsername = mojo.managerAppUsername;
-        this.managerAppPassword = mojo.managerAppPassword;
-        this.testPackageBase = mojo.testPackageBase;
-        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
-        this.awsSecurityGroup = mojo.awsSecurityGroup;
-        this.runnerKeyPairName = mojo.runnerKeyPairName;
-        this.runnerName = mojo.runnerName;
-        this.instanceType = mojo.instanceType;
-        this.setupTimeout = mojo.setupTimeout;
-        this.runnerCount = mojo.runnerCount;
-        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
-        this.resetIfStopped = mojo.resetIfStopped;
+        this.awsSecurityGroup = mojo.awsSecurityGroup;
+        this.blockUntilComplete = mojo.blockUntilComplete;
+        this.bucketName = mojo.bucketName;
+        this.certStorePassphrase = mojo.certStorePassphrase;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.dumpType = mojo.dumpType;
+        this.endpoint = mojo.endpoint;
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.instanceType = mojo.instanceType;
+        this.localRepository = mojo.localRepository;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.managerAppUsername = mojo.managerAppUsername;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.resultsDirectory = mojo.resultsDirectory;
+        this.runnerCount = mojo.runnerCount;
+        this.runnerKeyPairName = mojo.runnerKeyPairName;
+        this.runnerName = mojo.runnerName;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+        this.secretKey = mojo.secretKey;
+        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.setupTimeout = mojo.setupTimeout;
         this.sleepAfterCreation = mojo.sleepAfterCreation;
+        this.store = mojo.store;
+        this.testPackageBase = mojo.testPackageBase;
     }
 
 
@@ -78,72 +80,78 @@ public class LoadMojo extends MainMojo {
     }
 
 
+    protected void setSshValues() {
+        Preconditions.checkNotNull( runnerSSHKeyFile );
+        Preconditions.checkNotNull( managerAppPassword );
+
+        list = new InstanceValues( "ls", runnerSSHKeyFile );
+
+        String stop = "sudo service tomcat7 stop; ";
+        stopTomcat = new InstanceValues( stop, runnerSSHKeyFile );
+
+        String start = "sudo service tomcat7 start; ";
+        startTomcat = new InstanceValues( start, runnerSSHKeyFile );
+
+        String status = "sudo service tomcat7 status; ";
+        statusTomcat = new InstanceValues( status, runnerSSHKeyFile );
+
+        String password = "sudo sed -i 's/WtPgEXEwioa0LXUtqGwtkC4YUSgl2w4BF9VXsBviT/" + managerAppPassword
+                + "/g' /etc/tomcat7/tomcat-users.xml; ";
+        passwordTomcat = new InstanceValues( password, runnerSSHKeyFile );
+
+        String combined = stop + password + start + status;
+        stopPasswordStartStatusTomcat = new InstanceValues( combined, runnerSSHKeyFile );
+    }
+
+
     @Override
     public void execute() throws MojoExecutionException {
+        setSshValues();
 
         /* ------------------------------------------------------------------------------
          * This ensures the proper instance types and counts are up and ready.
          * ------------------------------------------------------------------------------
          */
 
+        getLog().info( "" );
+        getLog().info( "------------------------------------------------------------------------" );
         getLog().info( "Calling setup goal first to ensure cluster is prepared" );
+        getLog().info( "------------------------------------------------------------------------" );
+        getLog().info( "" );
+
         SetupMojo setupMojo = new SetupMojo( this );
         setupMojo.execute();
         getLog().info( "Cluster is prepared" );
 
-        /*
-         * Sometimes load gets a net connection exception due to the runners not being up
-         * after a setup has created instances. In this case we want to wait a little bit
-         * until those runners are up.
-         */
+        getLog().info( "" );
+        getLog().info( "------------------------------------------------------------------------" );
+        getLog().info( "RUNNER CLUSTER IS PREPARED" );
+        getLog().info( "------------------------------------------------------------------------" );
+        getLog().info( "" );
 
-        if ( setupMojo.setupCreatedInstances ) {
-            getLog().info( "Seems setup created instances, so we'll wait " + sleepAfterCreation
-                    + " milliseconds to make sure they come up." );
-
-            try {
-                Thread.sleep( sleepAfterCreation );
-            }
-            catch ( InterruptedException e ) {
-                getLog().warn( "Awe snap! Could not wait the full " + sleepAfterCreation
-                        + " milliseconds after instance creation." );
-            }
-        }
+        // @todo see if it works without this - don't think we need it anymore
+        //
+//        /*
+//         * Sometimes load gets a net connection exception due to the runners not being up
+//         * after a setup has created instances. In this case we want to wait a little bit
+//         * until those runners are up.
+//         */
+//
+//        if ( setupMojo.setupCreatedInstances ) {
+//            getLog().info( "Seems setup created instances, so we'll wait " + sleepAfterCreation
+//                    + " milliseconds to make sure they come up." );
+//
+//            try {
+//                Thread.sleep( sleepAfterCreation );
+//            }
+//            catch ( InterruptedException e ) {
+//                getLog().warn( "Awe snap! Could not wait the full " + sleepAfterCreation
+//                        + " milliseconds after instance creation." );
+//            }
+//        }
 
         Injector injector = Guice.createInjector( new ChopClientModule() );
         ChopClient client = injector.getInstance( ChopClient.class );
-
-        /* ------------------------------------------------------------------------------
-         * Instances may be running but may not be registered their runner information in
-         * S3, so we're going to need to access instance information directly with EC2
-         * Manager rather than from S3.
-         * ------------------------------------------------------------------------------
-         */
-
-        EC2Manager ec2Manager =
-                new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup, runnerKeyPairName, runnerName, endpoint );
-
-        try {
-
-            // seems to be a bug here where InstanceType.valueOf is not recognizing the m1.large
-            if ( "m1.large".equals( instanceType ) ) {
-                ec2Manager.setDefaultType( InstanceType.M1Large );
-            }
-            else {
-                InstanceType type = InstanceType.valueOf( instanceType );
-                ec2Manager.setDefaultType( type );
-            }
-        }
-        catch ( IllegalArgumentException e ) {
-            getLog().warn( "The instanceType provided " + instanceType + " was not a valid InstanceType String" );
-        }
-        catch ( NullPointerException e ) {
-            getLog().info( "Instance type value was not provided. Using EC2Manager default." );
-        }
-
-        ec2Manager.setAvailabilityZone( availabilityZone );
-        ec2Manager.setDefaultTimeout( setupTimeout );
-        Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
 
         /*
          * Let's check and see if the project file exists and if it does not that means we
@@ -223,10 +231,8 @@ public class LoadMojo extends MainMojo {
             statuses.add( new AsyncRequest<RunnerInstance, StatusOp>( new RunnerInstance( instance ), new StatusOp( instance ) ) );
         }
 
-        List<Future<Result>> futures;
-        ExecutorService service = Executors.newFixedThreadPool( instances.size() );
         try {
-            futures = service.invokeAll( statuses );
+            executor.invokeAll( statuses );
         }
         catch ( InterruptedException e ) {
             throw new MojoExecutionException( "Failed on status invocations.", e );
@@ -311,7 +317,7 @@ public class LoadMojo extends MainMojo {
 
         if ( loads.size() > 0 ) {
             try {
-                futures = service.invokeAll( loads );
+                executor.invokeAll( loads );
             }
             catch ( InterruptedException e ) {
                 throw new MojoExecutionException( "Failed on status invocations.", e );
@@ -330,60 +336,106 @@ public class LoadMojo extends MainMojo {
             }
         }
 
+
         /**
          * There's a 2s pause in the Runner's load REST operation returns, but before the
          * reload of the application is issued for safety purposes. We must make sure we
          * give the Tomcat Admin Application to reload the file.
          */
-        getLog().info( "Sending restart tomcat requests updated instances after 5 seconds ..." );
-        try {
-            Thread.sleep( 5000L );
-        }
-        catch ( InterruptedException e ) {
-            getLog().warn( "Got interrupted.", e );
-        }
+        getLog().info( "" );
+        getLog().info( "------------------------------------------------------------------------" );
+        getLog().info( "Sending restart command to newly loaded runner Tomcat instances ..." );
+        getLog().info( "------------------------------------------------------------------------" );
+        getLog().info( "" );
 
-        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
+        boolean allUp;
 
-        for ( Instance instance : instancesToRestart ) {
-            SSHRequestThread restarter = new SSHRequestThread();
-            restarter.setSshKeyFile( runnerSSHKeyFile );
-            restarter.setInstanceURL( instance.getPublicDnsName() );
-            restarter.setTomcatAdminPassword( managerAppPassword );
-            restarter.setInstance( instance );
-            restarters.add( restarter );
-            restarter.start();
-        }
+        String stop = "sudo service tomcat7 stop; ";
+        String start = "sudo service tomcat7 start; ";
+        String status = "sudo service tomcat7 status; ";
+        String password = "sudo sed -i 's/WtPgEXEwioa0LXUtqGwtkC4YUSgl2w4BF9VXsBviT/" + managerAppPassword
+                + "/g' /etc/tomcat7/tomcat-users.xml; ";
+        String combined = stop + password + start + status;
+        stopPasswordStartStatusTomcat = new InstanceValues( combined, runnerSSHKeyFile );
 
-        for ( SSHRequestThread restarter : restarters ) {
+        Collection<TomcatRestart<Instance>> failedTomcat = TomcatRestart.getCommands( managerAppPassword,
+                instancesToRestart, stopPasswordStartStatusTomcat );
+        do {
+            getLog().info( "Sleeping for 5 seconds" );
             try {
-                restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
+                Thread.sleep( 5000 );
             }
             catch ( InterruptedException e ) {
-                getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
-                        + " is interrupted before finish", e );
+                getLog().warn( "Got interrupted.", e );
             }
-        }
 
-        ResponseInfo response;
-        boolean failedRestart = false;
-        for ( SSHRequestThread restarter : restarters ) {
-            response = restarter.getResult();
-            if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
-                for ( String s : response.getMessages() ) {
-                    getLog().info( s );
+            getLog().info( "Woke up from sleep ready to parallel execute Tomcat restart commands." );
+
+            try {
+                getLog().info( "About to execute " + failedTomcat.size() + " commands." );
+
+                executor.invokeAll( failedTomcat );
+
+                failedTomcat = TomcatRestart.extractTomcatFailures( failedTomcat );
+                getLog().info( failedTomcat.size() + " of those commands failed." );
+
+                if ( failedTomcat.size() > 0 ) {
+                    getLog().info( "Failed on ssh commands: " );
+                    for ( AsyncSsh<Instance> command : failedTomcat ) {
+                        getLog().info( "\t\t" + command );
+                    }
                 }
-                for ( String s : response.getErrorMessages() ) {
-                    getLog().info( s );
-                }
-                failedRestart = true;
+
+                allUp = failedTomcat.isEmpty();
             }
-        }
+            catch ( Exception e ) {
+                getLog().error( "Got the following error during command execution.", e );
+                allUp = false;
+            }
+        } while ( ! allUp );
 
-        if ( failedRestart ) {
-            throw new MojoExecutionException(
-                    "There are instances that failed to restart properly, verify the cluster before moving on" );
-        }
+
+//        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
+//
+//        for ( Instance instance : instancesToRestart ) {
+//            SSHRequestThread restarter = new SSHRequestThread();
+//            restarter.setSshKeyFile( runnerSSHKeyFile );
+//            restarter.setInstanceURL( instance.getPublicDnsName() );
+//            restarter.setTomcatAdminPassword( managerAppPassword );
+//            restarter.setInstance( instance );
+//            restarters.add( restarter );
+//            restarter.start();
+//        }
+//
+//        for ( SSHRequestThread restarter : restarters ) {
+//            try {
+//                restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
+//            }
+//            catch ( InterruptedException e ) {
+//                getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
+//                        + " is interrupted before finish", e );
+//            }
+//        }
+//
+//        ResponseInfo response;
+//        boolean failedRestart = false;
+//        for ( SSHRequestThread restarter : restarters ) {
+//            response = restarter.getResult();
+//            if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
+//                for ( String s : response.getMessages() ) {
+//                    getLog().info( s );
+//                }
+//                for ( String s : response.getErrorMessages() ) {
+//                    getLog().info( s );
+//                }
+//                failedRestart = true;
+//            }
+//        }
+//
+//        if ( failedRestart ) {
+//            throw new MojoExecutionException(
+//                    "There are instances that failed to restart properly, verify the cluster before moving on" );
+//        }
 
         getLog().info( "Test war is loaded on each runner instance and in READY state." );
     }

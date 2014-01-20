@@ -1,4 +1,4 @@
-package org.safehaus.chop.client.ssh;
+package org.safehaus.chop.api;
 
 
 /**

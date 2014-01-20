@@ -3,14 +3,18 @@ package org.safehaus.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.api.SshValues;
+import org.safehaus.chop.api.store.amazon.EC2Manager;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -19,6 +23,7 @@ import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
+import com.amazonaws.services.ec2.model.Instance;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -196,10 +201,20 @@ public class MainMojo extends AbstractMojo implements Constants {
 
     // ------------------------------------------------------------------------
 
+    protected SshValues<Instance> list;
+    protected SshValues<Instance> passwordTomcat;
+    protected SshValues<Instance> startTomcat;
+    protected SshValues<Instance> statusTomcat;
+    protected SshValues<Instance> stopPasswordStartStatusTomcat;
+    protected SshValues<Instance> stopTomcat;
 
     protected String endpoint;
     protected Store store;
     protected boolean setupCreatedInstances = false;
+
+    protected static EC2Manager ec2Manager;
+    protected static Collection<Instance> instances;
+    protected static ExecutorService executor;
 
 
     @Override
@@ -209,34 +224,37 @@ public class MainMojo extends AbstractMojo implements Constants {
 
     @SuppressWarnings( "UnusedDeclaration" )
     protected MainMojo( MainMojo mojo ) {
-        this.certStorePassphrase = mojo.certStorePassphrase;
-        this.resultsDirectory = mojo.resultsDirectory;
-        this.dumpType = mojo.dumpType;
-        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
-        this.localRepository = mojo.localRepository;
         this.accessKey = mojo.accessKey;
-        this.secretKey = mojo.secretKey;
-        this.bucketName = mojo.bucketName;
-        this.destinationParentDir = mojo.destinationParentDir;
-        this.managerAppUsername = mojo.managerAppUsername;
-        this.managerAppPassword = mojo.managerAppPassword;
-        this.testPackageBase = mojo.testPackageBase;
-        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
         this.amiID = mojo.amiID;
-        this.awsSecurityGroup = mojo.awsSecurityGroup;
-        this.runnerKeyPairName = mojo.runnerKeyPairName;
-        this.runnerName = mojo.runnerName;
-        this.instanceType = mojo.instanceType;
-        this.setupTimeout = mojo.setupTimeout;
-        this.runnerCount = mojo.runnerCount;
-        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.availabilityZone = mojo.availabilityZone;
-        this.resetIfStopped = mojo.resetIfStopped;
+        this.awsSecurityGroup = mojo.awsSecurityGroup;
+        this.blockUntilComplete = mojo.blockUntilComplete;
+        this.bucketName = mojo.bucketName;
+        this.certStorePassphrase = mojo.certStorePassphrase;
         this.coldRestartTomcat = mojo.coldRestartTomcat;
+        this.destinationParentDir = mojo.destinationParentDir;
+        this.dumpType = mojo.dumpType;
+        this.endpoint = mojo.endpoint;
+        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+        this.instanceType = mojo.instanceType;
+        this.localRepository = mojo.localRepository;
+        this.managerAppPassword = mojo.managerAppPassword;
+        this.managerAppUsername = mojo.managerAppUsername;
         this.plugin = mojo.plugin;
         this.project = mojo.project;
+        this.resetIfStopped = mojo.resetIfStopped;
+        this.resultsDirectory = mojo.resultsDirectory;
+        this.runnerCount = mojo.runnerCount;
+        this.runnerKeyPairName = mojo.runnerKeyPairName;
+        this.runnerName = mojo.runnerName;
+        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+        this.secretKey = mojo.secretKey;
+        this.securityGroupExceptions = mojo.securityGroupExceptions;
         this.setupCreatedInstances = mojo.setupCreatedInstances;
+        this.setupTimeout = mojo.setupTimeout;
         this.sleepAfterCreation = mojo.sleepAfterCreation;
+        this.store = mojo.store;
+        this.testPackageBase = mojo.testPackageBase;
 
         setEndpoint();
     }
@@ -247,7 +265,66 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    private void setEndpoint() {
+//    protected void copyFields( MainMojo mojo ) {
+//        this.accessKey = mojo.accessKey;
+//        this.amiID = mojo.amiID;
+//        this.availabilityZone = mojo.availabilityZone;
+//        this.awsSecurityGroup = mojo.awsSecurityGroup;
+//        this.blockUntilComplete = mojo.blockUntilComplete;
+//        this.bucketName = mojo.bucketName;
+//        this.certStorePassphrase = mojo.certStorePassphrase;
+//        this.coldRestartTomcat = mojo.coldRestartTomcat;
+//        this.destinationParentDir = mojo.destinationParentDir;
+//        this.dumpType = mojo.dumpType;
+//        this.endpoint = mojo.endpoint;
+//        this.failIfCommitNecessary = mojo.failIfCommitNecessary;
+//        this.instanceType = mojo.instanceType;
+//        this.localRepository = mojo.localRepository;
+//        this.managerAppPassword = mojo.managerAppPassword;
+//        this.managerAppUsername = mojo.managerAppUsername;
+//        this.plugin = mojo.plugin;
+//        this.project = mojo.project;
+//        this.resetIfStopped = mojo.resetIfStopped;
+//        this.resultsDirectory = mojo.resultsDirectory;
+//        this.runnerCount = mojo.runnerCount;
+//        this.runnerKeyPairName = mojo.runnerKeyPairName;
+//        this.runnerName = mojo.runnerName;
+//        this.runnerSSHKeyFile = mojo.runnerSSHKeyFile;
+//        this.secretKey = mojo.secretKey;
+//        this.securityGroupExceptions = mojo.securityGroupExceptions;
+//        this.setupCreatedInstances = mojo.setupCreatedInstances;
+//        this.setupTimeout = mojo.setupTimeout;
+//        this.sleepAfterCreation = mojo.sleepAfterCreation;
+//        this.store = mojo.store;
+//        this.testPackageBase = mojo.testPackageBase;
+//    }
+//
+
+//    protected void setSshValues() {
+//        Preconditions.checkNotNull( runnerSSHKeyFile );
+//        Preconditions.checkNotNull( managerAppPassword );
+//
+//        list = new InstanceValues( "ls", runnerSSHKeyFile );
+//
+//        String stop = "sudo service tomcat7 stop; ";
+//        stopTomcat = new InstanceValues( stop, runnerSSHKeyFile );
+//
+//        String start = "sudo service tomcat7 start; ";
+//        startTomcat = new InstanceValues( start, runnerSSHKeyFile );
+//
+//        String status = "sudo service tomcat7 status; ";
+//        statusTomcat = new InstanceValues( status, runnerSSHKeyFile );
+//
+//        String password = "sudo sed -i 's/WtPgEXEwioa0LXUtqGwtkC4YUSgl2w4BF9VXsBviT/" + managerAppPassword
+//                + "/g' /etc/tomcat7/tomcat-users.xml; ";
+//        passwordTomcat = new InstanceValues( password, runnerSSHKeyFile );
+//
+//        String combined = stop + password + start + status;
+//        stopPasswordStartStatusTomcat = new InstanceValues( combined, runnerSSHKeyFile );
+//    }
+
+
+    public void setEndpoint() {
         Injector injector = Guice.createInjector( new AmazonStoreModule() );
         store = injector.getInstance( Store.class );
 
