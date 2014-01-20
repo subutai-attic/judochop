@@ -3,22 +3,24 @@ package org.safehaus.chop.plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
+import org.safehaus.chop.api.store.amazon.InstanceValues;
+import org.safehaus.chop.api.store.amazon.RunnerInstance;
 import org.safehaus.chop.client.ChopClient;
 import org.safehaus.chop.client.ChopClientModule;
-import org.safehaus.chop.client.ResponseInfo;
+import org.safehaus.chop.client.rest.AsyncRequest;
+import org.safehaus.chop.client.rest.StartOp;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceStateName;
+import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -27,8 +29,34 @@ import com.google.inject.Injector;
         requiresDependencyCollection = ResolutionScope.TEST )
 public class StartMojo extends MainMojo {
 
+    protected void setSshValues() {
+        Preconditions.checkNotNull( runnerSSHKeyFile );
+        Preconditions.checkNotNull( managerAppPassword );
+
+        list = new InstanceValues( "ls", runnerSSHKeyFile );
+
+        String stop = "sudo service tomcat7 stop; ";
+        stopTomcat = new InstanceValues( stop, runnerSSHKeyFile );
+
+        String start = "sudo service tomcat7 start; ";
+        startTomcat = new InstanceValues( start, runnerSSHKeyFile );
+
+        String status = "sudo service tomcat7 status; ";
+        statusTomcat = new InstanceValues( status, runnerSSHKeyFile );
+
+        String password = "sudo sed -i 's/WtPgEXEwioa0LXUtqGwtkC4YUSgl2w4BF9VXsBviT/" + managerAppPassword
+                + "/g' /etc/tomcat7/tomcat-users.xml; ";
+        passwordTomcat = new InstanceValues( password, runnerSSHKeyFile );
+
+        String combined = stop + password + start + status;
+        stopPasswordStartStatusTomcat = new InstanceValues( combined, runnerSSHKeyFile );
+    }
+
+
     @Override
     public void execute() throws MojoExecutionException {
+        setSshValues();
+
         Injector injector = Guice.createInjector( new ChopClientModule() );
         ChopClient client = injector.getInstance( ChopClient.class );
 
@@ -41,13 +69,13 @@ public class StartMojo extends MainMojo {
          * So we are waiting until all instances have their runners registered on the store or a timeout occurs
          */
         getLog().info( "Checking and waiting maximum " + setupTimeout +
-                " msecs. until all runners register themselves to the store" );
-        EC2Manager ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
+                " milliseconds. until all runners register themselves to the store" );
+        ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
                 runnerKeyPairName, runnerName, endpoint );
-        Collection<Instance> instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );
+
         long startTime = System.currentTimeMillis();
         boolean runnersRegistered = false;
-        Collection<Runner> runners = null;
+        Collection<Runner> runners;
         while ( System.currentTimeMillis() - startTime < setupTimeout && !runnersRegistered ) {
             runners = client.getRunners();
             // We are not checking here if runners correspond to instances 1-to-1 but this is theoretically safe
@@ -85,74 +113,22 @@ public class StartMojo extends MainMojo {
             throw new MojoExecutionException( "Runners could not be verified to run" );
         }
 
-        // Let's cold restart after full verification if the coldRestartRunners option is set
-        // @todo - enable later and test - first fix war issue
-        // coldRestart( instances );
+        // @todo cold restart here?
 
-        for( Runner runner : runners ) {
-            Result result = client.start( runner );
-            if ( ! result.getStatus() ) {
-                throw new MojoExecutionException( result.getMessage() );
-            }
+        ArrayList<AsyncRequest<RunnerInstance,StartOp>> starts =
+                new ArrayList<AsyncRequest<RunnerInstance, StartOp>>( instances.size() );
+        for ( Instance instance : instances ) {
+            starts.add( new AsyncRequest<RunnerInstance, StartOp>( new RunnerInstance( instance ), new StartOp( instance ) ) );
+        }
 
-            getLog().info( "Start request resulted with: " + result.getMessage() );
+        try {
+            executor.invokeAll( starts );
+        }
+        catch ( InterruptedException e ) {
+            throw new MojoExecutionException( "Failed on start invocations." );
         }
 
         getLog().info( "All runners have started!" );
-    }
-
-
-    private void coldRestart( Collection<Instance> instancesToRestart ) throws MojoExecutionException {
-        if ( ! coldRestartTomcat ) {
-            return;
-        }
-
-        getLog().info( "Sending restart tomcat requests to all instances..." );
-
-        List<SSHRequestThread> restarters = new ArrayList<SSHRequestThread>( instancesToRestart.size() );
-
-        for ( Instance instance : instancesToRestart ) {
-            SSHRequestThread restarter = new SSHRequestThread();
-            restarter.setSshKeyFile( runnerSSHKeyFile );
-            restarter.setTomcatAdminPassword( managerAppPassword );
-            restarter.setInstanceURL( instance.getPublicDnsName() );
-            restarter.setInstance( instance );
-            restarters.add( restarter );
-            restarter.start();
-        }
-
-        for ( SSHRequestThread restarter : restarters ) {
-            try {
-                restarter.join( 40000 ); // Is this enough or too much, should this be an annotated parameter?
-            }
-            catch ( InterruptedException e ) {
-                getLog().warn( "Restart request on " + restarter.getInstance().getPublicDnsName()
-                        + " is interrupted before finish", e );
-            }
-        }
-
-        ResponseInfo response;
-        boolean failedRestart = false;
-        for ( SSHRequestThread restarter : restarters ) {
-            response = restarter.getResult();
-            if ( !response.isRequestSuccessful() || !response.isOperationSuccessful() ) {
-                for ( String s : response.getMessages() ) {
-                    getLog().info( s );
-                }
-                for ( String s : response.getErrorMessages() ) {
-                    getLog().info( s );
-                }
-                failedRestart = true;
-            }
-        }
-
-        if ( failedRestart ) {
-            throw new MojoExecutionException(
-                    "There are instances that failed to restart properly, " + "verify the cluster before moving on" );
-        }
-
-        getLog().info( "Test war is loaded on each runner instance and in READY state. You can run chop:start now"
-                + " to start your tests" );
     }
 }
 

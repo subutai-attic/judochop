@@ -1,4 +1,4 @@
-package org.safehaus.chop.client;
+package org.safehaus.chop.client.ssh;
 
 
 import java.util.Collection;
@@ -17,13 +17,6 @@ public class ResponseInfo {
     private boolean operationSuccessful;
 
 
-    /**
-     * @param endpoint
-     * @param requestSuccessful
-     * @param operationSuccessful
-     * @param messages
-     * @param errorMessages
-     */
     public ResponseInfo( String endpoint, boolean requestSuccessful, boolean operationSuccessful,
                          Collection<String> messages, Collection<String> errorMessages ) {
         this.endpoint = endpoint;
@@ -34,8 +27,18 @@ public class ResponseInfo {
     }
 
 
+    void addErrorMessage( String error ) {
+        errorMessages.add( error );
+    }
+
+
     public Collection<String> getErrorMessages() {
         return errorMessages;
+    }
+
+
+    void addMessage( String mesg ) {
+        messages.add( mesg );
     }
 
 
@@ -54,9 +57,17 @@ public class ResponseInfo {
     }
 
 
+    void setRequestSuccessful( boolean requestSuccessful ) {
+        this.requestSuccessful = requestSuccessful;
+    }
+
+
     public boolean isOperationSuccessful() {
         return operationSuccessful;
     }
 
 
+    void setOperationSuccessful( boolean operationSuccessful ) {
+        this.operationSuccessful = operationSuccessful;
+    }
 }

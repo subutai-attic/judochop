@@ -17,22 +17,22 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 
 /**
- * A status request.
+ * A reset request.
  */
-public class StatusOp implements RestOperation {
-    public static final String PATH = "/status";
+public class ResetOp implements RestOperation {
+    public static final String PATH = "/reset";
 
     private String resource;
     private Result result;
 
 
     @SuppressWarnings( "UnusedDeclaration" )
-    public StatusOp( String resource ) {
+    public ResetOp( String resource ) {
         this.resource = resource;
     }
 
 
-    public StatusOp( Instance instance ) {
+    public ResetOp( Instance instance ) {
         this.resource = "https://" + instance.getPublicDnsName() + ":" + Runner.DEFAULT_SERVER_PORT;
     }
 
@@ -66,7 +66,7 @@ public class StatusOp implements RestOperation {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( this.resource ).path( PATH );
-        result = resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( BaseResult.class );
+        result = resource.accept( MediaType.APPLICATION_JSON_TYPE ).post( BaseResult.class );
         return result;
     }
 }

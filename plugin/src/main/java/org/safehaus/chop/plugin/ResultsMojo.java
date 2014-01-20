@@ -6,14 +6,11 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.api.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
@@ -221,10 +218,9 @@ public class ResultsMojo extends MainMojo {
             statuses.add( new AsyncRequest<RunnerInstance, StatusOp>( new RunnerInstance( instance ), new StatusOp( instance ) ) );
         }
 
-        List<Future<Result>> futures;
         ExecutorService service = Executors.newFixedThreadPool( instances.size() );
         try {
-            futures = service.invokeAll( statuses );
+            service.invokeAll( statuses );
         }
         catch ( InterruptedException e ) {
             throw new MojoExecutionException( "Failed on status invocations.", e );
