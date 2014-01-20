@@ -5,8 +5,6 @@
 </head>
 <body>
 
-<div class="row">
-
     <h4>${params.commitId}</h4>
     <b>Class</b>: <a href="/web-ui?className=${session.className}&metric=${session.metricType}">${session.className}</a><br/>
     <b>Metric</b>: ${session.metricType}<br/>
@@ -39,18 +37,37 @@
     <br/>
     <br/>
 
-    <div class="span9">
-        <div id="chart"></div>
+    <div class="row">
+        <div class="span9">
+            <div id="chart"></div>
+        </div>
+        <div class="span3">
+            <span id="info" style="color: #000000;">
+                Click a point to see details
+            </span>
+        </div>
     </div>
-    <div class="span3">
-        <span id="info" style="color: #000000;">
-            Click a point to see details
-        </span>
+
+    <hr/>
+
+    <div class="row">
+        <div class="span5">
+            <b>Runners:</b><br/>
+            <select id="runners" size="10" style="width: 100%" onclick="showRunnerInfo();">
+            </select>
+        </div>
+        <div class="span7">
+            <b>Runner's Summary:</b><br/>
+            <span id="runnerInfo">
+
+            </span>
+        </div>
     </div>
-</div>
 
 <script class="code" type="text/javascript">
 
+    var currentRun = 0;
+    var runInfo = ${runInfo};
     var RUN_LINK = "<a href='javascript:void(0);' onclick='openRunDetails(\"runNumber\");'>run#: runNumber</a>";
 
     function reload() {
@@ -59,11 +76,48 @@
 
     function pointClicked(point) {
         showPointInfo(point.info);
+        showRunners(point.info);
+    }
+
+    function showRunners(pointInfo) {
+
+        $('#runners').empty();
+        $("#runnerInfo").html("");
+
+        currentRun = pointInfo.runNumber;
+        var runJson = runInfo[currentRun];
+
+        $.each(runJson, function(key, value) {
+            var s = "<option value='" + key + "'>" + key + "</option>";
+            $('#runners').append(s);
+        });
+    }
+
+    function showRunnerInfo() {
+
+        if (currentRun == 0) {
+            return;
+        }
+
+        var runner = $("#runners").find(':selected').text();
+        var text = jsonToString( runInfo[currentRun][runner] );
+
+        $("#runnerInfo").html(text);
+    }
+
+    function jsonToString(json) {
+
+        var s = "";
+
+        $.each(json, function(k, v) {
+            s += k + ": " + v + "<br/>";
+        });
+
+        return s;
     }
 
     function showPointInfo(info) {
 
-        console.log(info);
         var text = "- chopType: " + info.chopType
                 + "<br/>- " + RUN_LINK.replace(/runNumber/g, info.runNumber)
                 + "<br/>- runners: " + info.runners
