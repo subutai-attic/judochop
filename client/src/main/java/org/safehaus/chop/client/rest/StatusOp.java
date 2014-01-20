@@ -26,6 +26,7 @@ public class StatusOp implements RestOperation {
     private Result result;
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     public StatusOp( String resource ) {
         this.resource = resource;
     }

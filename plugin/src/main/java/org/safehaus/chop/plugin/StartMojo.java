@@ -69,13 +69,13 @@ public class StartMojo extends MainMojo {
          * So we are waiting until all instances have their runners registered on the store or a timeout occurs
          */
         getLog().info( "Checking and waiting maximum " + setupTimeout +
-                " msecs. until all runners register themselves to the store" );
+                " milliseconds. until all runners register themselves to the store" );
         ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
                 runnerKeyPairName, runnerName, endpoint );
 
         long startTime = System.currentTimeMillis();
         boolean runnersRegistered = false;
-        Collection<Runner> runners = null;
+        Collection<Runner> runners;
         while ( System.currentTimeMillis() - startTime < setupTimeout && !runnersRegistered ) {
             runners = client.getRunners();
             // We are not checking here if runners correspond to instances 1-to-1 but this is theoretically safe

@@ -26,6 +26,7 @@ public class StopOp implements RestOperation {
     private Result result;
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     public StopOp( String resource ) {
         this.resource = resource;
     }

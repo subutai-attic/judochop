@@ -72,6 +72,7 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
 
     public boolean isSuccess() {
+        //noinspection SimplifiableIfStatement
         if ( response == null ) {
             return false;
         }

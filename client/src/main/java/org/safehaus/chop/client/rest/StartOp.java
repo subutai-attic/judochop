@@ -26,6 +26,7 @@ public class StartOp implements RestOperation {
     private Result result;
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     public StartOp( String resource ) {
         this.resource = resource;
     }

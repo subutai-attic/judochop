@@ -88,33 +88,6 @@ public class StopMojo extends MainMojo {
             throw new MojoExecutionException( "Failed on stop invocations." );
         }
 
-//        Injector injector = Guice.createInjector( new ChopClientModule() );
-//        ChopClient client = injector.getInstance( ChopClient.class );
-//
-//        getLog().info( "Stopping runner(s)" );
-//
-//        Collection<Runner> runners = client.getRunners();
-//
-//
-//
-//        if ( runners.size() == 0 ) {
-//            throw new MojoExecutionException( "There is no runner found" );
-//        }
-//
-//        Result result;
-//        int stoppedCount = 0;
-//        for ( Runner runner : runners ) {
-//            result = client.stop( runner );
-//            if( ! result.getStatus() || result.getState() != State.STOPPED ) {
-//                getLog().info( "Could not stop runner at " + result.getEndpoint() );
-//            }
-//            else {
-//                getLog().info( "Stopped runner at " + result.getEndpoint() );
-//                stoppedCount++;
-//            }
-//            getLog().info( "Runner state: " + result.getState() + " , returned message: " + result.getMessage() );
-//        }
-
         getLog().info( "Stopped " + ( stops.size() == 0 ? "no" : stops.size() ) + " runner(s) out of " +
                 instances.size() );
     }

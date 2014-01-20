@@ -26,6 +26,7 @@ public class ResetOp implements RestOperation {
     private Result result;
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     public ResetOp( String resource ) {
         this.resource = resource;
     }
