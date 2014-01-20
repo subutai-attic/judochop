@@ -47,10 +47,6 @@
       <id>aasanaliev</id>
       <name>Askhat Asanaliev</name>
     </developer>
-    <developer>
-      <id>ctmax</id>
-      <name>Maksat Joldoshbekov</name>
-    </developer>
   </developers>
 
   <scm>
@@ -74,7 +70,7 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
     <fastxml.version>2.3.0</fastxml.version>
     <guava.version>15.0</guava.version>
     <guice.version>3.0</guice.version>
-    <guicyfig.version>3.3-SNAPSHOT</guicyfig.version>
+    <guicyfig.version>3.3</guicyfig.version>
     <jackson.version>2.1.5</jackson.version>
     <jersey.version>1.9.1</jersey.version>
     <jetty.plugin.version>8.1.14.v20131031</jetty.plugin.version>
