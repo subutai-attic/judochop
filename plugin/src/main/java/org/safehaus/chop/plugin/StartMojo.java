@@ -69,7 +69,7 @@ public class StartMojo extends MainMojo {
          * So we are waiting until all instances have their runners registered on the store or a timeout occurs
          */
         getLog().info( "Checking and waiting maximum " + setupTimeout +
-                " milliseconds. until all runners register themselves to the store" );
+                " milliseconds until all runners register themselves to the store ..." );
         ec2Manager = new EC2Manager( accessKey, secretKey, amiID, awsSecurityGroup,
                 runnerKeyPairName, runnerName, endpoint );
 

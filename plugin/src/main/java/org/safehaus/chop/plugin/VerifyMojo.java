@@ -23,6 +23,7 @@ import com.google.inject.Injector;
 @Mojo( name = "verify" )
 public class VerifyMojo extends MainMojo {
 
+    // @todo - parallel execute this command as well
     @Override
     public void execute() throws MojoExecutionException {
         Injector injector = Guice.createInjector( new ChopClientModule() );
@@ -46,7 +47,7 @@ public class VerifyMojo extends MainMojo {
             }
 
             if ( result ) {
-                getLog().info( "Test on store is up-to-date, checking drivers..." );
+                getLog().info( "Test on store is up-to-date, checking runners..." );
                 Result verifyResult = client.verify();
                 result = ( verifyResult.getStatus() && verifyResult.getState().equals( State.READY ) );
             }

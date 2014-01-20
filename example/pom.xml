@@ -67,7 +67,7 @@
           <testPackageBase>org.safehaus.chop.example</testPackageBase>
           <runnerSSHKeyFile>${runner.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
-          <amiID>${ami.id}</amiID>
+          <amiID>${default.ami.id}</amiID>
           <awsSecurityGroup>${security.group}</awsSecurityGroup>
           <runnerKeyPairName>${runner.keypair.name}</runnerKeyPairName>
           <runnerCount>3</runnerCount>
