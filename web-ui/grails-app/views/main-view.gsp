@@ -48,9 +48,12 @@
         <div id="chart"></div>
     </div>
     <div class="span3">
-        <span id="info" style="color: #000000;">
-            Click a point to see details
-        </span>
+        <b>Details</b>:
+        <div id="info"></div>
+        <br/>
+
+        <b>Note</b>:
+        <textarea id="note" rows="10" cols="45" readonly></textarea>
     </div>
 </div>
 
@@ -73,6 +76,7 @@
     function pointClicked(point) {
         showPointInfo(point.info);
         updateCommitUrl(point.info.commitId);
+        showNote(point.info);
     }
 
     function updateCommitUrl(commitId) {
@@ -93,6 +97,17 @@
             + "<br/>- value: " + info.value;
 
         $("#info").html(text);
+    }
+
+    function showNote(pointInfo) {
+        $.ajax({
+            url: "note/get",
+            type: "POST",
+            data: { commitId: pointInfo.commitId, runNumber: pointInfo.runNumber }
+        })
+        .done(function(responseText) {
+            $('#note').val(responseText);
+        });
     }
 
     function openCommitDetails(commitId) {

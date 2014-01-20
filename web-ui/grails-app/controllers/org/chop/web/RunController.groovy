@@ -2,6 +2,7 @@ package org.chop.web
 
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
+import org.chop.service.data.NoteService
 import org.chop.service.data.PointType
 import org.chop.service.metric.AggregatedMetric
 import org.chop.service.metric.Metric
@@ -32,7 +33,9 @@ class RunController {
 
         series += "," + FormatRunner.format("AVG", getMainValues(jsonList, percentileValue), percentileValue, pointType)
 
-        render(view: "/run", model: [series: series])
+        String note = NoteService.get(params.commitId, params.runNumber)
+
+        render(view: "/run", model: [series: series, note: note])
     }
 
     private static double getPercentile(List<Map> jsonList, int percentile) {

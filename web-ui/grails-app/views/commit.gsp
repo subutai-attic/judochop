@@ -42,9 +42,15 @@
             <div id="chart"></div>
         </div>
         <div class="span3">
-            <span id="info" style="color: #000000;">
-                Click a point to see details
-            </span>
+            <b>Details</b>:
+            <div id="info"></div>
+            <br/>
+
+            <b>Note</b>:
+            <textarea id="note" rows="10" cols="45" readonly></textarea>
+            <button id="editNoteButton" class="btn btn-mini" type="button" onclick="editNote()">Edit</button>
+            <button id="saveNoteButton" class="btn btn-mini" type="button" onclick="saveNote()" style="display: none">Save</button>
+            <button id="cancelNoteButton" class="btn btn-mini" type="button" onclick="cancelNote()" style="display: none">Cancel</button>
         </div>
     </div>
 
@@ -58,9 +64,7 @@
         </div>
         <div class="span7">
             <b>Runner's Summary:</b><br/>
-            <span id="runnerInfo">
-
-            </span>
+            <span id="runnerInfo"></span>
         </div>
     </div>
 
@@ -70,6 +74,53 @@
     var runInfo = ${runInfo};
     var RUN_LINK = "<a href='javascript:void(0);' onclick='openRunDetails(\"runNumber\");'>run#: runNumber</a>";
 
+    function editNote() {
+        $("#note").removeAttr('readonly');
+        $("#editNoteButton").hide();
+        $("#saveNoteButton").show();
+        $("#cancelNoteButton").show();
+    }
+
+    function cancelNote() {
+        makeNoteReadOnly();
+    }
+
+    function makeNoteReadOnly() {
+        $("#note").attr('readonly','readonly');
+        $("#editNoteButton").show();
+        $("#saveNoteButton").hide();
+        $("#cancelNoteButton").hide();
+    }
+
+    function saveNote() {
+
+        var noteText = $('#note').val();
+        console.log(noteText);
+
+        $.ajax({
+            url: "note/save",
+            type: "POST",
+            data: { commitId: "${params.commitId}", runNumber: currentRun, note: noteText }
+        })
+        .done(function(responseText) {
+            console.log(responseText);
+        });
+
+        makeNoteReadOnly();
+    }
+
+    function showNote(pointInfo) {
+        $.ajax({
+            url: "note/get",
+            type: "POST",
+            data: { commitId: pointInfo.commitId, runNumber: pointInfo.runNumber }
+        })
+        .done(function(responseText) {
+            console.log(responseText);
+            $('#note').val(responseText);
+        });
+    }
+
     function reload() {
         $('#form').submit()
     }
@@ -77,6 +128,7 @@
     function pointClicked(point) {
         showPointInfo(point.info);
         showRunners(point.info);
+        showNote(point.info);
     }
 
     function showRunners(pointInfo) {
