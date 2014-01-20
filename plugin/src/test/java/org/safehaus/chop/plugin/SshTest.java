@@ -79,28 +79,37 @@ public class SshTest {
 
     @Test
     public void testWithExecutor() throws InterruptedException {
+        if ( instances.size() == 0 ) {
+            return;
+        }
         long startTime = System.currentTimeMillis();
         service.invokeAll( instanceMap.values() );
         assertTrue( isSuccessful( instanceMap.values() ) );
-        LOG.info( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
+        LOG.debug( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
     }
 
 
     @Test
     public void testGetCommands() throws InterruptedException {
+        if ( instances.size() == 0 ) {
+            return;
+        }
         Collection<AsyncSsh<Instance>> commands = AsyncSsh.getCommands( instances, values );
         long startTime = System.currentTimeMillis();
         service.invokeAll( commands );
         assertTrue( isSuccessful( commands ) );
-        LOG.info( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
+        LOG.debug( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
     }
 
 
     @Test
     public void testExecute() throws InterruptedException {
+        if ( instances.size() == 0 ) {
+            return;
+        }
         long startTime = System.currentTimeMillis();
         assertTrue( AsyncSsh.execute( instances, values ) );
-        LOG.info( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
+        LOG.debug( "Total time = {} milliseconds!", System.currentTimeMillis() - startTime );
     }
 
 
