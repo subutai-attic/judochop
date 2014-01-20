@@ -1,7 +1,6 @@
 package org.safehaus.chop.client.ssh;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.Callable;
@@ -10,8 +9,6 @@ import java.util.concurrent.Executors;
 
 import org.slf4j.LoggerFactory;
 
-import com.google.common.hash.HashCode;
-
 
 /**
  * A reusable Ssh command that can be asynchronously executed and can work with
@@ -19,10 +16,7 @@ import com.google.common.hash.HashCode;
  * for Maven Plugin.
  */
 public class AsyncSsh<A> implements Callable<ResponseInfo> {
-
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger( AsyncSsh.class );
-
-    private final Object lock = new Object();
 
     private final String sshKeyFile;
 
@@ -36,7 +30,7 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
 
     public AsyncSsh( String command, String sshKeyFile, String server ) {
-        this.command = command;
+        setCommand( command );
         this.sshKeyFile = sshKeyFile;
         this.server = server;
     }
@@ -44,8 +38,9 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
     @Override
     public ResponseInfo call() throws Exception {
-        response = SSHCommands.sendCommandToInstance( command, sshKeyFile, server );
-        return response;
+        response = SSHCommands.sendCommandToInstance( getCommand(), getSshKeyFile(), getServer() );
+        LOG.info( "Successfully executed command {}", getCommand() );
+        return getResponse();
     }
 
 
@@ -80,6 +75,7 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
     public A getAssociate() {
         return associate;
     }
