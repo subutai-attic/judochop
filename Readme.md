@@ -155,11 +155,13 @@ in the plugin's configuration. You can specify any bucket name, and the plugin w
 create it for you with a standard layout to your project, it's tests and runs on those 
 tests.
 
-**NOTE**: _See the section below on security._ You must run a *chop:cert* goal before 
+~~~~~~
+**NOTE**: _See the section below on security._ You **MUST** run a *chop:cert* goal before 
 other goals to initialize the certificate trust store locally for your project. Any other
-goals run before this one time execution will file. Because of the way Maven and the
+goals run before this one time execution will fail. Because of the way Maven and the
 SSL Socket implementation in Java works you cannot chain this goal either, it must be 
 run alone by itself.
+~~~~~~
 
 Judo Chop concepts are simple and borrowed by things already in existence. We're not 
 creating new concepts like confusing hipsters, although the name is pretty damn cool.
