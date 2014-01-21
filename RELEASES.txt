@@ -2,3 +2,6 @@ When releasing use the following property value to activate the release profile:
 
    -DsafehausRelease=true
 
+mvn -X -Psafehaus.release -DsafehausRelease=true release:clean
+mvn -X -Psafehaus.release -DsafehausRelease=true release:prepare
+mvn -X -Psafehaus.release -DsafehausRelease=true release:perform
