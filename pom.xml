@@ -103,7 +103,7 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
           <configuration>
             <mavenExecutorId>forked-path</mavenExecutorId>
             <useReleaseProfile>false</useReleaseProfile>
-            <arguments>${arguments} -Psonatype-oss-release</arguments>
+            <arguments>-Psafehaus.release -Psonatype-oss-release</arguments>
           </configuration>
         </plugin>
       </plugins>
