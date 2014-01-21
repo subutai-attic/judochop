@@ -60,6 +60,10 @@ class RunController {
             matrix.add(runner.runResults)
         }
 
+        if (matrix.size() == 0) {
+            return []
+        }
+
         int rows = matrix.size()
         int columns = matrix[0].size()
         List<Map> resultList = []
