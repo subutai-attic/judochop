@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.safehaus.chop</groupId>
     <artifactId>chop-parent</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
 
   <name>Chop Usage Example</name>
@@ -56,7 +56,7 @@
       <plugin>
         <groupId>org.safehaus.chop</groupId>
         <artifactId>chop-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
         <configuration>
           <accessKey>${aws.s3.key}</accessKey>
           <secretKey>${aws.s3.secret}</secretKey>
