@@ -2,6 +2,7 @@ package org.chop.web
 
 import groovy.json.JsonBuilder
 import org.apache.commons.lang.StringUtils
+import org.apache.commons.logging.LogFactory
 import org.chop.service.data.CommitCalc
 import org.chop.service.data.FileScanner
 import org.chop.service.data.PointType
@@ -17,24 +18,30 @@ import javax.servlet.ServletContext
 
 class MainController {
 
-    private static boolean initDone = false
+    private static def LOG = LogFactory.getLog(MainController.class)
 
     private static void init(ServletContext ctx) {
 
-        if (initDone) {
-            return
-        }
+        LOG.info("Initializing...");
 
         FileScanner.setup(ctx)
         ResultFileScanner.update()
-        initDone = true
     }
 
     def index() {
+        try {
+            handle()
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e)
+        }
+    }
+
+    private def handle() {
 
         init(session.getServletContext())
 
         List<String> commitDirs = FileScanner.updateStorage()
+
         Set<String> classNames = Storage.getClassNames()
 
         String className = getSelectedClassName(classNames)

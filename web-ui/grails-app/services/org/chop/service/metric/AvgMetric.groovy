@@ -10,7 +10,7 @@ class AvgMetric extends Metric {
     }
 
     @Override
-    double getValue() {
+    Double getValue() {
         return data.value / count
     }
 }

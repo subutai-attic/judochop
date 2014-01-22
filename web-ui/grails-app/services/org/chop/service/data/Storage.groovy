@@ -40,7 +40,7 @@ class Storage {
         }
     }
 
-    static clear() {
+/*    static clear() {
         DATA.clear()
-    }
+    }*/
 }
