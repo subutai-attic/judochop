@@ -1,5 +1,7 @@
 package org.chop.service.data
 
+import org.chop.service.util.FileUtil
+
 class CommitOrder {
 
     private static final String PROPERTIES_FILE = "project.properties"
@@ -10,11 +12,20 @@ class CommitOrder {
         // <createTimestamp, commitId>
         TreeMap<String, File> orderMap = new TreeMap<String, File>()
 
-        dir.listFiles().each {
+        List<File> files = FileUtil.recursiveAllFiles(FileScanner.dataDir, PROPERTIES_FILE)
+
+        files.each { file ->
+            File commitDir = file.parentFile
+            if (commitDir.isDirectory()) {
+                handle(orderMap, commitDir)
+            }
+        }
+
+        /*dir.listFiles().each {
             if (it.isDirectory()) {
                 handle(orderMap, it)
             }
-        }
+        }*/
 
         return orderMap.values().collect()
     }
