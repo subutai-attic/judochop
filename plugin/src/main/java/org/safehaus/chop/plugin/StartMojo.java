@@ -24,6 +24,8 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 
 @Mojo ( name = "start", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST )
@@ -64,6 +66,8 @@ public class StartMojo extends MainMojo {
         LoadMojo loadMojo = new LoadMojo( this );
         loadMojo.execute();
 
+        getLog().info( instances.size() + " EC2 Instances Available" );
+
         /**
          * After having possible restarts on tomcats, runners may need some time to register themselves to the store
          * So we are waiting until all instances have their runners registered on the store or a timeout occurs
@@ -75,18 +79,26 @@ public class StartMojo extends MainMojo {
 
         long startTime = System.currentTimeMillis();
         boolean runnersRegistered = false;
-        Collection<Runner> runners;
+        //noinspection unchecked
+        Collection<Runner> runners = Collections.emptyList();
         while ( System.currentTimeMillis() - startTime < setupTimeout && !runnersRegistered ) {
             runners = client.getRunners();
+
             // We are not checking here if runners correspond to instances 1-to-1 but this is theoretically safe
             // since we are checking cluster and removing ghostRunner records from store before coming here
             if( instances.size() == runners.size() ) {
+                getLog().info( "The number of registered Runners matches the number of instances: " + runners.size() );
                 runnersRegistered = true;
+            }
+            else {
+                getLog().warn( instances.size() + " instances found, but only " + runners.size() + " registered. Waiting until timeout ..." );
             }
         }
 
         if( !runnersRegistered ) {
-            throw new MojoExecutionException( "Not all runners could register themselves to the store before time" );
+            throw new MojoExecutionException( instances.size() + " instances exist yet only " +
+                    runners.size() + " runners could register themselves to the store before the " + setupTimeout
+            + " millisecond timeout was reached." );
         }
 
         /**
