@@ -9,7 +9,7 @@
 
   <artifactId>chop-parent</artifactId>
   <groupId>org.safehaus.chop</groupId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
   <name>Chop Parent</name>
 
@@ -55,7 +55,7 @@
     <developerConnection>
 scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
     </developerConnection>
-    <tag>chop-1.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
