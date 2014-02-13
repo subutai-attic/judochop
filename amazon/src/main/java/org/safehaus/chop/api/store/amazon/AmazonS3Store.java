@@ -41,7 +41,7 @@ import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Store;
+import org.safehaus.chop.api.provider.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

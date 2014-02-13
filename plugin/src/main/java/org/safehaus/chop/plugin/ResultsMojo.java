@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.Store;
+import org.safehaus.chop.api.provider.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.api.store.amazon.RunnerInstance;

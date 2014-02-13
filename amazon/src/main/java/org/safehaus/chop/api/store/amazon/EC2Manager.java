@@ -314,16 +314,6 @@ public class EC2Manager {
     }
 
 
-    public Collection<String> getInstanceIDs( String runnerName, InstanceStateName state ) {
-        Collection<Instance> instances = getInstances( runnerName, state );
-        Collection<String> instanceIDs = new ArrayList<String>();
-        for ( Instance i : instances ) {
-            instanceIDs.add( i.getInstanceId() );
-        }
-        return instanceIDs;
-    }
-
-
     /**
      * Checks the state of all given instances in SLEEP_LENGTH intervals, returns when all instances are in running
      * state or state check times out

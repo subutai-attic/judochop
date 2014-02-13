@@ -1,4 +1,4 @@
-package org.safehaus.chop.api;
+package org.safehaus.chop.api.provider;
 
 
 import java.io.File;
@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.Summary;
 
 
 /** The Store is used to register the node so other nodes in the same perftest formation can access it. */

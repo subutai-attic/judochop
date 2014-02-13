@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Store;
+import org.safehaus.chop.api.provider.Store;
 import org.safehaus.chop.client.ChopClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
