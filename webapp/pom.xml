@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>chop-parent</artifactId>
+    <groupId>org.safehaus.chop</groupId>
+    <version>1.0.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Chop Webapp</name>
+  <artifactId>chop-webapp</artifactId>
+  <packaging>war</packaging>
+  <description>
+    A REST based web application that services requests to load, run, and
+    archive performance tests.
+  </description>
+
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </testResource>
+    </testResources>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.16</version>
+        <configuration>
+          <systemPropertyVariables>
+            <classes.base>${project.build.outputDirectory}</classes.base>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>${jetty.plugin.version}</version>
+        <configuration>
+          <systemProperties>
+            <systemProperty>
+              <name>log4j.configuration</name>
+              <value>file:///${project.build.testOutputDirectory}/log4j-jetty.properties</value>
+            </systemProperty>
+          </systemProperties>
+          <scanIntervalSeconds>5</scanIntervalSeconds>
+          <webApp>
+            <contextPath>/</contextPath>
+          </webApp>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>chop-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>chop-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>chop-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>chop-amazon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.safehaus.guicyfig</groupId>
+      <artifactId>guicyfig</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-multibindings</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-servlet</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.blitz4j</groupId>
+      <artifactId>blitz4j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-aws</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-jclouds</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+    </dependency>
+
+    <!-- Test Dependencies -->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jukito</groupId>
+      <artifactId>jukito</artifactId>
+    </dependency>
+  </dependencies>
+</project>
+
