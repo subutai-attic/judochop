@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
-import org.safehaus.chop.api.provider.Store;
+import org.safehaus.chop.spi.Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.SshValues;
 import org.safehaus.chop.api.store.amazon.EC2Manager;

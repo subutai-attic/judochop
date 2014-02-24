@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.provider.Store;
+import org.safehaus.chop.spi.Store;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 

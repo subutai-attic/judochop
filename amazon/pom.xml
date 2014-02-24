@@ -78,6 +78,12 @@
     </dependency>
 
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>chop-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.safehaus.guicyfig</groupId>
       <artifactId>guicyfig</artifactId>
     </dependency>

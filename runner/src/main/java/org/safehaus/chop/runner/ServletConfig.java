@@ -28,7 +28,7 @@ import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.provider.Store;
+import org.safehaus.chop.spi.Store;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package org.safehaus.chop.api.provider;
+package org.safehaus.chop.spi;
 
 
 import java.util.Map;

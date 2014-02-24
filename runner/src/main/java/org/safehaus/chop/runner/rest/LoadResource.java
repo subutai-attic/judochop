@@ -34,7 +34,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.provider.Store;
+import org.safehaus.chop.spi.Store;
 import org.safehaus.chop.api.store.amazon.AmazonFig;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;

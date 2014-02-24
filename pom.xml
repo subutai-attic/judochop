@@ -88,6 +88,7 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
     <module>runner</module>
     <module>plugin</module>
     <module>api</module>
+    <module>spi</module>
     <module>client</module>
     <module>example</module>
   </modules>
