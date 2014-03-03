@@ -15,6 +15,7 @@ import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import org.safehaus.chop.webapp.util.FileUtil;
 //import org.safehaus.chop.webapp.util.FileUtil;
 
 /* 
@@ -64,11 +65,10 @@ public class TestUI extends UI {
 
         System.out.println("button clicked");
 
-/*
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/jquery.min.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/highcharts.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/chart.js") );
-        */
+
 //        JavaScript.getCurrent().execute("console.log($('#chart'));");
 
 /*        JavaScript.getCurrent().execute(s);
