@@ -13,6 +13,7 @@ import java.util.Map;
 //import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.webapp.rest.DeployResource;
 import org.safehaus.chop.webapp.rest.RestFig;
+import org.safehaus.chop.webapp.vaadin.TestServlet;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -35,6 +36,8 @@ public class Module extends ServletModule {
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
         bind( DeployResource.class ).asEagerSingleton();
+
+        serve("/VAADIN/*").with(TestServlet.class);
 
         Map<String, String> params = new HashMap<String, String>();
         params.put( PACKAGES_KEY, getClass().getPackage().toString() );
