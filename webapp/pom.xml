@@ -37,6 +37,13 @@
           <include>**/*.properties</include>
         </includes>
       </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/test.war</include>
+        </includes>
+      </testResource>
     </testResources>
 
     <plugins>
@@ -53,7 +60,7 @@
       </plugin>
 
       <plugin>
-        <groupId>org.mortbay.jetty</groupId>
+        <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${jetty.plugin.version}</version>
         <configuration>
@@ -115,6 +122,11 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
     </dependency>
 
     <dependency>
