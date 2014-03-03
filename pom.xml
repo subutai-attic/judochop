@@ -73,7 +73,10 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
     <jackson.version>2.1.5</jackson.version>
     <jersey.version>1.18</jersey.version>
 
+    <!--
     <jetty.plugin.version>9.1.2.v20140210</jetty.plugin.version>
+    -->
+
     <jetty.version>9.1.2.v20140210</jetty.version>
 
     <jukito.version>1.3</jukito.version>
@@ -268,7 +271,8 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
 
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-http</artifactId>
+        <artifactId>jetty-webapp</artifactId>
+        <version>${jetty.version}</version>
       </dependency>
 
       <dependency>

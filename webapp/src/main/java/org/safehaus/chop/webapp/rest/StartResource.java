@@ -43,7 +43,7 @@ import com.google.inject.Singleton;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( StartResource.ENDPOINT_URL )
 public class StartResource {
-    public final static String ENDPOINT_URL = "/setup";
+    public final static String ENDPOINT_URL = "/start";
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
 
 

@@ -43,7 +43,7 @@ import com.google.inject.Singleton;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( ResetResource.ENDPOINT_URL )
 public class ResetResource {
-    public final static String ENDPOINT_URL = "/setup";
+    public final static String ENDPOINT_URL = "/reset";
     private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
 
 

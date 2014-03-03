@@ -27,7 +27,7 @@ public class DeployResourceTest {
     @Test
     public void testUpload() {
         InputStream in = getClass().getClassLoader().getResourceAsStream( "test.war" );
-        FormDataMultiPart part = new FormDataMultiPart().field( "file", in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
+        FormDataMultiPart part = new FormDataMultiPart().field( "warfile", in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
 
         LOG.debug( "Server URL = {}", jetty.getServerUrl().toString() );
 

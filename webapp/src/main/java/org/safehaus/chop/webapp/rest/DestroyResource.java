@@ -43,7 +43,7 @@ import com.google.inject.Singleton;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( DestroyResource.ENDPOINT_URL )
 public class DestroyResource {
-    public final static String ENDPOINT_URL = "/setup";
+    public final static String ENDPOINT_URL = "/destroy";
     private static final Logger LOG = LoggerFactory.getLogger( DestroyResource.class );
 
 

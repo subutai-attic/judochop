@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -61,15 +62,17 @@ public class DeployResource {
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     public Response deploy(
             @FormDataParam( WARFILE_PARAM ) InputStream in,
-            @FormDataParam( WARFILE_PARAM )FormDataContentDisposition fileDetails )
+            @FormDataParam( WARFILE_PARAM ) FormDataContentDisposition fileDetails )
     {
         LOG.warn( "deploy called ..." );
+        LOG.info( "fileDetails = " + fileDetails.toString() );
 
-        // handle the upload of the war file to some path on the file system
-        String fileLocation = config.getWarUploadPath() + fileDetails.getFileName();
-        writeToFile( in, fileLocation );
+//        // handle the upload of the war file to some path on the file system
+//        String fileLocation = config.getWarUploadPath() + fileDetails.getFileName();
+//        writeToFile( in, fileLocation );
 
-        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+//        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+        return Response.status( Response.Status.CREATED ).entity( "Hello World" ).build();
     }
 
 

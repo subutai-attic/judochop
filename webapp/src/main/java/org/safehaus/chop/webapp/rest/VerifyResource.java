@@ -43,7 +43,7 @@ import com.google.inject.Singleton;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( VerifyResource.ENDPOINT_URL )
 public class VerifyResource {
-    public final static String ENDPOINT_URL = "/setup";
+    public final static String ENDPOINT_URL = "/verify";
     private static final Logger LOG = LoggerFactory.getLogger( VerifyResource.class );
 
 
