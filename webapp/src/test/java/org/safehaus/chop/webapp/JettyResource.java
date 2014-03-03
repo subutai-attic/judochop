@@ -6,7 +6,7 @@ import java.net.URL;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.WebAppContext;
+//import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class JettyResource extends ExternalResource {
 
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() throws Throwable {/*
         WebAppContext ctx = new WebAppContext();
         ctx.setContextPath( "/" );
         ctx.setResourceBase( "./webapp/src/main/webapp" );
@@ -55,7 +55,7 @@ public class JettyResource extends ExternalResource {
         this.port = ( ( ServerConnector ) server.getConnectors()[0] ).getLocalPort();
         this.serverUrl = new URL( "http", "localhost", port, "" );
         this.started = true;
-    }
+   */ }
 
 
     @Override

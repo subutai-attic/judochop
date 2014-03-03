@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+//import com.sun.jersey.multipart.FormDataParam;
 
 
 /**
@@ -58,12 +58,11 @@ public class DeployResource {
     @Inject
     RestFig config;
 
-
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     public Response deploy(
-            @FormDataParam( CONTENT ) InputStream in,
-            @FormDataParam( FILENAME_PARAM ) String fileName )
+            /*@FormDataParam( CONTENT )*/ InputStream in,
+            /*@FormDataParam( FILENAME_PARAM )*/ String fileName )
     {
         LOG.warn( "deploy called ..." );
         LOG.info( "fileDetails = " + fileName );
@@ -74,7 +73,6 @@ public class DeployResource {
 
         return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
     }
-
 
 
     private void writeToFile( InputStream in, String fileLocation )

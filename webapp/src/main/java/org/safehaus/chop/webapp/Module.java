@@ -10,7 +10,7 @@ package org.safehaus.chop.webapp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.safehaus.chop.client.ChopClientModule;
+//import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.webapp.rest.DeployResource;
 import org.safehaus.chop.webapp.rest.RestFig;
 import org.safehaus.guicyfig.GuicyFigModule;
@@ -26,7 +26,7 @@ public class Module extends ServletModule {
 
     protected void configureServlets() {
         install( new GuicyFigModule( ServletFig.class, RestFig.class ) );
-        install( new ChopClientModule() );
+//        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );
