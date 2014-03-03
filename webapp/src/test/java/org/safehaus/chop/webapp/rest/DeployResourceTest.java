@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
 
@@ -27,11 +28,19 @@ public class DeployResourceTest {
     @Test
     public void testUpload() {
         InputStream in = getClass().getClassLoader().getResourceAsStream( "test.war" );
-        FormDataMultiPart part = new FormDataMultiPart().field( "warfile", in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
+
+        FormDataMultiPart part = new FormDataMultiPart();
+        part.field( DeployResource.FILENAME_PARAM, "test.war" );
+
+        FormDataBodyPart body = new FormDataBodyPart( DeployResource.CONTENT,
+                in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
+        part.bodyPart( body );
 
         LOG.debug( "Server URL = {}", jetty.getServerUrl().toString() );
 
         WebResource resource = Client.create().resource( jetty.getServerUrl().toString() + DeployResource.ENDPOINT_URL );
-        resource.type( MediaType.MULTIPART_FORM_DATA_TYPE ).post( String.class, part );
+        String result = resource.type( MediaType.MULTIPART_FORM_DATA_TYPE ).post( String.class, part );
+
+        LOG.debug( "Got back result = {}", result );
     }
 }

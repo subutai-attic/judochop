@@ -49,9 +49,10 @@ import com.sun.jersey.multipart.FormDataParam;
 @Produces( MediaType.APPLICATION_JSON )
 @Path( DeployResource.ENDPOINT_URL )
 public class DeployResource {
-    public final static String WARFILE_PARAM = "warfile";
-    public final static String ENDPOINT_URL = "/deploy";
+    public final static String ENDPOINT_URL = "/upload";
     private final static Logger LOG = LoggerFactory.getLogger( DeployResource.class );
+    public static final String FILENAME_PARAM = "file";
+    public static final String CONTENT = "content";
 
 
     @Inject
@@ -61,18 +62,17 @@ public class DeployResource {
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     public Response deploy(
-            @FormDataParam( WARFILE_PARAM ) InputStream in,
-            @FormDataParam( WARFILE_PARAM ) FormDataContentDisposition fileDetails )
+            @FormDataParam( CONTENT ) InputStream in,
+            @FormDataParam( FILENAME_PARAM ) String fileName )
     {
         LOG.warn( "deploy called ..." );
-        LOG.info( "fileDetails = " + fileDetails.toString() );
+        LOG.info( "fileDetails = " + fileName );
 
-//        // handle the upload of the war file to some path on the file system
-//        String fileLocation = config.getWarUploadPath() + fileDetails.getFileName();
-//        writeToFile( in, fileLocation );
+        // handle the upload of the war file to some path on the file system
+        String fileLocation = /* config.getWarUploadPath() + */ fileName;
+        writeToFile( in, fileLocation );
 
-//        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
-        return Response.status( Response.Status.CREATED ).entity( "Hello World" ).build();
+        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
     }
 
 
