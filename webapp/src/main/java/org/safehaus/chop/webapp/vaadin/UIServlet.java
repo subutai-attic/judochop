@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.StringTokenizer;
 
 @Singleton
-public class TestServlet extends VaadinServlet {
+public class UIServlet extends com.vaadin.server.VaadinServlet {
 
     @Override
     public void init(final ServletConfig servletConfig) throws ServletException {

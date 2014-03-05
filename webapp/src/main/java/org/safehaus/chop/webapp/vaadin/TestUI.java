@@ -1,21 +1,12 @@
 package org.safehaus.chop.webapp.vaadin;
 
 import com.vaadin.annotations.Title;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.AbstractTextField.TextChangeEventMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import org.safehaus.chop.webapp.util.FileUtil;
+import org.safehaus.chop.webapp.vaadin.util.FileUtil;
 //import org.safehaus.chop.webapp.util.FileUtil;
 
 /* 
@@ -63,27 +54,13 @@ public class TestUI extends UI {
 
     private void buttonClicked() {
 
+        /*
         System.out.println("button clicked");
 
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/jquery.min.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/highcharts.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/chart.js") );
-
-//        JavaScript.getCurrent().execute("console.log($('#chart'));");
-
-/*        JavaScript.getCurrent().execute(s);
-
-        JavaScript.getCurrent().execute("console.log(2);");
-
-        s = FileUtil.getContent("../../js/highcharts.js");
-        JavaScript.getCurrent().execute(s);
-
-        JavaScript.getCurrent().execute("console.log(3);");
-
-        s = FileUtil.getContent("../../js/chart.js");
-        JavaScript.getCurrent().execute(s);
-
-        JavaScript.getCurrent().execute("console.log(4);");*/
+        */
     }
 
 }
