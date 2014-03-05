@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.safehaus.chop.webapp.Module;
 
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
 
 @RunWith(JukitoRunner.class)
 @UseModules(Module.class)
@@ -21,6 +20,5 @@ public class ElasticSearchClientTest {
     public void test() {
         assertNotNull(elasticSearchClient);
         assertNotNull(elasticSearchClient.getClient());
-        assertTrue(elasticSearchClient.getClient().listedNodes().size() > 0);
     }
 }

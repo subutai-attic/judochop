@@ -1,5 +1,6 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
+import org.elasticsearch.client.support.AbstractClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -7,7 +8,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 public class ElasticSearchClient {
 
-    private TransportClient client;
+    private AbstractClient client;
 
     public ElasticSearchClient() {
 
@@ -16,10 +17,14 @@ public class ElasticSearchClient {
                 .put("node.name", "ChopNode")
                 .build();
 
-        client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("192.168.0.110", 9300));
+        // TODO take as params or from config
+        String host = "192.168.0.110"; int port = 9300;
+//        String host = "172.16.10.108"; int port = 9302;
+
+        client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(host, port));
     }
 
-    public TransportClient getClient() {
+    public AbstractClient getClient() {
         return client;
     }
 }

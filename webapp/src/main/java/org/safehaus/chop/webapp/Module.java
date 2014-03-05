@@ -24,7 +24,6 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 public class Module extends ServletModule {
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
-
     protected void configureServlets() {
         install( new GuicyFigModule( ServletFig.class, RestFig.class ) );
 //        install( new ChopClientModule() );
