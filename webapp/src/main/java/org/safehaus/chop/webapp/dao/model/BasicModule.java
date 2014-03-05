@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.dao;
+package org.safehaus.chop.webapp.dao.model;
 
 import org.safehaus.chop.api.Module;
 

@@ -5,6 +5,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.webapp.dao.model.BasicModule;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 
 import java.util.*;
@@ -44,6 +45,7 @@ public class ModuleDao extends Dao<Module> {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
+                .setTypes("module")
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 

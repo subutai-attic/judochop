@@ -6,6 +6,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.webapp.dao.model.BasicModule;
 
 import java.util.List;
 
@@ -16,7 +17,8 @@ import static org.junit.Assert.assertTrue;
 public class ModuleDaoTest {
 
     @Inject
-    private ModuleDao moduleDao = null;
+    @SuppressWarnings("unused")
+    private ModuleDao moduleDao;
 
     @Test
     public void save() throws Exception {
