@@ -9,12 +9,6 @@ import com.vaadin.ui.Button.ClickListener;
 import org.safehaus.chop.webapp.vaadin.util.FileUtil;
 //import org.safehaus.chop.webapp.util.FileUtil;
 
-/* 
- * UI class is the starting point for your app. You may deploy it with VaadinServlet
- * or VaadinPortlet by giving your UI class name a parameter. When you browse to your
- * app a web page showing your UI is automatically generated. Or you may choose to 
- * embed your UI to an existing web page. 
- */
 @Title("Test UI")
 public class TestUI extends UI {
 
@@ -54,9 +48,9 @@ public class TestUI extends UI {
 
     private void buttonClicked() {
 
-        /*
         System.out.println("button clicked");
 
+        /*
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/jquery.min.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/highcharts.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("../../js/chart.js") );

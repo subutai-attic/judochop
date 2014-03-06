@@ -1,17 +1,14 @@
 package org.safehaus.chop.webapp.vaadin;
 
 import com.google.inject.Singleton;
-import com.vaadin.server.VaadinServlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.*;
 
-import java.util.StringTokenizer;
-
 @Singleton
-public class UIServlet extends com.vaadin.server.VaadinServlet {
+public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
     @Override
     public void init(final ServletConfig servletConfig) throws ServletException {
