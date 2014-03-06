@@ -18,7 +18,7 @@ public class ElasticSearchClient {
                 .build();
 
         // TODO take as params or from config
-        String host = "192.168.0.110"; int port = 9300;
+        String host = "192.168.1.102"; int port = 9300;
 //        String host = "172.16.10.108"; int port = 9302;
 
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(host, port));
