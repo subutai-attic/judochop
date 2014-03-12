@@ -28,7 +28,7 @@ public class RunDaoTest {
     public void testSave() throws Exception {
 
         BasicSummary summary = new BasicSummary(1, 1, 1, "TestRun");
-        BasicModule module = new BasicModule("TestGroup", "TestArtifact", ""+System.currentTimeMillis());
+        BasicModule module = new BasicModule("TestGroup", "TestArtifact", ""+System.currentTimeMillis(), null, null);
         BasicVersion version = new BasicVersion(UUID.randomUUID(), module);
 
         BasicRun run = new BasicRun(version, summary);

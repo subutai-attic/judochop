@@ -5,6 +5,9 @@ package org.safehaus.chop.api;
  * This represents the Maven Module under test.
  */
 public interface Module {
+
+    String getId();
+
     String getGroupId();
 
     String getArtifactId();

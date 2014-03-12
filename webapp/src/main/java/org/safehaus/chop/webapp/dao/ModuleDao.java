@@ -21,18 +21,19 @@ public class ModuleDao extends Dao<Module> {
         super(elasticSearchClient);
     }
 
+    @Override
     public boolean save(Module module) throws Exception {
 
-        int id = String.format("%s-%s-%s", module.getGroupId(), module.getArtifactId(), module.getVersion()).hashCode();
-
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "module", ""+id)
+                .prepareIndex("modules", "module", module.getId())
                 .setSource(
                         jsonBuilder()
                                 .startObject()
                                 .field("groupId", module.getGroupId())
                                 .field("artifactId", module.getArtifactId())
                                 .field("version", module.getVersion())
+                                .field("vcsRepoUrl", module.getVcsRepoUrl())
+                                .field("testPackageBase", module.getTestPackageBase())
                                 .endObject()
                 )
                 .execute()
@@ -49,16 +50,17 @@ public class ModuleDao extends Dao<Module> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        SearchHit[] hits = response.getHits().hits();
         ArrayList<Module> list = new ArrayList<Module>();
 
-        for (SearchHit hit : hits) {
+        for (SearchHit hit : response.getHits().hits()) {
             Map<String, Object> json = hit.getSource();
 
             BasicModule module = new BasicModule(
                     (String) json.get("groupId"),
                     (String) json.get("artifactId"),
-                    (String) json.get("version")
+                    (String) json.get("version"),
+                    (String) json.get("vcsRepoUrl"),
+                    (String) json.get("testPackageBase")
             );
 
             list.add(module);
