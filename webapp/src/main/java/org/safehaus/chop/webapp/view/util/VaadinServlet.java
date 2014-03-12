@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.vaadin;
+package org.safehaus.chop.webapp.view.util;
 
 import com.google.inject.Singleton;
 
@@ -10,16 +10,25 @@ import java.util.*;
 @Singleton
 public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
+    private static final String PARAM_UI = "UI";
+    private static final String MAIN_UI = "org.safehaus.chop.webapp.view.MainUI";
+    private static final Hashtable<String, String> PARAMS = getInitParams();
+
     @Override
     public void init(final ServletConfig servletConfig) throws ServletException {
+        super.init(getServletConfig(servletConfig));
+    }
 
-        final ArrayList list = new ArrayList();
-        list.add("UI");
+    private static Hashtable<String, String> getInitParams() {
 
-        final Hashtable<String, String> ht = new Hashtable<String, String>();
-        ht.put("UI", "org.safehaus.chop.webapp.vaadin.TestUI");
+        Hashtable<String, String> ht = new Hashtable<String, String>();
+        ht.put(PARAM_UI, MAIN_UI);
 
-        ServletConfig servletConfig_ = new ServletConfig() {
+        return ht;
+    }
+
+    private static ServletConfig getServletConfig(final ServletConfig servletConfig) {
+        return new ServletConfig() {
             @Override
             public String getServletName() {
                 return servletConfig.getServletName();
@@ -32,21 +41,13 @@ public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
             @Override
             public String getInitParameter(String s) {
-                System.out.println(">> get param: " + s);
-//                return "org.safehaus.chop.webapp.vaadin.AddressbookUI";
-                return ht.get(s);
+                return PARAMS.get(s);
             }
 
             @Override
             public Enumeration<String> getInitParameterNames() {
-                System.out.println(">> getInitParameterNames()");
-//                return servletConfig.getInitParameterNames();
-//                return list.iterator();
-//                return new StringTokenizer("UI");
-                return ht.keys();
+                return PARAMS.keys();
             }
         };
-
-        super.init(servletConfig_);
     }
 }

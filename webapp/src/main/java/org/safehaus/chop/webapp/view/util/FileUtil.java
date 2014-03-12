@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.vaadin.util;
+package org.safehaus.chop.webapp.view.util;
 
 import java.io.IOException;
 import java.io.InputStream;

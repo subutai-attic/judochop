@@ -6,14 +6,13 @@
  */
 package org.safehaus.chop.webapp;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
 //import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.webapp.rest.DeployResource;
 import org.safehaus.chop.webapp.rest.RestFig;
-import org.safehaus.chop.webapp.vaadin.VaadinServlet;
+import org.safehaus.chop.webapp.view.util.VaadinServlet;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;

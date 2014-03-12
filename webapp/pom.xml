@@ -50,9 +50,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.16</version>
         <configuration>
-          <systemPropertyVariables>
-            <classes.base>${project.build.outputDirectory}</classes.base>
-          </systemPropertyVariables>
+            <systemPropertyVariables>
+                <classes.base>${project.build.outputDirectory}</classes.base>
+            </systemPropertyVariables>
+            <skipTests>true</skipTests>
         </configuration>
       </plugin>
 
