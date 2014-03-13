@@ -9,13 +9,13 @@ import java.util.Date;
 
 public class BasicCommit implements Commit {
 
-    private String commitId;
+    private String id;
     private String moduleId;
     private String warMd5;
     private Date createTime;
 
-    public BasicCommit(String commitId, String moduleId, String warMd5, Date createTime) {
-        this.commitId = commitId;
+    public BasicCommit(String id, String moduleId, String warMd5, Date createTime) {
+        this.id = id;
         this.moduleId = moduleId;
         this.warMd5 = warMd5;
         this.createTime = createTime;
@@ -23,13 +23,7 @@ public class BasicCommit implements Commit {
 
     @Override
     public String getId() {
-        // For this simple example we can use just commitId. In real app there should generated more unique id.
-        return commitId;
-    }
-
-    @Override
-    public String getCommitId() {
-        return commitId;
+        return id;
     }
 
     @Override
@@ -49,8 +43,8 @@ public class BasicCommit implements Commit {
 
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id)
                 .append("moduleId", moduleId)
-                .append("commitId", commitId)
                 .append("warMd5", warMd5)
                 .append("createTime", createTime)
                 .toString();

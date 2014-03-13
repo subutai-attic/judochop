@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public interface Summary {
 
+    String getId();
+
     /**
      * Returns a specific commit version of a Maven Module under test.
      */

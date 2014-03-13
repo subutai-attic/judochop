@@ -33,7 +33,6 @@ public class CommitDao extends Dao<Commit> {
                         jsonBuilder()
                                 .startObject()
                                 .field("moduleId", commit.getModuleId())
-                                .field("commitId", commit.getCommitId())
                                 .field("warMd5", commit.getWarMd5())
                                 .field("createTime", commit.getCreateTime())
                                 .endObject()
@@ -52,13 +51,15 @@ public class CommitDao extends Dao<Commit> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
+        System.out.println(response);
+
         ArrayList<Commit> list = new ArrayList<Commit>();
 
         for (SearchHit hit : response.getHits().hits()) {
             Map<String, Object> json = hit.getSource();
 
             BasicCommit commit = new BasicCommit(
-                    (String) json.get("commitId"),
+                    hit.getId(),
                     (String) json.get("moduleId"),
                     (String) json.get("warMd5"),
                     Util.toDate((String) json.get("createTime"))

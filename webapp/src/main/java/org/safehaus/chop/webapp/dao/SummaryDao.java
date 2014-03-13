@@ -17,24 +17,23 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class SummaryDao extends Dao<Summary> {
 
-    private static final int MAX_RESULT_SIZE = 100000;
+    private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
     public SummaryDao(ElasticSearchClient elasticSearchClient) {
         super(elasticSearchClient);
     }
 
-    // TODO get module info from summary
     public boolean save(Summary summary) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "summary")
+                .prepareIndex("modules", "summary", summary.getId())
                 .setSource(
                         jsonBuilder()
                                 .startObject()
+                                .field("commitId", summary.getCommitId())
+                                .field("runner", summary.getRunner())
                                 .field("runNumber", summary.getRunNumber())
-                                .field("iterations", summary.getIterations())
-                                .field("totalTestsRun", summary.getTotalTestsRun())
                                 .field("testName", summary.getTestName())
                                 .endObject()
                 )
@@ -44,7 +43,7 @@ public class SummaryDao extends Dao<Summary> {
         return response.isCreated();
     }
 
-    public List<Summary> getSummaries(Module module) {
+    public List<Summary> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
@@ -52,16 +51,17 @@ public class SummaryDao extends Dao<Summary> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        SearchHit[] hits = response.getHits().hits();
+//        System.out.println(response);
+
         ArrayList<Summary> list = new ArrayList<Summary>();
 
-        for (SearchHit hit : hits) {
+        for (SearchHit hit : response.getHits().hits()) {
             Map<String, Object> json = hit.getSource();
 
             BasicSummary summary = new BasicSummary(
+                    (String) json.get("commitId"),
+                    (String) json.get("runner"),
                     (Integer) json.get("runNumber"),
-                    (Integer) json.get("iterations"),
-                    (Integer) json.get("totalTestsRun"),
                     (String) json.get("testName")
             );
 

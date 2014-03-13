@@ -12,8 +12,6 @@ public interface Commit {
 
     String getId();
 
-    String getCommitId();
-
     String getModuleId();
 
     String getWarMd5();
