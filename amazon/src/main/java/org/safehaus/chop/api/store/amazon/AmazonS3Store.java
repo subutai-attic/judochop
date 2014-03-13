@@ -434,7 +434,7 @@ public class AmazonS3Store implements Store, Runnable, Constants {
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
-          .append( summary.getRunNumber() ).append( '/' )
+//          .append( summary.getRunNumber() ).append( '/' )
           .append( testClass.getName() ).append( '/' )
           .append( metadata.getHostname() ).append( SUMMARY_SUFFIX );
 
@@ -460,7 +460,7 @@ public class AmazonS3Store implements Store, Runnable, Constants {
 
         StringBuilder sb = new StringBuilder();
         sb.append( loadKey )
-          .append( summary.getRunNumber() ).append( '/' )
+//          .append( summary.getRunNumber() ).append( '/' )
           .append( testClass.getName() ).append( '/' )
           .append( metadata.getHostname() ).append( RESULTS_SUFFIX );
 

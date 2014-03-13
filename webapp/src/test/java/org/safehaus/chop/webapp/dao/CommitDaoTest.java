@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
-import org.safehaus.chop.webapp.read.CommitFileReader;
 
 import java.util.Date;
 import java.util.List;

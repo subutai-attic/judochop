@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.read;
+package org.safehaus.chop.webapp.upload;
 
 import java.io.FileInputStream;
 import java.io.IOException;

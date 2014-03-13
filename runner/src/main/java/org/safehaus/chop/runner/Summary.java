@@ -44,9 +44,8 @@ public class Summary implements org.safehaus.chop.api.Summary {
         this.runNumber = runNumber;
     }
 
-    // TODO
     @Override
-    public Commit getCommit() {
+    public String getRunId() {
         return null;
     }
 
@@ -87,7 +86,6 @@ public class Summary implements org.safehaus.chop.api.Summary {
     }
 
 
-    @Override
     @JsonProperty
     public int getRunNumber() {
         return runNumber;
@@ -108,7 +106,6 @@ public class Summary implements org.safehaus.chop.api.Summary {
     }
 
 
-    @Override
     @JsonProperty
     public String getTestName() {
         return testName;

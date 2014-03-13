@@ -1,22 +1,12 @@
-package org.safehaus.chop.webapp.read;
+package org.safehaus.chop.webapp.upload;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.logging.Level;
-
-import static org.elasticsearch.index.query.QueryBuilders.queryString;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class Test {
 

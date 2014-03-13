@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.read;
+package org.safehaus.chop.webapp.upload;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
