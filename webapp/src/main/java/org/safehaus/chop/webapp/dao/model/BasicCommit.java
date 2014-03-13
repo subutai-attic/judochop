@@ -2,20 +2,19 @@ package org.safehaus.chop.webapp.dao.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.Version;
 
 import java.util.Date;
-import java.util.UUID;
 
-public class BasicVersion implements Version {
+public class BasicCommit implements Commit {
 
     private String commitId;
     private Module module;
     private String warMd5;
     private Date createTime;
 
-    public BasicVersion(String commitId, Module module, String warMd5, Date createTime) {
+    public BasicCommit(String commitId, Module module, String warMd5, Date createTime) {
         this.commitId = commitId;
         this.module = module;
         this.warMd5 = warMd5;
@@ -24,6 +23,7 @@ public class BasicVersion implements Version {
 
     @Override
     public String getId() {
+        // For this simple example we can use just commitId. In real app there should generated more unique id.
         return commitId;
     }
 

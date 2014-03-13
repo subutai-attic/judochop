@@ -9,7 +9,7 @@ import java.util.Iterator;
  */
 public interface Run {
 
-    Version getCommitVersion();
+    Commit getCommitVersion();
 
     Summary getSummary();
 

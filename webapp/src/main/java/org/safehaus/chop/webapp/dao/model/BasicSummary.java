@@ -1,9 +1,11 @@
 package org.safehaus.chop.webapp.dao.model;
 
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Summary;
 
 public class BasicSummary implements Summary {
 
+    private Commit version;
     private int runNumber;
     private long iterations;
     private long totalTestsRun;
@@ -27,6 +29,11 @@ public class BasicSummary implements Summary {
         this.iterations = iterations;
         this.totalTestsRun = totalTestsRun;
         this.testName = testName;
+    }
+
+    @Override
+    public Commit getCommit() {
+        return version;
     }
 
     @Override

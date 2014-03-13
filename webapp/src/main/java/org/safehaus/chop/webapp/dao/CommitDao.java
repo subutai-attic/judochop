@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Version;
-import org.safehaus.chop.webapp.dao.model.BasicVersion;
+import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
-public class VersionDao extends Dao<Version> {
+public class CommitDao extends Dao<Commit> {
 
     private static final int MAX_RESULT_SIZE = 10000;
 
@@ -23,22 +23,22 @@ public class VersionDao extends Dao<Version> {
     private ModuleDao moduleDao = null;
 
     @Inject
-    public VersionDao(ElasticSearchClient elasticSearchClient) {
+    public CommitDao(ElasticSearchClient elasticSearchClient) {
         super(elasticSearchClient);
     }
 
     @Override
-    public boolean save(Version version) throws Exception {
+    public boolean save(Commit commit) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "version", version.getId())
+                .prepareIndex("modules", "commit", commit.getId())
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field("moduleId", version.getModule().getId())
-                                .field("commitId", version.getCommitId())
-                                .field("warMd5", version.getWarMd5())
-                                .field("createTime", version.getCreateTime())
+                                .field("moduleId", commit.getModule().getId())
+                                .field("commitId", commit.getCommitId())
+                                .field("warMd5", commit.getWarMd5())
+                                .field("createTime", commit.getCreateTime())
                                 .endObject()
                 )
                 .execute()
@@ -47,29 +47,29 @@ public class VersionDao extends Dao<Version> {
         return response.isCreated();
     }
 
-    public List<Version> getAll() throws Exception {
+    public List<Commit> getAll() throws Exception {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
-                .setTypes("version")
+                .setTypes("commit")
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
         System.out.println(response);
 
-        ArrayList<Version> list = new ArrayList<Version>();
+        ArrayList<Commit> list = new ArrayList<Commit>();
 
         for (SearchHit hit : response.getHits().hits()) {
             Map<String, Object> json = hit.getSource();
 
-            BasicVersion version = new BasicVersion(
+            BasicCommit commit = new BasicCommit(
                     (String) json.get("commitId"),
                     moduleDao.get((String) json.get("moduleId")),
                     (String) json.get("warMd5"),
                     Util.toDate((String) json.get("createTime"))
             );
 
-            list.add(version);
+            list.add(commit);
         }
 
         return list;

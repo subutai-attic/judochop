@@ -6,17 +6,17 @@ import java.util.Iterator;
 
 public class BasicRun implements Run {
 
-    private Version version;
+    private Commit commit;
     private Summary summary;
 
-    public BasicRun(Version version, Summary summary) {
-        this.version = version;
+    public BasicRun(Commit commit, Summary summary) {
+        this.commit = commit;
         this.summary = summary;
     }
 
     @Override
-    public Version getCommitVersion() {
-        return version;
+    public Commit getCommitVersion() {
+        return commit;
     }
 
     @Override

@@ -1,20 +1,20 @@
 package org.safehaus.chop.webapp.read;
 
-import org.safehaus.chop.api.Version;
-import org.safehaus.chop.webapp.dao.model.BasicVersion;
+import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.webapp.dao.model.BasicCommit;
 
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 
-public class VersionFileReader {
+public class CommitFileReader {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
 
-    public static Version read(String filePath) throws Exception {
+    public static Commit read(String filePath) throws Exception {
 
         Properties props = FileReader.readProperties(filePath);
 
-        return new BasicVersion(
+        return new BasicCommit(
                 props.getProperty("git.uuid"),
                 ModuleFileReader.read(filePath),
                 props.getProperty("war.md5"),

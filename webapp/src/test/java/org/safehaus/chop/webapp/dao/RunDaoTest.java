@@ -6,13 +6,8 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.dao.model.BasicSummary;
-import org.safehaus.chop.webapp.dao.model.BasicVersion;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 

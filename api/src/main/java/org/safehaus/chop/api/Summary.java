@@ -8,6 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A summary of a single chop run.
  */
 public interface Summary {
+
+    /**
+     * Returns a specific commit version of a Maven Module under test.
+     */
+    @JsonProperty
+    Commit getCommit();
+
     /**
      * Gets the run number. Each start that is issued against the same
      * Runner will increment the run number. The results of each run

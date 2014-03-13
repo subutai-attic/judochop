@@ -1,6 +1,7 @@
 package org.safehaus.chop.runner;
 
 
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.runner.drivers.IterationTracker;
 import org.safehaus.chop.runner.drivers.TimeTracker;
 import org.safehaus.chop.runner.drivers.Tracker;
@@ -43,6 +44,11 @@ public class Summary implements org.safehaus.chop.api.Summary {
         this.runNumber = runNumber;
     }
 
+    // TODO
+    @Override
+    public Commit getCommit() {
+        return null;
+    }
 
     public void setIterationTracker( IterationTracker iterationTracker ) {
         iterations = iterationTracker.getIterationChop().iterations();
