@@ -6,8 +6,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Module;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.upload.ModuleFileReader;
+import org.safehaus.chop.webapp.read.ModuleFileReader;
 
 import java.util.List;
 
@@ -18,8 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class ModuleDaoTest {
 
     @Inject
-    @SuppressWarnings("unused")
-    private ModuleDao moduleDao;
+    private ModuleDao moduleDao = null;
 
     @Test
     public void save() throws Exception {
@@ -32,14 +30,18 @@ public class ModuleDaoTest {
     }
 
     @Test
-    public void testGetModules() throws Exception {
+    public void testGetAll() throws Exception {
 
-        List<Module> modules = moduleDao.getModules();
+        List<Module> modules = moduleDao.getAll();
 
-        /*for (Module m : modules) {
+        for (Module m : modules) {
             System.out.println(m);
-        }*/
-
-//        assertTrue(modules.size() > 0);
+        }
     }
+
+    @Test
+    public void testGetById() {
+        System.out.println( moduleDao.get("1168044208") );
+    }
+
 }

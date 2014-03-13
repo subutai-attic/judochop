@@ -9,7 +9,10 @@ import java.util.UUID;
  * A specific commit version of a Maven Module under test.
  */
 public interface Version {
-    UUID getCommitId();
+
+    String getId();
+
+    String getCommitId();
 
     Module getModule();
 

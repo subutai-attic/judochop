@@ -10,6 +10,7 @@ import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 
 import java.util.*;
 
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 public class ModuleDao extends Dao<Module> {
@@ -42,28 +43,46 @@ public class ModuleDao extends Dao<Module> {
         return response.isCreated();
     }
 
-    public List<Module> getModules() {
+    public Module get(String id) {
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("module")
+                .setQuery(termQuery("_id", id))
+                .execute()
+                .actionGet();
+
+        SearchHit hits[] = response.getHits().hits();
+
+        return hits.length > 0 ? toModule(hits[0]) : null;
+    }
+
+    private static Module toModule(SearchHit hit) {
+
+        Map<String, Object> json = hit.getSource();
+
+        return new BasicModule(
+                (String) json.get("groupId"),
+                (String) json.get("artifactId"),
+                (String) json.get("version"),
+                (String) json.get("vcsRepoUrl"),
+                (String) json.get("testPackageBase")
+        );
+    }
+
+    public List<Module> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("module")
                 .setSize(MAX_RESULT_SIZE)
-                .execute().actionGet();
+                .execute()
+                .actionGet();
 
         ArrayList<Module> list = new ArrayList<Module>();
 
         for (SearchHit hit : response.getHits().hits()) {
-            Map<String, Object> json = hit.getSource();
-
-            BasicModule module = new BasicModule(
-                    (String) json.get("groupId"),
-                    (String) json.get("artifactId"),
-                    (String) json.get("version"),
-                    (String) json.get("vcsRepoUrl"),
-                    (String) json.get("testPackageBase")
-            );
-
-            list.add(module);
+            list.add(toModule(hit));
         }
 
         return list;
