@@ -5,33 +5,26 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
+import org.safehaus.chop.api.RunResult;
+import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.webapp.dao.model.BasicSummary;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
 @RunWith(JukitoRunner.class)
 @UseModules(org.safehaus.chop.webapp.Module.class)
-public class RunDaoTest {
+public class RunResultDaoTest {
 
     @Inject
     @SuppressWarnings("unused")
-    private RunDao runDao;
+    private RunResultDao dao;
 
     @Test
     public void testSave() throws Exception {
 
-        BasicRun run = new BasicRun(
-                "testCommitId",
-                "testRunner",
-                1,
-                "testName"
-        );
+        BasicRunResult runResult = new BasicRunResult("testRunId");
 
-        boolean created = runDao.save(run);
+        boolean created = dao.save(runResult);
 
         System.out.println(created);
     }
@@ -39,10 +32,10 @@ public class RunDaoTest {
     @Test
     public void testGetAll() throws Exception {
 
-        List<Run> list = runDao.getAll();
+        List<RunResult> list = dao.getAll();
 
-        for (Run run : list) {
-            System.out.println(run);
+        for (RunResult r : list) {
+            System.out.println(r);
         }
     }
 

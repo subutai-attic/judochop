@@ -1,32 +1,64 @@
 package org.safehaus.chop.webapp.dao.model;
 
-import org.safehaus.chop.api.*;
-
-import java.util.Iterator;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.safehaus.chop.api.Run;
+import org.safehaus.chop.api.Summary;
 
 public class BasicRun implements Run {
 
-    private Commit commit;
-    private Summary summary;
+    private String id;
+    private String commitId;
+    private String runner;
+    private int runNumber;
+    private String testName;
 
-    public BasicRun(Commit commit, Summary summary) {
-        this.commit = commit;
-        this.summary = summary;
+    public BasicRun(String commitId, String runner, int runNumber, String testName) {
+        id = createId(commitId, runner, runNumber, testName);
+        this.commitId = commitId;
+        this.runner = runner;
+        this.runNumber = runNumber;
+        this.testName = testName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getCommitId() {
+        return commitId;
+    }
+
+    public String getRunner() {
+        return runner;
+    }
+
+    public int getRunNumber() {
+        return runNumber;
     }
 
     @Override
-    public Commit getCommitVersion() {
-        return commit;
+    public String getTestName() {
+        return testName;
     }
 
-    @Override
-    public Summary getSummary() {
-        return summary;
+    private static String createId(String commitId, String runner, int runNumber, String testName) {
+        return "" + new HashCodeBuilder()
+                .append(commitId)
+                .append(runner)
+                .append(runNumber)
+                .append(testName)
+                .toHashCode();
     }
 
-    @Override
-    public Iterator<TestResult> getResults() {
-        return null;
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id)
+                .append("commitId", commitId)
+                .append("runner", runner)
+                .append("runNumber", runNumber)
+                .append("testName", testName)
+                .toString();
     }
 }
-

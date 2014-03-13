@@ -5,15 +5,11 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Module;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.webapp.dao.model.BasicRunner;
 import org.safehaus.chop.webapp.dao.model.BasicSummary;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;

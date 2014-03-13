@@ -7,14 +7,10 @@ import org.safehaus.chop.api.Summary;
 
 public class BasicSummary implements Summary {
 
-    private String id;
-    private String commitId;
-    private String runner;
-    private int runNumber;
-    private String testName;
+    private String runId;
+    private String chopType;
     private long iterations;
     private long totalTestsRun;
-    private String chopType;
     private int threads;
     private long delay;
     private long time;
@@ -28,47 +24,21 @@ public class BasicSummary implements Summary {
     private long stopTime;
     private boolean saturate;
 
-    public BasicSummary(String commitId, String runner, int runNumber, String testName) {
-        id = createId(commitId, runner, runNumber, testName);
-        this.commitId = commitId;
-        this.runner = runner;
-        this.runNumber = runNumber;
-        this.testName = testName;
+    public BasicSummary(String runId) {
+        this.runId = runId;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    private static String createId(String commitId, String runner, int runNumber, String testName) {
-        return "" + new HashCodeBuilder()
-                .append(commitId)
-                .append(runner)
-                .append(runNumber)
-                .append(testName)
-                .toHashCode();
+    public String getRunId() {
+        return runId;
     }
 
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("id", id)
-                .append("commitId", commitId)
-                .append("runner", runner)
-                .append("runNumber", runNumber)
-                .append("testName", testName)
+                .append("runId", runId)
+                .append("chopType", chopType)
+                .append("iterations", iterations)
+                .append("totalTestsRun", totalTestsRun)
                 .toString();
-    }
-
-    public String getCommitId() {
-        return commitId;
-    }
-
-    public String getRunner() {
-        return runner;
-    }
-
-    public int getRunNumber() {
-        return runNumber;
     }
 
     public long getIterations() {
@@ -77,10 +47,6 @@ public class BasicSummary implements Summary {
 
     public long getTotalTestsRun() {
         return totalTestsRun;
-    }
-
-    public String getTestName() {
-        return testName;
     }
 
     public String getChopType() {
@@ -135,28 +101,12 @@ public class BasicSummary implements Summary {
         return saturate;
     }
 
-    public void setCommitId(String commitId) {
-        this.commitId = commitId;
-    }
-
-    public void setRunner(String runner) {
-        this.runner = runner;
-    }
-
-    public void setRunNumber(int runNumber) {
-        this.runNumber = runNumber;
-    }
-
     public void setIterations(long iterations) {
         this.iterations = iterations;
     }
 
     public void setTotalTestsRun(long totalTestsRun) {
         this.totalTestsRun = totalTestsRun;
-    }
-
-    public void setTestName(String testName) {
-        this.testName = testName;
     }
 
     public void setChopType(String chopType) {
