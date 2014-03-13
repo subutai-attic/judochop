@@ -13,7 +13,13 @@ public interface Summary {
      * Returns a specific commit version of a Maven Module under test.
      */
     @JsonProperty
-    Commit getCommit();
+    String getCommitId();
+
+    /**
+     * Returns a runner.
+     */
+    @JsonProperty
+    String getRunner();
 
     /**
      * Gets the run number. Each start that is issued against the same
@@ -120,10 +126,10 @@ public interface Summary {
      * Gets the mean time it took for a test iteration to run in a TimeChop or an
      * IterationChop.
      *
-     * @return the mean time it took for a test iteration to run
+     * @return the avg time it took for a test iteration to run
      */
     @JsonProperty
-    long getMeanTime();
+    long getAvgTime();
 
     /**
      * Gets the number of JUnit test failures that occurred during the chop.

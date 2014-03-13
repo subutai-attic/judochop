@@ -6,8 +6,10 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.read.CommitFileReader;
 
+import java.util.Date;
 import java.util.List;
 
 @RunWith(JukitoRunner.class)
@@ -20,8 +22,12 @@ public class CommitDaoTest {
     @Test
     public void save() throws Exception {
 
-        String file = "d:\\temp\\chop-data\\perftest-bucket-2\\tests\\2c6e5647\\project.properties";
-        Commit commit = CommitFileReader.read(file);
+        Commit commit = new BasicCommit(
+                "2c6e7e4863d57c9f69d32829ee3acaaee3635647",
+                "1168044208",
+                "742e2a76a6ba161f9efb87ce58a9187e",
+                new Date()
+        );
 
         boolean created = commitDao.save(commit);
         System.out.println(created);

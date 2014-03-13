@@ -166,7 +166,7 @@ public class Summary implements org.safehaus.chop.api.Summary {
 
     @Override
     @JsonProperty
-    public long getMeanTime() {
+    public long getAvgTime() {
         return meanTime;
     }
 

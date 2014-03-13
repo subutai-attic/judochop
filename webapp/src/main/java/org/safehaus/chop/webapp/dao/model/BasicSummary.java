@@ -5,7 +5,8 @@ import org.safehaus.chop.api.Summary;
 
 public class BasicSummary implements Summary {
 
-    private Commit version;
+    private String commitId;
+    private String runner;
     private int runNumber;
     private long iterations;
     private long totalTestsRun;
@@ -32,8 +33,13 @@ public class BasicSummary implements Summary {
     }
 
     @Override
-    public Commit getCommit() {
-        return version;
+    public String getCommitId() {
+        return commitId;
+    }
+
+    @Override
+    public String getRunner() {
+        return runner;
     }
 
     @Override
@@ -92,7 +98,7 @@ public class BasicSummary implements Summary {
     }
 
     @Override
-    public long getMeanTime() {
+    public long getAvgTime() {
         return 0;  
     }
 

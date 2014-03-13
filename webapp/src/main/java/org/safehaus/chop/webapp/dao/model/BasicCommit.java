@@ -10,13 +10,13 @@ import java.util.Date;
 public class BasicCommit implements Commit {
 
     private String commitId;
-    private Module module;
+    private String moduleId;
     private String warMd5;
     private Date createTime;
 
-    public BasicCommit(String commitId, Module module, String warMd5, Date createTime) {
+    public BasicCommit(String commitId, String moduleId, String warMd5, Date createTime) {
         this.commitId = commitId;
-        this.module = module;
+        this.moduleId = moduleId;
         this.warMd5 = warMd5;
         this.createTime = createTime;
     }
@@ -33,8 +33,8 @@ public class BasicCommit implements Commit {
     }
 
     @Override
-    public Module getModule() {
-        return module;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BasicCommit implements Commit {
 
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("moduleId", module.getId())
+                .append("moduleId", moduleId)
                 .append("commitId", commitId)
                 .append("warMd5", warMd5)
                 .append("createTime", createTime)

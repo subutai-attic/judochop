@@ -16,7 +16,8 @@ public class CommitFileReader {
 
         return new BasicCommit(
                 props.getProperty("git.uuid"),
-                ModuleFileReader.read(filePath),
+//                ModuleFileReader.read(filePath),
+                null,
                 props.getProperty("war.md5"),
                 DATE_FORMAT.parse( props.getProperty("create.timestamp") )
         );

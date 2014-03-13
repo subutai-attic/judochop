@@ -6,7 +6,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Module;
-import org.safehaus.chop.webapp.read.ModuleFileReader;
+import org.safehaus.chop.webapp.dao.model.BasicModule;
 
 import java.util.List;
 
@@ -16,17 +16,25 @@ import static org.junit.Assert.assertTrue;
 @UseModules(org.safehaus.chop.webapp.Module.class)
 public class ModuleDaoTest {
 
+    private static final String ID = "1168044208";
+
     @Inject
     private ModuleDao moduleDao = null;
 
     @Test
     public void save() throws Exception {
 
-        String moduleFile = "d:\\temp\\chop-data\\perftest-bucket-2\\tests\\2c6e5647\\project.properties";
-        Module module = ModuleFileReader.read(moduleFile);
+        Module module = new BasicModule(
+                "org.apache.usergrid",
+                "collection",
+                "1.0-SNAPSHOT",
+                "https://github.com/usergrid/usergrid.git",
+                "org.apache.usergrid"
+        );
+
         boolean created = moduleDao.save(module);
 
-//        assertTrue(created);
+        System.out.println(created);
     }
 
     @Test
@@ -41,7 +49,7 @@ public class ModuleDaoTest {
 
     @Test
     public void testGetById() {
-        System.out.println( moduleDao.get("1168044208") );
+        System.out.println( moduleDao.get(ID) );
     }
 
 }

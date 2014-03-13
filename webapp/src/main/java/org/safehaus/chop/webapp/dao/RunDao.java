@@ -23,10 +23,10 @@ public class RunDao extends Dao<Run> {
     }
 
     public boolean save(Run run) throws Exception {
-
+/*
         String id = String.format("%s-%s-%s-%s-%s-%s",
                 run.getCommitVersion().getCommitId(),
-                run.getCommitVersion().getModule() .getVersion(),
+                run.getCommitVersion().getModuleId() .getVersion(),
                 run.getSummary().getRunNumber(),
                 run.getSummary().getIterations(),
                 run.getSummary().getTotalTestsRun(),
@@ -44,7 +44,9 @@ public class RunDao extends Dao<Run> {
                 .execute()
                 .actionGet();
 
-        return response.isCreated();
+        return response.isCreated();*/
+
+        return false;
     }
 
     public List<Run> get() {

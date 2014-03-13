@@ -20,9 +20,6 @@ public class CommitDao extends Dao<Commit> {
     private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
-    private ModuleDao moduleDao = null;
-
-    @Inject
     public CommitDao(ElasticSearchClient elasticSearchClient) {
         super(elasticSearchClient);
     }
@@ -35,7 +32,7 @@ public class CommitDao extends Dao<Commit> {
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field("moduleId", commit.getModule().getId())
+                                .field("moduleId", commit.getModuleId())
                                 .field("commitId", commit.getCommitId())
                                 .field("warMd5", commit.getWarMd5())
                                 .field("createTime", commit.getCreateTime())
@@ -55,8 +52,6 @@ public class CommitDao extends Dao<Commit> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        System.out.println(response);
-
         ArrayList<Commit> list = new ArrayList<Commit>();
 
         for (SearchHit hit : response.getHits().hits()) {
@@ -64,7 +59,7 @@ public class CommitDao extends Dao<Commit> {
 
             BasicCommit commit = new BasicCommit(
                     (String) json.get("commitId"),
-                    moduleDao.get((String) json.get("moduleId")),
+                    (String) json.get("moduleId"),
                     (String) json.get("warMd5"),
                     Util.toDate((String) json.get("createTime"))
             );
