@@ -44,6 +44,8 @@ public class RunDaoTest {
         for (Run run : list) {
             System.out.println(run);
         }
+
+        System.out.println("count: " + list.size());
     }
 
 }

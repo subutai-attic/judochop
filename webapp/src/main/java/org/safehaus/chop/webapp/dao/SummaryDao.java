@@ -44,7 +44,7 @@ public class SummaryDao extends Dao<Summary> {
                                 .field("failures", summary.getFailures())
                                 .field("ignores", summary.getIgnores())
                                 .field("saturate", summary.getSaturate())
-                                // Error in ElasticSearch while saving Long
+                                // Error in ElasticSearch while saving Long - tries to store as Integer
                                 //.field("startTime", summary.getStartTime())
                                 //.field("stopTime", summary.getStopTime())
                                 .endObject()
@@ -71,11 +71,6 @@ public class SummaryDao extends Dao<Summary> {
 
             BasicSummary summary = new BasicSummary(hit.getId());
             summary.copyJson(hit.getSource());
-
-            /*summary.setChopType(Util.getString(json, "chopType"));
-            summary.setIterations(Util.getInt(json, "iterations"));
-            summary.setTotalTestsRun(Util.getInt(json, "totalTestsRun"));
-            summary.setThreads(Util.getInt(json, "threads"));*/
 
             list.add(summary);
         }

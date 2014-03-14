@@ -22,7 +22,7 @@ public class RunResultDaoTest {
     @Test
     public void testSave() throws Exception {
 
-        BasicRunResult runResult = new BasicRunResult(0, 0, 0, 0);
+        BasicRunResult runResult = new BasicRunResult("runId", 0, 0, 0, 0);
 
         boolean created = dao.save(runResult);
 
@@ -34,9 +34,9 @@ public class RunResultDaoTest {
 
         List<RunResult> list = dao.getAll();
 
-/*        for (RunResult r : list) {
+        for (RunResult r : list) {
             System.out.println(r);
-        }*/
+        }
 
         System.out.println("count: " + list.size());
     }

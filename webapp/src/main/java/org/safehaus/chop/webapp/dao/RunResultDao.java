@@ -31,6 +31,7 @@ public class RunResultDao extends Dao<RunResult> {
                 .setSource(
                         jsonBuilder()
                                 .startObject()
+                                .field("runId", runResult.getRunId())
                                 .field("runCount", runResult.getRunCount())
                                 .field("runTime", runResult.getRunTime())
                                 .field("ignoreCount", runResult.getIgnoreCount())
@@ -44,25 +45,28 @@ public class RunResultDao extends Dao<RunResult> {
     }
 
     public List<RunResult> getAll() {
+
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("runResult")
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-//        System.out.println(response);
+        System.out.println(response);
 
         ArrayList<RunResult> list = new ArrayList<RunResult>();
 
         for (SearchHit hit : response.getHits().hits()) {
 
-            BasicRunResult runResult = new BasicRunResult(0, 0, 0, 0);
             Map<String, Object> json = hit.getSource();
 
-            runResult.setRunCount(Util.getInt(json, "runCount"));
-            runResult.setRunTime(Util.getInt(json, "runTime"));
-            runResult.setIgnoreCount(Util.getInt(json, "ignoreCount"));
-            runResult.setFailureCount(Util.getInt(json, "failureCount"));
+            BasicRunResult runResult = new BasicRunResult(
+                    Util.getString(json, "runId"),
+                    Util.getInt(json, "runCount"),
+                    Util.getInt(json, "runTime"),
+                    Util.getInt(json, "ignoreCount"),
+                    Util.getInt(json, "failureCount")
+            );
 
             list.add(runResult);
         }

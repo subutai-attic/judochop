@@ -37,10 +37,12 @@ public class CommitDaoTest {
     @Test
     public void testGetAll() throws Exception {
 
-        List<Commit> commits = commitDao.getAll();
+        List<Commit> list = commitDao.getAll();
 
-        for (Commit commit : commits) {
+        for (Commit commit : list) {
             System.out.println(commit);
         }
+
+        System.out.println("count: " + list.size());
     }
 }

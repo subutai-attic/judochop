@@ -38,6 +38,8 @@ public class SummaryDaoTest {
         for (Summary s : list) {
             System.out.println(s);
         }
+
+        System.out.println("count: " + list.size());
     }
 
 }

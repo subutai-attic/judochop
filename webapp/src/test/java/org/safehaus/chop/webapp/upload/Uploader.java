@@ -58,10 +58,10 @@ public class Uploader {
         String runId = saveRun(json, file);
 
         saveSummary(json, runId);
-//        saveRunResults(file);
+        saveRunResults(file, runId);
     }
 
-    private void saveRunResults(File file) throws Exception {
+    private void saveRunResults(File file, String runId) throws Exception {
 
         String resultsFileName = file.getAbsolutePath().replace("summary", "results");
         JSONObject json = FileUtil.readJson(resultsFileName);
@@ -77,6 +77,7 @@ public class Uploader {
             JSONObject jsonResult = iterator.next();
 
             BasicRunResult runResult = new BasicRunResult(
+                    runId,
                     Util.getInt(jsonResult, "runCount"),
                     Util.getInt(jsonResult, "runTime"),
                     Util.getInt(jsonResult, "ignoreCount"),

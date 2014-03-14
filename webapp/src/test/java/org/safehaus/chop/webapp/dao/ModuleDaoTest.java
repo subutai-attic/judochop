@@ -40,11 +40,13 @@ public class ModuleDaoTest {
     @Test
     public void testGetAll() throws Exception {
 
-        List<Module> modules = moduleDao.getAll();
+        List<Module> list = moduleDao.getAll();
 
-        for (Module m : modules) {
+        for (Module m : list) {
             System.out.println(m);
         }
+
+        System.out.println("count: " + list.size());
     }
 
     @Test
