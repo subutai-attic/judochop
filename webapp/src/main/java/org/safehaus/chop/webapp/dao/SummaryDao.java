@@ -7,6 +7,7 @@ import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.webapp.dao.model.BasicSummary;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,19 @@ public class SummaryDao extends Dao<Summary> {
                                 .field("chopType", summary.getChopType())
                                 .field("iterations", summary.getIterations())
                                 .field("totalTestsRun", summary.getTotalTestsRun())
+                                .field("threads", summary.getThreads())
+                                .field("delay", summary.getDelay())
+                                .field("time", summary.getTime())
+                                .field("actualTime", summary.getActualTime())
+                                .field("minTime", summary.getMinTime())
+                                .field("maxTime", summary.getMaxTime())
+                                .field("avgTime", summary.getAvgTime())
+                                .field("failures", summary.getFailures())
+                                .field("ignores", summary.getIgnores())
+                                .field("saturate", summary.getSaturate())
+                                // Error in ElasticSearch while saving Long
+                                //.field("startTime", summary.getStartTime())
+                                //.field("stopTime", summary.getStopTime())
                                 .endObject()
                 )
                 .execute()
@@ -42,6 +56,7 @@ public class SummaryDao extends Dao<Summary> {
     }
 
     public List<Summary> getAll() {
+
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("summary")
@@ -55,11 +70,12 @@ public class SummaryDao extends Dao<Summary> {
         for (SearchHit hit : response.getHits().hits()) {
 
             BasicSummary summary = new BasicSummary(hit.getId());
-            Map<String, Object> json = hit.getSource();
+            summary.copyJson(hit.getSource());
 
-            summary.setChopType((String) json.get("chopType"));
-//            summary.setIterations((Integer) json.get("iterations"));
-//            summary.setTotalTestsRun((Integer) json.get("totalTestsRun"));
+            /*summary.setChopType(Util.getString(json, "chopType"));
+            summary.setIterations(Util.getInt(json, "iterations"));
+            summary.setTotalTestsRun(Util.getInt(json, "totalTestsRun"));
+            summary.setThreads(Util.getInt(json, "threads"));*/
 
             list.add(summary);
         }

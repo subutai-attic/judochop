@@ -1,20 +1,23 @@
 package org.safehaus.chop.webapp.upload;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
-public class FileReader {
+import java.io.IOException;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+public class FileUtil {
 
     public static Properties readProperties(String filePath) {
 
-        Properties prop = new Properties();
+        Properties props = new Properties();
         InputStream input = null;
 
         try {
             input = new FileInputStream("d:\\temp\\chop-data\\perftest-bucket-2\\tests\\2c6e5647\\project.properties");
-            prop.load(input);
+            props.load(input);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -27,6 +30,21 @@ public class FileReader {
             }
         }
 
-        return prop;
+        return props;
     }
+
+    public static JSONObject readJson(File file) {
+
+        JSONObject json = null;
+
+        try {
+            Object obj = new JSONParser().parse(new FileReader(file.getAbsolutePath()));
+            json = (JSONObject) obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
 }

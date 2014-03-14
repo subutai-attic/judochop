@@ -25,16 +25,16 @@ public class ModuleDaoTest {
     public void save() throws Exception {
 
         Module module = new BasicModule(
-                "org.apache.usergrid",
-                "collection",
-                "1.0-SNAPSHOT",
-                "https://github.com/usergrid/usergrid.git",
-                "org.apache.usergrid"
+                "org.apache.usergrid", // groupId
+                "collection", // artifactId
+                "1.0-SNAPSHOT", // version
+                "https://github.com/usergrid/usergrid.git", // vcsRepoUrl
+                "org.apache.usergrid" // testPackageBase
         );
 
         boolean created = moduleDao.save(module);
 
-        System.out.println(created);
+        System.out.println(created + ": " + module);
     }
 
     @Test

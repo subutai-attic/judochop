@@ -43,15 +43,6 @@ public class BasicRun implements Run {
         return testName;
     }
 
-    private static String createId(String commitId, String runner, int runNumber, String testName) {
-        return "" + new HashCodeBuilder()
-                .append(commitId)
-                .append(runner)
-                .append(runNumber)
-                .append(testName)
-                .toHashCode();
-    }
-
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
@@ -60,5 +51,14 @@ public class BasicRun implements Run {
                 .append("runNumber", runNumber)
                 .append("testName", testName)
                 .toString();
+    }
+
+    private static String createId(String commitId, String runner, int runNumber, String testName) {
+        return "" + new HashCodeBuilder()
+                .append(commitId)
+                .append(runner)
+                .append(runNumber)
+                .append(testName)
+                .toHashCode();
     }
 }

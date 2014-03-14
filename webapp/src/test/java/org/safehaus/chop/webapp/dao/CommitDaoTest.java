@@ -22,14 +22,14 @@ public class CommitDaoTest {
     public void save() throws Exception {
 
         Commit commit = new BasicCommit(
-                "2c6e7e4863d57c9f69d32829ee3acaaee3635647",
-                "1168044208",
-                "742e2a76a6ba161f9efb87ce58a9187e",
-                new Date()
+                "cc471b502aca2791c3a068f93d15b79ff6b7b827", // commitId
+                "1168044208", // moduleId
+                "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
+                new Date() // createDate
         );
 
         boolean created = commitDao.save(commit);
-        System.out.println(created);
+        System.out.println(created + ": " + commit);
     }
 
     @Test

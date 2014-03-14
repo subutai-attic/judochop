@@ -25,10 +25,10 @@ public class RunDaoTest {
     public void testSave() throws Exception {
 
         BasicRun run = new BasicRun(
-                "testCommitId",
-                "testRunner",
-                1,
-                "testName"
+                "testCommitId", // commitId
+                "testRunner", // runner
+                1, // runNumber
+                "testName" // testName
         );
 
         boolean created = runDao.save(run);

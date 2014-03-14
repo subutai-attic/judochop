@@ -12,7 +12,7 @@ public class CommitFileReader {
 
     public static Commit read(String filePath) throws Exception {
 
-        Properties props = FileReader.readProperties(filePath);
+        Properties props = FileUtil.readProperties(filePath);
 
         return new BasicCommit(
                 props.getProperty("git.uuid"),
