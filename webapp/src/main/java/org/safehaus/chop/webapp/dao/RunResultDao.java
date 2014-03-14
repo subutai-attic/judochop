@@ -7,6 +7,7 @@ import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.RunResult;
 import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class RunResultDao extends Dao<RunResult> {
 
-    private static final int MAX_RESULT_SIZE = 10000;
+    private static final int MAX_RESULT_SIZE = 1000000;
 
     @Inject
     public RunResultDao(ElasticSearchClient elasticSearchClient) {
@@ -26,7 +27,7 @@ public class RunResultDao extends Dao<RunResult> {
     public boolean save(RunResult runResult) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "runResult", runResult.getRunId())
+                .prepareIndex("modules", "runResult")
                 .setSource(
                         jsonBuilder()
                                 .startObject()
@@ -49,19 +50,19 @@ public class RunResultDao extends Dao<RunResult> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        System.out.println(response);
+//        System.out.println(response);
 
         ArrayList<RunResult> list = new ArrayList<RunResult>();
 
         for (SearchHit hit : response.getHits().hits()) {
 
-            BasicRunResult runResult = new BasicRunResult(hit.getId());
+            BasicRunResult runResult = new BasicRunResult(0, 0, 0, 0);
             Map<String, Object> json = hit.getSource();
 
-            runResult.setRunCount((Integer) json.get("runCount"));
-            runResult.setRunTime((Integer) json.get("runTime"));
-            runResult.setIgnoreCount((Integer) json.get("ignoreCount"));
-            runResult.setFailureCount((Integer) json.get("failureCount"));
+            runResult.setRunCount(Util.getInt(json, "runCount"));
+            runResult.setRunTime(Util.getInt(json, "runTime"));
+            runResult.setIgnoreCount(Util.getInt(json, "ignoreCount"));
+            runResult.setFailureCount(Util.getInt(json, "failureCount"));
 
             list.add(runResult);
         }

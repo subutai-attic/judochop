@@ -33,12 +33,12 @@ public class FileUtil {
         return props;
     }
 
-    public static JSONObject readJson(File file) {
+    public static JSONObject readJson(String filePath) {
 
         JSONObject json = null;
 
         try {
-            Object obj = new JSONParser().parse(new FileReader(file.getAbsolutePath()));
+            Object obj = new JSONParser().parse(new FileReader(filePath));
             json = (JSONObject) obj;
         } catch (Exception e) {
             e.printStackTrace();

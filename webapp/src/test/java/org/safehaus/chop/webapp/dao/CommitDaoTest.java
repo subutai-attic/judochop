@@ -22,7 +22,9 @@ public class CommitDaoTest {
     public void save() throws Exception {
 
         Commit commit = new BasicCommit(
-                "cc471b502aca2791c3a068f93d15b79ff6b7b827", // commitId
+                // commitId
+//                "cc471b502aca2791c3a068f93d15b79ff6b7b827",
+                "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e",
                 "1168044208", // moduleId
                 "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
                 new Date() // createDate

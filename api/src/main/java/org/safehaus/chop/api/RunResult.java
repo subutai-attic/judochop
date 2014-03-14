@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public interface RunResult {
 
-    String getRunId();
-
     int getRunCount();
 
     int getRunTime();

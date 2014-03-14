@@ -46,9 +46,9 @@ public class BasicRun implements Run {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
+                .append("runNumber", runNumber)
                 .append("commitId", commitId)
                 .append("runner", runner)
-                .append("runNumber", runNumber)
                 .append("testName", testName)
                 .toString();
     }
