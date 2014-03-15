@@ -9,6 +9,7 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
+import org.safehaus.chop.webapp.service.calc.OverviewAvg;
 import org.safehaus.chop.webapp.service.calc.OverviewCollector;
 import org.safehaus.chop.webapp.view.chart.format.OverviewFormat;
 
@@ -25,20 +26,13 @@ public class CalcTest {
     private RunDao runDao;
 
     @Test
-    public void test3() throws Exception {
+    public void test() throws Exception {
 
         OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
         List<Run> list = runDao.getAll();
-        int i = 0;
 
         for (Run run : list) {
-//            System.out.println(run);
             collector.collect(run);
-
-            i++;
-            if (i == 3) {
-//                break;
-            }
         }
 
         System.out.println(collector);
@@ -47,6 +41,20 @@ public class CalcTest {
 
         System.out.println( format.getCategories() );
         System.out.println(format.getSeries());
+    }
+
+    @Test
+    public void test2() throws Exception {
+
+        OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
+        List<Run> list = runDao.getAll();
+
+        for (Run run : list) {
+            collector.collect(run);
+        }
+
+        OverviewAvg.get(collector.getValues());
+
     }
 
 }

@@ -14,6 +14,11 @@ public class Metric {
         count++;
     }
 
+    public void merge(Metric metric) {
+        value += metric.getValue();
+        count++;
+    }
+
     public double getValue() {
         return value / count;
     }
