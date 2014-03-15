@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.calc;
 
 import com.google.inject.Inject;
+import org.json.simple.JSONObject;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.calc.MetricCollector;
 import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.view.chart.format.OverviewFormat;
 
 import java.util.*;
 
@@ -21,7 +23,7 @@ public class CalcTest {
     @Inject
     private RunDao runDao;
 
-    @Test
+//    @Test
     public void test() throws Exception {
 
         List<Run> list = runDao.getAll();
@@ -36,10 +38,16 @@ public class CalcTest {
 
             i++;
             if (i == 3) {
-//                break;
+                break;
             }
         }
 
         System.out.println(collector);
     }
+
+    @Test
+    public void test2() throws Exception {
+        System.out.println( OverviewFormat.get() );
+    }
+
 }

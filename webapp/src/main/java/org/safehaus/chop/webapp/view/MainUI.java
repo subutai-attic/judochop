@@ -1,18 +1,14 @@
 package org.safehaus.chop.webapp.view;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import com.vaadin.annotations.Title;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
+import org.safehaus.chop.webapp.view.chart.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.format.OverviewFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")
@@ -79,7 +75,9 @@ public class MainUI extends UI {
     private void loadScripts() {
         JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
-        JavaScript.getCurrent().execute( FileUtil.getContent("js/chart.js") );
+
+//        JavaScript.getCurrent().execute( OverviewFormat.get() );
+        JavaScript.getCurrent().execute( OverviewChart.get() );
     }
 
 }

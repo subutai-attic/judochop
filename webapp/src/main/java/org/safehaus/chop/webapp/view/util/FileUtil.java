@@ -44,7 +44,6 @@ public class FileUtil {
         // Needed an instance to get URL, i.e. the static way doesn't work: FileUtil.class.getClass().
         URL url = new FileUtil().getClass().getProtectionDomain().getCodeSource().getLocation();
         classLoader = new URLClassLoader(new URL[]{ url }, Thread.currentThread().getContextClassLoader());
-        System.out.println("classLoader: " + classLoader);
 
         return classLoader;
     }
