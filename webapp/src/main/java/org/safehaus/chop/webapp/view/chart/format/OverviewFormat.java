@@ -46,6 +46,7 @@ public class OverviewFormat {
         }
 
         Map<String, Map<Integer, Metric>> values = collector.getValues();
+
         JSONArray arr = new JSONArray();
 
         addSeries(arr, values);

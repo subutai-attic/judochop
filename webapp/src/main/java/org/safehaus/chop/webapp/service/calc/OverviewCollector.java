@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class OverviewCollector {
 
-    // <commitId>,  <runNumber, metric>
+    // < <commitId>, <runNumber, metric> >
     private final Map<String, Map<Integer, Metric>> values = new LinkedHashMap<String, Map<Integer, Metric>>();
 
     public OverviewCollector(List<Commit> commits) {
@@ -21,10 +21,6 @@ public class OverviewCollector {
     }
 
     public void collect(Run run) {
-        getMetric(run).merge(run);
-    }
-
-    private Metric getMetric(Run run) {
         Map<Integer, Metric> runs = values.get( run.getCommitId() );
         Metric metric = runs.get(run.getRunNumber());
 
@@ -33,7 +29,7 @@ public class OverviewCollector {
             runs.put(run.getRunNumber(), metric);
         }
 
-        return metric;
+        metric.merge(run);
     }
 
     public Map<String, Map<Integer, Metric>> getValues() {
