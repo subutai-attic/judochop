@@ -1,6 +1,7 @@
 package org.safehaus.chop.runner;
 
 
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.runner.drivers.IterationTracker;
 import org.safehaus.chop.runner.drivers.TimeTracker;
 import org.safehaus.chop.runner.drivers.Tracker;
@@ -43,6 +44,10 @@ public class Summary implements org.safehaus.chop.api.Summary {
         this.runNumber = runNumber;
     }
 
+    @Override
+    public String getRunId() {
+        return null;
+    }
 
     public void setIterationTracker( IterationTracker iterationTracker ) {
         iterations = iterationTracker.getIterationChop().iterations();
@@ -81,7 +86,6 @@ public class Summary implements org.safehaus.chop.api.Summary {
     }
 
 
-    @Override
     @JsonProperty
     public int getRunNumber() {
         return runNumber;
@@ -102,7 +106,6 @@ public class Summary implements org.safehaus.chop.api.Summary {
     }
 
 
-    @Override
     @JsonProperty
     public String getTestName() {
         return testName;
@@ -160,7 +163,7 @@ public class Summary implements org.safehaus.chop.api.Summary {
 
     @Override
     @JsonProperty
-    public long getMeanTime() {
+    public long getAvgTime() {
         return meanTime;
     }
 

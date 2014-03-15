@@ -6,12 +6,13 @@ import java.util.UUID;
 
 
 /**
- * A specific commit version of a Maven Module under test.
+ * A specific commit of a Maven Module under test.
  */
-public interface Version {
-    UUID getCommitId();
+public interface Commit {
 
-    Module getModule();
+    String getId();
+
+    String getModuleId();
 
     String getWarMd5();
 

@@ -8,15 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * A summary of a single chop run.
  */
 public interface Summary {
-    /**
-     * Gets the run number. Each start that is issued against the same
-     * Runner will increment the run number. The results of each run
-     * are kept separate with a path component being the run number.
-     *
-     * @return the run number
-     */
-    @JsonProperty
-    int getRunNumber();
+
+    String getRunId();
 
     /**
      * Gets the number of iterations used in an IterationChop if the
@@ -39,13 +32,7 @@ public interface Summary {
     @JsonProperty
     long getTotalTestsRun();
 
-    /**
-     * Gets the fully qualified name of the Class that was chopped.
-     *
-     * @return the name of the chopped test
-     */
-    @JsonProperty
-    String getTestName();
+
 
     /**
      * Gets the chop type used to generate this summary information, either
@@ -113,10 +100,10 @@ public interface Summary {
      * Gets the mean time it took for a test iteration to run in a TimeChop or an
      * IterationChop.
      *
-     * @return the mean time it took for a test iteration to run
+     * @return the avg time it took for a test iteration to run
      */
     @JsonProperty
-    long getMeanTime();
+    long getAvgTime();
 
     /**
      * Gets the number of JUnit test failures that occurred during the chop.

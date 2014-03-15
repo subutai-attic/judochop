@@ -16,6 +16,10 @@
     archive performance tests.
   </description>
 
+    <properties>
+        <!--<jetty.plugin.version>9.1.2.v20140210</jetty.plugin.version>-->
+        <vaadin.version>7.0.0</vaadin.version>
+    </properties>
   <build>
     <finalName>${project.artifactId}</finalName>
 
@@ -37,13 +41,6 @@
           <include>**/*.properties</include>
         </includes>
       </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/test.war</include>
-        </includes>
-      </testResource>
     </testResources>
 
     <plugins>
@@ -52,17 +49,17 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.16</version>
         <configuration>
-          <systemPropertyVariables>
-            <classes.base>${project.build.outputDirectory}</classes.base>
-          </systemPropertyVariables>
+            <systemPropertyVariables>
+                <classes.base>${project.build.outputDirectory}</classes.base>
+            </systemPropertyVariables>
+            <skipTests>true</skipTests>
         </configuration>
       </plugin>
-
       <!--
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
+        <version>${jetty.plugin.version}</version>
         <configuration>
           <systemProperties>
             <systemProperty>
@@ -121,11 +118,11 @@
           </archive>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 
   <dependencies>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-api</artifactId>
@@ -138,17 +135,17 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
+    <!--<dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-client</artifactId>
       <version>${project.version}</version>
-    </dependency>
+    </dependency>-->
 
-    <dependency>
+    <!--<dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-amazon</artifactId>
       <version>${project.version}</version>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>org.safehaus.guicyfig</groupId>
@@ -166,18 +163,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
     </dependency>
 
     <dependency>
@@ -188,6 +175,11 @@
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
     </dependency>
 
     <dependency>
@@ -265,17 +257,51 @@
       <artifactId>vaadin-themes</artifactId>
     </dependency>
 
-    <!-- Test Dependencies -->
-
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <!--<version>0.90.3</version>-->
+      <version>1.0.0</version>
     </dependency>
 
     <dependency>
-      <groupId>org.jukito</groupId>
-      <artifactId>jukito</artifactId>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
     </dependency>
+
+    <dependency>
+        <groupId>org.jukito</groupId>
+        <artifactId>jukito</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
+        <version>${vaadin.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-client-compiled</artifactId>
+        <version>${vaadin.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-client</artifactId>
+        <version>${vaadin.version}</version>
+        <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-themes</artifactId>
+        <version>${vaadin.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.googlecode.json-simple</groupId>
+        <artifactId>json-simple</artifactId>
+        <version>1.1</version>
+    </dependency>
+
   </dependencies>
 </project>
 

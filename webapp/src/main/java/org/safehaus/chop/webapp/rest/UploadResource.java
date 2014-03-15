@@ -56,7 +56,6 @@ public class UploadResource {
     @Inject
     RestFig config;
 
-
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     public Response upload(
@@ -72,7 +71,6 @@ public class UploadResource {
 
         return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
     }
-
 
 
     private void writeToFile( InputStream in, String fileLocation )
