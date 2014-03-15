@@ -1,23 +1,46 @@
 package org.safehaus.chop.webapp.view.chart.format;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.safehaus.chop.webapp.service.calc.OverviewCollector;
 import org.safehaus.chop.webapp.view.util.FileUtil;
+
+import java.util.Set;
 
 public class OverviewFormat {
 
-    public static String get() {
+    private OverviewCollector collector;
+    private String categories;
 
-        String s = FileUtil.getContent("js/overview-chart.js");
-//        s = s.replace("$categories", "'7072b19e', 'cc47b827'");
-        s = s.replace("$categories", "'7072b19e'");
-
-        String series = FileUtil.getContent("js/series.js");
-//        s = s.replace("$series", series);
-        s = s.replace("$series", getData());
-
-        return s;
+    public OverviewFormat(OverviewCollector collector) {
+        this.collector = collector;
     }
+
+    public String getCategories() {
+
+        if (categories != null) {
+            return categories;
+        }
+
+        categories = "";
+        Set<String> commits = collector.getValues().keySet();
+
+        for (String commitId : commits) {
+            if (!categories.isEmpty()) {
+                categories += ", ";
+            }
+
+            categories += String.format("'%s'", StringUtils.abbreviate(commitId, 10));
+        }
+
+        return categories;
+    }
+
+    public String getSeries() {
+        return getData();
+    }
+
 
     public static String getData() {
 
@@ -26,20 +49,6 @@ public class OverviewFormat {
         json.put("name", "7072b19e");
         json.put("dashStyle", "shortdot");
         json.put("lineColor", "blue");
-
-/*        JSONObject data = new JSONObject();
-        data.put("x", 0);
-        data.put("y", 10);
-
-        JSONObject marker = new JSONObject();
-        marker.put("radius", 4);
-        marker.put("fillColor", "red");
-
-        JSONObject info = new JSONObject();
-        info.put("chopType", "IterationChop");
-
-        data.put("marker", marker);
-        data.put("info", info);*/
 
         JSONArray arr = new JSONArray();
         arr.add(getData(10));

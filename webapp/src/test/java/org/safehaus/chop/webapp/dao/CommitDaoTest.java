@@ -38,7 +38,7 @@ public class CommitDaoTest {
     @Test
     public void testGetAll() throws Exception {
 
-        List<Commit> list = commitDao.getAll();
+        List<Commit> list = commitDao.getByModule("1168044208");
 
         for (Commit commit : list) {
             System.out.println(commit);

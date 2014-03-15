@@ -3,6 +3,7 @@ package org.safehaus.chop.webapp.dao;
 import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class CommitDao extends Dao<Commit> {
 
@@ -43,15 +46,17 @@ public class CommitDao extends Dao<Commit> {
         return response.isCreated();
     }
 
-    public List<Commit> getAll() throws Exception {
+    public List<Commit> getByModule(String moduleId) throws Exception {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("commit")
+                .setQuery( termQuery("moduleId", moduleId) )
+                .addSort( fieldSort("createTime") )
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        System.out.println(response);
+//        System.out.println(response);
 
         ArrayList<Commit> list = new ArrayList<Commit>();
 

@@ -76,8 +76,11 @@ public class MainUI extends UI {
         JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
         JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
 
-//        JavaScript.getCurrent().execute( OverviewFormat.get() );
-        JavaScript.getCurrent().execute( OverviewChart.get() );
+        try {
+            JavaScript.getCurrent().execute( new OverviewChart().get() );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
