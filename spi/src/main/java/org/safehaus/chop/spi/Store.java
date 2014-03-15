@@ -52,6 +52,9 @@ public interface Store {
     Map<String, Runner> getRunners( Runner runner );
 
     /**
+     * @todo - not needed for 2.0 since we do not need to download results into
+     * the web UI with a maven results goal.
+     *
      * Downloads a file from the store by key, and places it in a temporary file returning
      * the file. Use this to download big things like war files or results.
      *
@@ -64,6 +67,9 @@ public interface Store {
     File download( File tempDir, String runnerWar ) throws Exception;
 
     /**
+     * @todo - not needed for 2.0 since we do not need to download results into
+     * the web UI with a maven results goal.
+     *
      * Downloads files from the store as a folder structure under the specified
      * results directory with the top most folder being the bucket name.
      *
@@ -75,6 +81,8 @@ public interface Store {
     void download( File resultsDirectory, @Nullable String prefix, FilenameFilter filter ) throws Exception;
 
     /**
+     * @todo this just uploads results into the Web UI
+     *
      * Stores the summary and results file for a chop test run into the store.
      *
      * @param project the project associated with the run
@@ -85,6 +93,8 @@ public interface Store {
     void store( Project project, Summary summary, File resultsFile, Class<?> testClass );
 
     /**
+     * @todo this is replaced by the project manager which handles project registration
+     *
      * Stores the project test information.
      *
      * @param project the Project object to be serialized and stored
@@ -92,6 +102,8 @@ public interface Store {
     void store( Project project );
 
     /**
+     * @todo this is replaced by the project manager which handles project registration
+     *
      * Tries to load a Project file based on prepackaged runner metadata: the runner's
      * loadKey. If it cannot find it, null is returned.
      *
@@ -101,6 +113,8 @@ public interface Store {
     Project getProject( String runnerWar );
 
     /**
+     * @todo this is handled by the runner registry
+     *
      * Registers this runner instance by adding its instance information into the
      * store as a properties file using the following key format:
      *
@@ -111,6 +125,8 @@ public interface Store {
     void register( Runner runner );
 
     /**
+     * @todo this is handled by the runner registry
+     *
      * Removes this Runner's registration.
      *
      * @param runner the runners information
@@ -118,6 +134,8 @@ public interface Store {
     void unregister( Runner runner );
 
     /**
+     * @todo this is replaced by the project manager which handles project registration
+     *
      * Scans for projects with test information under the bucket as:
      * </p>
      * "$TESTS_PATH/.*\/$PROJECT_FILE
@@ -127,11 +145,15 @@ public interface Store {
     Set<Project> getProjects() throws IOException;
 
     /**
+     * @todo this is replaced by the project manager which handles project registration
+     *
      * Deletes all the projects in the store.
      */
     void deleteProjects();
 
     /**
+     * @todo this is handled by the runner registry
+     *
      * Deletes all the runner registrations outside of the provided collection.
      *
      * @param activeRunners the hostnames of the active runners that should NOT be deleted
@@ -139,6 +161,8 @@ public interface Store {
     void deleteGhostRunners( Set<String> activeRunners );
 
     /**
+     * @todo this is handled by the run manager
+     *
      * Checks to see if a runner has deposited run summary information for a chopped test in
      * the store.
      *
@@ -151,6 +175,8 @@ public interface Store {
     boolean hasCompleted( Runner runner, Project project, int runNumber, Class<?> testClass );
 
     /**
+     * @todo this is handled by the run manager
+     *
      * Checks the store to find the next available run number starting at 1. This method
      * needs to be used with extreme caution. It should only be used when starting up a
      * runner's controller. The intention is to be able to enable Judo Chop to restart
