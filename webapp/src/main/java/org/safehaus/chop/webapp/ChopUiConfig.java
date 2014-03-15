@@ -25,6 +25,7 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
         }
 
         injector = Guice.createInjector( new ChopUiModule() );
+        InjectorFactory.setInjector(injector);
         return injector;
     }
 

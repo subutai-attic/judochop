@@ -1,6 +1,10 @@
 package org.safehaus.chop.webapp.view.util;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.VaadinServletService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -15,7 +19,7 @@ public class VaadinServlet extends com.vaadin.server.VaadinServlet {
     private static final Hashtable<String, String> PARAMS = getInitParams();
 
     @Override
-    public void init(final ServletConfig servletConfig) throws ServletException {
+    public void init(ServletConfig servletConfig) throws ServletException {
         super.init(getServletConfig(servletConfig));
     }
 

@@ -60,9 +60,9 @@ public class CommitDao extends Dao<Commit> {
 
             BasicCommit commit = new BasicCommit(
                     hit.getId(),
-                    (String) json.get("moduleId"),
-                    (String) json.get("warMd5"),
-                    Util.toDate((String) json.get("createTime"))
+                    Util.getString(json, "moduleId"),
+                    Util.getString(json, "warMd5"),
+                    Util.toDate(Util.getString(json, "createTime"))
             );
 
             list.add(commit);

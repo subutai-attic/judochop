@@ -1,5 +1,8 @@
 package org.safehaus.chop.webapp.view;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.vaadin.annotations.Title;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
@@ -7,13 +10,18 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import org.safehaus.chop.webapp.dao.ModuleDao;
+import org.safehaus.chop.webapp.service.InjectorFactory;
+import org.safehaus.chop.webapp.service.ModuleService;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")
 public class MainUI extends UI {
 
+    private ModuleService moduleService = InjectorFactory.getInstance(ModuleService.class);
+
 	protected void init(VaadinRequest request) {
-		initLayout();
+        initLayout();
 	}
 
 	private void initLayout() {
@@ -56,11 +64,16 @@ public class MainUI extends UI {
 
         ttable.addListener(new ItemClickEvent.ItemClickListener() {
             public void itemClick(ItemClickEvent event) {
-                System.out.println("clicked: " + event.getItemId() + ", " + event.getPropertyId());
+//                System.out.println("clicked: " + event.getItemId() + ", " + event.getPropertyId());
+                itemClicked(event);
             }
         });
 
         return ttable;
+    }
+
+    private void itemClicked(ItemClickEvent event) {
+        System.out.println( moduleService.get("1168044208") );
     }
 
     private void loadScripts() {

@@ -7,6 +7,7 @@ import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Module;
 import org.safehaus.chop.webapp.dao.model.BasicModule;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.*;
 
@@ -62,11 +63,11 @@ public class ModuleDao extends Dao<Module> {
         Map<String, Object> json = hit.getSource();
 
         return new BasicModule(
-                (String) json.get("groupId"),
-                (String) json.get("artifactId"),
-                (String) json.get("version"),
-                (String) json.get("vcsRepoUrl"),
-                (String) json.get("testPackageBase")
+                Util.getString(json, "groupId"),
+                Util.getString(json, "artifactId"),
+                Util.getString(json, "version"),
+                Util.getString(json, "vcsRepoUrl"),
+                Util.getString(json, "testPackageBase")
         );
     }
 

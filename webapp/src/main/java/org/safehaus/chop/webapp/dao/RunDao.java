@@ -6,8 +6,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.dao.model.BasicSummary;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,22 @@ public class RunDao extends Dao<Run> {
                                 .field("runner", run.getRunner())
                                 .field("runNumber", run.getRunNumber())
                                 .field("testName", run.getTestName())
+                                .field("chopType", run.getChopType())
+                                .field("iterations", run.getIterations())
+                                .field("totalTestsRun", run.getTotalTestsRun())
+                                .field("threads", run.getThreads())
+                                .field("delay", run.getDelay())
+                                .field("time", run.getTime())
+                                .field("actualTime", run.getActualTime())
+                                .field("minTime", run.getMinTime())
+                                .field("maxTime", run.getMaxTime())
+                                .field("meanTime", run.getAvgTime())
+                                .field("failures", run.getFailures())
+                                .field("ignores", run.getIgnores())
+                                .field("saturate", run.getSaturate())
+                                // Error in ElasticSearch while saving Long - tries to store as Integer
+                                //.field("startTime", run.getStartTime())
+                                //.field("stopTime", run.getStopTime())
                                 .endObject()
                 )
                 .execute()
@@ -51,7 +67,7 @@ public class RunDao extends Dao<Run> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        System.out.println(response);
+//        System.out.println(response);
 
         ArrayList<Run> list = new ArrayList<Run>();
 
@@ -59,11 +75,13 @@ public class RunDao extends Dao<Run> {
             Map<String, Object> json = hit.getSource();
 
             BasicRun run = new BasicRun(
-                    (String) json.get("commitId"),
-                    (String) json.get("runner"),
-                    (Integer) json.get("runNumber"),
-                    (String) json.get("testName")
+                    Util.getString(json, "commitId"),
+                    Util.getString(json, "runner"),
+                    Util.getInt(json, "runNumber"),
+                    Util.getString(json, "testName")
             );
+
+            run.copyJson(hit.getSource());
 
             list.add(run);
         }
