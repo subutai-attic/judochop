@@ -32,14 +32,12 @@ public class CalcTest {
         int i = 0;
 
         for (Run run : list) {
-
-            System.out.println(run);
-
+//            System.out.println(run);
             collector.collect(run);
 
             i++;
             if (i == 3) {
-                break;
+//                break;
             }
         }
 
@@ -49,17 +47,6 @@ public class CalcTest {
 
         System.out.println( format.getCategories() );
         System.out.println(format.getSeries());
-    }
-
-    @Test
-    public void test() throws Exception {
-
-        HashSet<String> set = new HashSet<String>();
-
-        set.add("a");
-        set.add("b");
-
-        System.out.println(set);
     }
 
 }

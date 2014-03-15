@@ -48,8 +48,6 @@ $('#chart').highcharts({
             }
         }
     },
-    series: [$series]
-
-
+    series: $series
 });
 

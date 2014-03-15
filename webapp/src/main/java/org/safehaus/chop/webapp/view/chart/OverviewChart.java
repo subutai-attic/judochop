@@ -30,7 +30,7 @@ public class OverviewChart {
 
             i++;
             if (i == 3) {
-                break;
+//                break;
             }
         }
 
@@ -39,7 +39,7 @@ public class OverviewChart {
         OverviewFormat format = new OverviewFormat(collector);
 
         String s = FileUtil.getContent("js/overview-chart.js");
-        s = s.replace("$categories", format.getCategories());
+        s = s.replace( "$categories", format.getCategories() );
         s = s.replace( "$series", format.getSeries() );
 
         return s;
