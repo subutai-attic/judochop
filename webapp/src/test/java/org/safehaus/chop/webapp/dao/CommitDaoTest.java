@@ -6,13 +6,14 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 
 import java.util.Date;
 import java.util.List;
 
 @RunWith(JukitoRunner.class)
-@UseModules(org.safehaus.chop.webapp.Module.class)
+@UseModules(ChopUiModule.class)
 public class CommitDaoTest {
 
     @Inject

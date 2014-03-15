@@ -31,6 +31,14 @@
           <include>**/*.properties</include>
         </includes>
       </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.cer</include>
+          <include>**/*.jks</include>
+        </includes>
+      </resource>
     </resources>
 
     <testResources>
@@ -55,27 +63,9 @@
             <skipTests>true</skipTests>
         </configuration>
       </plugin>
-      <!--
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.plugin.version}</version>
-        <configuration>
-          <systemProperties>
-            <systemProperty>
-              <name>log4j.configuration</name>
-              <value>file:///${project.build.testOutputDirectory}/log4j-jetty.properties</value>
-            </systemProperty>
-          </systemProperties>
-          <scanIntervalSeconds>5</scanIntervalSeconds>
-          <webApp>
-            <contextPath>/</contextPath>
-          </webApp>
-        </configuration>
-      </plugin>
-      -->
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
@@ -86,34 +76,19 @@
           </execution>
         </executions>
         <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>${project.artifactId}-${project.version}</finalName>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.safehaus.chop.webapp.Launcher</mainClass>
+              <mainClass>org.safehaus.chop.webapp.ChopUiLauncher</mainClass>
               <packageName>org.safehaus.chop.webapp</packageName>
             </manifest>
             <manifestEntries>
               <mode>development</mode>
-              <url>${pom.url}</url>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>org.safehaus.chop.webapp.Launcher</mainClass>
-              <packageName>org.safehaus.chop.webapp</packageName>
-            </manifest>
-            <manifestEntries>
-              <mode>development</mode>
-              <url>${pom.url}</url>
+              <url>${project.url}</url>
             </manifestEntries>
           </archive>
         </configuration>
@@ -265,6 +240,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.safehaus.jettyjam</groupId>
+      <artifactId>utils</artifactId>
+    </dependency>
+
+    <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
     </dependency>
@@ -272,28 +252,6 @@
     <dependency>
         <groupId>org.jukito</groupId>
         <artifactId>jukito</artifactId>
-    </dependency>
-
-    <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-server</artifactId>
-        <version>${vaadin.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client-compiled</artifactId>
-        <version>${vaadin.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client</artifactId>
-        <version>${vaadin.version}</version>
-        <!--<scope>provided</scope>-->
-    </dependency>
-    <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-themes</artifactId>
-        <version>${vaadin.version}</version>
     </dependency>
 
     <dependency>

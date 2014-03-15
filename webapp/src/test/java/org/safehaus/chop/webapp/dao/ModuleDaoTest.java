@@ -6,6 +6,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicModule;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JukitoRunner.class)
-@UseModules(org.safehaus.chop.webapp.Module.class)
+@UseModules(ChopUiModule.class)
 public class ModuleDaoTest {
 
     private static final String ID = "1168044208";

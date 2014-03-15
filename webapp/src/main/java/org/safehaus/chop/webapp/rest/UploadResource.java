@@ -44,7 +44,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * REST operation to upload (a.k.a. deploy) a project war file.
  */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
+@Produces( MediaType.TEXT_PLAIN )
 @Path( UploadResource.ENDPOINT_URL )
 public class UploadResource {
     public final static String ENDPOINT_URL = "/upload";
@@ -58,18 +58,18 @@ public class UploadResource {
 
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    public Response upload(
-            @FormDataParam( CONTENT ) InputStream in,
-            @FormDataParam( FILENAME_PARAM ) String fileName )
+    public Response upload()
+//            @FormDataParam( CONTENT ) InputStream in,
+//            @FormDataParam( FILENAME_PARAM ) String fileName )
     {
         LOG.warn( "upload called ..." );
-        LOG.info( "fileDetails = " + fileName );
-
-        // handle the upload of the war file to some path on the file system
-        String fileLocation = /* config.getWarUploadPath() + */ fileName;
-        writeToFile( in, fileLocation );
-
-        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+//        LOG.info( "fileDetails = " + fileName );
+//
+//        // handle the upload of the war file to some path on the file system
+//        String fileLocation = /* config.getWarUploadPath() + */ fileName;
+//        writeToFile( in, fileLocation );
+//
+        return Response.status( Response.Status.CREATED ).entity( "foo" ).build();
     }
 
 

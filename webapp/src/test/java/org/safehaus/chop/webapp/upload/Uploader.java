@@ -8,6 +8,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.RunResultDao;
 import org.safehaus.chop.webapp.dao.SummaryDao;
@@ -20,7 +21,7 @@ import java.io.File;
 import java.util.Iterator;
 
 @RunWith(JukitoRunner.class)
-@UseModules(org.safehaus.chop.webapp.Module.class)
+@UseModules(ChopUiModule.class)
 public class Uploader {
 
     private static final String DATA_DIR = "D:\\temp\\chop-data-upload";

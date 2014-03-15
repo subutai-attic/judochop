@@ -17,14 +17,15 @@ import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.servlet.ServletModule;
+import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 
-public class Module extends ServletModule {
+public class ChopUiModule extends JerseyServletModule {
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ServletFig.class, RestFig.class ) );
+        install( new GuicyFigModule( ChopUiFig.class, RestFig.class ) );
 //        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
@@ -37,7 +38,7 @@ public class Module extends ServletModule {
         bind( TestGetResource.class ).asEagerSingleton();
 
         // This should be before "/*" otherwise the vaadin servlet will not work
-        serve("/VAADIN/*").with(VaadinServlet.class);
+        serve( "/VAADIN/*" ).with( VaadinServlet.class );
 
         Map<String, String> params = new HashMap<String, String>();
         params.put( PACKAGES_KEY, getClass().getPackage().toString() );

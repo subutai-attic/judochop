@@ -38,8 +38,8 @@ import com.netflix.config.ConfigurationManager;
 
 /** ... */
 @SuppressWarnings( "UnusedDeclaration" )
-public class ServletConfig extends GuiceServletContextListener {
-    private final static Logger LOG = LoggerFactory.getLogger( ServletConfig.class );
+public class ChopUiConfig extends GuiceServletContextListener {
+    private final static Logger LOG = LoggerFactory.getLogger( ChopUiConfig.class );
     private Injector injector;
 
 
@@ -49,7 +49,7 @@ public class ServletConfig extends GuiceServletContextListener {
             return injector;
         }
 
-        injector = Guice.createInjector( new Module() );
+        injector = Guice.createInjector( new ChopUiModule() );
         return injector;
     }
 

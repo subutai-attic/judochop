@@ -6,13 +6,13 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.api.RunResult;
+import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRunResult;
-import org.safehaus.chop.webapp.dao.model.BasicSummary;
 
 import java.util.List;
 
 @RunWith(JukitoRunner.class)
-@UseModules(org.safehaus.chop.webapp.Module.class)
+@UseModules(ChopUiModule.class)
 public class RunResultDaoTest {
 
     @Inject

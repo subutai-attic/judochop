@@ -11,23 +11,23 @@ import org.safehaus.guicyfig.Key;
  * Servlet configuration information.
  */
 @FigSingleton
-public interface ServletFig extends GuicyFig {
+public interface ChopUiFig extends GuicyFig {
     String CONTEXT_PATH = "context.path";
 
-    @Key( ServletFig.CONTEXT_PATH )
+    @Key( ChopUiFig.CONTEXT_PATH )
     String getContextPath();
 
 
     String SERVER_INFO_KEY = "server.info";
 
-    @Key( ServletFig.SERVER_INFO_KEY )
+    @Key( ChopUiFig.SERVER_INFO_KEY )
     String getServerInfo();
 
 
 
     String CONTEXT_TEMPDIR_KEY = "javax.servlet.context.tempdir";
 
-    @Key( ServletFig.CONTEXT_TEMPDIR_KEY )
+    @Key( ChopUiFig.CONTEXT_TEMPDIR_KEY )
     String getContextTempDir();
 
 
@@ -38,12 +38,12 @@ public interface ServletFig extends GuicyFig {
 
     /**
      * Gets the number of times to retry recovery operations. Uses {@link
-     * ServletFig#RECOVERY_RETRY_COUNT_KEY} to access the retry count.
+     * ChopUiFig#RECOVERY_RETRY_COUNT_KEY} to access the retry count.
      *
      * @return the number of retries for recovery
      */
-    @Default( ServletFig.DEFAULT_RECOVERY_RETRY_COUNT )
-    @Key( ServletFig.RECOVERY_RETRY_COUNT_KEY )
+    @Default( ChopUiFig.DEFAULT_RECOVERY_RETRY_COUNT )
+    @Key( ChopUiFig.RECOVERY_RETRY_COUNT_KEY )
     int getRecoveryRetryCount();
 
 
@@ -54,12 +54,12 @@ public interface ServletFig extends GuicyFig {
 
     /**
      * Gets the amount of time to wait between retry operations. Uses {@link
-     * ServletFig#DELAY_RETRY_KEY} to access the recovery delay.
+     * ChopUiFig#DELAY_RETRY_KEY} to access the recovery delay.
      *
      * @return the time in milliseconds to delay between retry operations
      */
-    @Default( ServletFig.DEFAULT_DELAY_RETRY )
-    @Key( ServletFig.DELAY_RETRY_KEY )
+    @Default( ChopUiFig.DEFAULT_DELAY_RETRY )
+    @Key( ChopUiFig.DELAY_RETRY_KEY )
     long getRetryDelay();
 
 
@@ -67,12 +67,12 @@ public interface ServletFig extends GuicyFig {
     String DEFAULT_MANAGER_ENDPOINT = "http://localhost:24981/manager/text";
 
     /**
-     * Gets the Tomcat servlet manager endpoint. Uses {@link ServletFig#MANAGER_ENDPOINT_KEY}
+     * Gets the Tomcat servlet manager endpoint. Uses {@link ChopUiFig#MANAGER_ENDPOINT_KEY}
      * to access the servlet manager endpoint.
      *
      * @return the Tomcat servlet manager endpoint
      */
-    @Default( ServletFig.DEFAULT_MANAGER_ENDPOINT )
-    @Key( ServletFig.MANAGER_ENDPOINT_KEY )
+    @Default( ChopUiFig.DEFAULT_MANAGER_ENDPOINT )
+    @Key( ChopUiFig.MANAGER_ENDPOINT_KEY )
     String getManagerEndpoint();
 }
