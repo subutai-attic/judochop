@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -38,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
 
@@ -47,10 +45,10 @@ import com.sun.jersey.multipart.FormDataParam;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( DeployResource.ENDPOINT_URL )
-public class DeployResource {
+@Path( UploadResource.ENDPOINT_URL )
+public class UploadResource {
     public final static String ENDPOINT_URL = "/upload";
-    private final static Logger LOG = LoggerFactory.getLogger( DeployResource.class );
+    private final static Logger LOG = LoggerFactory.getLogger( UploadResource.class );
     public static final String FILENAME_PARAM = "file";
     public static final String CONTENT = "content";
 
@@ -61,11 +59,11 @@ public class DeployResource {
 
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    public Response deploy(
+    public Response upload(
             @FormDataParam( CONTENT ) InputStream in,
             @FormDataParam( FILENAME_PARAM ) String fileName )
     {
-        LOG.warn( "deploy called ..." );
+        LOG.warn( "upload called ..." );
         LOG.info( "fileDetails = " + fileName );
 
         // handle the upload of the war file to some path on the file system

@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.safehaus.chop.client.ChopClientModule;
-import org.safehaus.chop.webapp.rest.DeployResource;
+import org.safehaus.chop.webapp.rest.TestGetResource;
+import org.safehaus.chop.webapp.rest.UploadResource;
 import org.safehaus.chop.webapp.rest.RestFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 
@@ -34,7 +35,8 @@ public class Module extends ServletModule {
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
-        bind( DeployResource.class ).asEagerSingleton();
+        bind( UploadResource.class ).asEagerSingleton();
+        bind( TestGetResource.class ).asEagerSingleton();
 
         Map<String, String> params = new HashMap<String, String>();
         params.put( PACKAGES_KEY, getClass().getPackage().toString() );
