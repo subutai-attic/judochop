@@ -26,19 +26,20 @@ public class CalcTest {
 
         List<Run> list = runDao.getAll();
         MetricCollector collector = new MetricCollector();
+        int i = 0;
 
         for (Run run : list) {
-            handleRun(run);
-            break;
 
+            System.out.println(run);
+
+            collector.collect(run);
+
+            i++;
+            if (i == 3) {
+//                break;
+            }
         }
+
+        System.out.println(collector);
     }
-
-    // <commitId>
-    Map<String, Map<Integer, Metric>> map = new HashMap<String, Map<Integer, Metric>>();
-
-    private void handleRun(Run run) {
-        System.out.println(run);
-    }
-
 }

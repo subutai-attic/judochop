@@ -29,7 +29,6 @@ public class FileUtil {
     private static String readFile(String filePath) throws IOException {
 
         InputStream is = getClassLoader().getResourceAsStream(filePath);
-        System.out.println("is: " + is);
         String s = streamToString(is);
         is.close();
 
@@ -45,8 +44,6 @@ public class FileUtil {
         // Needed an instance to get URL, i.e. the static way doesn't work: FileUtil.class.getClass().
         URL url = new FileUtil().getClass().getProtectionDomain().getCodeSource().getLocation();
         classLoader = new URLClassLoader(new URL[]{ url }, Thread.currentThread().getContextClassLoader());
-
-        System.out.println("url: " + url);
         System.out.println("classLoader: " + classLoader);
 
         return classLoader;

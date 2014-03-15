@@ -73,13 +73,13 @@ public class MainUI extends UI {
     }
 
     private void itemClicked(ItemClickEvent event) {
-        System.out.println( moduleService.get("1168044208") );
+//        System.out.println( FileUtil.getContent("js/chart.js") );
     }
 
     private void loadScripts() {
-        JavaScript.getCurrent().execute( FileUtil.getContent("../../js/jquery.min.js") );
-        JavaScript.getCurrent().execute( FileUtil.getContent("../../js/highcharts.js") );
-        JavaScript.getCurrent().execute( FileUtil.getContent("../../js/chart.js") );
+        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
+        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
+        JavaScript.getCurrent().execute( FileUtil.getContent("js/chart.js") );
     }
 
 }

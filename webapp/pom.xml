@@ -29,6 +29,7 @@
         <filtering>true</filtering>
         <includes>
           <include>**/*.properties</include>
+          <include>**/*.js</include>
         </includes>
       </resource>
       <resource>
