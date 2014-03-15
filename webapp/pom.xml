@@ -10,7 +10,7 @@
 
   <name>Chop Webapp</name>
   <artifactId>chop-webapp</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <description>
     A REST based web application that services requests to load, run, and
     archive performance tests.
