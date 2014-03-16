@@ -16,6 +16,8 @@ import org.safehaus.chop.runner.rest.StartResource;
 import org.safehaus.chop.runner.rest.StatsResource;
 import org.safehaus.chop.runner.rest.StatusResource;
 import org.safehaus.chop.runner.rest.StopResource;
+import org.safehaus.chop.spi.RunManager;
+import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -28,7 +30,8 @@ public class Module extends ServletModule {
 
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ServletFig.class ) );
+        //noinspection unchecked
+        install( new GuicyFigModule( ServletFig.class, CoordinatorFig.class ) );
         install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
@@ -38,6 +41,8 @@ public class Module extends ServletModule {
         bind( JacksonJsonProvider.class ).asEagerSingleton();
 
         bind( IController.class ).to( Controller.class );
+        bind( RunnerRegistry.class ).to( RunnerRegistryImpl.class );
+        bind( RunManager.class ).to( RunManagerImpl.class );
 
         bind( ResetResource.class );
         bind( StopResource.class );
