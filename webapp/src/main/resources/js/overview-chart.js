@@ -1,3 +1,8 @@
+function pointClicked() {
+    var point = this;
+    console.log(point.info);
+}
+
 $('#chart').highcharts({
     chart: {
         type: 'spline'
@@ -40,10 +45,7 @@ $('#chart').highcharts({
             },
             point: {
                 events: {
-                    click: function() {
-//                        pointClicked(this)
-                        console.log(this);
-                    }
+                    click: pointClicked
                 }
             }
         }
