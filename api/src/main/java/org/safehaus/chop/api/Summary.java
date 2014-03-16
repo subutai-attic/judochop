@@ -32,8 +32,6 @@ public interface Summary {
     @JsonProperty
     long getTotalTestsRun();
 
-
-
     /**
      * Gets the chop type used to generate this summary information, either
      * being the String "TimeChop" or the String "IterationChop".

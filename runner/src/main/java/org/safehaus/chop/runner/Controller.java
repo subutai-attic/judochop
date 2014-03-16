@@ -3,7 +3,7 @@ package org.safehaus.chop.runner;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
@@ -43,7 +43,7 @@ public class Controller implements IController, Runnable {
     private State state = State.INACTIVE;
     private Driver<?> currentDriver;
 
-    private Map<String, Runner> otherRunners;
+    private List<Runner> otherRunners;
     private RunManager runManager;
     private Project project;
     private int runNumber;
@@ -190,8 +190,7 @@ public class Controller implements IController, Runnable {
     private Collection<Runner> getLagers( int runNumber, Class<?> testClass ) {
         Collection<Runner> lagers = new ArrayList<Runner>( otherRunners.size() );
 
-        for ( String runnerKey : otherRunners.keySet() ) {
-            Runner runner = otherRunners.get( runnerKey );
+        for ( Runner runner : otherRunners ) {
             if ( runManager.hasCompleted( runner, project, runNumber, testClass ) ) {
                 LOG.info( "Runner {} has completed test {}", runner.getHostname(), testClass.getName() );
             }
@@ -234,8 +233,14 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
-                runManager.store( project, summary, currentDriver.getResultsFile(),
-                        currentDriver.getTracker().getTestClass() );
+                try {
+                    runManager.store( project, summary, currentDriver.getResultsFile(),
+                            currentDriver.getTracker().getTestClass() );
+                }
+                catch ( Exception e ) {
+                    LOG.error( "Failed to store project results file " + currentDriver.getResultsFile() +
+                            " with runManager", e );
+                }
 
                 long startWaitingForLagers = System.currentTimeMillis();
                 while ( state == State.RUNNING ) {
@@ -297,8 +302,14 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
-                runManager.store( project, summary, currentDriver.getResultsFile(),
-                        currentDriver.getTracker().getTestClass() );
+                try {
+                    runManager.store( project, summary, currentDriver.getResultsFile(),
+                            currentDriver.getTracker().getTestClass() );
+                }
+                catch ( Exception e ) {
+                    LOG.error( "Failed to store project results file " + currentDriver.getResultsFile() +
+                            " with runManager", e );
+                }
 
                 long startWaitingForLagers = System.currentTimeMillis();
                 while ( state == State.RUNNING ) {

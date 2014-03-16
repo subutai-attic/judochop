@@ -30,7 +30,8 @@ public class Module extends ServletModule {
 
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ServletFig.class ) );
+        //noinspection unchecked
+        install( new GuicyFigModule( ServletFig.class, CoordinatorFig.class ) );
         install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
