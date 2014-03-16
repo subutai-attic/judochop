@@ -44,6 +44,7 @@ public interface Runner extends GuicyFig {
 
     String SERVER_PORT_KEY = "server.port";
     String DEFAULT_SERVER_PORT = "24981";
+    int DEFAULT_SERVER_PORT_INT = 24981;
 
     /**
      * Gets the Runner server port. Uses {@link Runner#SERVER_PORT_KEY} to access

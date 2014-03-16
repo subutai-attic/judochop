@@ -56,6 +56,7 @@
         <configuration>
           <systemPropertyVariables>
             <classes.base>${project.build.outputDirectory}</classes.base>
+            <archaius.deployment.environment>UNIT</archaius.deployment.environment>
           </systemPropertyVariables>
         </configuration>
       </plugin>

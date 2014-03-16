@@ -28,6 +28,7 @@ import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.chop.spi.Store;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
@@ -43,10 +44,11 @@ import com.netflix.config.ConfigurationManager;
 
 /** ... */
 @SuppressWarnings( "UnusedDeclaration" )
-public class ServletConfig extends GuiceServletContextListener {
-    private final static Logger LOG = LoggerFactory.getLogger( ServletConfig.class );
+public class RunnerConfig extends GuiceServletContextListener {
+    private final static Logger LOG = LoggerFactory.getLogger( RunnerConfig.class );
     private Injector injector;
     private Store store;
+    private RunnerRegistry registry;
 
 
     @Override
@@ -107,7 +109,13 @@ public class ServletConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        Ec2Metadata.applyBypass( runner );
+        if ( env == Env.UNIT ) {
+            runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
+            runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
+        }
+        else {
+            Ec2Metadata.applyBypass( runner );
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append( "https://" )
@@ -119,7 +127,7 @@ public class ServletConfig extends GuiceServletContextListener {
         runner.bypass( Runner.URL_KEY, baseUrl );
         LOG.info( "Setting url key {} to base url {}", Runner.URL_KEY, baseUrl );
 
-        File tempDir = ( File ) context.getAttribute( ServletFig.CONTEXT_TEMPDIR_KEY );
+        File tempDir = new File( System.getProperties().getProperty( "java.io.tmpdir" ) );
         runner.bypass( Runner.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
         LOG.info( "Setting runner temp directory key {} to context temp directory {}",
                 Runner.RUNNER_TEMP_DIR_KEY, tempDir.getAbsolutePath() );
@@ -148,11 +156,14 @@ public class ServletConfig extends GuiceServletContextListener {
          */
 
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
+            registry = getInjector().getInstance( RunnerRegistry.class );
             store = getInjector().getInstance( Store.class );
+            registry.start();
             store.start();
             LOG.info( "Store service started." );
+            LOG.info( "RunnerRegistry service started." );
 
-            store.register( runner );
+            registry.register( runner );
             LOG.info( "Registered runner information in store." );
         }
         else {
@@ -164,6 +175,7 @@ public class ServletConfig extends GuiceServletContextListener {
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
         if ( store != null ) {
+            registry.stop();
             store.stop();
         }
         super.contextDestroyed( servletContextEvent );

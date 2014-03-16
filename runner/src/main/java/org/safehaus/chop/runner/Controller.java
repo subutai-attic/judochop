@@ -11,7 +11,8 @@ import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.spi.Store;
+import org.safehaus.chop.spi.RunManager;
+import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.chop.runner.drivers.Driver;
 import org.safehaus.chop.runner.drivers.IterationDriver;
 import org.safehaus.chop.runner.drivers.TimeDriver;
@@ -43,15 +44,15 @@ public class Controller implements IController, Runnable {
     private Driver<?> currentDriver;
 
     private Map<String, Runner> otherRunners;
-    private Store service;
+    private RunManager runManager;
     private Project project;
     private int runNumber;
 
 
     @Inject
-    Controller( Project project, Store service, Runner me ) {
+    Controller( Project project, RunnerRegistry registry, RunManager runManager, Runner me ) {
         setProject( project );
-        setStoreService( service );
+        setRunManager( runManager );
 
         if ( state != State.INACTIVE ) {
             /*
@@ -60,8 +61,8 @@ public class Controller implements IController, Runnable {
              * the runNumber is also incremented every time start is called. So
              * we need to decrement this value by 1 in order not to skip run numbers.
              */
-            runNumber = service.getNextRunNumber( project ) - 1;
-            otherRunners = service.getRunners( me );
+            runNumber = runManager.getNextRunNumber( project ) - 1;
+            otherRunners = registry.getRunners( me );
         }
     }
 
@@ -111,9 +112,9 @@ public class Controller implements IController, Runnable {
     }
 
 
-    private void setStoreService( Store service ) {
-        Preconditions.checkNotNull( service, "The Store cannot be null." );
-        this.service = service;
+    private void setRunManager( RunManager runManager ) {
+        Preconditions.checkNotNull( runManager, "The RunManager cannot be null." );
+        this.runManager = runManager;
     }
 
 
@@ -191,7 +192,7 @@ public class Controller implements IController, Runnable {
 
         for ( String runnerKey : otherRunners.keySet() ) {
             Runner runner = otherRunners.get( runnerKey );
-            if ( service.hasCompleted( runner, project, runNumber, testClass ) ) {
+            if ( runManager.hasCompleted( runner, project, runNumber, testClass ) ) {
                 LOG.info( "Runner {} has completed test {}", runner.getHostname(), testClass.getName() );
             }
             else {
@@ -233,7 +234,7 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
-                service.store( project, summary, currentDriver.getResultsFile(),
+                runManager.store( project, summary, currentDriver.getResultsFile(),
                         currentDriver.getTracker().getTestClass() );
 
                 long startWaitingForLagers = System.currentTimeMillis();
@@ -296,7 +297,7 @@ public class Controller implements IController, Runnable {
             if ( currentDriver.isComplete() ) {
                 Summary summary = new Summary( runNumber );
                 summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
-                service.store( project, summary, currentDriver.getResultsFile(),
+                runManager.store( project, summary, currentDriver.getResultsFile(),
                         currentDriver.getTracker().getTestClass() );
 
                 long startWaitingForLagers = System.currentTimeMillis();
