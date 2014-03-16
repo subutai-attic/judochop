@@ -44,6 +44,7 @@ public class LineFormat {
 
         JSONObject info = new JSONObject();
         info.put("chopType", "IterationChop");
+        info.put("failures", metric.getFailures());
 
         data.put("marker", marker);
         data.put("info", info);

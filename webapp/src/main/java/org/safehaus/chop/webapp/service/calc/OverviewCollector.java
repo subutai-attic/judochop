@@ -21,6 +21,7 @@ public class OverviewCollector {
     }
 
     public void collect(Run run) {
+
         Map<Integer, Metric> runs = values.get( run.getCommitId() );
         Metric metric = runs.get(run.getRunNumber());
 
@@ -33,7 +34,10 @@ public class OverviewCollector {
     }
 
     public Map<String, Map<Integer, Metric>> getValues() {
-        return OverviewPercentile.filter(values, 100);
+        Map<String, Map<Integer, Metric>> filteredValues = OverviewPercentile.filter(values, 100);
+//        return FailureFilter.filter(filteredValues, "FAILED");
+//        return FailureFilter.filter(filteredValues, "SUCCESS");
+        return FailureFilter.filter(filteredValues, null);
     }
 
     @Override
