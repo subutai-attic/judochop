@@ -1,18 +1,23 @@
 package org.safehaus.chop.webapp.dao.model;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.safehaus.chop.api.RunResult;
 
+import java.util.UUID;
+
 public class BasicRunResult implements RunResult {
 
+    private String id;
     private String runId;
     private int runCount;
     private int runTime;
     private int ignoreCount;
     private int failureCount;
 
-    public BasicRunResult(String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
+    public BasicRunResult(String id, String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
+        this.id = id;
         this.runId = runId;
         this.runCount = runCount;
         this.runTime = runTime;
@@ -20,14 +25,31 @@ public class BasicRunResult implements RunResult {
         this.failureCount = failureCount;
     }
 
+    public BasicRunResult(String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
+        this(createId(runId), runId, runCount, runTime, ignoreCount, failureCount);
+    }
+
+    private static String createId(String runId) {
+        return "" + new HashCodeBuilder()
+                .append(runId)
+                .append( UUID.randomUUID() )
+                .toHashCode();
+    }
+
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id)
                 .append("runId", runId)
                 .append("runCount", runCount)
                 .append("runTime", runTime)
                 .append("ignoreCount", ignoreCount)
                 .append("failureCount", failureCount)
                 .toString();
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -53,21 +75,5 @@ public class BasicRunResult implements RunResult {
     @Override
     public int getFailureCount() {
         return failureCount;
-    }
-
-    public void setRunCount(int runCount) {
-        this.runCount = runCount;
-    }
-
-    public void setRunTime(int runTime) {
-        this.runTime = runTime;
-    }
-
-    public void setIgnoreCount(int ignoreCount) {
-        this.ignoreCount = ignoreCount;
-    }
-
-    public void setFailureCount(int failureCount) {
-        this.failureCount = failureCount;
     }
 }

@@ -10,6 +10,7 @@ import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.runs.IterationsChart;
 import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
@@ -143,7 +144,8 @@ public class MainUI extends UI {
 
         try {
 //            JavaScript.getCurrent().execute( new OverviewChart().get() );
-            JavaScript.getCurrent().execute( new RunsChart().get() );
+//            JavaScript.getCurrent().execute( new RunsChart().get() );
+            JavaScript.getCurrent().execute( new IterationsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();
         }

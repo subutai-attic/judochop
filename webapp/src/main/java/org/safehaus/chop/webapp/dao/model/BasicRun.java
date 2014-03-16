@@ -34,15 +34,16 @@ public class BasicRun implements Run {
     private boolean saturate;
 
     public BasicRun(String commitId, String runner, int runNumber, String testName) {
-        id = createId(commitId, runner, runNumber, testName);
         this.commitId = commitId;
         this.runner = runner;
         this.runNumber = runNumber;
         this.testName = testName;
+        id = "" + hashCode();
     }
 
-    private static String createId(String commitId, String runner, int runNumber, String testName) {
-        return "" + new HashCodeBuilder()
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
                 .append(commitId)
                 .append(runner)
                 .append(runNumber)
@@ -220,7 +221,7 @@ public class BasicRun implements Run {
                 .append("avgTime", avgTime)
                 .append("failures", failures)
                 .append("ignores",ignores)
-//                .append("runner", runner)
+                .append("runner", runner)
 //                .append("testName", testName)
 //                .append("chopType", chopType)
 //                .append("iterations", iterations)
@@ -233,6 +234,9 @@ public class BasicRun implements Run {
 //                .append("saturate", saturate)
                 .toString();
     }
+
+
+
 
 
 }

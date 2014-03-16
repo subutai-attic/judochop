@@ -9,7 +9,9 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -48,11 +50,11 @@ public class RunDaoTest {
     }
 
     @Test
-    public void getByCommit() {
+    public void getListByCommit() {
 
 //        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
         String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        List<Run> list = runDao.getByCommit(commitId);
+        List<Run> list = runDao.getList(commitId);
 
         for (Run run : list) {
             System.out.println(run);
@@ -62,14 +64,24 @@ public class RunDaoTest {
     }
 
     @Test
-    public void getNextRunNumber() throws Exception {
+    public void getNextRunNumber() {
         System.out.println( runDao.getNextRunNumber("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e") );
     }
 
     @Test
-    public void get() throws Exception {
+    public void get() {
         System.out.println( runDao.get("129097161") );
     }
 
+    @Test
+    public void getListByCommitAndRunNumber() {
 
+        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 2);
+
+        for (String runId : runs.keySet()) {
+            System.out.println(runId + ": " + runs.get(runId));
+        }
+
+//        System.out.println("count: " + list.size());
+    }
 }

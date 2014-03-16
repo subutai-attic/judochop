@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.upload;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -11,9 +12,11 @@ import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.RunResultDao;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
+import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.io.File;
+import java.util.Iterator;
 
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)
@@ -50,7 +53,36 @@ public class Uploader {
         JSONObject json = FileUtil.readJson(file.getAbsolutePath());
         String runId = saveRun(json, file);
 
-//        saveRunResults(file, runId);
+        saveRunResults(file, runId);
+    }
+
+    private void saveRunResults(File file, String runId) throws Exception {
+
+        String resultsFileName = file.getAbsolutePath().replace("summary", "results");
+        JSONObject json = FileUtil.readJson(resultsFileName);
+
+        if (json == null) {
+            return;
+        }
+
+        JSONArray runResults = (JSONArray) json.get("runResults");
+        Iterator<JSONObject> iterator = runResults.iterator();
+
+        while (iterator.hasNext()) {
+            JSONObject jsonResult = iterator.next();
+
+            BasicRunResult runResult = new BasicRunResult(
+                    runId,
+                    Util.getInt(jsonResult, "runCount"),
+                    Util.getInt(jsonResult, "runTime"),
+                    Util.getInt(jsonResult, "ignoreCount"),
+                    Util.getInt(jsonResult, "failureCount")
+            );
+
+            runResultDao.save(runResult);
+        }
+
+        System.out.println("Saved runResults: " + runResults.size());
     }
 
     private String saveRun(JSONObject json, File file) throws Exception {

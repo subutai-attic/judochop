@@ -3,6 +3,8 @@ package org.safehaus.chop.webapp.dao;
 import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilder;
@@ -15,6 +17,7 @@ import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,13 +74,36 @@ public class RunDao extends Dao<Run> {
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("run")
-                .setQuery(termQuery("_id", runId))
+                .setQuery( termQuery("_id", runId) )
                 .execute()
                 .actionGet();
 
         SearchHit hits[] = response.getHits().hits();
 
         return hits.length > 0 ? toRun(hits[0]) : null;
+    }
+
+    public Map<String, Run> getMap(String commitId, int runNumber) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .must( termQuery("commitId", commitId.toLowerCase()) )
+                .must( termQuery("runNumber", runNumber) );
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery(queryBuilder)
+                .setSize(MAX_RESULT_SIZE)
+                .execute()
+                .actionGet();
+
+        HashMap<String, Run> runs = new HashMap<String, Run>();
+
+        for (SearchHit hit : response.getHits().hits()) {
+            runs.put( hit.getId(), toRun(hit) );
+        }
+
+        return runs;
     }
 
     public static Run toRun(SearchHit hit) {
@@ -106,16 +132,10 @@ public class RunDao extends Dao<Run> {
 
 //        System.out.println(response);
 
-        ArrayList<Run> list = new ArrayList<Run>();
-
-        for (SearchHit hit : response.getHits().hits()) {
-            list.add( toRun(hit) );
-        }
-
-        return list;
+        return toList(response);
     }
 
-    public List<Run> getByCommit(String commitId) {
+    public List<Run> getList(String commitId) {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
@@ -123,6 +143,11 @@ public class RunDao extends Dao<Run> {
                 .setQuery( termQuery("commitId", commitId) )
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
+
+        return toList(response);
+    }
+
+    private static List<Run> toList(SearchResponse response) {
 
         ArrayList<Run> list = new ArrayList<Run>();
 
