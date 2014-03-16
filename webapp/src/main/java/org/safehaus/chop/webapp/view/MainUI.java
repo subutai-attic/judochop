@@ -5,16 +5,18 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
+import org.safehaus.chop.webapp.dao.NoteDao;
+import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
 import org.safehaus.chop.webapp.view.chart.OverviewChart;
-import org.safehaus.chop.webapp.view.chart.format.OverviewFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")
 public class MainUI extends UI {
 
     private ModuleService moduleService = InjectorFactory.getInstance(ModuleService.class);
+    private NoteDao noteDao = InjectorFactory.getInstance(NoteDao.class);
 
 	protected void init(VaadinRequest request) {
         initLayout();
@@ -29,14 +31,76 @@ public class MainUI extends UI {
 
         hsplit.setFirstComponent(getTreeTable());
 
+        AbsoluteLayout mainLayout = new AbsoluteLayout();
+        mainLayout.setWidth(800, Sizeable.UNITS_PIXELS);
+        mainLayout.setHeight(800, Sizeable.UNITS_PIXELS);
+
         AbsoluteLayout chartLayout = new AbsoluteLayout();
-        chartLayout.setWidth(800, Sizeable.UNITS_PIXELS);
+        chartLayout.setWidth(500, Sizeable.UNITS_PIXELS);
         chartLayout.setHeight(300, Sizeable.UNITS_PIXELS);
         chartLayout.setId("chart");
 
-        hsplit.setSecondComponent(chartLayout);
+        mainLayout.addComponent(chartLayout, "left: 0px; top: 0px;");
+
+        addNoteControls(mainLayout);
+
+        hsplit.setSecondComponent(mainLayout);
 
         loadScripts();
+    }
+
+    private void addNoteControls(AbsoluteLayout layout) {
+
+        Button saveButton = new Button("Save");
+        saveButton.setWidth(100, Sizeable.UNITS_PIXELS);
+
+        saveButton.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                saveNote();
+            }
+        });
+
+        layout.addComponent(saveButton, "left: 10px; top: 400px;");
+
+
+
+        Button readButton = new Button("Read");
+        readButton.setWidth(100, Sizeable.UNITS_PIXELS);
+
+        readButton.addListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                readNote();
+            }
+        });
+
+        layout.addComponent(readButton, "left: 200px; top: 400px;");
+
+
+
+        TextArea textArea = new TextArea("Log:");
+        textArea.setWidth(100, Sizeable.UNITS_PIXELS);
+        textArea.setHeight(100, Sizeable.UNITS_PIXELS);
+        textArea.setWordwrap(false);
+
+        layout.addComponent(textArea, "left: 10px; top: 450px;");
+    }
+
+    private void saveNote() {
+        Note note = new Note("noteCommitId", 1, ""+System.currentTimeMillis());
+
+        try {
+            noteDao.save(note);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readNote() {
+        try {
+            System.out.println( noteDao.get("noteCommitId", 1) );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private TreeTable getTreeTable() {
