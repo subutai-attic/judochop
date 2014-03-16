@@ -4,6 +4,10 @@ import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.facet.Facet;
+import org.elasticsearch.search.facet.FacetBuilder;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.statistical.StatisticalFacet;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
@@ -14,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.facet.FacetBuilders.statisticalFacet;
 
 public class RunDao extends Dao<Run> {
 
@@ -88,4 +94,20 @@ public class RunDao extends Dao<Run> {
 
         return list;
     }
+
+    public int getNextRunNumber(String commitId) {
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery( termQuery("commitId", commitId) )
+                .setSize(0)
+                .addFacet( statisticalFacet("stat").field("runNumber") )
+                .execute().actionGet();
+
+        StatisticalFacet facet = (StatisticalFacet) response.getFacets().facets().get(0);
+
+        return facet.getCount() > 0 ? (int) facet.getMax()+1 : 1;
+    }
+
 }
