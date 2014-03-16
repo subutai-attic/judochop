@@ -59,7 +59,7 @@ public class UploadResource {
     @Inject
     RestFig config;
 
-/*
+
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     public Response upload(
@@ -70,11 +70,11 @@ public class UploadResource {
         LOG.info( "fileDetails = " + fileName );
 
         // handle the upload of the war file to some path on the file system
-        String fileLocation = *//* config.getWarUploadPath() + *//* "target/" + fileName;
+        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
         writeToFile( in, fileLocation );
 
         return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
-    }*/
+    }
 
 
 //    @POST
