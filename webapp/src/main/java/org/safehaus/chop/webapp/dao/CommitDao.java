@@ -56,7 +56,7 @@ public class CommitDao extends Dao<Commit> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-//        System.out.println(response);
+        System.out.println(response);
 
         ArrayList<Commit> list = new ArrayList<Commit>();
 

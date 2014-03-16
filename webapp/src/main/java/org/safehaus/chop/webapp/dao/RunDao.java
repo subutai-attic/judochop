@@ -84,12 +84,16 @@ public class RunDao extends Dao<Run> {
 
         Map<String, Object> json = hit.getSource();
 
-        return new BasicRun(
+        BasicRun run = new BasicRun(
                 Util.getString(json, "commitId"),
                 Util.getString(json, "runner"),
                 Util.getInt(json, "runNumber"),
                 Util.getString(json, "testName")
         );
+
+        run.copyJson(hit.getSource());
+
+        return run;
     }
 
     public List<Run> getAll() {
@@ -105,18 +109,25 @@ public class RunDao extends Dao<Run> {
         ArrayList<Run> list = new ArrayList<Run>();
 
         for (SearchHit hit : response.getHits().hits()) {
-            Map<String, Object> json = hit.getSource();
+            list.add( toRun(hit) );
+        }
 
-            BasicRun run = new BasicRun(
-                    Util.getString(json, "commitId"),
-                    Util.getString(json, "runner"),
-                    Util.getInt(json, "runNumber"),
-                    Util.getString(json, "testName")
-            );
+        return list;
+    }
 
-            run.copyJson(hit.getSource());
+    public List<Run> getByCommit(String commitId) {
 
-            list.add(run);
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery( termQuery("commitId", commitId) )
+                .setSize(MAX_RESULT_SIZE)
+                .execute().actionGet();
+
+        ArrayList<Run> list = new ArrayList<Run>();
+
+        for (SearchHit hit : response.getHits().hits()) {
+            list.add( toRun(hit) );
         }
 
         return list;

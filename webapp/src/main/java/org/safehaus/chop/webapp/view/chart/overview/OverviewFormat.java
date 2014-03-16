@@ -1,9 +1,9 @@
-package org.safehaus.chop.webapp.view.chart.format;
+package org.safehaus.chop.webapp.view.chart.overview;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
-import org.safehaus.chop.webapp.service.calc.OverviewAvg;
-import org.safehaus.chop.webapp.service.calc.OverviewCollector;
+import org.safehaus.chop.webapp.service.calc.overview.OverviewAvg;
+import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
 import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.Map;

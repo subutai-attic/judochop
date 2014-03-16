@@ -10,16 +10,14 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.service.calc.OverviewAvg;
-import org.safehaus.chop.webapp.service.calc.OverviewCollector;
-import org.safehaus.chop.webapp.service.metric.Metric;
-import org.safehaus.chop.webapp.view.chart.format.OverviewFormat;
+import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
+import org.safehaus.chop.webapp.view.chart.overview.OverviewFormat;
 
-import java.util.*;
+import java.util.List;
 
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)
-public class CalcTest {
+public class OverviewCalcTest {
 
     @Inject
     private CommitDao commitDao;

@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.service.calc;
+package org.safehaus.chop.webapp.service.calc.overview;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
@@ -23,6 +23,12 @@ public class OverviewCollector {
     public void collect(Run run) {
 
         Map<Integer, Metric> runs = values.get( run.getCommitId() );
+
+        if (runs == null) {
+            // No such commit. Probably a commit is not from a currently selected module.
+            return;
+        }
+
         Metric metric = runs.get(run.getRunNumber());
 
         if (metric == null) {

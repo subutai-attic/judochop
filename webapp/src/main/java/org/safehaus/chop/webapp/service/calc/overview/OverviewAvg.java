@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.service.calc;
+package org.safehaus.chop.webapp.service.calc.overview;
 
 import org.safehaus.chop.webapp.service.metric.Metric;
 

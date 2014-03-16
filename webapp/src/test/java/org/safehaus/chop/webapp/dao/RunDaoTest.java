@@ -36,9 +36,23 @@ public class RunDaoTest {
     }
 
     @Test
-    public void getAll() throws Exception {
+    public void getAll() {
 
         List<Run> list = runDao.getAll();
+
+        for (Run run : list) {
+            System.out.println(run);
+        }
+
+        System.out.println("count: " + list.size());
+    }
+
+    @Test
+    public void getByCommit() {
+
+//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
+        List<Run> list = runDao.getByCommit(commitId);
 
         for (Run run : list) {
             System.out.println(run);

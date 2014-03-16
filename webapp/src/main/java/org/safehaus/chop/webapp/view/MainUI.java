@@ -9,7 +9,8 @@ import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
-import org.safehaus.chop.webapp.view.chart.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")
@@ -36,7 +37,7 @@ public class MainUI extends UI {
         mainLayout.setHeight(800, Sizeable.UNITS_PIXELS);
 
         AbsoluteLayout chartLayout = new AbsoluteLayout();
-        chartLayout.setWidth(500, Sizeable.UNITS_PIXELS);
+        chartLayout.setWidth(800, Sizeable.UNITS_PIXELS);
         chartLayout.setHeight(300, Sizeable.UNITS_PIXELS);
         chartLayout.setId("chart");
 
@@ -141,7 +142,8 @@ public class MainUI extends UI {
         JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
 
         try {
-            JavaScript.getCurrent().execute( new OverviewChart().get() );
+//            JavaScript.getCurrent().execute( new OverviewChart().get() );
+            JavaScript.getCurrent().execute( new RunsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();
         }
