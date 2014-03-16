@@ -53,15 +53,47 @@
     </testResources>
 
     <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.16</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludes>
+            <exclude>**/ChopUiIT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.16</version>
         <configuration>
-            <systemPropertyVariables>
-                <classes.base>${project.build.outputDirectory}</classes.base>
-            </systemPropertyVariables>
-            <skipTests>true</skipTests>
+          <systemPropertyVariables>
+            <classes.base>${project.build.outputDirectory}</classes.base>
+          </systemPropertyVariables>
+
+          <!--
+          An TestRule needs to be written for elastic search to run a local
+          embedded ES instance for these tests to not block and pass.
+          -->
+
+          <excludes>
+            <exclude>**/CommitDaoTest.java</exclude>
+            <exclude>**/ModuleDaoTest.java</exclude>
+            <exclude>**/RunDaoTest.java</exclude>
+            <exclude>**/RunResultDaoTest.java</exclude>
+            <exclude>**/SummaryDaoTest.java</exclude>
+            <exclude>**/ElasticSearchClientTest.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
@@ -157,6 +189,13 @@
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
     </dependency>
+
+    <!--
+    <dependency>
+      <groupId>org.jvnet</groupId>
+      <artifactId>mimepull</artifactId>
+    </dependency>
+    -->
 
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
