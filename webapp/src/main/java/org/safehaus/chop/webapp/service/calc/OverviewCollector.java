@@ -33,11 +33,11 @@ public class OverviewCollector {
     }
 
     public Map<String, Map<Integer, Metric>> getValues() {
-        return values;
+        return OverviewPercentile.filter(values, 100);
     }
 
     @Override
     public String toString() {
-        return values.toString();
+        return getValues().toString();
     }
 }

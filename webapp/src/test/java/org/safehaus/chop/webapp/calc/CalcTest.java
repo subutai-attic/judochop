@@ -56,49 +56,6 @@ public class CalcTest {
         }
 
         System.out.println(collector);
-
-        Map<String, Map<Integer, Metric>> values = collector.getValues();
-        List<Double> arr = new ArrayList<Double>();
-
-        for (Map<Integer, Metric> runs : values.values()) {
-            for (Metric metric : runs.values()) {
-                arr.add(metric.getValue());
-            }
-        }
-
-        double arr2[] = new double[arr.size()];
-        for (int i = 0; i < arr.size(); i++) {
-            arr2[i] = arr.get(i);
-        }
-
-        double p = new DescriptiveStatistics(arr2).getPercentile(50);
-        System.out.println("p: " + p);
-
-        Map<String, Map<Integer, Metric>> filteredValues = new LinkedHashMap<String, Map<Integer, Metric>>();
-
-        for (String commitId : values.keySet()) {
-            Map<Integer, Metric> runs = values.get(commitId);
-
-            for (Integer runNumber : runs.keySet()) {
-                Metric metric = runs.get(runNumber);
-
-                if (metric.getValue() > p) {
-                    continue;
-                }
-
-                Map<Integer, Metric> filteredRuns = filteredValues.get( commitId );
-
-                if (filteredRuns == null) {
-                    filteredRuns = new HashMap<Integer, Metric>();
-                    filteredValues.put(commitId, filteredRuns);
-                }
-
-                filteredRuns.put(runNumber, metric);
-            }
-        }
-
-        System.out.println(filteredValues);
-
     }
 
     @Test

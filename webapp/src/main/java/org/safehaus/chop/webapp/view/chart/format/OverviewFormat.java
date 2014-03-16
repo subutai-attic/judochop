@@ -46,14 +46,12 @@ public class OverviewFormat {
         }
 
         Map<String, Map<Integer, Metric>> values = collector.getValues();
-
         JSONArray arr = new JSONArray();
 
         addSeries(arr, values);
         arr.add( new LineFormat().getLine( OverviewAvg.get(values) ) );
 
         series = arr.toString();
-
         return series;
     }
 
