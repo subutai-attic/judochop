@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
 
@@ -44,7 +47,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * REST operation to upload (a.k.a. deploy) a project war file.
  */
 @Singleton
-@Produces( MediaType.TEXT_PLAIN )
+@Produces( MediaType.APPLICATION_JSON )
 @Path( UploadResource.ENDPOINT_URL )
 public class UploadResource {
     public final static String ENDPOINT_URL = "/upload";
@@ -56,21 +59,43 @@ public class UploadResource {
     @Inject
     RestFig config;
 
+
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    public Response upload()
-//            @FormDataParam( CONTENT ) InputStream in,
-//            @FormDataParam( FILENAME_PARAM ) String fileName )
+    public Response upload(
+            @FormDataParam( CONTENT ) InputStream in,
+            @FormDataParam( FILENAME_PARAM ) String fileName )
     {
         LOG.warn( "upload called ..." );
-//        LOG.info( "fileDetails = " + fileName );
-//
-//        // handle the upload of the war file to some path on the file system
-//        String fileLocation = /* config.getWarUploadPath() + */ fileName;
-//        writeToFile( in, fileLocation );
-//
-        return Response.status( Response.Status.CREATED ).entity( "foo" ).build();
+        LOG.info( "fileDetails = " + fileName );
+
+        // handle the upload of the war file to some path on the file system
+        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
+        writeToFile( in, fileLocation );
+
+        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
     }
+
+
+//    @POST
+//    @Consumes( MediaType.MULTIPART_FORM_DATA )
+//    public Response upload()
+////            @FormDataParam( CONTENT ) FormDataBodyPart content )
+////            @FormDataParam( CONTENT ) InputStream in,
+////            @FormDataParam( FILENAME_PARAM ) String fileName )
+//    {
+////        FormDataContentDisposition cd = content.getFormDataContentDisposition();
+////        InputStream in = content.getValueAs( InputStream.class );
+////
+////        LOG.warn( "upload called ..." );
+////        LOG.info( "fileDetails = " + cd.getFileName() );
+////
+////        // handle the upload of the war file to some path on the file system
+////        String fileLocation = /* config.getWarUploadPath() + */ cd.getFileName();
+////        writeToFile( in, fileLocation );
+//
+//        return Response.status( Response.Status.CREATED ).entity( "ffooo" ).build();
+//    }
 
 
     private void writeToFile( InputStream in, String fileLocation )

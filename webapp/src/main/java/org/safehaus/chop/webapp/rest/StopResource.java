@@ -53,7 +53,7 @@ public class StopResource {
 
 
     @POST
-    public Result setup( Stack stack ) {
+    public Result stop( Stack stack ) {
         LOG.warn( "Calling setup" );
         return new BaseResult( ENDPOINT_URL, true, "Setup called", State.READY );
     }
