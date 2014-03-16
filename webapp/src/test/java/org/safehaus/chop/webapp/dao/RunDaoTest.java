@@ -22,7 +22,7 @@ public class RunDaoTest {
     private RunDao runDao;
 
     @Test
-    public void testSave() throws Exception {
+    public void save() throws Exception {
 
         BasicRun run = new BasicRun(
                 "testCommitId", // commitId
@@ -32,12 +32,11 @@ public class RunDaoTest {
         );
 
         boolean created = runDao.save(run);
-
-        System.out.println(created);
+        System.out.println(created + ": " + run);
     }
 
     @Test
-    public void testGetAll() throws Exception {
+    public void getAll() throws Exception {
 
         List<Run> list = runDao.getAll();
 
@@ -51,6 +50,11 @@ public class RunDaoTest {
     @Test
     public void getNextRunNumber() throws Exception {
         System.out.println( runDao.getNextRunNumber("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e") );
+    }
+
+    @Test
+    public void get() throws Exception {
+        System.out.println( runDao.get("129097161") );
     }
 
 

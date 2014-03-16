@@ -9,6 +9,7 @@ import org.elasticsearch.search.facet.FacetBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.statistical.StatisticalFacet;
 import org.safehaus.chop.api.Run;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
@@ -65,6 +66,32 @@ public class RunDao extends Dao<Run> {
         return response.isCreated();
     }
 
+    public Run get(String runId) {
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery(termQuery("_id", runId))
+                .execute()
+                .actionGet();
+
+        SearchHit hits[] = response.getHits().hits();
+
+        return hits.length > 0 ? toRun(hits[0]) : null;
+    }
+
+    public static Run toRun(SearchHit hit) {
+
+        Map<String, Object> json = hit.getSource();
+
+        return new BasicRun(
+                Util.getString(json, "commitId"),
+                Util.getString(json, "runner"),
+                Util.getInt(json, "runNumber"),
+                Util.getString(json, "testName")
+        );
+    }
+
     public List<Run> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
@@ -103,7 +130,8 @@ public class RunDao extends Dao<Run> {
                 .setQuery( termQuery("commitId", commitId) )
                 .setSize(0)
                 .addFacet( statisticalFacet("stat").field("runNumber") )
-                .execute().actionGet();
+                .execute()
+                .actionGet();
 
         StatisticalFacet facet = (StatisticalFacet) response.getFacets().facets().get(0);
 

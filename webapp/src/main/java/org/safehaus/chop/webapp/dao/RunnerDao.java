@@ -76,15 +76,13 @@ public class RunnerDao extends Dao<Runner> {
 
         Map<String, Object> json = hit.getSource();
 
-        BasicRunner runner = new BasicRunner(
+        return new BasicRunner(
                 Util.getString(json, "ipv4Address"),
                 Util.getString(json, "hostname"),
                 Util.getInt(json, "serverPort"),
                 Util.getString(json, "url"),
                 Util.getString(json, "tempDir")
         );
-
-        return runner;
     }
 
     public Map<String, Runner> getRunners() throws Exception {
