@@ -2,6 +2,8 @@ package org.safehaus.chop.spi;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
@@ -20,7 +22,8 @@ public interface RunManager {
      * @param resultsFile the results log file
      * @param testClass the chopped test class
      */
-    void store( Project project, Summary summary, File resultsFile, Class<?> testClass );
+    void store( Project project, Summary summary, File resultsFile, Class<?> testClass )
+            throws FileNotFoundException, MalformedURLException;
 
     /**
      * Checks to see if a runner has deposited run summary information for a chopped test in

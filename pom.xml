@@ -219,6 +219,12 @@ scm:git:http://${safehaus.git.username}@stash.safehaus.org/scm/chop/main.git
 
       <dependency>
         <groupId>com.sun.jersey</groupId>
+        <artifactId>jersey-json</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-client</artifactId>
         <version>${jersey.version}</version>
       </dependency>
