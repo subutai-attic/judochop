@@ -9,10 +9,11 @@ import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
+import org.safehaus.chop.webapp.view.chart.iterations.IterationsChart;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
-import org.safehaus.chop.webapp.view.chart.runs.IterationsChart;
 import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
+import org.safehaus.chop.webapp.view.window.UserSubwindow;
 
 @Title("Test UI")
 public class MainUI extends UI {
@@ -23,6 +24,21 @@ public class MainUI extends UI {
 	protected void init(VaadinRequest request) {
         initLayout();
 	}
+
+    private void initLayout_() {
+        // Some UI logic to open the sub-window
+        final Button open = new Button("Open Sub-Window");
+        open.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                UserSubwindow sub = new UserSubwindow();
+
+                // Add it to the root component
+                UI.getCurrent().addWindow(sub);
+            }
+        });
+
+        setContent(open);
+    }
 
 	private void initLayout() {
 
@@ -38,13 +54,27 @@ public class MainUI extends UI {
         mainLayout.setHeight(800, Sizeable.UNITS_PIXELS);
 
         AbsoluteLayout chartLayout = new AbsoluteLayout();
-        chartLayout.setWidth(800, Sizeable.UNITS_PIXELS);
-        chartLayout.setHeight(300, Sizeable.UNITS_PIXELS);
+        chartLayout.setWidth(700, Sizeable.UNITS_PIXELS);
+        chartLayout.setHeight(400, Sizeable.UNITS_PIXELS);
         chartLayout.setId("chart");
 
         mainLayout.addComponent(chartLayout, "left: 0px; top: 0px;");
 
         addNoteControls(mainLayout);
+
+
+        Button userManagementButton = new Button("User Management");
+        userManagementButton.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                UserSubwindow sub = new UserSubwindow();
+
+                // Add it to the root component
+                UI.getCurrent().addWindow(sub);
+            }
+        });
+
+        mainLayout.addComponent(userManagementButton, "left: 10px; top: 600px;");
+
 
         hsplit.setSecondComponent(mainLayout);
 
@@ -144,8 +174,8 @@ public class MainUI extends UI {
 
         try {
 //            JavaScript.getCurrent().execute( new OverviewChart().get() );
-//            JavaScript.getCurrent().execute( new RunsChart().get() );
-            JavaScript.getCurrent().execute( new IterationsChart().get() );
+            JavaScript.getCurrent().execute( new RunsChart().get() );
+//            JavaScript.getCurrent().execute( new IterationsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();
         }

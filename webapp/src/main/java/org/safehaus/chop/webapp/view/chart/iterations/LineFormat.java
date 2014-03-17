@@ -3,7 +3,6 @@ package org.safehaus.chop.webapp.view.chart.iterations;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.Collection;
 
@@ -29,6 +28,11 @@ public class LineFormat {
         for (RunResult runResult : runResults) {
             arr.add( getPoint(i, runResult) );
             i++;
+
+            // Bug: highcharts can't display if a line contains more than 500 points
+            if (i >= 500) {
+                break;
+            }
         }
 
         return arr;
@@ -36,9 +40,15 @@ public class LineFormat {
 
     protected static JSONObject getPoint(int x, RunResult runResult) {
 
+        Integer y = null;
+
+        if (runResult != null && runResult.getRunTime() > -1) {
+            y = runResult.getRunTime();
+        }
+
         JSONObject data = new JSONObject();
         data.put("x", x);
-        data.put("y", runResult.getRunTime());
+        data.put("y", y);
 
         JSONObject marker = new JSONObject();
         marker.put("radius", 4);
@@ -46,7 +56,7 @@ public class LineFormat {
 
         JSONObject info = new JSONObject();
         info.put("chopType", "IterationChop");
-        info.put("failures", runResult.getFailureCount());
+//        info.put("failures", runResult.getFailureCount());
 
         data.put("marker", marker);
         data.put("info", info);

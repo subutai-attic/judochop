@@ -15,18 +15,20 @@ public class BasicRunResult implements RunResult {
     private int runTime;
     private int ignoreCount;
     private int failureCount;
+    private String failures;
 
-    public BasicRunResult(String id, String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
+    public BasicRunResult(String id, String runId, int runCount, int runTime, int ignoreCount, int failureCount, String failures) {
         this.id = id;
         this.runId = runId;
         this.runCount = runCount;
         this.runTime = runTime;
         this.ignoreCount = ignoreCount;
         this.failureCount = failureCount;
+        this.failures = failures;
     }
 
     public BasicRunResult(String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
-        this(createId(runId), runId, runCount, runTime, ignoreCount, failureCount);
+        this(createId(runId), runId, runCount, runTime, ignoreCount, failureCount, "");
     }
 
     private static String createId(String runId) {
@@ -44,6 +46,7 @@ public class BasicRunResult implements RunResult {
                 .append("runTime", runTime)
                 .append("ignoreCount", ignoreCount)
                 .append("failureCount", failureCount)
+                .append("failures", failures)
                 .toString();
     }
 
@@ -75,5 +78,14 @@ public class BasicRunResult implements RunResult {
     @Override
     public int getFailureCount() {
         return failureCount;
+    }
+
+    @Override
+    public String getFailures() {
+        return failures;
+    }
+
+    public void setFailures(String failures) {
+        this.failures = failures;
     }
 }

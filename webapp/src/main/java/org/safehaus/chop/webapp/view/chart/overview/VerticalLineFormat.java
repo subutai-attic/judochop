@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.view.chart.overview;
 
 import org.json.simple.JSONArray;
 import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.MinMetric;
 
 import java.util.Collection;
 

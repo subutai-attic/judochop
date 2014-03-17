@@ -40,9 +40,12 @@ public class RunResultDaoTest {
         List<RunResult> list = runResultDao.getAll();
 
         for (RunResult runResult : list) {
-            if (runResult.getRunId().equals("-1683882156")) {
-                System.out.println(runResult.getRunTime());
-            }
+//            if (runResult.getRunId().equals("-1683882156")) {
+//                System.out.println(runResult.getRunTime());
+//            }
+
+//            System.out.println(runResult.getRunTime());
+            System.out.println(runResult);
         }
 
         System.out.println("count: " + list.size());
@@ -53,7 +56,7 @@ public class RunResultDaoTest {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 2);
+        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 10);
         Map<Run, List<RunResult>> runResults = runResultDao.getMap(runs);
 
         for (Run run : runResults.keySet()) {

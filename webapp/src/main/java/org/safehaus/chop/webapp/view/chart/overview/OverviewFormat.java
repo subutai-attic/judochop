@@ -5,6 +5,7 @@ import org.json.simple.JSONArray;
 import org.safehaus.chop.webapp.service.calc.overview.OverviewAvg;
 import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
 import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.MinMetric;
 
 import java.util.Map;
 import java.util.Set;

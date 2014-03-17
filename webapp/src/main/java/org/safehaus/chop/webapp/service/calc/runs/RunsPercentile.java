@@ -3,8 +3,6 @@ package org.safehaus.chop.webapp.service.calc.runs;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.safehaus.chop.webapp.service.metric.Metric;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,18 +23,6 @@ public class RunsPercentile {
             if (e.getValue().getValue() <= percentile) {
                 filteredRuns.put(e.getKey(), e.getValue());
             }
-        }
-
-        return filteredRuns;
-    }
-
-    private static Map<Integer, Metric> getRuns(Map<String, Map<Integer, Metric>> filteredValues, String commitId) {
-
-        Map<Integer, Metric> filteredRuns = filteredValues.get( commitId );
-
-        if (filteredRuns == null) {
-            filteredRuns = new HashMap<Integer, Metric>();
-            filteredValues.put(commitId, filteredRuns);
         }
 
         return filteredRuns;

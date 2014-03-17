@@ -79,6 +79,8 @@ public class Uploader {
                     Util.getInt(jsonResult, "failureCount")
             );
 
+            runResult.setFailures("" + jsonResult.get("failures"));
+
             runResultDao.save(runResult);
         }
 

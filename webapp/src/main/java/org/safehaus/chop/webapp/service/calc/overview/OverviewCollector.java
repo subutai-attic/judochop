@@ -2,7 +2,7 @@ package org.safehaus.chop.webapp.service.calc.overview;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -32,7 +32,9 @@ public class OverviewCollector {
         Metric metric = runs.get(run.getRunNumber());
 
         if (metric == null) {
-            metric = new Metric();
+//            metric = new MinMetric();
+//            metric = new MaxMetric();
+            metric = new ActualMetric();
             runs.put(run.getRunNumber(), metric);
         }
 
@@ -42,7 +44,6 @@ public class OverviewCollector {
     public Map<String, Map<Integer, Metric>> getValues() {
         Map<String, Map<Integer, Metric>> filteredValues = OverviewPercentile.filter(values, 100);
 //        return FailureFilter.filter(filteredValues, "FAILED");
-//        return FailureFilter.filter(filteredValues, "SUCCESS");
         return FailureFilter.filter(filteredValues, null);
     }
 

@@ -2,13 +2,9 @@ package org.safehaus.chop.webapp.service.calc.iterations;
 
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.calc.runs.FailureFilter;
-import org.safehaus.chop.webapp.service.calc.runs.RunsPercentile;
-import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class IterationsCollector {
 
@@ -19,9 +15,8 @@ public class IterationsCollector {
     }
 
     public Map<Run, List<RunResult>> getRunResults() {
-/*        Map<Integer, Metric> filteredRuns = RunsPercentile.filter(runs, 100);
-        return FailureFilter.filter(filteredRuns, null);*/
-        return runResults;
+        Map<Run, List<RunResult>> filteredValues = IterationsPercentile.filter(runResults, 100);
+        return FailureFilter.filter(filteredValues, null);
     }
 
     @Override

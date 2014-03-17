@@ -31,6 +31,9 @@ public class IterationsFormat {
             arr.add( new LineFormat().getLine( run.getRunner(), runResults.get(run) ) );
         }
 
+        arr.add( new LineFormat().getLine( "AVG", IterationsAvg.get(runResults) ) );
+//        System.out.println( IterationsAvg.get(runResults));
+
         series = arr.toString();
         return series;
     }

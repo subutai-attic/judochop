@@ -2,8 +2,6 @@ package org.safehaus.chop.webapp.service.calc.runs;
 
 import org.safehaus.chop.webapp.service.metric.Metric;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 

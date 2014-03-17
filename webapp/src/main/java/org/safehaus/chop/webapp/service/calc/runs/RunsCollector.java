@@ -1,9 +1,8 @@
 package org.safehaus.chop.webapp.service.calc.runs;
 
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,7 +23,10 @@ public class RunsCollector {
         Metric metric = runs.get( run.getRunNumber() );
 
         if (metric == null) {
-            metric = new Metric();
+//            metric = new MinMetric();
+//            metric = new AvgMetric();
+//            metric = new MaxMetric();
+            metric = new ActualMetric();
             runs.put(run.getRunNumber(), metric);
         }
 

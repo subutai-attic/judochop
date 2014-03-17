@@ -18,6 +18,5 @@ public interface RunResult {
 
     int getFailureCount();
 
-    // TODO add failures[]
-
+    String getFailures();
 }
