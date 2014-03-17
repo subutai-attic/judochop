@@ -11,6 +11,7 @@ import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
+import org.safehaus.chop.webapp.view.window.UserSubwindow;
 
 @Title("Test UI")
 public class MainUI extends UI {
@@ -21,6 +22,21 @@ public class MainUI extends UI {
 	protected void init(VaadinRequest request) {
         initLayout();
 	}
+
+    private void initLayout_() {
+        // Some UI logic to open the sub-window
+        final Button open = new Button("Open Sub-Window");
+        open.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                UserSubwindow sub = new UserSubwindow();
+
+                // Add it to the root component
+                UI.getCurrent().addWindow(sub);
+            }
+        });
+
+        setContent(open);
+    }
 
 	private void initLayout() {
 
@@ -43,6 +59,20 @@ public class MainUI extends UI {
         mainLayout.addComponent(chartLayout, "left: 0px; top: 0px;");
 
         addNoteControls(mainLayout);
+
+
+        Button userManagementButton = new Button("User Management");
+        userManagementButton.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                UserSubwindow sub = new UserSubwindow();
+
+                // Add it to the root component
+                UI.getCurrent().addWindow(sub);
+            }
+        });
+
+        mainLayout.addComponent(userManagementButton, "left: 10px; top: 600px;");
+
 
         hsplit.setSecondComponent(mainLayout);
 

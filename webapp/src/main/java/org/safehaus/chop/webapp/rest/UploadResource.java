@@ -60,21 +60,21 @@ public class UploadResource {
     RestFig config;
 
 
-    @POST
-    @Consumes( MediaType.MULTIPART_FORM_DATA )
-    public Response upload(
-            @FormDataParam( CONTENT ) InputStream in,
-            @FormDataParam( FILENAME_PARAM ) String fileName )
-    {
-        LOG.warn( "upload called ..." );
-        LOG.info( "fileDetails = " + fileName );
-
-        // handle the upload of the war file to some path on the file system
-        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
-        writeToFile( in, fileLocation );
-
-        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
-    }
+//    @POST
+//    @Consumes( MediaType.MULTIPART_FORM_DATA )
+//    public Response upload(
+//            @FormDataParam( CONTENT ) InputStream in,
+//            @FormDataParam( FILENAME_PARAM ) String fileName )
+//    {
+//        LOG.warn( "upload called ..." );
+//        LOG.info( "fileDetails = " + fileName );
+//
+//        // handle the upload of the war file to some path on the file system
+//        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
+//        writeToFile( in, fileLocation );
+//
+//        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+//    }
 
 
 //    @POST

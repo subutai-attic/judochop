@@ -9,6 +9,7 @@ package org.safehaus.chop.webapp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.shiro.guice.web.GuiceShiroFilter;
 import org.safehaus.chop.webapp.rest.TestGetResource;
 import org.safehaus.chop.webapp.rest.UploadResource;
 import org.safehaus.chop.webapp.rest.RestFig;
@@ -36,6 +37,8 @@ public class ChopUiModule extends ServletModule {
 
         bind( UploadResource.class ).asEagerSingleton();
         bind( TestGetResource.class ).asEagerSingleton();
+
+        filter("/*").through(GuiceShiroFilter.class);
 
         // This should be before "/*" otherwise the vaadin servlet will not work
         serve( "/VAADIN/*" ).with( VaadinServlet.class );

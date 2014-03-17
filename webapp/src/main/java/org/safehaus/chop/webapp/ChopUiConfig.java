@@ -26,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.webapp.service.InjectorFactory;
+import org.safehaus.chop.webapp.shiro.MyShiroWebModule;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,25 +41,32 @@ import com.netflix.config.ConfigurationManager;
 /** ... */
 @SuppressWarnings( "UnusedDeclaration" )
 public class ChopUiConfig extends GuiceServletContextListener {
+
     private final static Logger LOG = LoggerFactory.getLogger( ChopUiConfig.class );
     private Injector injector;
-
+    private ServletContext context;
 
     @Override
     protected Injector getInjector() {
+
         if ( injector != null ) {
             return injector;
         }
 
-        injector = Guice.createInjector( new ChopUiModule() );
+//        injector = Guice.createInjector( new ChopUiModule() );
+        injector = Guice.createInjector(new MyShiroWebModule(context), new ChopUiModule());
         InjectorFactory.setInjector(injector);
+
         return injector;
     }
 
 
     @Override
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
-        super.contextInitialized( servletContextEvent );
+
+//        super.contextInitialized( servletContextEvent );
+        context = servletContextEvent.getServletContext();
+        context.setAttribute(Injector.class.getName(), getInjector());
 
         /*
          * --------------------------------------------------------------------
