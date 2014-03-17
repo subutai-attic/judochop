@@ -1,10 +1,12 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
@@ -12,6 +14,7 @@ import org.safehaus.chop.webapp.dao.model.BasicRun;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +25,10 @@ public class RunDaoTest {
     @Inject
     @SuppressWarnings("unused")
     private RunDao runDao;
+
+    @Inject
+    @SuppressWarnings("unuzed")
+    private CommitDao commitDao;
 
     @Test
     public void save() throws Exception {
@@ -50,11 +57,28 @@ public class RunDaoTest {
     }
 
     @Test
+    public void getListByCommits() {
+
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> list = runDao.getList(commits, testName);
+
+        for (Run run : list) {
+            System.out.println(run);
+        }
+
+        System.out.println("count: " + list.size());
+    }
+
+    @Test
     public void getListByCommit() {
 
 //        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
         String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        List<Run> list = runDao.getList(commitId);
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> list = runDao.getList(commitId, testName);
 
         for (Run run : list) {
             System.out.println(run);
@@ -74,14 +98,27 @@ public class RunDaoTest {
     }
 
     @Test
-    public void getListByCommitAndRunNumber() {
+    public void getMapByCommitAndRunNumber() {
 
-        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 2);
+        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        Map<String, Run> runs = runDao.getMap(commitId, 2, testName);
 
         for (String runId : runs.keySet()) {
             System.out.println(runId + ": " + runs.get(runId));
         }
 
-//        System.out.println("count: " + list.size());
+        System.out.println("count: " + runs.size());
+    }
+
+    @Test
+    public void getTestNames() {
+
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        Set<String> names = runDao.getTestNames(commits);
+
+        System.out.println(names);
+
     }
 }

@@ -32,9 +32,10 @@ public class OverviewCollector {
         Metric metric = runs.get(run.getRunNumber());
 
         if (metric == null) {
+            metric = new AvgMetric();
 //            metric = new MinMetric();
 //            metric = new MaxMetric();
-            metric = new ActualMetric();
+//            metric = new ActualMetric();
             runs.put(run.getRunNumber(), metric);
         }
 
