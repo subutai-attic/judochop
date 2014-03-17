@@ -9,9 +9,7 @@ import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
-import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
-import org.safehaus.chop.webapp.view.chart.runs.IterationsChart;
-import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
+import org.safehaus.chop.webapp.view.chart.iterations.IterationsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")

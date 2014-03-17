@@ -29,6 +29,11 @@ public class LineFormat {
         for (RunResult runResult : runResults) {
             arr.add( getPoint(i, runResult) );
             i++;
+
+            // Bug: highcharts can't display if a line contains more than 500 points
+            if (i >= 500) {
+                break;
+            }
         }
 
         return arr;

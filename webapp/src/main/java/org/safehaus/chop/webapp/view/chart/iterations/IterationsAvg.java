@@ -29,8 +29,13 @@ public class IterationsAvg {
             for (Run run : runs) {
                 List<RunResult> values = runResults.get(run);
 
-                RunResult runResult = values.get(i);
-                avg.merge(runResult);
+                try {
+                    // Can throw IndexOutOfBounds i.e. each array can have different size
+                    RunResult runResult = values.get(i);
+                    avg.merge(runResult);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             resultList.add(avg);
