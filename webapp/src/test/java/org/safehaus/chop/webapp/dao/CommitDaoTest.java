@@ -28,7 +28,7 @@ public class CommitDaoTest {
                 "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e",
                 "1168044208", // moduleId
                 "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
-                new Date() // createDate
+                new Date() // createTime
         );
 
         boolean created = commitDao.save(commit);

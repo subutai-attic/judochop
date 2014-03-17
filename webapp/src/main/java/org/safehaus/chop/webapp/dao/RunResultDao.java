@@ -13,14 +13,12 @@ import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class RunResultDao extends Dao<RunResult> {
 
@@ -33,6 +31,10 @@ public class RunResultDao extends Dao<RunResult> {
 
     public boolean save(RunResult runResult) throws Exception {
 
+        if (runResult.getRunId().equals("-1683882156")) {
+            System.out.println(runResult);
+        }
+
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex("modules", "runResult", runResult.getId())
                 .setSource(
@@ -43,6 +45,7 @@ public class RunResultDao extends Dao<RunResult> {
                                 .field("runTime", runResult.getRunTime())
                                 .field("ignoreCount", runResult.getIgnoreCount())
                                 .field("failureCount", runResult.getFailureCount())
+                                .field("createTime", System.nanoTime())
                                 .endObject()
                 )
                 .execute()
@@ -56,9 +59,12 @@ public class RunResultDao extends Dao<RunResult> {
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("runResult")
+                .addSort(fieldSort("createTime"))
                 .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
+
+//        System.out.println(response);
 
         return toList(response);
     }
@@ -67,7 +73,7 @@ public class RunResultDao extends Dao<RunResult> {
         ArrayList<RunResult> list = new ArrayList<RunResult>();
 
         for (SearchHit hit : response.getHits().hits()) {
-            list.add(toRunResult(hit));
+            list.add( toRunResult(hit) );
         }
 
         return list;
@@ -95,11 +101,12 @@ public class RunResultDao extends Dao<RunResult> {
                 .prepareSearch("modules")
                 .setTypes("runResult")
                 .setQuery(multiMatchQuery(runIds, "runId"))
+                .addSort(fieldSort("createTime"))
                 .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
 
-        System.out.println(response);
+//        System.out.println(response);
 
         HashMap<Run, List<RunResult>> runResults = new HashMap<Run, List<RunResult>>();
 

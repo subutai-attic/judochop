@@ -15,6 +15,7 @@ public class BasicRunResult implements RunResult {
     private int runTime;
     private int ignoreCount;
     private int failureCount;
+    private String failures;
 
     public BasicRunResult(String id, String runId, int runCount, int runTime, int ignoreCount, int failureCount) {
         this.id = id;
@@ -75,5 +76,14 @@ public class BasicRunResult implements RunResult {
     @Override
     public int getFailureCount() {
         return failureCount;
+    }
+
+    @Override
+    public String getFailures() {
+        return failures;
+    }
+
+    public void setFailures(String failures) {
+        this.failures = failures;
     }
 }

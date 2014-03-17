@@ -38,8 +38,8 @@ public class MainUI extends UI {
         mainLayout.setHeight(800, Sizeable.UNITS_PIXELS);
 
         AbsoluteLayout chartLayout = new AbsoluteLayout();
-        chartLayout.setWidth(800, Sizeable.UNITS_PIXELS);
-        chartLayout.setHeight(300, Sizeable.UNITS_PIXELS);
+        chartLayout.setWidth(700, Sizeable.UNITS_PIXELS);
+        chartLayout.setHeight(400, Sizeable.UNITS_PIXELS);
         chartLayout.setId("chart");
 
         mainLayout.addComponent(chartLayout, "left: 0px; top: 0px;");

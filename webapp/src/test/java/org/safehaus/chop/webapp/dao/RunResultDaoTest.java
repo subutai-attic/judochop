@@ -43,6 +43,9 @@ public class RunResultDaoTest {
             if (runResult.getRunId().equals("-1683882156")) {
                 System.out.println(runResult.getRunTime());
             }
+
+//            System.out.println(runResult.getRunTime());
+//            System.out.println(runResult);
         }
 
         System.out.println("count: " + list.size());
