@@ -2,7 +2,6 @@ package org.safehaus.chop.webapp.view.chart.iterations;
 
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.ArrayList;
 import java.util.List;

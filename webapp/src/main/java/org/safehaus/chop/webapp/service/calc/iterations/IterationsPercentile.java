@@ -3,11 +3,9 @@ package org.safehaus.chop.webapp.service.calc.iterations;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class IterationsPercentile {
 

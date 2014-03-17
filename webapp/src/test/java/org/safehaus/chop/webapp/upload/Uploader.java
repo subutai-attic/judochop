@@ -23,8 +23,8 @@ import java.util.Iterator;
 public class Uploader {
 
     private static final String DATA_DIR = "D:\\temp\\chop-data-upload";
-//    private static final String COMMIT_ID = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-    private static final String COMMIT_ID = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+    private static final String COMMIT_ID = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
+//    private static final String COMMIT_ID = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 
     @Inject
     private RunDao runDao;

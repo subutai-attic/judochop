@@ -4,33 +4,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.safehaus.chop.api.Run;
 
-public class Metric {
+import java.util.Map;
 
-    private double value;
-    private int count;
+public abstract class Metric {
 
-    private int failures;
+    protected double value;
+    protected int failures;
+
+    protected abstract void calc(Run run);
 
     public void merge(Run run) {
-        value += run.getAvgTime();
-        count++;
+        calc(run);
 
         failures += run.getFailures();
     }
 
-    public void merge(Metric metric) {
-        value += metric.getValue();
-        count++;
-
-        failures += metric.getFailures();
+    public double getValue() {
+        return value;
     }
 
     public int getFailures() {
         return failures;
-    }
-
-    public double getValue() {
-        return value / count;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.safehaus.chop.webapp.service.calc.overview;
 
+import org.safehaus.chop.webapp.service.metric.AvgMetric;
 import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.MinMetric;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ public class OverviewAvg {
 
     private static Metric getAvg(Map<Integer, Metric> runs) {
 
-        Metric avg = new Metric();
+        AvgMetric avg = new AvgMetric();
 
         for (Metric metric : runs.values()) {
             avg.merge(metric);
@@ -29,6 +31,4 @@ public class OverviewAvg {
 
         return avg;
     }
-
-
 }

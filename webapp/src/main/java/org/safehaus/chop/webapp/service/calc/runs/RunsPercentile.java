@@ -1,27 +1,25 @@
 package org.safehaus.chop.webapp.service.calc.runs;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.safehaus.chop.webapp.service.metric.Metric;
+import org.safehaus.chop.webapp.service.metric.MinMetric;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class RunsPercentile {
 
-    static Map<Integer, Metric> filter(Map<Integer, Metric> runs, int percent) {
+    static Map<Integer, MinMetric> filter(Map<Integer, MinMetric> runs, int percent) {
 
         double percentile = new DescriptiveStatistics( toArray(runs) ).getPercentile(percent);
 
         return filterValues(runs, percentile);
     }
 
-    private static Map<Integer, Metric> filterValues(Map<Integer, Metric> runs, double percentile) {
+    private static Map<Integer, MinMetric> filterValues(Map<Integer, MinMetric> runs, double percentile) {
 
-        Map<Integer, Metric> filteredRuns = new TreeMap<Integer, Metric>();
+        Map<Integer, MinMetric> filteredRuns = new TreeMap<Integer, MinMetric>();
 
-        for (Map.Entry<Integer, Metric> e : runs.entrySet()) {
+        for (Map.Entry<Integer, MinMetric> e : runs.entrySet()) {
             if (e.getValue().getValue() <= percentile) {
                 filteredRuns.put(e.getKey(), e.getValue());
             }
@@ -30,11 +28,11 @@ public class RunsPercentile {
         return filteredRuns;
     }
 
-    private static double[] toArray(Map<Integer, Metric> runs) {
+    private static double[] toArray(Map<Integer, MinMetric> runs) {
 
         double arr[] = new double[runs.size()];
         int i = 0;
-        for (Metric metric : runs.values()) {
+        for (MinMetric metric : runs.values()) {
             arr[i] = metric.getValue();
             i++;
         }
