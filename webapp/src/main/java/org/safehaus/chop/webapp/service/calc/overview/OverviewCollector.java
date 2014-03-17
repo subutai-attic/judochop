@@ -13,8 +13,16 @@ public class OverviewCollector {
 
     // < <commitId>, <runNumber, metric> >
     private final Map<String, Map<Integer, Metric>> values = new LinkedHashMap<String, Map<Integer, Metric>>();
+    private int percentile;
+    private String metricType;
+    private String failureValue;
 
-    public OverviewCollector(List<Commit> commits) {
+    public OverviewCollector(List<Commit> commits, String metricType, int percentile, String failureValue) {
+
+        this.percentile = percentile;
+        this.metricType = metricType;
+        this.failureValue = failureValue;
+
         for (Commit commit : commits) {
             values.put(commit.getId(), new HashMap<Integer, Metric>());
         }
@@ -32,10 +40,11 @@ public class OverviewCollector {
         Metric metric = runs.get(run.getRunNumber());
 
         if (metric == null) {
-            metric = new AvgMetric();
+//            metric = new AvgMetric();
 //            metric = new MinMetric();
 //            metric = new MaxMetric();
 //            metric = new ActualMetric();
+            metric = MetricFactory.getMetric(metricType);
             runs.put(run.getRunNumber(), metric);
         }
 
@@ -43,9 +52,9 @@ public class OverviewCollector {
     }
 
     public Map<String, Map<Integer, Metric>> getValues() {
-        Map<String, Map<Integer, Metric>> filteredValues = OverviewPercentile.filter(values, 100);
+        Map<String, Map<Integer, Metric>> filteredValues = OverviewPercentile.filter(values, percentile);
 //        return FailureFilter.filter(filteredValues, "FAILED");
-        return FailureFilter.filter(filteredValues, null);
+        return FailureFilter.filter(filteredValues, failureValue);
     }
 
     @Override

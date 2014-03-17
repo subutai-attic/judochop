@@ -16,14 +16,15 @@ public class OverviewChart {
     private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
 
-    public String get() throws Exception {
+    public String get(String moduleId, String testName, String metricType, int percentile, String failureValue) {
 
-        List<Commit> commits = commitDao.getByModule("1168044208");
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        List<Commit> commits = commitDao.getByModule("1168044208");
+        List<Commit> commits = commitDao.getByModule(moduleId);
+//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
 
         List<Run> list = runDao.getList(commits, testName);
 
-        OverviewCollector collector = new OverviewCollector( commits );
+        OverviewCollector collector = new OverviewCollector(commits, metricType, percentile, failureValue);
 
         for (Run run : list) {
             collector.collect(run);

@@ -19,7 +19,7 @@ public class FailureFilter {
             for (Integer runNumber : runs.keySet()) {
                 Metric metric = runs.get(runNumber);
 
-                if (type == null
+                if ("ALL".equals(type)
                         || ("FAILED".equals(type) && metric.getFailures() > 0)
                         || ("SUCCESS".equals(type) && metric.getFailures() == 0)
                         ) {

@@ -28,38 +28,38 @@ public class OverviewCalcTest {
 
     @Test
     public void test() throws Exception {
-
-        List<Commit> commits = commitDao.getByModule("1168044208");
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-
-        OverviewCollector collector = new OverviewCollector( commits );
-
-//        List<Run> list = runDao.getAll();
-        List<Run> list = runDao.getList(commits, testName);
-
-        for (Run run : list) {
-            collector.collect(run);
-        }
-
-        System.out.println(collector);
-
-        OverviewFormat format = new OverviewFormat(collector);
-
-        System.out.println( format.getCategories() );
-        System.out.println(format.getSeries());
+//
+//        List<Commit> commits = commitDao.getByModule("1168044208");
+//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//
+//        OverviewCollector collector = new OverviewCollector( commits, 100 );
+//
+////        List<Run> list = runDao.getAll();
+//        List<Run> list = runDao.getList(commits, testName);
+//
+//        for (Run run : list) {
+//            collector.collect(run);
+//        }
+//
+//        System.out.println(collector);
+//
+//        OverviewFormat format = new OverviewFormat(collector);
+//
+//        System.out.println( format.getCategories() );
+//        System.out.println(format.getSeries());
     }
 
     @Test
     public void test2() throws Exception {
 
-        OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
-        List<Run> list = runDao.getAll();
-
-        for (Run run : list) {
-            collector.collect(run);
-        }
-
-        System.out.println(collector);
+//        OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
+//        List<Run> list = runDao.getAll();
+//
+//        for (Run run : list) {
+//            collector.collect(run);
+//        }
+//
+//        System.out.println(collector);
     }
 
     @Test
