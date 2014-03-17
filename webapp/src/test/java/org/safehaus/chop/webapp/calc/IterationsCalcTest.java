@@ -31,7 +31,7 @@ public class IterationsCalcTest {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 2);
+        Map<String, Run> runs = runDao.getMap(commitId, 4);
         Map<Run, List<RunResult>> runResults = runResultDao.getMap(runs);
 
         IterationsCollector collector = new IterationsCollector(runResults);

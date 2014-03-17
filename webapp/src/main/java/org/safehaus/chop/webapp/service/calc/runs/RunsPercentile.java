@@ -30,18 +30,6 @@ public class RunsPercentile {
         return filteredRuns;
     }
 
-    private static Map<Integer, Metric> getRuns(Map<String, Map<Integer, Metric>> filteredValues, String commitId) {
-
-        Map<Integer, Metric> filteredRuns = filteredValues.get( commitId );
-
-        if (filteredRuns == null) {
-            filteredRuns = new HashMap<Integer, Metric>();
-            filteredValues.put(commitId, filteredRuns);
-        }
-
-        return filteredRuns;
-    }
-
     private static double[] toArray(Map<Integer, Metric> runs) {
 
         double arr[] = new double[runs.size()];

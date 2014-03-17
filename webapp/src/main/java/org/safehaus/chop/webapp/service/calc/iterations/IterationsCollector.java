@@ -19,9 +19,9 @@ public class IterationsCollector {
     }
 
     public Map<Run, List<RunResult>> getRunResults() {
-/*        Map<Integer, Metric> filteredRuns = RunsPercentile.filter(runs, 100);
-        return FailureFilter.filter(filteredRuns, null);*/
-        return runResults;
+        Map<Run, List<RunResult>> filteredValues = IterationsPercentile.filter(runResults, 10);
+//        return FailureFilter.filter(filteredRuns, null);
+        return filteredValues;
     }
 
     @Override

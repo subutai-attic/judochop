@@ -16,8 +16,10 @@ public class AvgResult implements RunResult {
     private int count;
 
     public void merge(RunResult runResult) {
-        runTime += runResult.getRunTime();
-        count++;
+        if (runResult != null) {
+            runTime += runResult.getRunTime();
+            count++;
+        }
     }
 
     @Override
@@ -37,7 +39,7 @@ public class AvgResult implements RunResult {
 
     @Override
     public int getRunTime() {
-        return runTime / count;
+        return count == 0 ? -1 : runTime / count;
     }
 
     @Override

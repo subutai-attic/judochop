@@ -31,7 +31,6 @@ public class IterationsAvg {
 
                 RunResult runResult = values.get(i);
                 avg.merge(runResult);
-                System.out.println(runResult.getRunTime());
             }
 
             resultList.add(avg);
