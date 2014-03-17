@@ -11,6 +11,7 @@ import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.ModuleService;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsChart;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 import org.safehaus.chop.webapp.view.window.UserSubwindow;
 
@@ -172,8 +173,8 @@ public class MainUI extends UI {
         JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
 
         try {
-            JavaScript.getCurrent().execute( new OverviewChart().get() );
-//            JavaScript.getCurrent().execute( new RunsChart().get() );
+//            JavaScript.getCurrent().execute( new OverviewChart().get() );
+            JavaScript.getCurrent().execute( new RunsChart().get() );
 //            JavaScript.getCurrent().execute( new IterationsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();
