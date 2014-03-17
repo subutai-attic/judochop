@@ -104,7 +104,7 @@ public class RunnerRegistryImpl implements RunnerRegistry {
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
         String result = resource.path( coordinatorFig.getRunnersRegisterPath() )
-                                .type( MediaType.TEXT_PLAIN ).post( String.class );
+                                .type( MediaType.TEXT_PLAIN ).post( String.class, runner );
 
         LOG.debug( "Got back results from register post = {}", result );
     }

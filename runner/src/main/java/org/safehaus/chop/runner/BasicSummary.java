@@ -1,7 +1,7 @@
 package org.safehaus.chop.runner;
 
 
-import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.api.Summary;
 import org.safehaus.chop.runner.drivers.IterationTracker;
 import org.safehaus.chop.runner.drivers.TimeTracker;
 import org.safehaus.chop.runner.drivers.Tracker;
@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
  * Feel free to stuff any kind of cumulative summary information into this entity.
  * It might be nice to include some percentile information as well.
  */
-public class Summary implements org.safehaus.chop.api.Summary {
+public class BasicSummary implements Summary {
     private final int runNumber;
 
     private long iterations;
@@ -40,7 +40,7 @@ public class Summary implements org.safehaus.chop.api.Summary {
     private boolean saturate = false;
 
 
-    public Summary( int runNumber ) {
+    public BasicSummary( int runNumber ) {
         this.runNumber = runNumber;
     }
 

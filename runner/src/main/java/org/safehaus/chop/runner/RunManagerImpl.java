@@ -28,7 +28,7 @@ import com.sun.jersey.multipart.FormDataMultiPart;
 /**
  * An implementation of the RunManager that works with the Coordinator service on the web ui.
  */
-public class RunManagerImpl implements RunManager {
+public class RunManagerImpl implements RunManager, RestParams {
     private static final Logger LOG = LoggerFactory.getLogger( RunManagerImpl.class );
 
     private CoordinatorFig coordinatorFig;
@@ -58,15 +58,15 @@ public class RunManagerImpl implements RunManager {
 
 
     private WebResource addQueryParameters( WebResource resource, Project project, Runner runner ) {
-        return resource.queryParam( "runnerHostname", runner.getHostname() )
-                .queryParam( "runnerPort", String.valueOf( runner.getServerPort() ) )
-                .queryParam( "runnerIpv4Address", runner.getIpv4Address() )
-                .queryParam( "moduleGroupId", project.getGroupId() )
-                .queryParam( "moduleArtifactId", project.getArtifactId() )
-                .queryParam( "moduleVersion", project.getVersion() )
-                .queryParam( "commitId", project.getVcsVersion() )
-                .queryParam( "username", coordinatorFig.getUsername() )
-                .queryParam( "password", coordinatorFig.getPassword() );
+        return resource.queryParam( RUNNER_HOSTNAME, runner.getHostname() )
+                .queryParam( RUNNER_PORT, String.valueOf( runner.getServerPort() ) )
+                .queryParam( RUNNER_IPV4_ADDRESS, runner.getIpv4Address() )
+                .queryParam( MODULE_GROUPID, project.getGroupId() )
+                .queryParam( MODULE_ARTIFACTID, project.getArtifactId() )
+                .queryParam( MODULE_VERSION, project.getVersion() )
+                .queryParam( COMMIT_ID, project.getVcsVersion() )
+                .queryParam( USERNAME, coordinatorFig.getUsername() )
+                .queryParam( PASSWORD, coordinatorFig.getPassword() );
     }
 
 
@@ -79,7 +79,7 @@ public class RunManagerImpl implements RunManager {
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, me );
         String result = resource.path( coordinatorFig.getUploadSummaryPath() )
-                                .queryParam( "testClass", testClass.getName() )
+                                .queryParam( TEST_CLASS, testClass.getName() )
                                 .type( MediaType.APPLICATION_JSON ).post( String.class, summary );
 
         LOG.debug( "Got back result from summary post = {}", result );
@@ -87,15 +87,15 @@ public class RunManagerImpl implements RunManager {
         // upload the results file
         InputStream in = new FileInputStream( resultsFile );
         FormDataMultiPart part = new FormDataMultiPart();
-        part.field( "file", resultsFile.getName() );
+        part.field( FILENAME, resultsFile.getName() );
 
-        FormDataBodyPart body = new FormDataBodyPart( "content", in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
+        FormDataBodyPart body = new FormDataBodyPart( CONTENT, in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
         part.bodyPart( body );
 
         resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, me );
         result = resource.path( coordinatorFig.getUploadResultsPath() )
-                         .queryParam( "testClass", testClass.getName() )
+                         .queryParam( TEST_CLASS, testClass.getName() )
                          .type( MediaType.MULTIPART_FORM_DATA_TYPE ).post( String.class, part );
 
         LOG.debug( "Got back result from results file upload = {}", result );
@@ -109,8 +109,8 @@ public class RunManagerImpl implements RunManager {
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
         String result = resource.path( coordinatorFig.getRunStatusPath() )
-                                  .queryParam( "runNumber", String.valueOf( runNumber ) )
-                                  .queryParam( "testClass", testClass.getName() )
+                                  .queryParam( RUN_NUMBER, String.valueOf( runNumber ) )
+                                  .queryParam( TEST_CLASS, testClass.getName() )
                                   .type( MediaType.TEXT_PLAIN ).get( String.class );
 
         LOG.debug( "Got back result from run status get = {}", result );

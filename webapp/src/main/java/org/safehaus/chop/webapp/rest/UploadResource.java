@@ -23,23 +23,32 @@ package org.safehaus.chop.webapp.rest;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import org.safehaus.chop.api.RestParams;
+import org.safehaus.chop.webapp.dao.RunDao;
+import org.safehaus.chop.webapp.dao.RunResultDao;
+import org.safehaus.chop.webapp.dao.model.BasicRun;
+import org.safehaus.chop.webapp.dao.model.BasicRunResult;
+import org.safehaus.chop.webapp.elasticsearch.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
 
@@ -47,55 +56,99 @@ import com.sun.jersey.multipart.FormDataParam;
  * REST operation to upload (a.k.a. deploy) a project war file.
  */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
+@Produces( MediaType.TEXT_PLAIN )
 @Path( UploadResource.ENDPOINT_URL )
-public class UploadResource {
+public class UploadResource implements RestParams {
     public final static String ENDPOINT_URL = "/upload";
     private final static Logger LOG = LoggerFactory.getLogger( UploadResource.class );
-    public static final String FILENAME_PARAM = "file";
-    public static final String CONTENT = "content";
 
 
     @Inject
-    RestFig config;
+    private RestFig config;
+
+    @Inject
+    private RunDao runDao;
+
+    @Inject
+    private RunResultDao runResultDao;
 
 
-//    @POST
-//    @Consumes( MediaType.MULTIPART_FORM_DATA )
-//    public Response upload(
-//            @FormDataParam( CONTENT ) InputStream in,
-//            @FormDataParam( FILENAME_PARAM ) String fileName )
-//    {
-//        LOG.warn( "upload called ..." );
-//        LOG.info( "fileDetails = " + fileName );
-//
-//        // handle the upload of the war file to some path on the file system
-//        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
-//        writeToFile( in, fileLocation );
-//
-//        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
-//    }
+    @POST
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
+    @Produces( MediaType.TEXT_PLAIN )
+    public Response upload(
+            @FormDataParam( CONTENT ) InputStream in,
+            @FormDataParam( FILENAME ) String fileName )
+    {
+        LOG.warn( "upload called ..." );
+        LOG.info( "fileDetails = " + fileName );
+
+        // handle the upload of the war file to some path on the file system
+        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
+        writeToFile( in, fileLocation );
+        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+    }
 
 
-//    @POST
-//    @Consumes( MediaType.MULTIPART_FORM_DATA )
-//    public Response upload()
-////            @FormDataParam( CONTENT ) FormDataBodyPart content )
-////            @FormDataParam( CONTENT ) InputStream in,
-////            @FormDataParam( FILENAME_PARAM ) String fileName )
-//    {
-////        FormDataContentDisposition cd = content.getFormDataContentDisposition();
-////        InputStream in = content.getValueAs( InputStream.class );
-////
-////        LOG.warn( "upload called ..." );
-////        LOG.info( "fileDetails = " + cd.getFileName() );
-////
-////        // handle the upload of the war file to some path on the file system
-////        String fileLocation = /* config.getWarUploadPath() + */ cd.getFileName();
-////        writeToFile( in, fileLocation );
-//
-//        return Response.status( Response.Status.CREATED ).entity( "ffooo" ).build();
-//    }
+    @SuppressWarnings( "unchecked" )
+    @POST
+    @Path( "/results" )
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
+    @Produces( MediaType.TEXT_PLAIN )
+    public Response uploadResults(
+        @FormDataParam( CONTENT ) InputStream in,
+        @FormDataParam( RUN_ID ) String runId ) throws Exception
+    {
+        JSONObject object = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
+        JSONArray runResults = ( JSONArray ) object.get( "runResults" );
+        Iterator<JSONObject> iterator = runResults.iterator();
+
+        //noinspection WhileLoopReplaceableByForEach
+        while( iterator.hasNext() ) {
+            JSONObject jsonResult = iterator.next();
+
+            BasicRunResult runResult = new BasicRunResult(
+                    runId,
+                    Util.getInt( jsonResult, "runCount" ),
+                    Util.getInt( jsonResult, "runTime" ),
+                    Util.getInt( jsonResult, "ignoreCount" ),
+                    Util.getInt( jsonResult, "failureCount" )
+            );
+
+            if ( runResultDao.save( runResult ) ) {
+                LOG.info( "Saved run result: {}", runResult );
+            }
+        }
+
+        return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+    }
+
+
+    @SuppressWarnings( "unchecked" )
+    @POST
+    @Path( "/summary" )
+    @Consumes( MediaType.MULTIPART_FORM_DATA )
+    @Produces( MediaType.TEXT_PLAIN )
+    public Response uploadSummary( @FormDataParam( CONTENT ) InputStream in,
+                                   @FormDataParam( RUNNER_HOSTNAME ) String runnerHostname ) throws Exception
+    {
+        JSONObject json = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
+        BasicRun run = new BasicRun(
+                COMMIT_ID,
+                runnerHostname,
+                Util.getInt( json, "runNumber" ),
+                Util.getString( json, "testName" ) );
+        run.copyJson( json );
+
+        if ( runDao.save( run ) ) {
+            LOG.info( "Created new Run {} ", run );
+        }
+        else {
+            LOG.warn( "Failed to create new Run" );
+        }
+
+        return Response.status( Response.Status.CREATED ).entity( run.getId() ).build();
+    }
 
 
     private void writeToFile( InputStream in, String fileLocation )
