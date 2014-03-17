@@ -1,5 +1,6 @@
 package org.safehaus.chop.webapp.view.chart.overview;
 
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
@@ -17,20 +18,15 @@ public class OverviewChart {
 
     public String get() throws Exception {
 
-        OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
-        List<Run> list = runDao.getAll();
-        int i = 0;
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> list = runDao.getList(commits, testName);
+
+        OverviewCollector collector = new OverviewCollector( commits );
 
         for (Run run : list) {
-
-            System.out.println(run);
-
             collector.collect(run);
-
-            i++;
-            if (i == 3) {
-//                break;
-            }
         }
 
         System.out.println(collector);

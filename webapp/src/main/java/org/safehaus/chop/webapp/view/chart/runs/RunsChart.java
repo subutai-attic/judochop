@@ -1,9 +1,12 @@
 package org.safehaus.chop.webapp.view.chart.runs;
 
+import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.runs.*;
 import org.safehaus.chop.webapp.view.util.FileUtil;
+
+import java.util.List;
 
 public class RunsChart {
 
@@ -13,7 +16,10 @@ public class RunsChart {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        RunsCollector collector = new RunsCollector( runDao.getList(commitId) );
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> runs = runDao.getList(commitId, testName);
+        RunsCollector collector = new RunsCollector(runs);
 
         System.out.println(collector);
 

@@ -174,8 +174,8 @@ public class MainUI extends UI {
 
         try {
 //            JavaScript.getCurrent().execute( new OverviewChart().get() );
-            JavaScript.getCurrent().execute( new RunsChart().get() );
-//            JavaScript.getCurrent().execute( new IterationsChart().get() );
+//            JavaScript.getCurrent().execute( new RunsChart().get() );
+            JavaScript.getCurrent().execute( new IterationsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();
         }

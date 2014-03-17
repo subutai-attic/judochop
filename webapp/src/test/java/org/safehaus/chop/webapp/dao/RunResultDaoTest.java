@@ -56,7 +56,9 @@ public class RunResultDaoTest {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 10);
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        Map<String, Run> runs = runDao.getMap(commitId, 10, testName);
         Map<Run, List<RunResult>> runResults = runResultDao.getMap(runs);
 
         for (Run run : runResults.keySet()) {

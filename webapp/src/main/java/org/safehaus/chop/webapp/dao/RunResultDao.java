@@ -102,8 +102,8 @@ public class RunResultDao extends Dao<RunResult> {
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("runResult")
-                .setQuery(multiMatchQuery(runIds, "runId"))
-                .addSort(fieldSort("createTime"))
+                .setQuery( multiMatchQuery(runIds, "runId") )
+                .addSort( fieldSort("createTime") )
                 .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
