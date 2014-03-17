@@ -11,6 +11,14 @@ public interface Summary {
 
     String getRunId();
 
+
+    @JsonProperty
+    String getTestName();
+
+
+    @JsonProperty
+    int getRunNumber();
+
     /**
      * Gets the number of iterations used in an IterationChop if the
      * chop summary is for an IterationChop, otherwise this value for

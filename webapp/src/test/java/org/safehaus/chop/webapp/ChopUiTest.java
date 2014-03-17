@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.webapp.rest.TestGetResource;
 import org.safehaus.chop.webapp.rest.UploadResource;
 import org.safehaus.embedded.jetty.utils.CertUtils;
@@ -62,7 +63,7 @@ public class ChopUiTest {
         InputStream in = getClass().getClassLoader().getResourceAsStream( "log4j.properties" );
 
         FormDataMultiPart part = new FormDataMultiPart();
-        part.field( UploadResource.FILENAME_PARAM, "log4j.properties" );
+        part.field( RestParams.FILENAME, "log4j.properties" );
 
         FormDataBodyPart body = new FormDataBodyPart( UploadResource.CONTENT,
                 in, MediaType.APPLICATION_OCTET_STREAM_TYPE );

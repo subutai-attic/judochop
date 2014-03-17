@@ -1,12 +1,16 @@
 package org.safehaus.chop.webapp.upload;
 
-import java.io.*;
+
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.util.Properties;
 
 import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 
 public class FileUtil {
 
@@ -38,7 +42,7 @@ public class FileUtil {
         JSONObject json = null;
 
         try {
-            Object obj = new JSONParser().parse(new FileReader(filePath));
+            Object obj = new JSONParser().parse( new FileReader( filePath ) );
             json = (JSONObject) obj;
         } catch (Exception e) {
             e.printStackTrace();

@@ -231,7 +231,7 @@ public class Controller implements IController, Runnable {
                     state, currentDriver.isRunning());
 
             if ( currentDriver.isComplete() ) {
-                Summary summary = new Summary( runNumber );
+                BasicSummary summary = new BasicSummary( runNumber );
                 summary.setIterationTracker( ( ( IterationDriver ) currentDriver ).getTracker() );
                 try {
                     runManager.store( project, summary, currentDriver.getResultsFile(),
@@ -300,7 +300,7 @@ public class Controller implements IController, Runnable {
                     state, currentDriver.isRunning());
 
             if ( currentDriver.isComplete() ) {
-                Summary summary = new Summary( runNumber );
+                BasicSummary summary = new BasicSummary( runNumber );
                 summary.setTimeTracker( ( ( TimeDriver ) currentDriver ).getTracker() );
                 try {
                     runManager.store( project, summary, currentDriver.getResultsFile(),

@@ -87,12 +87,18 @@
           -->
 
           <excludes>
+            <exclude>**/NoteDaoTest.java</exclude>
             <exclude>**/CommitDaoTest.java</exclude>
             <exclude>**/ModuleDaoTest.java</exclude>
             <exclude>**/RunDaoTest.java</exclude>
             <exclude>**/RunResultDaoTest.java</exclude>
             <exclude>**/SummaryDaoTest.java</exclude>
+            <exclude>**/RunnerDaoTest.java</exclude>
             <exclude>**/ElasticSearchClientTest.java</exclude>
+            <exclude>**/RunsCalcTest.java</exclude>
+            <exclude>**/OverviewCalcTest.java</exclude>
+            <exclude>**/IterationsCalcTest.java</exclude>
+            <exclude>**/ChopUiTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
