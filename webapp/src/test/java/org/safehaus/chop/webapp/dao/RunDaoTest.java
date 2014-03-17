@@ -1,10 +1,12 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
@@ -12,6 +14,7 @@ import org.safehaus.chop.webapp.dao.model.BasicRun;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +25,10 @@ public class RunDaoTest {
     @Inject
     @SuppressWarnings("unused")
     private RunDao runDao;
+
+    @Inject
+    @SuppressWarnings("unuzed")
+    private CommitDao commitDao;
 
     @Test
     public void save() throws Exception {
@@ -41,6 +48,21 @@ public class RunDaoTest {
     public void getAll() {
 
         List<Run> list = runDao.getAll();
+
+        for (Run run : list) {
+            System.out.println(run);
+        }
+
+        System.out.println("count: " + list.size());
+    }
+
+    @Test
+    public void getListByCommits() {
+
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> list = runDao.getList(commits, testName);
 
         for (Run run : list) {
             System.out.println(run);
@@ -83,5 +105,15 @@ public class RunDaoTest {
         }
 
 //        System.out.println("count: " + list.size());
+    }
+
+    @Test
+    public void getTestNames() {
+
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        Set<String> names = runDao.getTestNames(commits);
+
+        System.out.println(names);
+
     }
 }

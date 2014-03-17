@@ -10,6 +10,7 @@ import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class CommitDao extends Dao<Commit> {
         return response.isCreated();
     }
 
-    public List<Commit> getByModule(String moduleId) throws Exception {
+    public List<Commit> getByModule(String moduleId) {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
@@ -56,7 +57,7 @@ public class CommitDao extends Dao<Commit> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
-        System.out.println(response);
+//        System.out.println(response);
 
         ArrayList<Commit> list = new ArrayList<Commit>();
 

@@ -173,8 +173,8 @@ public class MainUI extends UI {
         JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
 
         try {
-//            JavaScript.getCurrent().execute( new OverviewChart().get() );
-            JavaScript.getCurrent().execute( new RunsChart().get() );
+            JavaScript.getCurrent().execute( new OverviewChart().get() );
+//            JavaScript.getCurrent().execute( new RunsChart().get() );
 //            JavaScript.getCurrent().execute( new IterationsChart().get() );
         } catch (Exception e) {
             e.printStackTrace();

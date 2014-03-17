@@ -9,6 +9,7 @@ import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,8 @@ import java.util.List;
 public class CommitDaoTest {
 
     @Inject
-    private CommitDao commitDao = null;
+    @SuppressWarnings("unuzed")
+    private CommitDao commitDao;
 
     @Test
     public void save() throws Exception {
@@ -36,7 +38,7 @@ public class CommitDaoTest {
     }
 
     @Test
-    public void testGetAll() throws Exception {
+    public void testGetAll() {
 
         List<Commit> list = commitDao.getByModule("1168044208");
 

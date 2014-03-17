@@ -6,6 +6,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.CommitDao;
@@ -28,8 +29,13 @@ public class OverviewCalcTest {
     @Test
     public void test() throws Exception {
 
-        OverviewCollector collector = new OverviewCollector( commitDao.getByModule("1168044208") );
-        List<Run> list = runDao.getAll();
+        List<Commit> commits = commitDao.getByModule("1168044208");
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        OverviewCollector collector = new OverviewCollector( commits );
+
+//        List<Run> list = runDao.getAll();
+        List<Run> list = runDao.getList(commits, testName);
 
         for (Run run : list) {
             collector.collect(run);

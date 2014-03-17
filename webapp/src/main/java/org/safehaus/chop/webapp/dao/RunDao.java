@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -10,20 +11,20 @@ import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.statistical.StatisticalFacet;
+import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.facet.FacetBuilders.statisticalFacet;
+import static org.elasticsearch.search.facet.FacetBuilders.termsFacet;
 
 public class RunDao extends Dao<Run> {
 
@@ -145,6 +146,45 @@ public class RunDao extends Dao<Run> {
                 .execute().actionGet();
 
         return toList(response);
+    }
+
+    public List<Run> getList(List<Commit> commits, String testName) {
+
+        String commitIds = StringUtils.join(commits, ' ');
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery( multiMatchQuery(commitIds, "commitId") )
+                .setQuery( termQuery("testName", testName.toLowerCase()) )
+                .setSize(MAX_RESULT_SIZE)
+                .execute()
+                .actionGet();
+
+        return toList(response);
+    }
+
+    public Set<String> getTestNames(List<Commit> commits) {
+
+        String commitIds = StringUtils.join(commits, ' ');
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch("modules")
+                .setTypes("run")
+                .setQuery( multiMatchQuery(commitIds, "commitId") )
+                .setSize(MAX_RESULT_SIZE)
+                .execute()
+                .actionGet();
+
+//        System.out.println(response);
+
+        HashSet<String> names = new HashSet<String>();
+
+        for (SearchHit hit : response.getHits().hits()) {
+            names.add( Util.getString(hit.getSource(), "testName") );
+        }
+
+        return names;
     }
 
     private static List<Run> toList(SearchResponse response) {

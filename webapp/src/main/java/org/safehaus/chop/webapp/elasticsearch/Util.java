@@ -9,8 +9,16 @@ public class Util {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static Date toDate(String dateStr) throws ParseException {
-        return DATE_FORMAT.parse( dateStr.replaceAll("T", " ") );
+    public static Date toDate(String dateStr) {
+        Date date = null;
+
+        try {
+            date = DATE_FORMAT.parse( dateStr.replaceAll("T", " ") );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
     }
 
     public static int getInt(Map<String, Object> json, String key) {
