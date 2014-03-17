@@ -98,15 +98,18 @@ public class RunDaoTest {
     }
 
     @Test
-    public void getListByCommitAndRunNumber() {
+    public void getMapByCommitAndRunNumber() {
 
-        Map<String, Run> runs = runDao.getMap("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 2);
+        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        Map<String, Run> runs = runDao.getMap(commitId, 2, testName);
 
         for (String runId : runs.keySet()) {
             System.out.println(runId + ": " + runs.get(runId));
         }
 
-//        System.out.println("count: " + list.size());
+        System.out.println("count: " + runs.size());
     }
 
     @Test

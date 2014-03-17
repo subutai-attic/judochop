@@ -84,11 +84,13 @@ public class RunDao extends Dao<Run> {
         return hits.length > 0 ? toRun(hits[0]) : null;
     }
 
-    public Map<String, Run> getMap(String commitId, int runNumber) {
+    // <runId, Run>
+    public Map<String, Run> getMap(String commitId, int runNumber, String testName) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must( termQuery("commitId", commitId.toLowerCase()) )
-                .must( termQuery("runNumber", runNumber) );
+                .must( termQuery("runNumber", runNumber) )
+                .must( termQuery("testName", testName.toLowerCase()) );
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
