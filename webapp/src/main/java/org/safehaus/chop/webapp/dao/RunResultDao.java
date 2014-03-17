@@ -31,9 +31,9 @@ public class RunResultDao extends Dao<RunResult> {
 
     public boolean save(RunResult runResult) throws Exception {
 
-        if (runResult.getRunId().equals("-1683882156")) {
-            System.out.println(runResult);
-        }
+//        if (runResult.getRunId().equals("-1683882156")) {
+//            System.out.println(runResult);
+//        }
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex("modules", "runResult", runResult.getId())
@@ -46,6 +46,7 @@ public class RunResultDao extends Dao<RunResult> {
                                 .field("ignoreCount", runResult.getIgnoreCount())
                                 .field("failureCount", runResult.getFailureCount())
                                 .field("createTime", System.nanoTime())
+                                .field("failures", runResult.getFailures())
                                 .endObject()
                 )
                 .execute()
@@ -64,7 +65,7 @@ public class RunResultDao extends Dao<RunResult> {
                 .execute()
                 .actionGet();
 
-//        System.out.println(response);
+        System.out.println(response);
 
         return toList(response);
     }
@@ -89,7 +90,8 @@ public class RunResultDao extends Dao<RunResult> {
                 Util.getInt(json, "runCount"),
                 Util.getInt(json, "runTime"),
                 Util.getInt(json, "ignoreCount"),
-                Util.getInt(json, "failureCount")
+                Util.getInt(json, "failureCount"),
+                Util.getString(json, "failures")
         );
     }
 

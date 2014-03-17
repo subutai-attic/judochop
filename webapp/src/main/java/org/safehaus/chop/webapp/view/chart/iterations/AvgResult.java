@@ -1,5 +1,7 @@
 package org.safehaus.chop.webapp.view.chart.iterations;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
 
@@ -11,15 +13,25 @@ public class AvgResult implements RunResult {
     private int runTime;
     private int ignoreCount;
     private int failureCount;
-    private String failures;
+    private String failures = "";
 
     private int count;
 
     public void merge(RunResult runResult) {
-        if (runResult != null) {
-            runTime += runResult.getRunTime();
-            count++;
+        if (runResult == null) {
+            return;
         }
+
+        runTime += runResult.getRunTime();
+        count++;
+
+        failureCount += runResult.getFailureCount();
+        ignoreCount += runResult.getIgnoreCount();
+    }
+
+    @Override
+    public int getRunTime() {
+        return count == 0 ? -1 : runTime / count;
     }
 
     @Override
@@ -38,11 +50,6 @@ public class AvgResult implements RunResult {
     }
 
     @Override
-    public int getRunTime() {
-        return count == 0 ? -1 : runTime / count;
-    }
-
-    @Override
     public int getIgnoreCount() {
         return ignoreCount;
     }
@@ -55,5 +62,17 @@ public class AvgResult implements RunResult {
     @Override
     public String getFailures() {
         return failures;
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id)
+                .append("runId", runId)
+                .append("runCount", runCount)
+                .append("runTime", getRunTime())
+                .append("ignoreCount", ignoreCount)
+                .append("failureCount", failureCount)
+                .append("failures", failures)
+                .toString();
     }
 }
