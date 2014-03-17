@@ -20,16 +20,18 @@
 package org.safehaus.chop.webapp.rest;
 
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.RunnerDao;
 import org.slf4j.Logger;
@@ -54,43 +56,51 @@ public class RunnerRegistryResource {
     private RunnerDao runnerDao;
 
 
-    @POST
+    @GET
     @Path( "/list" )
-    public Response list() throws Exception {
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response list( @QueryParam(  RestParams.COMMIT_ID ) String commitId ) throws Exception {
         LOG.warn( "Calling list ..." );
-
-        Map<String, Runner> runnerMap = runnerDao.getRunners();
-        List<Runner> runnerList = new ArrayList<Runner>( runnerMap.size() );
-        Runner[] runners = new Runner[runnerMap.size()];
-
-        for ( String key : runnerMap.keySet() ) {
-            runnerList.add( runnerMap.get( key ) );
-        }
-
-        return Response.status( Response.Status.CREATED )
-                       .entity( runnerList.toArray( runners ) ).build();
+        List<Runner> runnerList = runnerDao.getRunners( commitId );
+        Runner[] runners = new Runner[runnerList.size()];
+        return Response.status( Response.Status.CREATED ).entity( runnerList.toArray( runners ) ).build();
     }
 
 
     @POST
     @Path( "/register" )
+    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.TEXT_PLAIN )
-    public Response register() {
+    public Response register( @QueryParam( RestParams.COMMIT_ID ) String commitId, Runner runner ) throws Exception
+    {
         LOG.warn( "Calling register ..." );
 
-
-
-        return Response.status( Response.Status.CREATED )
-                       .entity( "TRUE" ).build();
+        if ( runnerDao.save( runner, commitId ) ) {
+            LOG.info( "registered runner {}", runner.getHostname() );
+            return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+        }
+        else {
+            LOG.warn( "failed to register runner {}", runner.getHostname() );
+            return Response.status( Response.Status.CREATED ).entity( "FALSE" ).build();
+        }
     }
 
 
     @POST
     @Path( "/unregister" )
+    @Consumes( MediaType.APPLICATION_JSON )
     @Produces( MediaType.TEXT_PLAIN )
-    public Response unregister() {
+    public Response unregister( @QueryParam( RestParams.RUNNER_HOSTNAME ) String runnerHostname )
+    {
         LOG.warn( "Calling unregister ..." );
-        return Response.status( Response.Status.CREATED )
-                       .entity( "TRUE" ).build();
+
+        if ( runnerDao.delete( runnerHostname ) ) {
+            LOG.info( "unregistered runner {}", runnerHostname );
+            return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+        }
+        else {
+            LOG.warn( "failed to unregister runner {}", runnerHostname );
+            return Response.status( Response.Status.CREATED ).entity( "FALSE" ).build();
+        }
     }
 }
