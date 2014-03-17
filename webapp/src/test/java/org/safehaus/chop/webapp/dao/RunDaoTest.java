@@ -76,7 +76,9 @@ public class RunDaoTest {
 
 //        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
         String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        List<Run> list = runDao.getList(commitId);
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> list = runDao.getList(commitId, testName);
 
         for (Run run : list) {
             System.out.println(run);

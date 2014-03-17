@@ -5,9 +5,12 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.calc.runs.*;
+
+import java.util.List;
 
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)
@@ -21,7 +24,11 @@ public class RunsCalcTest {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        RunsCollector collector = new RunsCollector( runDao.getList(commitId) );
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+
+        List<Run> runs = runDao.getList(commitId, testName);
+
+        RunsCollector collector = new RunsCollector( runs );
         System.out.println(collector.getRuns());
 
 //        RunsFormat format = new RunsFormat(collector);
