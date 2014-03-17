@@ -30,27 +30,18 @@ public class RunnerDaoTest {
             "/tmp"
         );
 
-        boolean created = runnerDao.save(runner);
+        boolean created = runnerDao.save(runner, "commitId");
         System.out.println(created + ": " + runner);
     }
 
     @Test
     public void delete() {
-
-        BasicRunner runner = new BasicRunner(
-                "127.0.0.1",
-                "localhost",
-                8080,
-                "http://localhost:8080",
-                "/tmp"
-        );
-
-        System.out.println( runnerDao.delete(runner) );
+        System.out.println( runnerDao.delete("localhost") );
     }
 
     @Test
     public void getRunners() {
-        System.out.println( runnerDao.getRunners() );
+        System.out.println( runnerDao.getRunners("commitId") );
     }
 
 }

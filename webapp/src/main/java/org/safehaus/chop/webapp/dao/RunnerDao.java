@@ -53,10 +53,10 @@ public class RunnerDao {
         return response.isCreated();
     }
 
-    public boolean delete(Runner runner) {
+    public boolean delete(String hostname) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete("runners", "runner", runner.getHostname())
+                .prepareDelete("runners", "runner", hostname)
                 .execute()
                 .actionGet();
 
