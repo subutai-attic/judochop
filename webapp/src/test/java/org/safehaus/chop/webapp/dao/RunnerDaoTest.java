@@ -9,6 +9,7 @@ import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRunner;
 
+import java.util.List;
 import java.util.Map;
 
 @RunWith(JukitoRunner.class)
@@ -34,22 +35,22 @@ public class RunnerDaoTest {
     }
 
     @Test
-    public void testGetRunners() throws Exception {
+    public void delete() {
 
-        Map<String, Runner> runners = runnerDao.getRunners();
+        BasicRunner runner = new BasicRunner(
+                "127.0.0.1",
+                "localhost",
+                8080,
+                "http://localhost:8080",
+                "/tmp"
+        );
 
-        System.out.println(runners);
-        System.out.println("count: " + runners.size());
+        System.out.println( runnerDao.delete(runner) );
     }
 
     @Test
-    public void testGet() {
-        System.out.println( runnerDao.get("-1492679439") );
-    }
-
-    @Test
-    public void testDelete() {
-        System.out.println( runnerDao.delete("-1492679439") );
+    public void getRunners() {
+        System.out.println( runnerDao.getRunners() );
     }
 
 }
