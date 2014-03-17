@@ -23,28 +23,23 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
-public class RunnerDao extends Dao<Runner> {
+public class RunnerDao {
+
+    protected ElasticSearchClient elasticSearchClient;
 
     @Inject
     public RunnerDao(ElasticSearchClient elasticSearchClient) {
-        super(elasticSearchClient);
+        this.elasticSearchClient = elasticSearchClient;
     }
 
-    @Override
-    public boolean save(Runner runner) throws Exception {
-
-        // TODO: key should be given as a param?
-        String key = "" + new HashCodeBuilder()
-                .append(runner.getIpv4Address())
-                .append(runner.getHostname())
-                .append(runner.getServerPort())
-                .toHashCode();
+    public boolean save(Runner runner, String commitId) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("runners", "runner", key)
+                .prepareIndex("runners", "runner", runner.getHostname())
                 .setSource(
                         jsonBuilder()
                                 .startObject()
+                                .field("commitId", commitId)
                                 .field("ipv4Address", runner.getIpv4Address())
                                 .field("hostname", runner.getHostname())
                                 .field("serverPort", runner.getServerPort())
@@ -58,18 +53,34 @@ public class RunnerDao extends Dao<Runner> {
         return response.isCreated();
     }
 
-    public Runner get(String key) {
+    public boolean delete(Runner runner) {
+
+        DeleteResponse response = elasticSearchClient.getClient()
+                .prepareDelete("runners", "runner", runner.getHostname())
+                .execute()
+                .actionGet();
+
+        return response.isFound();
+    }
+
+    public List<Runner> getRunners(String commitId) {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("runners")
                 .setTypes("runner")
-                .setQuery(termQuery("_id", key))
+                .setQuery( termQuery("commitId", commitId.toLowerCase()) )
                 .execute()
                 .actionGet();
 
-        SearchHit hits[] = response.getHits().hits();
+        System.out.println(response);
 
-        return hits.length > 0 ? toRunner(hits[0]) : null;
+        ArrayList<Runner> runners = new ArrayList<Runner> ();
+
+        for (SearchHit hit : response.getHits().hits()) {
+            runners.add( toRunner(hit) );
+        }
+
+        return runners;
     }
 
     private static Runner toRunner(SearchHit hit) {
@@ -83,34 +94,6 @@ public class RunnerDao extends Dao<Runner> {
                 Util.getString(json, "url"),
                 Util.getString(json, "tempDir")
         );
-    }
-
-    public Map<String, Runner> getRunners() throws Exception {
-
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("runners")
-                .setTypes("runner")
-                .execute().actionGet();
-
-        System.out.println(response);
-
-        HashMap<String, Runner> runners = new HashMap<String, Runner> ();
-
-        for (SearchHit hit : response.getHits().hits()) {
-            runners.put(hit.getId(), toRunner(hit));
-        }
-
-        return runners;
-    }
-
-    public boolean delete(String key) {
-
-        DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete("runners", "runner", key)
-                .execute()
-                .actionGet();
-
-        return response.isFound();
     }
 
 }
