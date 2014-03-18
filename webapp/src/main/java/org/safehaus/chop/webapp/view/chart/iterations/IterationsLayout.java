@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.view.chart.runs;
+package org.safehaus.chop.webapp.view.chart.iterations;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
@@ -9,58 +9,29 @@ import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainUI;
-import org.safehaus.chop.webapp.view.window.UserSubwindow;
+import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 
-public class RunsLayout extends AbsoluteLayout {
+public class IterationsLayout extends AbsoluteLayout {
 
-    private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
-    private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
-    private NoteDao noteDao = InjectorFactory.getInstance(NoteDao.class);
+    private IterationsChart iterationsChart = new IterationsChart();
 
-    private RunsChart runsChart = new RunsChart();
-
-    private ComboBox metricCombo;
     private ComboBox percentileCombo;
     private ComboBox failureCombo;
 
     private MainUI mainUI;
 
-    private Button runNumberButton;
-
-    public RunsLayout(MainUI mainUI) {
+    public IterationsLayout(MainUI mainUI) {
 
         this.mainUI = mainUI;
 
         setSizeFull();
 
-        addMetricCombo();
         addPercentileCombo();
         addFailureCombo();
         addSubmitButton();
         addChartLayout();
 
         addBackButton();
-        addRunNumberButton();
-    }
-
-    private void addRunNumberButton() {
-
-        runNumberButton = new Button("...");
-        runNumberButton.setId("commitIdButton");
-
-        runNumberButton.setStyleName(Reindeer.BUTTON_LINK);
-        this.addComponent(runNumberButton, "left: 800px; top: 30px;");
-
-        runNumberButton.addClickListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                runNumberButtonClicked();
-            }
-        });
-    }
-
-    private void runNumberButtonClicked() {
-//        System.out.println(selectedRunNumber);
-        mainUI.showIterationsLayout(selectedRunNumber);
     }
 
     private void addBackButton() {
@@ -72,7 +43,7 @@ public class RunsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                mainUI.showOverviewLayout();
+                mainUI.showRunsLayout("");
             }
         });
     }
@@ -82,7 +53,7 @@ public class RunsLayout extends AbsoluteLayout {
         AbsoluteLayout chartLayout = new AbsoluteLayout();
         chartLayout.setWidth(700, Sizeable.UNITS_PIXELS);
         chartLayout.setHeight(400, Sizeable.UNITS_PIXELS);
-        chartLayout.setId("runsChart");
+        chartLayout.setId("iterationsChart");
 
         this.addComponent(chartLayout, "left: 10px; top: 150px;");
     }
@@ -144,68 +115,42 @@ public class RunsLayout extends AbsoluteLayout {
         percentileCombo = comboBox;
     }
 
-    private void addMetricCombo() {
-
-        ComboBox comboBox = new ComboBox("Metric:");
-        comboBox.setTextInputAllowed(false);
-        comboBox.setNullSelectionAllowed(false);
-
-        comboBox.addItem("Avg Time");
-        comboBox.addItem("Min Time");
-        comboBox.addItem("Max Time");
-        comboBox.addItem("Actual Time");
-
-        comboBox.select("Avg Time");
-
-        this.addComponent(comboBox, "left: 10px; top: 80px;");
-
-        metricCombo = comboBox;
+    private void loadChart(String testName, String commitId, int runNumber, int percentile, String failureValue) {
+        String chart = iterationsChart.get(testName, commitId, runNumber, percentile, failureValue);
+        JavaScript.getCurrent().execute(chart);
     }
 
-    private void loadChart(String testName, String commitId, String metricType, int percentile, String failureValue) {
-        String chart = runsChart.get(testName, commitId, metricType, percentile, failureValue);
-        JavaScript.getCurrent().execute(chart);
+    public void loadChart(int runNumber) {
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+        int percentile = 100;
+        String failureValue = "ALL";
+
+        loadChart(testName, commitId, runNumber, percentile, failureValue);
     }
 
     public void loadScripts() {
         try {
             String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
             String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-            String metricType = "Avg Time";
+            int runNumber = 2;
             int percentile = 100;
             String failureValue = "ALL";
 
-            loadChart(testName, commitId, metricType, percentile, failureValue);
+            loadChart(testName, commitId, runNumber, percentile, failureValue);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        addJavaScriptCallback();
-    }
-
-    private int selectedRunNumber = 1;
-
-    private void addJavaScriptCallback() {
-        JavaScript.getCurrent().addFunction("handleRunNumber",
-                new JavaScriptFunction() {
-                    @Override
-                    public void call(org.json.JSONArray args) throws JSONException {
-                        selectedRunNumber = args.getInt(0);
-                        runNumberButton.setCaption(""+selectedRunNumber);
-                    }
-                }
-        );
     }
 
     private void submitButtonClicked() {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
         String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-        String metricType = (String) metricCombo.getValue();
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
         String failureType = (String) failureCombo.getValue();
 
-        loadChart(testName, commitId, metricType, percentile, failureType);
+        loadChart(testName, commitId, 2, percentile, failureType);
     }
 
 }

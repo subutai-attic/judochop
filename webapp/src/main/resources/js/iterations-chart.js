@@ -3,7 +3,7 @@ function pointClicked() {
     console.log(point.info);
 }
 
-$('#chart').highcharts({
+$('#iterationsChart').highcharts({
     chart: {
         type: 'spline'
     },

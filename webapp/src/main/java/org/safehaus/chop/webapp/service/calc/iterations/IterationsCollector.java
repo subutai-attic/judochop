@@ -9,14 +9,18 @@ import java.util.Map;
 public class IterationsCollector {
 
     private Map<Run, List<RunResult>> runResults;
+    private int percentile;
+    private String failureValue;
 
-    public IterationsCollector(Map<Run, List<RunResult>> runResults) {
+    public IterationsCollector(Map<Run, List<RunResult>> runResults, int percentile, String failureValue) {
         this.runResults = runResults;
+        this.percentile = percentile;
+        this.failureValue = failureValue;
     }
 
     public Map<Run, List<RunResult>> getRunResults() {
-        Map<Run, List<RunResult>> filteredValues = IterationsPercentile.filter(runResults, 100);
-        return FailureFilter.filter(filteredValues, null);
+        Map<Run, List<RunResult>> filteredValues = IterationsPercentile.filter(runResults, percentile);
+        return FailureFilter.filter(filteredValues, failureValue);
     }
 
     @Override

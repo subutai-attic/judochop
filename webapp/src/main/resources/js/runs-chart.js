@@ -1,9 +1,10 @@
 function pointClicked() {
     var point = this;
-    console.log(point.info);
+    console.log(point.info.runNumber);
+    handleRunNumber(point.info.runNumber);
 }
 
-$('#chart').highcharts({
+$('#runsChart').highcharts({
     chart: {
         type: 'spline'
     },

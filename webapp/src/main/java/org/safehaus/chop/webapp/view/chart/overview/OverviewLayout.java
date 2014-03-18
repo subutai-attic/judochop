@@ -47,6 +47,21 @@ public class OverviewLayout extends AbsoluteLayout {
         addChartLayout();
 
         addCommitIdButton();
+//        addJavaScriptCallback();
+    }
+
+    private void addBackButton() {
+
+        Button button = new Button("Back");
+
+        button.setStyleName(Reindeer.BUTTON_LINK);
+        this.addComponent(button, "left: 700px; top: 30px;");
+
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                mainUI.showRunsLayout("");
+            }
+        });
     }
 
     private void addCommitIdButton() {
@@ -78,7 +93,7 @@ public class OverviewLayout extends AbsoluteLayout {
         AbsoluteLayout chartLayout = new AbsoluteLayout();
         chartLayout.setWidth(700, Sizeable.UNITS_PIXELS);
         chartLayout.setHeight(400, Sizeable.UNITS_PIXELS);
-        chartLayout.setId("chart");
+        chartLayout.setId("overviewChart");
 
         this.addComponent(chartLayout, "left: 10px; top: 150px;");
     }
@@ -230,8 +245,8 @@ public class OverviewLayout extends AbsoluteLayout {
 
     public void loadScripts() {
 
-        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
-        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
+//        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
+//        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
 
         try {
             String moduleId = "1168044208";
@@ -245,16 +260,30 @@ public class OverviewLayout extends AbsoluteLayout {
             e.printStackTrace();
         }
 
-        JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
-            new JavaScriptFunction() {
-                @Override
-                public void call(org.json.JSONArray args) throws JSONException {
-                    String commitId = args.getString(0);
-                    commitIdButton.setCaption(commitId);
-                }
-            }
-        );
+        addJavaScriptCallback();
 
+//        JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
+//            new JavaScriptFunction() {
+//                @Override
+//                public void call(org.json.JSONArray args) throws JSONException {
+//                    String commitId = args.getString(0);
+//                    commitIdButton.setCaption(commitId);
+//                }
+//            }
+//        );
+
+    }
+
+    private void addJavaScriptCallback() {
+        JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
+                new JavaScriptFunction() {
+                    @Override
+                    public void call(org.json.JSONArray args) throws JSONException {
+                        String commitId = args.getString(0);
+                        commitIdButton.setCaption(commitId);
+                    }
+                }
+        );
     }
 
     private void submitButtonClicked() {

@@ -9,7 +9,7 @@ function pointClicked() {
     com.example.foo.myfunc(info.commitId);
 }
 
-$('#chart').highcharts({
+$('#overviewChart').highcharts({
     chart: {
         type: 'spline'
     },

@@ -17,16 +17,19 @@ public class IterationsChart {
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
     private RunResultDao runResultDao = InjectorFactory.getInstance(RunResultDao.class);
 
-    public String get() throws Exception {
+    public String get(String testName, String commitId, int runNumber, int percentile, String failureValue) {
 
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//        int runNumber = 2;
 //        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        int percentile = 100;
+//        String failureValue = "ALL";
 
-        Map<String, Run> runs = runDao.getMap(commitId, 2, testName);
+        Map<String, Run> runs = runDao.getMap(commitId, runNumber, testName);
         Map<Run, List<RunResult>> runResults = runResultDao.getMap(runs);
 
-        IterationsCollector collector = new IterationsCollector(runResults);
+        IterationsCollector collector = new IterationsCollector(runResults, percentile, failureValue);
         IterationsFormat format = new IterationsFormat(collector);
 
         String s = FileUtil.getContent("js/iterations-chart.js");

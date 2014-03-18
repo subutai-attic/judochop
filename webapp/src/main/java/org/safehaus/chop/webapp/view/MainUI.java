@@ -6,14 +6,17 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 import org.safehaus.chop.webapp.dao.*;
 import org.safehaus.chop.webapp.service.InjectorFactory;
+import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
 import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
+import org.safehaus.chop.webapp.view.util.FileUtil;
 
 @Title("Test UI")
 public class MainUI extends UI {
 
     private final OverviewLayout overviewLayout = new OverviewLayout(this);
-    private final RunsLayout runsLayout = new RunsLayout();
+    private final RunsLayout runsLayout = new RunsLayout(this);
+    private final IterationsLayout iterationsLayout = new IterationsLayout(this);
 
     private HorizontalSplitPanel hsplit;
 
@@ -30,13 +33,31 @@ public class MainUI extends UI {
 
         hsplit.setFirstComponent(getTreeTable());
 
-        hsplit.setSecondComponent(overviewLayout);
-        overviewLayout.loadScripts();
+        loadScripts();
+//        showOverviewLayout();
+        showRunsLayout("");
+//        showIterationsLayout();
+    }
+
+    public void loadScripts() {
+        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
+        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
     }
 
     public void showRunsLayout(String commitId) {
         hsplit.setSecondComponent(runsLayout);
         runsLayout.loadScripts();
+    }
+
+    public void showOverviewLayout() {
+        hsplit.setSecondComponent(overviewLayout);
+        overviewLayout.loadScripts();
+    }
+
+    public void showIterationsLayout(int runNumber) {
+        hsplit.setSecondComponent(iterationsLayout);
+//        iterationsLayout.loadScripts();
+        iterationsLayout.loadChart(runNumber);
     }
 
 //    private void saveNote() {
