@@ -23,7 +23,7 @@ public class OverviewAvg {
 
     private static Metric getAvg(Map<Integer, Metric> runs) {
 
-        AvgMetric avg = new AvgMetric();
+        AvgMetric avg = new AvgMetric(true);
 
         for (Metric metric : runs.values()) {
             avg.merge(metric);

@@ -55,8 +55,12 @@ public class LineFormat {
         marker.put("fillColor", "red");
 
         JSONObject info = new JSONObject();
-        info.put("chopType", "IterationChop");
-//        info.put("failures", runResult.getFailureCount());
+
+        if ( runResult != null ) {
+            info.put("value", y);
+            info.put("failureCount", runResult.getFailureCount());
+            info.put("ignoreCount", runResult.getIgnoreCount());
+        }
 
         data.put("marker", marker);
         data.put("info", info);

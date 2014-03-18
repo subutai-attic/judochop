@@ -1,6 +1,6 @@
 function pointClicked() {
     var point = this;
-    console.log(point.info.runNumber);
+    console.log(point.info);
     handleRunNumber(point.info.runNumber);
 }
 

@@ -1,12 +1,15 @@
 package org.safehaus.chop.webapp.service.metric;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.safehaus.chop.api.Run;
 
 public class AvgMetric extends Metric {
 
     private int count;
+    private boolean mainAvg;
+
+    public AvgMetric(boolean mainAvg) {
+        this.mainAvg = mainAvg;
+    }
 
     @Override
     public void calc(Run run) {
@@ -20,10 +23,27 @@ public class AvgMetric extends Metric {
 
         failures += metric.getFailures();
         commitId = metric.getCommitId();
+        chopType = metric.getChopType();
+        totalTestsRun += metric.getTotalTestsRun();
     }
 
     @Override
     public double getValue() {
         return value / count;
+    }
+
+    @Override
+    public String getRunNumberString() {
+        return mainAvg ? "N/A" : super.getRunNumberString();
+    }
+
+    @Override
+    public String getRunnersString() {
+        return mainAvg ? "N/A" : super.getRunnersString();
+    }
+
+    @Override
+    public String getIterationsString() {
+        return mainAvg ? "N/A" : super.getIterationsString();
     }
 }

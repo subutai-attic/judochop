@@ -65,7 +65,7 @@ public class IterationsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                submitButtonClicked();
+                loadChart(runNumber);
             }
         });
 
@@ -126,35 +126,21 @@ public class IterationsLayout extends AbsoluteLayout {
 
         String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        int percentile = 100;
-        String failureValue = "ALL";
-
-
-        loadChart(testName, commitId, runNumber, percentile, failureValue);
-    }
-
-//    public void loadScripts() {
-//        try {
-//            String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-//            String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-//            int runNumber = 2;
-//            int percentile = 100;
-//            String failureValue = "ALL";
-//
-//            loadChart(testName, commitId, runNumber, percentile, failureValue);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-    private void submitButtonClicked() {
-
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
         String failureType = (String) failureCombo.getValue();
 
         loadChart(testName, commitId, runNumber, percentile, failureType);
     }
+
+//    private void submitButtonClicked() {
+//
+//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
+//        String failureType = (String) failureCombo.getValue();
+//
+//        loadChart(testName, commitId, runNumber, percentile, failureType);
+//    }
 
 }

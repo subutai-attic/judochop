@@ -7,7 +7,7 @@ public class MetricFactory {
         Metric metric;
 
         if ("Avg Time".equals(metricType)) {
-            metric = new AvgMetric();
+            metric = new AvgMetric(false);
         } else if ("Min Time".equals(metricType)) {
             metric = new MinMetric();
         } else if ("Max Time".equals(metricType)) {

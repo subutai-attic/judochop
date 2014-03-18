@@ -4,8 +4,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
-import org.safehaus.chop.webapp.dao.*;
-import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
 import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
@@ -34,8 +32,8 @@ public class MainUI extends UI {
         hsplit.setFirstComponent(getTreeTable());
 
         loadScripts();
-//        showOverviewLayout();
-        showRunsLayout("");
+        showOverviewLayout();
+//        showRunsLayout("");
 //        showIterationsLayout();
     }
 
@@ -46,37 +44,18 @@ public class MainUI extends UI {
 
     public void showRunsLayout(String commitId) {
         hsplit.setSecondComponent(runsLayout);
-        runsLayout.loadScripts();
+        runsLayout.loadChart(commitId);
     }
 
     public void showOverviewLayout() {
         hsplit.setSecondComponent(overviewLayout);
-        overviewLayout.loadScripts();
+        overviewLayout.loadChart("1168044208");
     }
 
     public void showIterationsLayout(int runNumber) {
         hsplit.setSecondComponent(iterationsLayout);
-//        iterationsLayout.loadScripts();
         iterationsLayout.loadChart(runNumber);
     }
-
-//    private void saveNote() {
-//        Note note = new Note("noteCommitId", 1, ""+System.currentTimeMillis());
-//
-//        try {
-//            noteDao.save(note);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void readNote() {
-//        try {
-//            System.out.println( noteDao.get("noteCommitId", 1) );
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private TreeTable getTreeTable() {
 

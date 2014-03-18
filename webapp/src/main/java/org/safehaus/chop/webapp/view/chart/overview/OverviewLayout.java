@@ -20,7 +20,6 @@ public class OverviewLayout extends AbsoluteLayout {
 
     private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
-    private NoteDao noteDao = InjectorFactory.getInstance(NoteDao.class);
 
     private OverviewChart overviewChart = new OverviewChart();
 
@@ -28,7 +27,6 @@ public class OverviewLayout extends AbsoluteLayout {
     private ComboBox metricCombo;
     private ComboBox percentileCombo;
     private ComboBox failureCombo;
-
     private Button commitIdButton;
 
     private MainUI mainUI;
@@ -47,21 +45,6 @@ public class OverviewLayout extends AbsoluteLayout {
         addChartLayout();
 
         addCommitIdButton();
-//        addJavaScriptCallback();
-    }
-
-    private void addBackButton() {
-
-        Button button = new Button("Back");
-
-        button.setStyleName(Reindeer.BUTTON_LINK);
-        this.addComponent(button, "left: 700px; top: 30px;");
-
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                mainUI.showRunsLayout("");
-            }
-        });
     }
 
     private void addCommitIdButton() {
@@ -75,11 +58,7 @@ public class OverviewLayout extends AbsoluteLayout {
         commitIdButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 commitButtonClicked();
-//                System.out.println( event.getButton().getCaption() );
-
-//                UserSubwindow sub = new UserSubwindow();
-//                UI.getCurrent().addWindow(sub);
-                }
+            }
         });
     }
 
@@ -102,25 +81,15 @@ public class OverviewLayout extends AbsoluteLayout {
 
         Button button = new Button("Submit");
         button.setWidth("100px");
-//        button.setWidth(100, Sizeable.UNITS_PIXELS);
-
-//        saveButton.addListener(new Button.ClickListener() {
-//            public void buttonClick(Button.ClickEvent event) {
-//                saveNote();
-//            }
-//        });
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-//                Notification.show("Thank You!");
-                submitButtonClicked();
+                loadChart("1168044208");
             }
         });
 
         this.addComponent(button, "left: 600px; top: 80px;");
     }
-
-
 
     private void addFailureCombo() {
 
@@ -202,77 +171,13 @@ public class OverviewLayout extends AbsoluteLayout {
     }
 
 
-    private void addNoteControls() {
-
-        Button saveButton = new Button("Save");
-        saveButton.setWidth(100, Sizeable.UNITS_PIXELS);
-
-//        saveButton.addListener(new Button.ClickListener() {
-//            public void buttonClick(Button.ClickEvent event) {
-//                saveNote();
-//            }
-//        });
-
-        this.addComponent(saveButton, "left: 10px; top: 700px;");
-
-
-
-        Button readButton = new Button("Read");
-        readButton.setWidth(100, Sizeable.UNITS_PIXELS);
-
-//        readButton.addListener(new Button.ClickListener() {
-//            public void buttonClick(Button.ClickEvent event) {
-//                readNote();
-//            }
-//        });
-
-        this.addComponent(readButton, "left: 200px; top: 700px;");
-
-
-        TextArea textArea = new TextArea("Log:");
-        textArea.setWidth(100, Sizeable.UNITS_PIXELS);
-        textArea.setHeight(100, Sizeable.UNITS_PIXELS);
-        textArea.setWordwrap(false);
-
-        this.addComponent(textArea, "left: 10px; top: 750px;");
-    }
-
 
     private void loadChart(String moduleId, String testName, String metricType, int percentile, String failureValue) {
         String chart = overviewChart.get(moduleId, testName, metricType, percentile, failureValue);
         JavaScript.getCurrent().execute(chart);
-    }
-
-    public void loadScripts() {
-
-//        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
-//        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
-
-        try {
-            String moduleId = "1168044208";
-            String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-            String metricType = "Avg Time";
-            int percentile = 100;
-            String failureValue = "ALL";
-
-            loadChart(moduleId, testName, metricType, percentile, failureValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         addJavaScriptCallback();
-
-//        JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
-//            new JavaScriptFunction() {
-//                @Override
-//                public void call(org.json.JSONArray args) throws JSONException {
-//                    String commitId = args.getString(0);
-//                    commitIdButton.setCaption(commitId);
-//                }
-//            }
-//        );
-
     }
+
 
     private void addJavaScriptCallback() {
         JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
@@ -286,9 +191,8 @@ public class OverviewLayout extends AbsoluteLayout {
         );
     }
 
-    private void submitButtonClicked() {
+    public void loadChart(String moduleId) {
 
-        String moduleId = "1168044208";
         String testName = (String) testNamesCombo.getValue();
         String metricType = (String) metricCombo.getValue();
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
@@ -296,5 +200,44 @@ public class OverviewLayout extends AbsoluteLayout {
 
         loadChart(moduleId, testName, metricType, percentile, failureType);
     }
+
+
+//    private void addNoteControls() {
+//
+//        Button saveButton = new Button("Save");
+//        saveButton.setWidth(100, Sizeable.UNITS_PIXELS);
+//
+//        this.addComponent(saveButton, "left: 10px; top: 700px;");
+//
+//        Button readButton = new Button("Read");
+//        readButton.setWidth(100, Sizeable.UNITS_PIXELS);
+//
+//        this.addComponent(readButton, "left: 200px; top: 700px;");
+//
+//        TextArea textArea = new TextArea("Log:");
+//        textArea.setWidth(100, Sizeable.UNITS_PIXELS);
+//        textArea.setHeight(100, Sizeable.UNITS_PIXELS);
+//        textArea.setWordwrap(false);
+//
+//        this.addComponent(textArea, "left: 10px; top: 750px;");
+//    }
+
+//    private void saveNote() {
+//        Note note = new Note("noteCommitId", 1, ""+System.currentTimeMillis());
+//
+//        try {
+//            noteDao.save(note);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void readNote() {
+//        try {
+//            System.out.println( noteDao.get("noteCommitId", 1) );
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -59,7 +59,6 @@ public class RunsLayout extends AbsoluteLayout {
     }
 
     private void runNumberButtonClicked() {
-//        System.out.println(selectedRunNumber);
         mainUI.showIterationsLayout(selectedRunNumber);
     }
 
@@ -94,14 +93,12 @@ public class RunsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                submitButtonClicked();
+                loadChart(commitId);
             }
         });
 
         this.addComponent(button, "left: 600px; top: 80px;");
     }
-
-
 
     private void addFailureCombo() {
 
@@ -167,18 +164,18 @@ public class RunsLayout extends AbsoluteLayout {
         JavaScript.getCurrent().execute(chart);
     }
 
-    public void loadScripts() {
-        try {
-            String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-            String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-            String metricType = "Avg Time";
-            int percentile = 100;
-            String failureValue = "ALL";
+    String commitId = "";
 
-            loadChart(testName, commitId, metricType, percentile, failureValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void loadChart(String commitId) {
+
+        this.commitId = commitId;
+
+        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        String metricType = (String) metricCombo.getValue();
+        int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
+        String failureType = (String) failureCombo.getValue();
+
+        loadChart(testName, commitId, metricType, percentile, failureType);
 
         addJavaScriptCallback();
     }
@@ -197,15 +194,10 @@ public class RunsLayout extends AbsoluteLayout {
         );
     }
 
-    private void submitButtonClicked() {
-
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-        String metricType = (String) metricCombo.getValue();
-        int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
-        String failureType = (String) failureCombo.getValue();
-
-        loadChart(testName, commitId, metricType, percentile, failureType);
-    }
+//    private void submitButtonClicked() {
+//
+//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//        loadChart(testName, commitId, metricType, percentile, failureType);
+//    }
 
 }

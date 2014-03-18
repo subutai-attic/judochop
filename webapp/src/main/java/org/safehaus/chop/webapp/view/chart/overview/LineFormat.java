@@ -3,7 +3,6 @@ package org.safehaus.chop.webapp.view.chart.overview;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.safehaus.chop.webapp.service.metric.Metric;
-import org.safehaus.chop.webapp.service.metric.MinMetric;
 
 import java.util.Collection;
 
@@ -44,15 +43,19 @@ public class LineFormat {
         marker.put("fillColor", "red");
 
         JSONObject info = new JSONObject();
-        info.put("value", metric.getValue());
-        info.put("chopType", metric.getChopType());
-        info.put("failures", metric.getFailures());
-        info.put("chopType", metric.getChopType());
-        info.put("runNumber", metric.getRunNumber());
-        info.put("commitId", metric.getCommitId());
+        info.put( "value", metric.getValue() );
+        info.put( "runners", metric.getRunnersString() );
+        info.put( "chopType", metric.getChopType() );
+        info.put( "failures", metric.getFailures() );
+        info.put( "chopType", metric.getChopType() );
+        info.put( "runNumber", metric.getRunNumberString() );
+        info.put( "commitId", metric.getCommitId() );
+        info.put( "totalTestsRun", metric.getTotalTestsRun() );
+        info.put( "iterations", metric.getIterationsString() );
+        info.put( "ignores", metric.getIgnores() );
 
-        data.put("marker", marker);
-        data.put("info", info);
+        data.put( "marker", marker );
+        data.put( "info", info );
 
         return data;
     }
