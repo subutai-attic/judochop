@@ -9,21 +9,21 @@ import java.util.Collection;
 
 public class LineFormat {
 
-    public JSONObject getLine(Collection<Metric> metrics) {
+    public JSONObject getLine(Collection<Metric> metrics, int x) {
 
         JSONObject json = new JSONObject();
 
         json.put( "dashStyle", "shortdot" );
         json.put( "lineColor", "blue" );
-        json.put( "data", getPoints(metrics) );
+        json.put( "data", getPoints(metrics, x) );
 
         return json;
     }
 
-    protected JSONArray getPoints(Collection<Metric> metrics) {
+    protected JSONArray getPoints(Collection<Metric> metrics, int xstart) {
 
         JSONArray arr = new JSONArray();
-        int i = 0;
+        int i = xstart;
 
         for (Metric m : metrics) {
             arr.add( getPoint(i, m) );
@@ -44,8 +44,12 @@ public class LineFormat {
         marker.put("fillColor", "red");
 
         JSONObject info = new JSONObject();
-        info.put("chopType", "IterationChop");
+        info.put("value", metric.getValue());
+        info.put("chopType", metric.getChopType());
         info.put("failures", metric.getFailures());
+        info.put("chopType", metric.getChopType());
+        info.put("runNumber", metric.getRunNumber());
+        info.put("commitId", metric.getCommitId());
 
         data.put("marker", marker);
         data.put("info", info);

@@ -13,14 +13,14 @@ public class OverviewCollector {
 
     // < <commitId>, <runNumber, metric> >
     private final Map<String, Map<Integer, Metric>> values = new LinkedHashMap<String, Map<Integer, Metric>>();
-    private int percentile;
     private String metricType;
+    private int percentile;
     private String failureValue;
 
     public OverviewCollector(List<Commit> commits, String metricType, int percentile, String failureValue) {
 
-        this.percentile = percentile;
         this.metricType = metricType;
+        this.percentile = percentile;
         this.failureValue = failureValue;
 
         for (Commit commit : commits) {

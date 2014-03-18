@@ -18,10 +18,7 @@ public class OverviewChart {
 
     public String get(String moduleId, String testName, String metricType, int percentile, String failureValue) {
 
-//        List<Commit> commits = commitDao.getByModule("1168044208");
         List<Commit> commits = commitDao.getByModule(moduleId);
-//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-
         List<Run> list = runDao.getList(commits, testName);
 
         OverviewCollector collector = new OverviewCollector(commits, metricType, percentile, failureValue);
@@ -29,8 +26,6 @@ public class OverviewChart {
         for (Run run : list) {
             collector.collect(run);
         }
-
-        System.out.println(collector);
 
         OverviewFormat format = new OverviewFormat(collector);
 

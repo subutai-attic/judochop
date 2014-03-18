@@ -8,13 +8,7 @@ import java.util.Collection;
 
 public class VerticalLineFormat extends LineFormat {
 
-    private int x;
-
-    public VerticalLineFormat(int x) {
-        this.x = x;
-    }
-
-    protected JSONArray getPoints(Collection<Metric> metrics) {
+    protected JSONArray getPoints(Collection<Metric> metrics, int x) {
 
         JSONArray arr = new JSONArray();
 

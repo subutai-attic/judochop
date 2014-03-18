@@ -12,14 +12,16 @@ public class RunsChart {
 
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
 
-    public String get() throws Exception {
+    public String get(String commitId, String testName, String metricType, int percentile, String failureValue) {
 
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-//        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//        String metricType = "Avg Time";
+//        int percentile = 100;
+//        String failureValue = "ALL";
 
         List<Run> runs = runDao.getList(commitId, testName);
-        RunsCollector collector = new RunsCollector(runs);
+        RunsCollector collector = new RunsCollector(runs, metricType, percentile, failureValue);
 
         System.out.println(collector);
 

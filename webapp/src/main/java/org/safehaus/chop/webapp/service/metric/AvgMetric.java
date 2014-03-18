@@ -19,6 +19,7 @@ public class AvgMetric extends Metric {
         count++;
 
         failures += metric.getFailures();
+        commitId = metric.getCommitId();
     }
 
     @Override

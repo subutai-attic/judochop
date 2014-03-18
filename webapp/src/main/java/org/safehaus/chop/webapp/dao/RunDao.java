@@ -140,11 +140,14 @@ public class RunDao extends Dao<Run> {
 
     public List<Run> getList(String commitId, String testName) {
 
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .must( termQuery("commitId", commitId.toLowerCase()) )
+                .must( termQuery("testName", testName.toLowerCase()) );
+
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
                 .setTypes("run")
-                .setQuery( termQuery("commitId", commitId) )
-                .setQuery( termQuery("testName", testName.toLowerCase()) )
+                .setQuery(queryBuilder)
                 .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 

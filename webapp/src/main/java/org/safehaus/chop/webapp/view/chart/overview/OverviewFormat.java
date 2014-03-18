@@ -50,7 +50,7 @@ public class OverviewFormat {
         JSONArray arr = new JSONArray();
 
         addSeries(arr, values);
-        arr.add( new LineFormat().getLine( OverviewAvg.get(values) ) );
+        arr.add( new LineFormat().getLine( OverviewAvg.get(values), 0) );
 
         series = arr.toString();
         return series;
@@ -60,7 +60,7 @@ public class OverviewFormat {
         int x = 0;
 
         for (Map<Integer, Metric> runs : values.values()) {
-            arr.add( new VerticalLineFormat(x).getLine(runs.values()) );
+            arr.add( new VerticalLineFormat().getLine(runs.values(), x) );
             x++;
         }
     }

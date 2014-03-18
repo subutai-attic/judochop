@@ -21,7 +21,7 @@ public class RunsFormat {
 
         JSONArray arr = new JSONArray();
 
-        arr.add( new LineFormat().getLine( collector.getRuns().values() ) );
+        arr.add( new LineFormat().getLine( collector.getRuns().values(), 1) );
 
         series = arr.toString();
         return series;

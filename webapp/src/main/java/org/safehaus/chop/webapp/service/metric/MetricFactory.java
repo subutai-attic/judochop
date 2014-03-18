@@ -2,10 +2,6 @@ package org.safehaus.chop.webapp.service.metric;
 
 public class MetricFactory {
 
-//            metric = new MinMetric();
-//            metric = new MaxMetric();
-//            metric = new ActualMetric();
-
     public static Metric getMetric(String metricType) {
 
         Metric metric;

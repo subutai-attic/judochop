@@ -10,6 +10,9 @@ public abstract class Metric {
 
     protected double value;
     protected int failures;
+    protected String chopType;
+    protected int runNumber;
+    protected String commitId;
 
     protected abstract void calc(Run run);
 
@@ -17,6 +20,9 @@ public abstract class Metric {
         calc(run);
 
         failures += run.getFailures();
+        chopType = run.getChopType();
+        runNumber = run.getRunNumber();
+        commitId = run.getCommitId();
     }
 
     public double getValue() {
@@ -25,6 +31,18 @@ public abstract class Metric {
 
     public int getFailures() {
         return failures;
+    }
+
+    public String getChopType() {
+        return chopType;
+    }
+
+    public int getRunNumber() {
+        return runNumber;
+    }
+
+    public String getCommitId() {
+        return commitId;
     }
 
     @Override

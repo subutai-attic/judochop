@@ -12,7 +12,16 @@ public class RunsCollector {
     // <runNumber, metric>
     private final Map<Integer, Metric> runs = new TreeMap<Integer, Metric>();
 
-    public RunsCollector(List<Run> list) {
+    private String metricType;
+    private int percentile;
+    private String failureValue;
+
+    public RunsCollector(List<Run> list, String metricType, int percentile, String failureValue) {
+
+        this.metricType = metricType;
+        this.percentile = percentile;
+        this.failureValue = failureValue;
+
         for (Run run : list) {
             collect(run);
         }
@@ -23,10 +32,7 @@ public class RunsCollector {
         Metric metric = runs.get( run.getRunNumber() );
 
         if (metric == null) {
-            metric = new AvgMetric();
-//            metric = new MinMetric();
-//            metric = new MaxMetric();
-//            metric = new ActualMetric();
+            metric = MetricFactory.getMetric(metricType);
             runs.put(run.getRunNumber(), metric);
         }
 
@@ -34,8 +40,8 @@ public class RunsCollector {
     }
 
     public Map<Integer, Metric> getRuns() {
-        Map<Integer, Metric> filteredRuns = RunsPercentile.filter(runs, 100);
-        return FailureFilter.filter(filteredRuns, null);
+        Map<Integer, Metric> filteredRuns = RunsPercentile.filter(runs, percentile);
+        return FailureFilter.filter(filteredRuns, failureValue);
     }
 
     @Override

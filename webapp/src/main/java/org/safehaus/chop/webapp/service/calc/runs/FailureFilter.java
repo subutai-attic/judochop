@@ -13,7 +13,8 @@ public class FailureFilter {
 
         for (Map.Entry<Integer, Metric> e : runs.entrySet()) {
             Metric metric = e.getValue();
-            if (type == null
+
+            if ("ALL".equals(type)
                     || ("FAILED".equals(type) && metric.getFailures() > 0)
                     || ("SUCCESS".equals(type) && metric.getFailures() == 0)
                     ) {

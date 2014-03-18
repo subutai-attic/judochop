@@ -9,6 +9,7 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.calc.runs.*;
+import org.safehaus.chop.webapp.view.chart.runs.RunsFormat;
 
 import java.util.List;
 
@@ -23,16 +24,24 @@ public class RunsCalcTest {
     public void test() {
 
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-//        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
         String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        String metricType = "Min Time";
+        int percentile = 100;
+        String failureValue = "ALL";
 
         List<Run> runs = runDao.getList(commitId, testName);
 
-        RunsCollector collector = new RunsCollector( runs );
+//        for (Run run: runs) {
+//            if (run.getRunNumber() == 1) {
+//                System.out.println(run);
+//            }
+//        }
+
+        RunsCollector collector = new RunsCollector(runs, metricType, percentile, failureValue);
         System.out.println(collector.getRuns());
 
-//        RunsFormat format = new RunsFormat(collector);
-//        System.out.println( format.getSeries() );
+        RunsFormat format = new RunsFormat(collector);
+        System.out.println( format.getSeries() );
     }
 
 
