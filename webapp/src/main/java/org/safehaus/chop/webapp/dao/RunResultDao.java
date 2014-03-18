@@ -91,13 +91,16 @@ public class RunResultDao extends Dao<RunResult> {
                 Util.getInt(json, "runTime"),
                 Util.getInt(json, "ignoreCount"),
                 Util.getInt(json, "failureCount"),
-                Util.getString(json, "failures")
+//                Util.getString(json, "failures")
+                ""
         );
     }
 
     public Map<Run, List<RunResult>> getMap(Map<String, Run> runs) {
 
         String runIds = StringUtils.join(runs.keySet(), ' ');
+
+        System.out.println(runIds);
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch("modules")
@@ -107,8 +110,6 @@ public class RunResultDao extends Dao<RunResult> {
                 .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
-
-//        System.out.println(response);
 
         HashMap<Run, List<RunResult>> runResults = new HashMap<Run, List<RunResult>>();
 
@@ -122,6 +123,14 @@ public class RunResultDao extends Dao<RunResult> {
                 list = new ArrayList<RunResult>();
                 runResults.put(run, list);
             }
+
+//            Map<String, Object> json = hit.getSource();
+//            if ("-2043597735".equals( Util.getString(json, "runId") ) )  {
+////                System.out.println( Util.getInt(json, "runTime") );
+////                System.out.println( Util.getInt(json, "runTime") );
+//                System.out.println( run );
+//                System.out.println( " " + runResult );
+//            }
 
             list.add(runResult);
         }

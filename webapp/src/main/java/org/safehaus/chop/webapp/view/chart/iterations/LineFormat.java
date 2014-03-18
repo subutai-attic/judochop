@@ -23,7 +23,7 @@ public class LineFormat {
     protected JSONArray getPoints(Collection<RunResult> runResults) {
 
         JSONArray arr = new JSONArray();
-        int i = 0;
+        int i = 1;
 
         for (RunResult runResult : runResults) {
             arr.add( getPoint(i, runResult) );

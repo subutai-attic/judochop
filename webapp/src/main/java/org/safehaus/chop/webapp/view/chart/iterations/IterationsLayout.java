@@ -72,8 +72,6 @@ public class IterationsLayout extends AbsoluteLayout {
         this.addComponent(button, "left: 600px; top: 80px;");
     }
 
-
-
     private void addFailureCombo() {
 
         ComboBox comboBox = new ComboBox("Interation Points to Plot:");
@@ -120,28 +118,34 @@ public class IterationsLayout extends AbsoluteLayout {
         JavaScript.getCurrent().execute(chart);
     }
 
+    private int runNumber = 1;
+
     public void loadChart(int runNumber) {
+
+        this.runNumber = runNumber;
+
         String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
         String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
         int percentile = 100;
         String failureValue = "ALL";
 
+
         loadChart(testName, commitId, runNumber, percentile, failureValue);
     }
 
-    public void loadScripts() {
-        try {
-            String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-            String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-            int runNumber = 2;
-            int percentile = 100;
-            String failureValue = "ALL";
-
-            loadChart(testName, commitId, runNumber, percentile, failureValue);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void loadScripts() {
+//        try {
+//            String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+//            String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+//            int runNumber = 2;
+//            int percentile = 100;
+//            String failureValue = "ALL";
+//
+//            loadChart(testName, commitId, runNumber, percentile, failureValue);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void submitButtonClicked() {
 
@@ -150,7 +154,7 @@ public class IterationsLayout extends AbsoluteLayout {
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
         String failureType = (String) failureCombo.getValue();
 
-        loadChart(testName, commitId, 2, percentile, failureType);
+        loadChart(testName, commitId, runNumber, percentile, failureType);
     }
 
 }

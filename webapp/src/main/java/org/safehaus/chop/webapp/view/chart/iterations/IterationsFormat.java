@@ -28,6 +28,7 @@ public class IterationsFormat {
         Map<Run, List<RunResult>> runResults = collector.getRunResults();
 
         for (Run run : runResults.keySet()) {
+            System.out.println( ">> " + run.getRunner() );
             arr.add( new LineFormat().getLine( run.getRunner(), runResults.get(run) ) );
         }
 
