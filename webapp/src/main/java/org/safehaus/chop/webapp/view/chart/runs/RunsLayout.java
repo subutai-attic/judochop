@@ -4,12 +4,15 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.json.JSONException;
+import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainUI;
 import org.safehaus.chop.webapp.view.window.UserSubwindow;
+
+import java.util.List;
 
 public class RunsLayout extends AbsoluteLayout {
 
@@ -189,15 +192,25 @@ public class RunsLayout extends AbsoluteLayout {
                     public void call(org.json.JSONArray args) throws JSONException {
                         selectedRunNumber = args.getInt(0);
                         runNumberButton.setCaption(""+selectedRunNumber);
+
+                        showRunners();
                     }
                 }
         );
     }
 
-//    private void submitButtonClicked() {
-//
-//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-//        loadChart(testName, commitId, metricType, percentile, failureType);
-//    }
+    private void showRunners() {
+
+        System.out.println( "---" );
+
+        List<Run> runs = runDao.getList( commitId, selectedRunNumber );
+
+        for ( Run run : runs ) {
+            System.out.println( run.getId() + ": " + run.getRunner() );
+        }
+
+        Run run = runDao.get( "1706276721" );
+        System.out.println(">> " + run);
+    }
 
 }

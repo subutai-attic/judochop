@@ -70,10 +70,10 @@ public class RunDao extends Dao<Run> {
         return response.isCreated();
     }
 
-    public Run get(String runId) {
+    public Run get( String runId ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
+                .prepareSearch( "modules" )
                 .setTypes("run")
                 .setQuery( termQuery("_id", runId) )
                 .execute()
@@ -155,6 +155,23 @@ public class RunDao extends Dao<Run> {
         return toList(response);
     }
 
+    public List<Run> getList(String commitId, int runNumber) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .must( termQuery( "commitId", commitId.toLowerCase() ) )
+                .must( termQuery( "runNumber", runNumber ) );
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( queryBuilder )
+                .setSize( MAX_RESULT_SIZE )
+                .execute()
+                .actionGet();
+
+        return toList(response);
+    }
+
     public List<Run> getList(List<Commit> commits, String testName) {
 
         String commitIds = StringUtils.join(commits, ' ');
@@ -194,7 +211,7 @@ public class RunDao extends Dao<Run> {
         return names;
     }
 
-    private static List<Run> toList(SearchResponse response) {
+    private static List<Run> toList( SearchResponse response ) {
 
         ArrayList<Run> list = new ArrayList<Run>();
 
@@ -218,7 +235,7 @@ public class RunDao extends Dao<Run> {
 
         StatisticalFacet facet = (StatisticalFacet) response.getFacets().facets().get(0);
 
-        return facet.getCount() > 0 ? (int) facet.getMax()+1 : 1;
+        return facet.getCount() > 0 ? (int) facet.getMax() + 1 : 1;
     }
 
 }

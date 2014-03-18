@@ -88,6 +88,21 @@ public class RunDaoTest {
     }
 
     @Test
+    public void getListByCommitAndRunNumber() {
+
+        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
+        int runNumber = 1;
+
+        List<Run> list = runDao.getList(commitId, runNumber);
+
+        for (Run run : list) {
+            System.out.println(run);
+        }
+
+        System.out.println("count: " + list.size());
+    }
+
+    @Test
     public void getNextRunNumber() {
         System.out.println( runDao.getNextRunNumber("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e") );
     }

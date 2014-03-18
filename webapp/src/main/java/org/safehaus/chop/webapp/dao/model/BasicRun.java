@@ -41,9 +41,6 @@ public class BasicRun implements Run {
         id = "" + hashCode();
     }
 
-
-    public BasicRun() {}
-
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
