@@ -3,6 +3,7 @@ package org.safehaus.chop.webapp.view.chart.iterations;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.safehaus.chop.api.RunResult;
+import org.safehaus.chop.webapp.service.metric.Metric;
 
 import java.util.Collection;
 
@@ -52,7 +53,7 @@ public class LineFormat {
 
         JSONObject marker = new JSONObject();
         marker.put("radius", 4);
-        marker.put("fillColor", "red");
+        marker.put("fillColor", getPointColor( runResult ));
 
         JSONObject info = new JSONObject();
 
@@ -66,5 +67,24 @@ public class LineFormat {
         data.put("info", info);
 
         return data;
+    }
+
+    private static String getPointColor( RunResult runResult ) {
+
+        if ( runResult == null ) {
+            return "";
+        }
+
+        String color = "white";
+
+        if ( runResult.getIgnoreCount() > 0 ) {
+            color = "yellow";
+        }
+
+        if ( runResult.getFailureCount() > 0 ) {
+            color = "red";
+        }
+
+        return color;
     }
 }

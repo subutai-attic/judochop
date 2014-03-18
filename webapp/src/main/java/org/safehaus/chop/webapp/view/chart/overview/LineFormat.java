@@ -39,8 +39,8 @@ public class LineFormat {
         data.put("y", metric.getValue());
 
         JSONObject marker = new JSONObject();
-        marker.put("radius", 4);
-        marker.put("fillColor", "red");
+        marker.put( "radius", 4 );
+        marker.put( "fillColor", getPointColor( metric ) );
 
         JSONObject info = new JSONObject();
         info.put( "value", metric.getValue() );
@@ -58,5 +58,20 @@ public class LineFormat {
         data.put( "info", info );
 
         return data;
+    }
+
+    private static String getPointColor( Metric metric ) {
+
+        String color = "white";
+
+        if (metric.getIgnores() > 0) {
+            color = "yellow";
+        }
+
+        if (metric.getFailures() > 0) {
+            color = "red";
+        }
+
+        return color;
     }
 }
