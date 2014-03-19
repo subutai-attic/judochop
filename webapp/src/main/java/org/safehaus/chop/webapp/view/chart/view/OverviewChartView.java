@@ -53,7 +53,6 @@ public class OverviewChartView extends ChartView {
     }
 
     protected void nextChartButtonClicked() {
-        System.out.println(commitId);
         chartViewContext.show( nextChartView, getParams() );
     }
 

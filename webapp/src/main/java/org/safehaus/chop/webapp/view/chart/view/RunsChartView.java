@@ -13,6 +13,9 @@ public class RunsChartView extends ChartView {
     private RunsChart runsChart = new RunsChart();
     private int runNumber;
 
+    private String moduleId;
+    private String commitId;
+
     public RunsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
         super(viewContext, prevView, nextView);
         addChartLayout("runsChart");
@@ -27,10 +30,26 @@ public class RunsChartView extends ChartView {
 
     @Override
     protected void nextChartButtonClicked() {
-        System.out.println(runNumber);
+        chartViewContext.show( nextChartView, getParams() );
+    }
+
+    private Params getParams() {
+        return new Params(
+                moduleId,
+                (String) testNamesCombo.getValue(),
+                commitId,
+                runNumber,
+                (String) metricCombo.getValue(),
+                Integer.parseInt( (String) percentileCombo.getValue() ),
+                (String) failureCombo.getValue()
+        );
     }
 
     public void show(Params params) {
+
+        this.moduleId = params.getModuleId();
+        this.commitId = params.getCommitId();
+
         populateTestNames( params.getModuleId() );
 
         String chart = runsChart.get(params);

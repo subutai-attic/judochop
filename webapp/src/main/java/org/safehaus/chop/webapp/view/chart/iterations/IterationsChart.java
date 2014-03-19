@@ -17,11 +17,11 @@ public class IterationsChart {
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
     private RunResultDao runResultDao = InjectorFactory.getInstance(RunResultDao.class);
 
-    public String get(Params params, int runNumber) {
+    public String get(Params params) {
 
-        Map<String, Run> runs = runDao.getMap(params.getCommitId(), runNumber, params.getTestName());
+        Map<String, Run> runs = runDao.getMap( params.getCommitId(), params.getRunNumber(), params.getTestName() );
         Map<Run, List<RunResult>> runResults = runResultDao.getMap(runs);
-        IterationsCollector collector = new IterationsCollector(runResults, params.getPercentile(), params.getFailureValue());
+        IterationsCollector collector = new IterationsCollector( runResults, params.getPercentile(), params.getFailureValue() );
 
         IterationsFormat format = new IterationsFormat(collector);
 

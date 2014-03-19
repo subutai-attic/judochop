@@ -11,6 +11,7 @@ import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
 import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
 import org.safehaus.chop.webapp.view.chart.view.ChartView;
+import org.safehaus.chop.webapp.view.chart.view.IterationsChartView;
 import org.safehaus.chop.webapp.view.chart.view.OverviewChartView;
 import org.safehaus.chop.webapp.view.chart.view.RunsChartView;
 import org.safehaus.chop.webapp.view.tree.ModuleSelectListener;
@@ -32,7 +33,8 @@ public class MainView extends UI implements ChartViewContext, ModuleSelectListen
 
     private static OverviewChartView initChartViews(ChartViewContext viewContext) {
 
-        ChartView runsChartView = new RunsChartView(viewContext, null, null);
+        ChartView iterationsChartView = new IterationsChartView(viewContext, null, null);
+        ChartView runsChartView = new RunsChartView(viewContext, null, iterationsChartView);
 
         OverviewChartView overviewChartView = new OverviewChartView(viewContext, null, runsChartView);
 

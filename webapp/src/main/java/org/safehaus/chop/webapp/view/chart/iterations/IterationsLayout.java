@@ -109,8 +109,8 @@ public class IterationsLayout extends AbsoluteLayout {
     }
 
     private void loadChart(Params params, int runNumber) {
-        String chart = iterationsChart.get(params, runNumber);
-        JavaScript.getCurrent().execute(chart);
+//        String chart = iterationsChart.get(params, runNumber);
+//        JavaScript.getCurrent().execute(chart);
     }
 
     private int runNumber = 1;

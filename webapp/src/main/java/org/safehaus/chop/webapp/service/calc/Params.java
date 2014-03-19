@@ -43,6 +43,10 @@ public class Params {
         return commitId;
     }
 
+    public int getRunNumber() {
+        return runNumber;
+    }
+
     public String getMetricType() {
         return metricType;
     }
