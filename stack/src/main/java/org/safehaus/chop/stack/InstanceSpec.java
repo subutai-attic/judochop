@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Properties;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /**
  * An IaaS provider independent instance specification encapsulates all the information
  * needed to create, configure, and enable access to an instance.
  */
+@JsonDeserialize( as = BasicInstanceSpec.class )
 public interface InstanceSpec {
     /**
      * Gets the IaaS identifier for a base image (template) used for creating instances.
@@ -22,13 +24,12 @@ public interface InstanceSpec {
     String getImageId();
 
     /**
-     * Gets the IaaS identifier for the instance type. This is very provider specific
-     * hence why we use just a base Enum type here.
+     * Gets the IaaS identifier for the instance type. This is very provider specific.
      *
      * @return the instance type
      */
     @JsonProperty
-    Enum getType();
+    String getType();
 
     /**
      * Private key pair name used to authenticate into instances.
@@ -45,7 +46,7 @@ public interface InstanceSpec {
      * @return the inbound and outbound IP traffic rules
      */
     @JsonProperty
-    IpRuleSet getIpRules();
+    IpRuleSet getIpRuleSet();
 
     /**
      * Gets the data center where the instances will be created. In AWS this

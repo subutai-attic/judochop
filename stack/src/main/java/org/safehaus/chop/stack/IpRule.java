@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /**
  * Provider agnostic interface for IpPermissions.
  */
+@JsonDeserialize( as = BasicIpRule.class )
 public interface IpRule {
 
     @JsonProperty
@@ -35,7 +37,4 @@ public interface IpRule {
 
     @JsonProperty
     IpRule withIpRanges( String... ipRanges );
-
-    @JsonProperty
-    IpRule withIpRanges( Collection<String> ipRanges );
 }
