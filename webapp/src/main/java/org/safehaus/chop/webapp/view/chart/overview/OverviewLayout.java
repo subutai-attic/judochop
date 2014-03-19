@@ -9,6 +9,7 @@ import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.RunDao;
+import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainUI;
 import org.safehaus.chop.webapp.view.util.FileUtil;
@@ -18,8 +19,9 @@ import java.util.Set;
 
 public class OverviewLayout extends AbsoluteLayout {
 
-    private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
-    private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
+    private CommitDao commitDao = InjectorFactory.getInstance( CommitDao.class );
+    private RunDao runDao = InjectorFactory.getInstance( RunDao.class );
+    private NoteDao noteDao = InjectorFactory.getInstance( NoteDao.class );
 
     private OverviewChart overviewChart = new OverviewChart();
 
@@ -184,11 +186,24 @@ public class OverviewLayout extends AbsoluteLayout {
                 new JavaScriptFunction() {
                     @Override
                     public void call(org.json.JSONArray args) throws JSONException {
-                        String commitId = args.getString(0);
-                        commitIdButton.setCaption(commitId);
+
+                        JSONObject json = args.getJSONObject( 0 );
+                        String commitId = json.getString( "commitId" );
+
+                        commitIdButton.setCaption( commitId );
+
+                        int runNumber = json.optInt( "runNumber" );
+
+                        loadNote( commitId, runNumber );
                     }
                 }
         );
+    }
+
+    private void loadNote( String commitId, int runNumber ) {
+        Note note = noteDao.get( commitId, runNumber );
+
+        System.out.println( note );
     }
 
     public void loadChart(String moduleId) {

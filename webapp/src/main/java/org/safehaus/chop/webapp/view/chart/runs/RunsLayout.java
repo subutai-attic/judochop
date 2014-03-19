@@ -8,6 +8,7 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.RunDao;
+import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainUI;
 import org.safehaus.chop.webapp.view.window.UserSubwindow;
@@ -44,6 +45,8 @@ public class RunsLayout extends AbsoluteLayout {
 
         addBackButton();
         addRunNumberButton();
+
+        addNoteControls();
     }
 
     private void addRunNumberButton() {
@@ -194,6 +197,7 @@ public class RunsLayout extends AbsoluteLayout {
                         runNumberButton.setCaption(""+selectedRunNumber);
 
                         showRunners();
+                        loadNote();
                     }
                 }
         );
@@ -211,6 +215,47 @@ public class RunsLayout extends AbsoluteLayout {
 
         Run run = runDao.get( "1706276721" );
         System.out.println(">> " + run);
+    }
+
+    private void loadNote() {
+        Note note = noteDao.get( commitId, selectedRunNumber );
+        String text = note != null ? note.getText() : "";
+        noteTextArea.setValue( text );
+    }
+
+    private TextArea noteTextArea;
+
+    private void addNoteControls() {
+
+        noteTextArea = new TextArea("Note:");
+        noteTextArea.setWidth(250, Sizeable.UNITS_PIXELS);
+        noteTextArea.setHeight(100, Sizeable.UNITS_PIXELS);
+        noteTextArea.setWordwrap(false);
+
+        this.addComponent(noteTextArea, "left: 10px; top: 600px;");
+
+        // ====================================================================
+
+        Button saveButton = new Button("Save");
+        saveButton.setWidth(100, Sizeable.UNITS_PIXELS);
+
+        this.addComponent(saveButton, "left: 300px; top: 600px;");
+
+        saveButton.addClickListener( new Button.ClickListener() {
+            public void buttonClick( Button.ClickEvent event ) {
+                saveNote();
+            }
+        });
+    }
+
+    private void saveNote() {
+        Note note = new Note( commitId, selectedRunNumber, noteTextArea.getValue() );
+
+        try {
+            noteDao.save( note );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
 }
