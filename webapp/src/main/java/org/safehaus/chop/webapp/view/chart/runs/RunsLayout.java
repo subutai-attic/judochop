@@ -10,8 +10,8 @@ import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.view.MainUI;
-import org.safehaus.chop.webapp.view.window.UserSubwindow;
+import org.safehaus.chop.webapp.view.MainView;
+import org.safehaus.chop.webapp.view.chart.Params;
 
 import java.util.List;
 
@@ -27,11 +27,11 @@ public class RunsLayout extends AbsoluteLayout {
     private ComboBox percentileCombo;
     private ComboBox failureCombo;
 
-    private MainUI mainUI;
+    private MainView mainUI;
 
     private Button runNumberButton;
 
-    public RunsLayout(MainUI mainUI) {
+    public RunsLayout(MainView mainUI) {
 
         this.mainUI = mainUI;
 
@@ -99,7 +99,7 @@ public class RunsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                loadChart(commitId);
+//                loadChart(commitId);
             }
         });
 
@@ -165,26 +165,32 @@ public class RunsLayout extends AbsoluteLayout {
         metricCombo = comboBox;
     }
 
-    private void loadChart(String testName, String commitId, String metricType, int percentile, String failureValue) {
-        String chart = runsChart.get(testName, commitId, metricType, percentile, failureValue);
-        JavaScript.getCurrent().execute(chart);
-    }
+//    private void loadChart(Params params) {
+//        String chart = runsChart.get(params);
+//        JavaScript.getCurrent().execute(chart);
+//    }
 
     String commitId = "";
 
-    public void loadChart(String commitId) {
+    public void loadChart(Params params) {
 
-        this.commitId = commitId;
+        this.commitId = params.getCommitId();
+
+        metricCombo.select( params.getMetricType() );
 
         String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
         String metricType = (String) metricCombo.getValue();
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
         String failureType = (String) failureCombo.getValue();
 
-        loadChart(testName, commitId, metricType, percentile, failureType);
+        String chart = runsChart.get(params);
+        JavaScript.getCurrent().execute(chart);
 
         addJavaScriptCallback();
     }
+
+
+
 
     private int selectedRunNumber = 1;
 

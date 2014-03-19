@@ -1,10 +1,6 @@
 package org.safehaus.chop.webapp.view.util;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.vaadin.server.DeploymentConfiguration;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.VaadinServletService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -15,7 +11,7 @@ import java.util.*;
 public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
     private static final String PARAM_UI = "UI";
-    private static final String MAIN_UI = "org.safehaus.chop.webapp.view.MainUI";
+    private static final String MAIN_VIEW = "org.safehaus.chop.webapp.view.MainView";
     private static final Hashtable<String, String> PARAMS = getInitParams();
 
     @Override
@@ -26,7 +22,7 @@ public class VaadinServlet extends com.vaadin.server.VaadinServlet {
     private static Hashtable<String, String> getInitParams() {
 
         Hashtable<String, String> ht = new Hashtable<String, String>();
-        ht.put(PARAM_UI, MAIN_UI);
+        ht.put(PARAM_UI, MAIN_VIEW);
 
         return ht;
     }

@@ -1,9 +1,11 @@
-package org.safehaus.chop.webapp.view.chart.overview;
+package org.safehaus.chop.webapp.view.chart.view;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.NoteDao;
@@ -12,11 +14,21 @@ import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainView;
 import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.view.chart.ViewContext;
+import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
 
 import java.util.List;
 import java.util.Set;
 
-public class OverviewLayout extends AbsoluteLayout {
+public class OverviewView extends ChartView {
+
+    public OverviewView(ViewContext viewContext, ChartView prevView, ChartView nextView) {
+        super(viewContext, prevView, nextView);
+    }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 
     private CommitDao commitDao = InjectorFactory.getInstance( CommitDao.class );
     private RunDao runDao = InjectorFactory.getInstance( RunDao.class );
@@ -32,21 +44,25 @@ public class OverviewLayout extends AbsoluteLayout {
 
     private MainView mainUI;
 
-    public OverviewLayout(MainView mainUI) {
+//    public OverviewView(MainView mainUI) {
+//
+//        this.mainUI = mainUI;
+//
+//        setSizeFull();
+//
+//        addTestNamesCombo();
+//        addMetricCombo();
+//        addPercentileCombo();
+//        addFailureCombo();
+//        addSubmitButton();
+//        addChartLayout();
+//
+//        addCommitIdButton();
+//    }
 
-        this.mainUI = mainUI;
 
-        setSizeFull();
 
-        addTestNamesCombo();
-        addMetricCombo();
-        addPercentileCombo();
-        addFailureCombo();
-        addSubmitButton();
-        addChartLayout();
 
-        addCommitIdButton();
-    }
 
     private void addCommitIdButton() {
 
@@ -173,7 +189,7 @@ public class OverviewLayout extends AbsoluteLayout {
         JavaScript.getCurrent().addFunction("com.example.foo.myfunc",
                 new JavaScriptFunction() {
                     @Override
-                    public void call(org.json.JSONArray args) throws JSONException {
+                    public void call(JSONArray args) throws JSONException {
 
                         JSONObject json = args.getJSONObject( 0 );
                         String commitId = json.getString( "commitId" );
