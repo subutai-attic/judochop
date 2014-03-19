@@ -39,20 +39,37 @@ public class ModuleDaoTest {
     }
 
     @Test
-    public void testGetAll() throws Exception {
+    public void getAll() throws Exception {
+        List<Module> modules = moduleDao.getAll();
 
-        List<Module> list = moduleDao.getAll();
-
-        for (Module m : list) {
+        for (Module m : modules) {
             System.out.println(m);
         }
 
-        System.out.println("count: " + list.size());
+        System.out.println("count: " + modules.size());
     }
 
     @Test
-    public void testGetById() {
+    public void get() {
         System.out.println( moduleDao.get(ID) );
+    }
+
+    @Test
+    public void forTreeTable() throws Exception {
+        List<Module> modules = moduleDao.getAll();
+
+        for (Module module : modules) {
+            String id = String.format( "%s-%s", module.getGroupId(), module.getArtifactId() );
+            System.out.println( id );
+        }
+
+//        treeTable.addItem(new Object[]{ "Module1", "v1"}, "id1");
+//        treeTable.addItem(new Object[]{"version1", "v3"}, 3);
+//
+//        treeTable.setParent(3, "id1");
+
+
+
     }
 
 }
