@@ -6,7 +6,8 @@ function pointClicked() {
 //    var e = $("#commitIdButton").children(":first").children(":first");
 //    e.text(info.commitId);
 
-    com.example.foo.myfunc(info.commitId);
+//    com.example.foo.myfunc(info.commitId);
+    com.example.foo.myfunc( info );
 }
 
 $('#overviewChart').highcharts({

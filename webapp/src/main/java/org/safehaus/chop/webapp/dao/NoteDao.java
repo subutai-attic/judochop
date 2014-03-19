@@ -12,6 +12,7 @@ import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class NoteDao extends Dao<Note> {
     }
 
     @Override
-    public boolean save(Note note) throws Exception {
+    public boolean save(Note note) throws IOException {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex("modules", "note", note.getId())
@@ -48,17 +49,18 @@ public class NoteDao extends Dao<Note> {
         return response.isCreated();
     }
 
-    public Note get(String commitId, int runNumber) throws Exception {
+    public Note get( String commitId, int runNumber ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must( termQuery("commitId", commitId.toLowerCase()) )
+                .must( termQuery("commitId", commitId.toLowerCase() ) )
                 .must( termQuery("runNumber", runNumber) );
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("note")
-                .setQuery(queryBuilder)
-                .execute().actionGet();
+                .prepareSearch( "modules" )
+                .setTypes( "note" )
+                .setQuery( queryBuilder )
+                .execute()
+                .actionGet();
 
         SearchHit hits[] = response.getHits().getHits();
 
@@ -69,9 +71,9 @@ public class NoteDao extends Dao<Note> {
         Map<String, Object> json = hits[0].getSource();
 
         return new Note(
-                Util.getString(json, "moduleId"),
-                Util.getInt(json, "runNumber"),
-                Util.getString(json, "text")
+                Util.getString( json, "moduleId" ),
+                Util.getInt( json, "runNumber" ),
+                Util.getString( json, "text" )
         );
     }
 

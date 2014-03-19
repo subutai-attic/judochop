@@ -4,10 +4,17 @@ import com.vaadin.annotations.Title;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
+import org.apache.commons.lang.StringUtils;
+import org.safehaus.chop.api.Module;
+import org.safehaus.chop.webapp.dao.CommitDao;
+import org.safehaus.chop.webapp.dao.ModuleDao;
+import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
 import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
 import org.safehaus.chop.webapp.view.util.FileUtil;
+
+import java.util.List;
 
 @Title("Test UI")
 public class MainUI extends UI {
@@ -15,6 +22,8 @@ public class MainUI extends UI {
     private final OverviewLayout overviewLayout = new OverviewLayout(this);
     private final RunsLayout runsLayout = new RunsLayout(this);
     private final IterationsLayout iterationsLayout = new IterationsLayout(this);
+
+    private ModuleDao moduleDao = InjectorFactory.getInstance( ModuleDao.class );
 
     private HorizontalSplitPanel hsplit;
 
@@ -32,7 +41,7 @@ public class MainUI extends UI {
         hsplit.setFirstComponent(getTreeTable());
 
         loadScripts();
-        showOverviewLayout();
+//        showOverviewLayout();
 //        showRunsLayout("");
 //        showIterationsLayout();
     }
@@ -47,9 +56,12 @@ public class MainUI extends UI {
         runsLayout.loadChart(commitId);
     }
 
+    String selectedModuleId = "";
+
     public void showOverviewLayout() {
         hsplit.setSecondComponent(overviewLayout);
-        overviewLayout.loadChart("1168044208");
+//        overviewLayout.loadChart("1168044208");
+        overviewLayout.loadChart( selectedModuleId );
     }
 
     public void showIterationsLayout(int runNumber) {
@@ -59,35 +71,38 @@ public class MainUI extends UI {
 
     private TreeTable getTreeTable() {
 
-        final TreeTable ttable = new TreeTable("Modules");
-        ttable.addContainerProperty("Module", String.class, "");
-        ttable.addContainerProperty("Property", String.class, "");
-        ttable.setSizeFull();
+        TreeTable treeTable = new TreeTable( "Modules" );
+        treeTable.addContainerProperty("Group", String.class, "");
+        treeTable.addContainerProperty("Artifact", String.class, "");
+        treeTable.setSizeFull();
 
-        ttable.addItem(new Object[]{"Module1", "v1"}, "id1");
-        ttable.addItem(new Object[]{"Module2", "v2"}, 2);
-        ttable.addItem(new Object[]{"version1", "v3"}, 3);
-        ttable.addItem(new Object[]{"version2", "v4"}, 4);
-        ttable.addItem(new Object[]{"version3", "v5"}, 5);
-        ttable.addItem(new Object[]{"version4", "v6"}, 6);
+        treeTable.addItemClickListener( new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick( ItemClickEvent event ) {
+                String id = (String) event.getItemId();
+                boolean parent = StringUtils.startsWith( id, "parent:" );
 
-        ttable.setParent(3, "id1");
-        ttable.setParent(4, "id1");
-        ttable.setParent(5, 2);
-        ttable.setParent(6, 2);
-
-        ttable.addListener(new ItemClickEvent.ItemClickListener() {
-            public void itemClick(ItemClickEvent event) {
-//                System.out.println("clicked: " + event.getItemId() + ", " + event.getPropertyId());
-                itemClicked(event);
+                if (!parent) {
+                    selectedModuleId = id;
+                    showOverviewLayout();
+                }
             }
         });
 
-        return ttable;
+        addTreeItems(treeTable);
+
+        return treeTable;
     }
 
-    private void itemClicked(ItemClickEvent event) {
-//        System.out.println( FileUtil.getContent("js/chart.js") );
-    }
+    private void addTreeItems( TreeTable treeTable ) {
+        List<Module> modules = moduleDao.getAll();
 
+        for (Module module : modules) {
+            String parentId = String.format( "parent:%s-%s", module.getGroupId(), module.getArtifactId() );
+            treeTable.addItem( new Object[]{ module.getGroupId(), module.getArtifactId() }, parentId );
+
+            treeTable.addItem( new Object[]{ module.getVersion(), "" }, module.getId() );
+            treeTable.setParent( module.getId(), parentId );
+        }
+    }
 }

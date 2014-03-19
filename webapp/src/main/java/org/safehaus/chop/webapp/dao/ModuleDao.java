@@ -58,34 +58,33 @@ public class ModuleDao extends Dao<Module> {
         return hits.length > 0 ? toModule(hits[0]) : null;
     }
 
-    private static Module toModule(SearchHit hit) {
-
+    private static Module toModule( SearchHit hit ) {
         Map<String, Object> json = hit.getSource();
 
         return new BasicModule(
-                Util.getString(json, "groupId"),
-                Util.getString(json, "artifactId"),
-                Util.getString(json, "version"),
-                Util.getString(json, "vcsRepoUrl"),
-                Util.getString(json, "testPackageBase")
+                Util.getString( json, "groupId" ),
+                Util.getString( json, "artifactId" ),
+                Util.getString( json, "version" ),
+                Util.getString( json, "vcsRepoUrl" ),
+                Util.getString( json, "testPackageBase" )
         );
     }
 
     public List<Module> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("module")
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "module" )
+                .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
 
-        ArrayList<Module> list = new ArrayList<Module>();
+        ArrayList<Module> modules = new ArrayList<Module>();
 
-        for (SearchHit hit : response.getHits().hits()) {
-            list.add(toModule(hit));
+        for ( SearchHit hit : response.getHits().hits() ) {
+            modules.add(toModule(hit));
         }
 
-        return list;
+        return modules;
     }
 }

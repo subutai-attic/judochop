@@ -23,14 +23,14 @@ public class NoteDaoTest {
     @Test
     public void save() throws Exception {
 
-        Note note = new Note("noteCommitId", 1, "This is a note");
+        Note note = new Note( "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e", 1, "This is a note" );
 
-        boolean created = noteDao.save(note);
-        System.out.println(created + ": " + note);
+        boolean created = noteDao.save( note );
+        System.out.println( created + ": " + note );
     }
 
     @Test
-    public void testGet() throws Exception {
-        System.out.println( noteDao.get("noteCommitId", 1) );
+    public void testGet() {
+        System.out.println( noteDao.get( "noteCommitId", 1 ) );
     }
 }

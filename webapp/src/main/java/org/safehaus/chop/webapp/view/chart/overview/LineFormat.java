@@ -39,7 +39,7 @@ public class LineFormat {
         data.put("y", metric.getValue());
 
         JSONObject marker = new JSONObject();
-        marker.put( "radius", 4 );
+        marker.put( "radius", getMarkerRadius( metric ) );
         marker.put( "fillColor", getPointColor( metric ) );
 
         JSONObject info = new JSONObject();
@@ -60,8 +60,21 @@ public class LineFormat {
         return data;
     }
 
-    private static String getPointColor( Metric metric ) {
+    private static int getMarkerRadius( Metric metric ) {
+        int radius = 4;
 
+        if ( metric.getFailures() > 1000 ) {
+            radius = 15;
+        } else if ( metric.getFailures() > 500 ) {
+            radius = 10;
+        } else if ( metric.getFailures() > 100 ) {
+            radius = 7;
+        }
+
+        return radius;
+    }
+
+    private static String getPointColor( Metric metric ) {
         String color = "white";
 
         if (metric.getIgnores() > 0) {
