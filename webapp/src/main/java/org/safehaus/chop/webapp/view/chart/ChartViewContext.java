@@ -7,5 +7,4 @@ public interface ChartViewContext {
 
     public void show(ChartView chartView, Params params);
 
-
 }

@@ -1,7 +1,5 @@
 package org.safehaus.chop.webapp.view.chart.view;
 
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.Reindeer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +7,6 @@ import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.chart.ChartViewContext;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
-import org.safehaus.chop.webapp.view.util.UIUtil;
 
 public class OverviewChartView extends ChartView {
 
@@ -20,7 +17,8 @@ public class OverviewChartView extends ChartView {
 
     public OverviewChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
         super(viewContext, prevView, nextView);
-        addCommitIdButton();
+        addChartLayout("overviewChart");
+        addNextChartButton();
     }
 
     public void show(String moduleId) {
@@ -54,21 +52,7 @@ public class OverviewChartView extends ChartView {
         commitId = json.getString("commitId");
     }
 
-    private void addCommitIdButton() {
-
-        Button button = UIUtil.getButton("open commit", "150px");
-        button.setStyleName(Reindeer.BUTTON_LINK);
-
-        button.addClickListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                commitButtonClicked();
-            }
-        });
-
-        addComponent(button, "left: 800px; top: 30px;");
-    }
-
-    private void commitButtonClicked() {
+    protected void nextChartButtonClicked() {
         System.out.println(commitId);
         chartViewContext.show( nextChartView, getParams() );
     }

@@ -12,12 +12,12 @@ public class UIUtil {
         combo.setTextInputAllowed(false);
         combo.setNullSelectionAllowed(false);
 
-        populuteCombo(combo, values);
+        populateCombo(combo, values);
 
         return combo;
     }
 
-    public static void populuteCombo(ComboBox combo, String ... values) {
+    public static void populateCombo(ComboBox combo, String... values) {
 
         for (String testName : values) {
             combo.addItem(testName);

@@ -6,7 +6,6 @@ import com.vaadin.ui.JavaScriptFunction;
 public class JavaScriptUtil {
 
     public static void loadFile(String fileName) {
-//        JavaScript.getCurrent().execute( FileUtil.getContent(fileName) );
         execute( FileUtil.getContent(fileName) );
     }
 

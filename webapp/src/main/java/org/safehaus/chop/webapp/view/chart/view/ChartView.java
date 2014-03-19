@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.view.chart.view;
 
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.RunService;
 import org.safehaus.chop.webapp.service.calc.Params;
@@ -36,26 +37,45 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
         addPercentileCombo();
         addFailureCombo();
         addSubmitButton();
-        addChartLayout();
-//        addCommitIdButton();
     }
 
-    private void addChartLayout() {
-        AbsoluteLayout chartLayout = UIUtil.getLayout("overviewChart", "700px", "400px");
+    protected void addChartLayout(String id) {
+//        AbsoluteLayout chartLayout = UIUtil.getLayout("overviewChart", "700px", "400px");
+        AbsoluteLayout chartLayout = UIUtil.getLayout(id, "700px", "400px");
         addComponent(chartLayout, "left: 10px; top: 150px;");
     }
 
     private void addSubmitButton() {
 
         Button button = UIUtil.getButton("Submit", "100px");
+        addComponent(button, "left: 600px; top: 80px;");
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                System.out.println("button clicked");
+                submitButtonClicked();
             }
         });
+    }
 
-        addComponent(button, "left: 600px; top: 80px;");
+    private void submitButtonClicked() {
+        System.out.println("submit");
+    }
+
+    protected void addNextChartButton() {
+
+        Button button = UIUtil.getButton("next chart", "150px");
+        button.setStyleName(Reindeer.BUTTON_LINK);
+        addComponent(button, "left: 800px; top: 30px;");
+
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                nextChartButtonClicked();
+            }
+        });
+    }
+
+    protected void nextChartButtonClicked() {
+        System.out.println("next");
     }
 
     private void addTestNamesCombo() {
@@ -86,12 +106,10 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
 
     protected void populateTestNames(String moduleId) {
         Set<String> testNames = runService.getTestNames(moduleId);
-        UIUtil.populuteCombo( testNamesCombo, testNames.toArray(new String[0]) );
+        UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]));
     }
 
     public void show(Params params) { }
-
-    // ===========================================================================================
 
 //    public void showPrev() {}
 //    public void showNext() {}
