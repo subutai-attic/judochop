@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.State;
-import org.safehaus.chop.spi.Stack;
+import org.safehaus.chop.stack.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

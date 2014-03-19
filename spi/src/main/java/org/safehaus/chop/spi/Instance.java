@@ -1,6 +1,9 @@
 package org.safehaus.chop.spi;
 
 
+import org.safehaus.chop.stack.InstanceSpec;
+
+
 /**
  * A virtual machine or lxc instance.
  */

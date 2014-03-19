@@ -7,24 +7,17 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Chop SPI</name>
-  <artifactId>chop-spi</artifactId>
+  <name>Chop Stack</name>
+  <artifactId>chop-stack</artifactId>
   <packaging>jar</packaging>
   <description>
-    Service provider interfaces for the chop system enabling the use
-    of multiple IaaS service providers.
+    Interfaces and utilities for dealing with stack formation.
   </description>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>chop-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>chop-stack</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

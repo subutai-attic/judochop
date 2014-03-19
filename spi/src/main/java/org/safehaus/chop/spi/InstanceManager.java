@@ -3,6 +3,8 @@ package org.safehaus.chop.spi;
 
 import java.util.Collection;
 
+import org.safehaus.chop.stack.InstanceSpec;
+
 
 /**
  * Manages instances.
