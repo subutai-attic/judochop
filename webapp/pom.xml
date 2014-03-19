@@ -88,6 +88,7 @@
 
           <excludes>
             <exclude>**/NoteDaoTest.java</exclude>
+            <exclude>**/UserDaoTest.java</exclude>
             <exclude>**/CommitDaoTest.java</exclude>
             <exclude>**/ModuleDaoTest.java</exclude>
             <exclude>**/RunDaoTest.java</exclude>
