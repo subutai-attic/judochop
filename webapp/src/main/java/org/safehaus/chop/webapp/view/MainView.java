@@ -1,77 +1,87 @@
 package org.safehaus.chop.webapp.view;
 
 import com.vaadin.annotations.Title;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.StringUtils;
-import org.safehaus.chop.api.Module;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.view.chart.Params;
-import org.safehaus.chop.webapp.view.chart.ViewContext;
+import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.view.chart.ChartViewContext;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
 import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
 import org.safehaus.chop.webapp.view.chart.view.ChartView;
-import org.safehaus.chop.webapp.view.chart.view.OverviewView;
+import org.safehaus.chop.webapp.view.chart.view.OverviewChartView;
 import org.safehaus.chop.webapp.view.tree.ModuleSelectListener;
-import org.safehaus.chop.webapp.view.tree.ModuleTreeHelper;
-import org.safehaus.chop.webapp.view.util.FileUtil;
-
-import java.util.List;
+import org.safehaus.chop.webapp.view.tree.ModuleTreeBuilder;
+import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 
 @Title("Judo Chop")
-public class MainView extends UI implements ViewContext, ModuleSelectListener {
+public class MainView extends UI implements ChartViewContext, ModuleSelectListener {
 
     private HorizontalSplitPanel splitPanel;
-    private ChartView overviewView;
+    private OverviewChartView overviewChartView;
 
     @Override
     protected void init(VaadinRequest request) {
-        AbsoluteLayout initialLayout = initViews();
-        initLayout(initialLayout);
+        overviewChartView = initChartViews(this);
+        initLayout();
         loadScripts();
     }
 
-    private AbsoluteLayout initViews() {
+    private static OverviewChartView initChartViews(ChartViewContext viewContext) {
 
-        overviewView = new OverviewView(this, null, null);
+        OverviewChartView overviewChartView = new OverviewChartView(viewContext, null, null);
 
-        return overviewView;
+        return overviewChartView;
     }
 
-    private void initLayout(AbsoluteLayout initialLayout) {
+    private void initLayout() {
 
         splitPanel = new HorizontalSplitPanel();
         splitPanel.setSplitPosition(25);
-        splitPanel.setFirstComponent( ModuleTreeHelper.getTreeTable(this) );
-        splitPanel.setSecondComponent(initialLayout);
+        splitPanel.setFirstComponent( ModuleTreeBuilder.getTree(this) );
+//        splitPanel.setSecondComponent(initialLayout);
 
         setContent(splitPanel);
     }
 
     private void loadScripts() {
-        JavaScript.getCurrent().execute( FileUtil.getContent("js/jquery.min.js") );
-        JavaScript.getCurrent().execute( FileUtil.getContent("js/highcharts.js") );
-    }
-
-    public void show(ChartView chartView) {
-
-    }
-
-    public void show(ChartView chartView, Params params) {
-
+        JavaScriptUtil.loadFile("js/jquery.min.js");
+        JavaScriptUtil.loadFile("js/highcharts.js");
     }
 
     public void onModuleSelect(String moduleId) {
-        System.out.println("module selected: " + moduleId);
+        overviewChartView.show(moduleId);
+        splitPanel.setSecondComponent(overviewChartView);
     }
+
+    @Override
+    public void show(ChartView chartView, Params params) {
+        System.out.println(params);
+//        chartView.show(params);
+    }
+
+
 
 
 
     // ===================================================================================================
 
+//    public void show(ChartView chartView) {
+//
+//        Params params = new Params(
+//            "1168044208",
+//            "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest",
+//            null,
+//            0,
+//            "Avg Time",
+//            100,
+//            "ALL"
+//        );
+//
+//        chartView.show(params);
+//    }
 
 //    public void showOverviewLayout() {
 //        hsplit.setSecondComponent(overviewLayout);

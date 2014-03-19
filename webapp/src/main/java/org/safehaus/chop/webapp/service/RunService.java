@@ -4,13 +4,20 @@ import com.google.inject.Inject;
 import org.safehaus.chop.api.*;
 import org.safehaus.chop.webapp.dao.*;
 
+import java.util.List;
+import java.util.Set;
+
 public class RunService {
 
     @Inject
-    private RunDao dao;
+    private RunDao runDao = null;
 
-    public boolean save(Run run) throws Exception {
-        return dao.save(run);
+    @Inject
+    private CommitDao commitDao = null;
+
+    public Set<String> getTestNames(String moduleId) {
+        List<Commit> commits = commitDao.getByModule(moduleId);
+        return runDao.getTestNames(commits);
     }
 
 }

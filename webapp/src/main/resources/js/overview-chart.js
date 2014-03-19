@@ -1,13 +1,7 @@
 function pointClicked() {
-
     var info = this.info;
     console.log(info);
-
-//    var e = $("#commitIdButton").children(":first").children(":first");
-//    e.text(info.commitId);
-
-//    com.example.foo.myfunc(info.commitId);
-    com.example.foo.myfunc( info );
+    overviewChartCallback(info);
 }
 
 $('#overviewChart').highcharts({

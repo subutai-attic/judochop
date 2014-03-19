@@ -6,7 +6,7 @@ import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
-import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 import java.util.List;
@@ -16,10 +16,10 @@ public class OverviewChart {
     private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
 
-    public String get(String moduleId, Params params) {
+    public String get(Params params) {
 
-        List<Commit> commits = commitDao.getByModule(moduleId);
-        List<Run> list = runDao.getList(commits, params.getTestName());
+        List<Commit> commits = commitDao.getByModule( params.getModuleId() );
+        List<Run> list = runDao.getList( commits, params.getTestName() );
 
         OverviewCollector collector = new OverviewCollector(commits, params.getMetricType(), params.getPercentile(), params.getFailureValue());
 

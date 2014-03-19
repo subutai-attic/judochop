@@ -4,7 +4,7 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.runs.*;
-import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 import java.util.List;
