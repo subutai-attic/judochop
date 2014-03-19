@@ -73,82 +73,81 @@ public class UploadResource implements RestParams {
     private RunResultDao runResultDao;
 
 
-    @POST
-    @Consumes( MediaType.MULTIPART_FORM_DATA )
-    @Produces( MediaType.TEXT_PLAIN )
-    public Response upload(
-            @FormDataParam( CONTENT ) InputStream in,
-            @FormDataParam( FILENAME ) String fileName )
-    {
-        LOG.warn( "upload called ..." );
-        LOG.info( "fileDetails = " + fileName );
+//    @POST
+//    @Consumes( MediaType.MULTIPART_FORM_DATA )
+//    @Produces( MediaType.TEXT_PLAIN )
+//    public Response upload(
+//            @FormDataParam( CONTENT ) InputStream in,
+//            @FormDataParam( FILENAME ) String fileName )
+//    {
+//        LOG.warn( "upload called ..." );
+//        LOG.info( "fileDetails = " + fileName );
+//
+//        // handle the upload of the war file to some path on the file system
+//        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
+//        writeToFile( in, fileLocation );
+//        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
+//    }
 
-        // handle the upload of the war file to some path on the file system
-        String fileLocation = /* config.getWarUploadPath() + */ "target/" + fileName;
-        writeToFile( in, fileLocation );
-        return Response.status( Response.Status.CREATED ).entity( fileLocation ).build();
-    }
+//    @SuppressWarnings( "unchecked" )
+//    @POST
+//    @Path( "/results" )
+//    @Consumes( MediaType.MULTIPART_FORM_DATA )
+//    @Produces( MediaType.TEXT_PLAIN )
+//    public Response uploadResults(
+//        @FormDataParam( CONTENT ) InputStream in,
+//        @FormDataParam( RUN_ID ) String runId ) throws Exception
+//    {
+//        JSONObject object = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
+//        JSONArray runResults = ( JSONArray ) object.get( "runResults" );
+//        Iterator<JSONObject> iterator = runResults.iterator();
+//
+//        //noinspection WhileLoopReplaceableByForEach
+//        while( iterator.hasNext() ) {
+//            JSONObject jsonResult = iterator.next();
+//
+//            BasicRunResult runResult = new BasicRunResult(
+//                    runId,
+//                    Util.getInt( jsonResult, "runCount" ),
+//                    Util.getInt( jsonResult, "runTime" ),
+//                    Util.getInt( jsonResult, "ignoreCount" ),
+//                    Util.getInt( jsonResult, "failureCount" )
+//            );
+//
+//            if ( runResultDao.save( runResult ) ) {
+//                LOG.info( "Saved run result: {}", runResult );
+//            }
+//        }
+//
+//        return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+//    }
 
 
-    @SuppressWarnings( "unchecked" )
-    @POST
-    @Path( "/results" )
-    @Consumes( MediaType.MULTIPART_FORM_DATA )
-    @Produces( MediaType.TEXT_PLAIN )
-    public Response uploadResults(
-        @FormDataParam( CONTENT ) InputStream in,
-        @FormDataParam( RUN_ID ) String runId ) throws Exception
-    {
-        JSONObject object = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
-        JSONArray runResults = ( JSONArray ) object.get( "runResults" );
-        Iterator<JSONObject> iterator = runResults.iterator();
-
-        //noinspection WhileLoopReplaceableByForEach
-        while( iterator.hasNext() ) {
-            JSONObject jsonResult = iterator.next();
-
-            BasicRunResult runResult = new BasicRunResult(
-                    runId,
-                    Util.getInt( jsonResult, "runCount" ),
-                    Util.getInt( jsonResult, "runTime" ),
-                    Util.getInt( jsonResult, "ignoreCount" ),
-                    Util.getInt( jsonResult, "failureCount" )
-            );
-
-            if ( runResultDao.save( runResult ) ) {
-                LOG.info( "Saved run result: {}", runResult );
-            }
-        }
-
-        return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
-    }
-
-
-    @SuppressWarnings( "unchecked" )
-    @POST
-    @Path( "/summary" )
-    @Consumes( MediaType.MULTIPART_FORM_DATA )
-    @Produces( MediaType.TEXT_PLAIN )
-    public Response uploadSummary( @FormDataParam( CONTENT ) InputStream in,
-                                   @FormDataParam( RUNNER_HOSTNAME ) String runnerHostname ) throws Exception
-    {
-        JSONObject json = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
-        BasicRun run = new BasicRun(
-                COMMIT_ID,
-                runnerHostname,
-                Util.getInt( json, "runNumber" ),
-                Util.getString( json, "testName" ) );
-        run.copyJson( json );
-
-        if ( runDao.save( run ) ) {
-            LOG.info( "Created new Run {} ", run );
-        }
-        else {
-            LOG.warn( "Failed to create new Run" );
-        }
-
-        return Response.status( Response.Status.CREATED ).entity( run.getId() ).build();
-    }
+//    @SuppressWarnings( "unchecked" )
+//    @POST
+//    @Path( "/summary" )
+//    @Consumes( MediaType.MULTIPART_FORM_DATA )
+//    @Produces( MediaType.TEXT_PLAIN )
+//    public Response uploadSummary( @FormDataParam( CONTENT ) InputStream in,
+//                                   @FormDataParam( RUNNER_HOSTNAME ) String runnerHostname ) throws Exception
+//    {
+//        JSONObject json = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
+//        BasicRun run = new BasicRun(
+//                COMMIT_ID,
+//                runnerHostname,
+//                Util.getInt( json, "runNumber" ),
+//                Util.getString( json, "testName" ) );
+//        run.copyJson( json );
+//
+//        if ( runDao.save( run ) ) {
+//            LOG.info( "Created new Run {} ", run );
+//        }
+//        else {
+//            LOG.warn( "Failed to create new Run" );
+//        }
+//
+//        return Response.status( Response.Status.CREATED ).entity( run.getId() ).build();
+//    }
 
 
     private void writeToFile( InputStream in, String fileLocation )

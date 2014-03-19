@@ -3,13 +3,8 @@ package org.safehaus.chop.webapp.view.chart.iterations;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
-import org.json.JSONException;
-import org.safehaus.chop.webapp.dao.CommitDao;
-import org.safehaus.chop.webapp.dao.NoteDao;
-import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.view.MainUI;
-import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
+import org.safehaus.chop.webapp.view.MainView;
+import org.safehaus.chop.webapp.view.chart.Params;
 
 public class IterationsLayout extends AbsoluteLayout {
 
@@ -18,9 +13,9 @@ public class IterationsLayout extends AbsoluteLayout {
     private ComboBox percentileCombo;
     private ComboBox failureCombo;
 
-    private MainUI mainUI;
+    private MainView mainUI;
 
-    public IterationsLayout(MainUI mainUI) {
+    public IterationsLayout(MainView mainUI) {
 
         this.mainUI = mainUI;
 
@@ -43,7 +38,7 @@ public class IterationsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                mainUI.showRunsLayout("");
+//                mainUI.showRunsLayout("");
             }
         });
     }
@@ -113,8 +108,8 @@ public class IterationsLayout extends AbsoluteLayout {
         percentileCombo = comboBox;
     }
 
-    private void loadChart(String testName, String commitId, int runNumber, int percentile, String failureValue) {
-        String chart = iterationsChart.get(testName, commitId, runNumber, percentile, failureValue);
+    private void loadChart(Params params, int runNumber) {
+        String chart = iterationsChart.get(params, runNumber);
         JavaScript.getCurrent().execute(chart);
     }
 
@@ -130,17 +125,14 @@ public class IterationsLayout extends AbsoluteLayout {
         int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
         String failureType = (String) failureCombo.getValue();
 
-        loadChart(testName, commitId, runNumber, percentile, failureType);
+        Params params = new Params(
+                testName,
+                commitId,
+                null,
+                percentile,
+                failureType
+        );
+
+        loadChart(params, runNumber);
     }
-
-//    private void submitButtonClicked() {
-//
-//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-//        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
-//        int percentile = Integer.parseInt( (String) percentileCombo.getValue() );
-//        String failureType = (String) failureCombo.getValue();
-//
-//        loadChart(testName, commitId, runNumber, percentile, failureType);
-//    }
-
 }
