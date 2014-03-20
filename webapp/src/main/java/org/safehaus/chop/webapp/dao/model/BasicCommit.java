@@ -11,14 +11,17 @@ public class BasicCommit implements Commit {
 
     private String id;
     private String moduleId;
-    private String warMd5;
+    private String md5;
     private Date createTime;
+    private String runnerWarPath;
 
-    public BasicCommit(String id, String moduleId, String warMd5, Date createTime) {
+
+    public BasicCommit( String id, String moduleId, String md5, Date createTime, String runnerWarPath ) {
         this.id = id;
         this.moduleId = moduleId;
-        this.warMd5 = warMd5;
+        this.md5 = md5;
         this.createTime = createTime;
+        this.runnerWarPath = runnerWarPath;
     }
 
     @Override
@@ -32,9 +35,26 @@ public class BasicCommit implements Commit {
     }
 
     @Override
-    public String getWarMd5() {
-        return warMd5;
+    public String getMd5() {
+        return md5;
     }
+
+
+    public void setMd5() {
+        this.md5 = md5;
+    }
+
+
+    @Override
+    public String getRunnerPath() {
+        return runnerWarPath;
+    }
+
+
+    public void setRunnerPath( String runnerWarPath ) {
+        this.runnerWarPath = runnerWarPath;
+    }
+
 
     @Override
     public Date getCreateTime() {
@@ -45,7 +65,7 @@ public class BasicCommit implements Commit {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
                 .append("moduleId", moduleId)
-                .append("warMd5", warMd5)
+                .append("md5", md5)
                 .append("createTime", createTime)
                 .toString();
     }

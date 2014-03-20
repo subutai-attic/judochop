@@ -14,7 +14,9 @@ public interface Commit {
 
     String getModuleId();
 
-    String getWarMd5();
+    String getMd5();
+
+    String getRunnerPath();
 
     Date getCreateTime();
 }
