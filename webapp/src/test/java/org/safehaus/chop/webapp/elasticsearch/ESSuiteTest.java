@@ -18,17 +18,21 @@ import org.safehaus.chop.webapp.dao.ModuleDaoTest;
 import org.safehaus.chop.webapp.dao.NoteDao;
 import org.safehaus.chop.webapp.dao.NoteDaoTest;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
+import org.safehaus.chop.webapp.dao.ProviderParamsDaoTest;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.RunDaoTest;
 import org.safehaus.chop.webapp.dao.RunResultDao;
 import org.safehaus.chop.webapp.dao.RunResultDaoTest;
+import org.safehaus.chop.webapp.dao.RunnerDao;
 import org.safehaus.chop.webapp.dao.RunnerDaoTest;
 import org.safehaus.chop.webapp.dao.UserDao;
+import org.safehaus.chop.webapp.dao.UserDaoTest;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.dao.model.BasicModule;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.dao.model.BasicRunResult;
+import org.safehaus.chop.webapp.dao.model.BasicRunner;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.dao.model.User;
 import org.slf4j.Logger;
@@ -39,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @Suite.SuiteClasses(
 {
         ModuleDaoTest.class, CommitDaoTest.class, NoteDaoTest.class, RunDaoTest.class, RunnerDaoTest.class,
-        RunResultDaoTest.class
+        RunResultDaoTest.class, UserDaoTest.class, ProviderParamsDaoTest.class
 } )
 public class ESSuiteTest {
 
@@ -58,6 +62,9 @@ public class ESSuiteTest {
     public static final String TEST_NAME = "org.safehaus.chop.example.DigitalWatchTest";
     public static final String USER_1 = "testuser";
     public static final String USER_2 = "user-2";
+    public static final String RUNNER_IPV4_1 = "54.227.39.116";
+    public static final String RUNNER_IPV4_2 = "23.20.162.161";
+    public static final String RUNNER_HOSTNAME_3 = "ec2-84-197-213-159.compute-1.amazonaws.com";
 
 
     @ClassRule
@@ -70,16 +77,13 @@ public class ESSuiteTest {
     public static RunDao runDao;
     public static RunResultDao runResultDao;
     public static UserDao userDao;
+    public static RunnerDao runnerDao;
 
     /** Populate elastic search for all tests */
     @BeforeClass
     public static void setUpData() throws Exception {
 
-        LOG.warn( "Setup called!!!" );
-
-        LOG.warn( "Is esClient null? : {}", ( esClient == null )  );
-
-        LOG.warn( "Is esClient.getClient() null? : {}", ( esClient.getClient() == null )  );
+        LOG.info( "Setting up sample data for elasticsearch Dao tests..." );
 
 
         /** Save 2 different modules */
@@ -102,7 +106,6 @@ public class ESSuiteTest {
         );
         moduleDao.save( module );
 
-        LOG.warn( "after module save" );
 
         /** Save 3 commits, 2 under same module, 1 different */
         commitDao = new CommitDao( esClient );
@@ -130,14 +133,12 @@ public class ESSuiteTest {
         );
         commitDao.save( commit );
 
-        LOG.warn( "after commit save" );
 
         /** Save a Note */
         noteDao = new NoteDao( esClient );
         Note note = new Note( COMMIT_ID_1, 1, NOTE );
         noteDao.save( note );
 
-        LOG.warn( "after note save" );
 
         /** Save 2 provider params */
         ppDao = new ProviderParamsDao( esClient );
@@ -166,8 +167,6 @@ public class ESSuiteTest {
                 "chop-runner"
         );
         ppDao.save( pp );
-
-        LOG.warn( "after pparams save" );
 
 
         /** Save 2 runs for one commit, 1 run for another */
@@ -201,7 +200,6 @@ public class ESSuiteTest {
         runDao.save( run );
         runIds[ 2 ] = run.getId();
 
-        LOG.warn( "after run save" );
 
         /** Save 3 run results, one for each run */
         runResultDao = new RunResultDao( esClient );
@@ -214,7 +212,6 @@ public class ESSuiteTest {
         runResult = new BasicRunResult( runIds[ 2 ], 17, 15789, 2, 2 );
         runResultDao.save( runResult );
 
-        LOG.warn( "after runresult save" );
 
         /** Save 2 users */
         userDao = new UserDao( esClient );
@@ -224,13 +221,44 @@ public class ESSuiteTest {
         user = new User( USER_2 , "sosecretsuchcryptowow" );
         userDao.save( user );
 
-        LOG.warn( "after user save" );
+
+        /** Save 2 runners for COMMIT_ID_1, 1 runner for COMMIT_ID_2 */
+        runnerDao = new RunnerDao( esClient );
+        BasicRunner runner = new BasicRunner(
+                                RUNNER_IPV4_1, // ipv4Address
+                                "ec2-54-227-39-116.compute-1.amazonaws.com", // hostname
+                                24981,// serverPort
+                                "https://ec2-54-227-39-116.compute-1.amazonaws.com:24981", // url
+                                "/tmp" // tempDir
+        );
+        runnerDao.save( runner, COMMIT_ID_1 );
+
+        runner = new BasicRunner(
+                                RUNNER_IPV4_2, // ipv4Address
+                                "ec2-23-20-162-161.compute-1.amazonaws.com", // hostname
+                                8443, // serverPort
+                                "https://ec2-23-20-162-161.compute-1.amazonaws.com:8443", // url
+                                "/tmp" // tempDir
+        );
+        runnerDao.save( runner, COMMIT_ID_1 );
+
+        runner = new BasicRunner(
+                                "84.197.213.159", // ipv4Address
+                                RUNNER_HOSTNAME_3, // hostname
+                                24981,// serverPort
+                                "https://ec2-84-197-213-159.compute-1.amazonaws.com:24981", // url
+                                "/tmp" // tempDir
+        );
+        runnerDao.save( runner, COMMIT_ID_2 );
+
+
+        LOG.info( "Sample data for dao tests are saved into elasticsearch" );
 
     }
 
     @AfterClass
     public static void tearDownData() {
-        LOG.warn( "ESSuiteTest teardown called" );
+        LOG.info( "ESSuiteTest teardown called" );
     }
 
 

@@ -1,12 +1,8 @@
 package org.safehaus.chop.webapp.dao;
 
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +46,7 @@ public class RunDaoTest {
             LOG.info( run.toString() );
         }
 
-        // @todo assertEquals number of runs
+        assertEquals( 3, list.size() );
     }
 
 
@@ -107,7 +103,7 @@ public class RunDaoTest {
             LOG.info("{}: {}", runId, runs.get( runId ));
         }
 
-        // @todo assert Equals size
+        assertEquals( 1, runs.size() );
     }
 
 }

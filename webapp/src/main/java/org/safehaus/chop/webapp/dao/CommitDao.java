@@ -31,6 +31,7 @@ public class CommitDao extends Dao<Commit> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "modules", "commit", commit.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()

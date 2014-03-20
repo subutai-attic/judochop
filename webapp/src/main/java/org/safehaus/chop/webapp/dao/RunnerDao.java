@@ -30,6 +30,7 @@ public class RunnerDao {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "runners", "runner", runner.getHostname() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
@@ -51,6 +52,7 @@ public class RunnerDao {
 
         DeleteResponse response = elasticSearchClient.getClient()
                 .prepareDelete( "runners", "runner", hostname )
+                .setRefresh( true )
                 .execute()
                 .actionGet();
 

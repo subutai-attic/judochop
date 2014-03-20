@@ -102,7 +102,7 @@
             <exclude>**/OverviewCalcTest.java</exclude>
             <exclude>**/IterationsCalcTest.java</exclude>
             <exclude>**/ChopUiTest.java</exclude>
-            <exclude>**/ESSuiteTest.java</exclude>
+            <exclude>**/DataServiceTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>

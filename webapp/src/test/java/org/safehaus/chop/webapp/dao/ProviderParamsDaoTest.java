@@ -1,11 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.ProviderParams;
-import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +11,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
 public class ProviderParamsDaoTest {
 
     private static final Logger LOG = LoggerFactory.getLogger( ProviderParamsDaoTest.class );
@@ -24,6 +18,8 @@ public class ProviderParamsDaoTest {
 
     @Test
     public void testGetAll() throws Exception {
+
+        LOG.info( "\n===ProviderParamsDaoTest.testGetAll===\n" );
 
         List<ProviderParams> list = ESSuiteTest.ppDao.getAll();
 
@@ -37,6 +33,9 @@ public class ProviderParamsDaoTest {
 
     @Test
     public void testGetByUsername() {
+
+        LOG.info( "\n===ProviderParamsDaoTest.testGetByUsername===\n" );
+
         ProviderParams pp = ESSuiteTest.ppDao.getByUser( ESSuiteTest.USER_1 );
 
         assertEquals( ESSuiteTest.IMAGE_ID, pp.getImageId() );

@@ -19,7 +19,6 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
 
     private Node node;
     private Client client;
-    private Settings settings;
 
     private static Logger LOG = LoggerFactory.getLogger( ElasticSearchResource.class );
 
@@ -27,23 +26,24 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
     protected void before() throws Throwable {
         super.before();
 
-        LOG.warn( "ElasticSearchResource before() called" );
+        LOG.info( "ElasticSearchResource external resource is being created..." );
 
         node = NodeBuilder.nodeBuilder()
                           .local( true )
                           .settings( buildNodeSettings() )
                           .node();
 
+
         // Get a client
         client = node.client();
 
         // Wait for Yellow status
         client.admin().cluster()
-                .prepareHealth()
-                .setWaitForYellowStatus()
-                .setTimeout( TimeValue.timeValueMinutes( 1 ) )
-                .execute()
-                .actionGet();
+                      .prepareHealth()
+                      .setWaitForGreenStatus()
+                      .setTimeout( TimeValue.timeValueMinutes( 1 ) )
+                      .execute()
+                      .actionGet();
 
     }
 
@@ -52,16 +52,19 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
     protected void after() {
         super.after();
 
-        LOG.warn( "ElasticSearchResource after() called" );
+        LOG.info( "ElasticSearchResource is being closed..." );
 
         if ( client != null ) {
+
             client.close();
         }
 
         if ( ( node != null ) && ( ! node.isClosed() ) ) {
+            node.stop();
             node.close();
 
             FileSystemUtils.deleteRecursively( new File( "./target/elasticsearch-test/" ), true );
+
         }
     }
 
@@ -88,10 +91,6 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
                 .put( "index.number_of_replicas", "0" )
                 .put( "cluster.routing.schedule", "50ms" )
                 .put( "node.local", true );
-
-        if ( settings != null ) {
-            builder.put(settings);
-        }
 
         return builder.build();
     }

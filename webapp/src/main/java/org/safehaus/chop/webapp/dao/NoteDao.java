@@ -30,6 +30,7 @@ public class NoteDao extends Dao<Note> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "modules", "note", note.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()

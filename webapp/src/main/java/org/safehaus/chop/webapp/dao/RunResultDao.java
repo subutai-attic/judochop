@@ -30,6 +30,7 @@ public class RunResultDao extends Dao<RunResult> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "modules", "runResult", runResult.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()

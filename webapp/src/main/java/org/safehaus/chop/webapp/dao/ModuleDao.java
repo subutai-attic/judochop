@@ -29,6 +29,7 @@ public class ModuleDao extends Dao<Module> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "modules", "module", module.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()

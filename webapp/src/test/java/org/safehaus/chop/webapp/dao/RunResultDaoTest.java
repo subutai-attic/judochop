@@ -1,12 +1,8 @@
 package org.safehaus.chop.webapp.dao;
 
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +12,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-//@RunWith(JukitoRunner.class)
-//@UseModules(ChopUiModule.class)
+
 public class RunResultDaoTest {
 
     private static Logger LOG = LoggerFactory.getLogger( RunResultDaoTest.class );
@@ -25,6 +20,8 @@ public class RunResultDaoTest {
 
     @Test
     public void getAll() {
+
+        LOG.info( "\n===RunResultDaoTest.getAll===\n" );
 
         List<RunResult> list = ESSuiteTest.runResultDao.getAll();
 
@@ -37,6 +34,8 @@ public class RunResultDaoTest {
 
     @Test
     public void getMap() {
+
+        LOG.info( "\n===RunResultDaoTest.getMap===\n" );
 
         Map<String, Run> runs = ESSuiteTest.runDao.getMap( ESSuiteTest.COMMIT_ID_2, 2, ESSuiteTest.TEST_NAME );
         Map<Run, List<RunResult>> runResults = ESSuiteTest.runResultDao.getMap( runs );

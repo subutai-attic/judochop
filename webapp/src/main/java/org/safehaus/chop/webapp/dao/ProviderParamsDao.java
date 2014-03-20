@@ -38,6 +38,7 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( INDEX_KEY, TYPE_KEY, pp.getUsername() )
+                .setRefresh( true )
                 .setSource(
                     jsonBuilder()
                         .startObject()
