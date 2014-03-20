@@ -7,7 +7,7 @@ import org.safehaus.chop.webapp.dao.*;
 import java.util.List;
 import java.util.Set;
 
-public class RunService {
+public class DataService {
 
     @Inject
     private RunDao runDao = null;

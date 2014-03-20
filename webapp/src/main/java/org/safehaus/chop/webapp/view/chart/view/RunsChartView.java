@@ -12,40 +12,20 @@ public class RunsChartView extends ChartView {
 
     private RunsChart runsChart = new RunsChart();
 
-    private String moduleId;
-    private String commitId;
-    private int runNumber;
-
     public RunsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
-        super(viewContext, prevView, nextView);
-    }
-
-    @Override
-    protected void addControls() {
-        super.addControls();
-        addChartLayout("runsChart");
+        super(viewContext, prevView, nextView, "runsChart");
         addNextChartButton();
     }
 
     @Override
     public void call(JSONArray args) throws JSONException {
         JSONObject json = args.getJSONObject(0);
-        runNumber = json.getInt("runNumber");
+        params.setRunNumber( json.getInt("runNumber") );
     }
 
-    @Override
-    protected Params getParams() {
-        return super.getParams()
-                .setModuleId(moduleId)
-                .setCommitId(commitId)
-                .setRunNumber(runNumber);
-    }
-
-    @Override
     public void show(Params params) {
 
-        moduleId = params.getModuleId();
-        commitId = params.getCommitId();
+        this.params = params;
 
         populateTestNames( params.getModuleId() );
 

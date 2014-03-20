@@ -2,20 +2,22 @@ package org.safehaus.chop.webapp.view.chart.view;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
+import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.RunService;
 import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.chart.ChartViewContext;
+import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
+import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
 import java.util.Set;
 
 public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunction {
 
-    private RunService runService = InjectorFactory.getInstance(RunService.class);
+    private DataService dataService = InjectorFactory.getInstance(DataService.class);
 
     protected ChartViewContext chartViewContext;
-    private ChartView prevView;
+//    private ChartView prevView;
     protected ChartView nextChartView;
     //private ChartBuilder chartBuilder;
 
@@ -24,25 +26,28 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
     protected ComboBox percentileCombo;
     protected ComboBox failureCombo;
 
-    protected ChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextChartView) {
+    protected Params params;
+
+    protected ChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextChartView, String chartId) {
 
         this.chartViewContext = viewContext;
-        this.prevView = prevView;
+//        this.prevView = prevView;
         this.nextChartView = nextChartView;
 
         setSizeFull();
-        addControls();
+        addControls(chartId);
     }
 
-    protected void addControls() {
+    protected void addControls(String chartId) {
         addTestNamesCombo();
         addMetricCombo();
         addPercentileCombo();
         addFailureCombo();
         addSubmitButton();
+        addChartLayout(chartId);
     }
 
-    protected void addChartLayout(String id) {
+    private void addChartLayout(String id) {
         AbsoluteLayout chartLayout = UIUtil.getLayout(id, "700px", "400px");
         addComponent(chartLayout, "left: 10px; top: 150px;");
     }
@@ -107,23 +112,40 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
     }
 
     protected void populateTestNames(String moduleId) {
-        Set<String> testNames = runService.getTestNames(moduleId);
+        Set<String> testNames = dataService.getTestNames(moduleId);
         UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]));
     }
 
     protected Params getParams() {
         return new Params(
-                null, // moduleId
+                params.getModuleId(),
                 (String) testNamesCombo.getValue(),
-                null, // commitId
-                0, // runNumber
+                params.getCommitId(),
+                params.getRunNumber(),
                 (String) metricCombo.getValue(),
                 Integer.parseInt( (String) percentileCombo.getValue() ),
                 (String) failureCombo.getValue()
         );
     }
 
-    public void show(Params params) { }
+    private OverviewChart overviewChart = new OverviewChart();
+
+    public void show(Params params_) {
+
+//        this.moduleId = params_.getModuleId();
+        this.params = params_;
+        System.out.println(this.params);
+
+        populateTestNames(params_.getModuleId());
+
+        Params params = getParams();
+        System.out.println(params);
+        System.out.println("-");
+
+        String chart = overviewChart.get(params);
+        JavaScriptUtil.execute(chart);
+        JavaScriptUtil.addCallback("overviewChartCallback", this);
+    }
 
 //    public void showPrev() {}
 //    public void showNext() {}
