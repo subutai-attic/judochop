@@ -1,22 +1,23 @@
-package org.safehaus.chop.webapp.view.chart.overview;
+package org.safehaus.chop.webapp.view.chart.builder;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
 import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
+import org.safehaus.chop.webapp.view.chart.overview.OverviewFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 import java.util.List;
 
-public class OverviewChart {
+public class OverviewChartBuilder extends ChartBuilder {
 
     private CommitDao commitDao = InjectorFactory.getInstance(CommitDao.class);
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
 
-    public String get(Params params) {
+    public String getChart(Params params) {
 
         List<Commit> commits = commitDao.getByModule( params.getModuleId() );
         List<Run> list = runDao.getList( commits, params.getTestName() );

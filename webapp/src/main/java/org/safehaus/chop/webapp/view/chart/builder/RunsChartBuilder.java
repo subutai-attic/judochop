@@ -1,19 +1,20 @@
-package org.safehaus.chop.webapp.view.chart.runs;
+package org.safehaus.chop.webapp.view.chart.builder;
 
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.calc.runs.*;
 import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.service.calc.runs.RunsCollector;
+import org.safehaus.chop.webapp.view.chart.runs.RunsFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 import java.util.List;
 
-public class RunsChart {
+public class RunsChartBuilder extends ChartBuilder {
 
     private RunDao runDao = InjectorFactory.getInstance(RunDao.class);
 
-    public String get(Params params) {
+    public String getChart(Params params) {
 
         List<Run> runs = runDao.getList(params.getCommitId(), params.getTestName());
         RunsCollector collector = new RunsCollector(runs, params.getMetricType(), params.getPercentile(), params.getFailureValue());
