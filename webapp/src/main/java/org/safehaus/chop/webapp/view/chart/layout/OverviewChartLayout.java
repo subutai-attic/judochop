@@ -1,16 +1,16 @@
-package org.safehaus.chop.webapp.view.chart.view;
+package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.safehaus.chop.webapp.view.chart.ChartViewContext;
+import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 
-public class OverviewChartView extends ChartView {
+public class OverviewChartLayout extends ChartLayout {
 
 //    private OverviewChart overviewChart = new OverviewChart();
 
-    public OverviewChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
-        super(viewContext, prevView, nextView, "overviewChart");
+    public OverviewChartLayout(ChartLayoutContext layoutContext, ChartLayout prevLayout, ChartLayout nextLayout) {
+        super(layoutContext, prevLayout, nextLayout, "overviewChart");
         addNextChartButton();
     }
 

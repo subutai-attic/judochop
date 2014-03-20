@@ -1,24 +1,24 @@
-package org.safehaus.chop.webapp.view.chart.view;
+package org.safehaus.chop.webapp.view.chart.layout;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.Params;
-import org.safehaus.chop.webapp.view.chart.ChartViewContext;
+import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
 import java.util.Set;
 
-public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunction {
+public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFunction {
 
     private DataService dataService = InjectorFactory.getInstance(DataService.class);
 
-    protected ChartViewContext chartViewContext;
+    protected ChartLayoutContext chartLayoutContext;
 //    private ChartView prevView;
-    protected ChartView nextChartView;
+    protected ChartLayout nextLayout;
     //private ChartBuilder chartBuilder;
 
     protected ComboBox testNamesCombo;
@@ -28,11 +28,11 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
 
     protected Params params;
 
-    protected ChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextChartView, String chartId) {
+    protected ChartLayout(ChartLayoutContext layoutContext, ChartLayout prevLayout, ChartLayout nextLayout, String chartId) {
 
-        this.chartViewContext = viewContext;
+        this.chartLayoutContext = layoutContext;
 //        this.prevView = prevView;
-        this.nextChartView = nextChartView;
+        this.nextLayout = nextLayout;
 
         setSizeFull();
         addControls(chartId);
@@ -82,7 +82,7 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
     }
 
     private void nextChartButtonClicked() {
-        chartViewContext.show( nextChartView, getParams() );
+        chartLayoutContext.show(nextLayout, getParams());
     }
 
     private void addTestNamesCombo() {

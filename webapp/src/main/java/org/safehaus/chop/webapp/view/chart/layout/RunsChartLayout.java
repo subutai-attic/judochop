@@ -1,19 +1,19 @@
-package org.safehaus.chop.webapp.view.chart.view;
+package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.calc.Params;
-import org.safehaus.chop.webapp.view.chart.ChartViewContext;
+import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.runs.RunsChart;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 
-public class RunsChartView extends ChartView {
+public class RunsChartLayout extends ChartLayout {
 
     private RunsChart runsChart = new RunsChart();
 
-    public RunsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
-        super(viewContext, prevView, nextView, "runsChart");
+    public RunsChartLayout(ChartLayoutContext layoutContext, ChartLayout prevLayout, ChartLayout nextLayout) {
+        super(layoutContext, prevLayout, nextLayout, "runsChart");
         addNextChartButton();
     }
 

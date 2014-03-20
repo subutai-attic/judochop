@@ -3,41 +3,36 @@ package org.safehaus.chop.webapp.view;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.Params;
-import org.safehaus.chop.webapp.view.chart.ChartViewContext;
-import org.safehaus.chop.webapp.view.chart.iterations.IterationsLayout;
-import org.safehaus.chop.webapp.view.chart.overview.OverviewLayout;
-import org.safehaus.chop.webapp.view.chart.runs.RunsLayout;
-import org.safehaus.chop.webapp.view.chart.view.ChartView;
-import org.safehaus.chop.webapp.view.chart.view.IterationsChartView;
-import org.safehaus.chop.webapp.view.chart.view.OverviewChartView;
-import org.safehaus.chop.webapp.view.chart.view.RunsChartView;
+import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
+import org.safehaus.chop.webapp.view.chart.layout.ChartLayout;
+import org.safehaus.chop.webapp.view.chart.layout.IterationsChartLayout;
+import org.safehaus.chop.webapp.view.chart.layout.OverviewChartLayout;
+import org.safehaus.chop.webapp.view.chart.layout.RunsChartLayout;
 import org.safehaus.chop.webapp.view.tree.ModuleSelectListener;
 import org.safehaus.chop.webapp.view.tree.ModuleTreeBuilder;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 
 @Title("Judo Chop")
-public class MainView extends UI implements ChartViewContext, ModuleSelectListener {
+public class MainView extends UI implements ChartLayoutContext, ModuleSelectListener {
 
     private HorizontalSplitPanel splitPanel;
-    private ChartView overviewChartView;
+    private ChartLayout overviewLayout;
 
     @Override
     protected void init(VaadinRequest request) {
-        overviewChartView = initChartViews(this);
+        overviewLayout = initChartViews(this);
         initLayout();
         loadScripts();
     }
 
-    private static ChartView initChartViews(ChartViewContext viewContext) {
+    private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
 
-        ChartView iterationsChartView = new IterationsChartView(viewContext, null, null);
-        ChartView runsChartView = new RunsChartView(viewContext, null, iterationsChartView);
-        ChartView overviewChartView = new OverviewChartView(viewContext, null, runsChartView);
+        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, null, null);
+        ChartLayout runsLayout = new RunsChartLayout(layoutContext, null, iterationsLayout);
+        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, null, runsLayout);
 
-        return overviewChartView;
+        return overviewLayout;
     }
 
     private void initLayout() {
@@ -56,11 +51,11 @@ public class MainView extends UI implements ChartViewContext, ModuleSelectListen
 
     @Override
     public void onModuleSelect(String moduleId) {
-        show( overviewChartView, new Params(moduleId) );
+        show(overviewLayout, new Params(moduleId) );
     }
 
     @Override
-    public void show(ChartView chartView, Params params) {
+    public void show(ChartLayout chartView, Params params) {
         splitPanel.setSecondComponent(chartView);
         chartView.show(params);
     }

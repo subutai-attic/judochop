@@ -1,19 +1,19 @@
-package org.safehaus.chop.webapp.view.chart.view;
+package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.calc.Params;
-import org.safehaus.chop.webapp.view.chart.ChartViewContext;
+import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsChart;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 
-public class IterationsChartView extends ChartView {
+public class IterationsChartLayout extends ChartLayout {
 
     private IterationsChart iterationsChart = new IterationsChart();
 
-    public IterationsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
-        super(viewContext, prevView, nextView, "iterationsChart");
+    public IterationsChartLayout(ChartLayoutContext viewContext, ChartLayout prevLayout, ChartLayout nextLayout) {
+        super(viewContext, prevLayout, nextLayout, "iterationsChart");
     }
 
     @Override
