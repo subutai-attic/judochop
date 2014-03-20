@@ -61,13 +61,13 @@ public class UploadResource {
             InputStream in = multipart.getBodyPart(1).getInputStream();
             String fileLocation = /* config.getWarUploadPath() + */ filename;
             writeToFile(in, fileLocation);
-            return Response.status(Response.Status.CREATED).entity("foo").build();
+            return Response.status(Response.Status.CREATED).entity(filename).build();
         } catch (IOException ex) {
             LOG.error(ex.getMessage());
         } catch (MessagingException ex) {
             LOG.error(ex.getMessage());
         }
-        return Response.status(Response.Status.CREATED).entity("foo").build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
 
     }
 
