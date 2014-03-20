@@ -1,75 +1,43 @@
 package org.safehaus.chop.webapp.dao;
 
-import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Module;
-import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
+import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+
 public class ModuleDaoTest {
 
-    private static final String ID = "1168044208";
+    private static Logger LOG = LoggerFactory.getLogger( ModuleDaoTest.class );
 
-    @Inject
-    private ModuleDao moduleDao = null;
-
-    @Test
-    public void save() throws Exception {
-
-        Module module = new BasicModule(
-                "org.apache.usergrid", // groupId
-                "collection", // artifactId
-                "1.0-SNAPSHOT", // version
-                "https://github.com/usergrid/usergrid.git", // vcsRepoUrl
-                "org.apache.usergrid" // testPackageBase
-        );
-
-        boolean created = moduleDao.save(module);
-
-        System.out.println(created + ": " + module);
-    }
 
     @Test
     public void getAll() throws Exception {
-        List<Module> modules = moduleDao.getAll();
 
-        for (Module m : modules) {
-            System.out.println(m);
+        LOG.info( "\n===ModuleDaoTest.getAll===\n" );
+
+        List<Module> modules = ESSuiteTest.moduleDao.getAll();
+
+        for ( Module m : modules ) {
+            LOG.info( m.toString() );
         }
 
-        System.out.println("count: " + modules.size());
+        assertEquals( "Wrong number of modules in elasticsearch", 2, modules.size() );
     }
 
     @Test
     public void get() {
-        System.out.println( moduleDao.get(ID) );
-    }
 
-    @Test
-    public void forTreeTable() throws Exception {
-        List<Module> modules = moduleDao.getAll();
+        LOG.info( "\n===ModuleDaoTest.get===\n" );
 
-        for (Module module : modules) {
-            String id = String.format( "%s-%s", module.getGroupId(), module.getArtifactId() );
-            System.out.println( id );
-        }
-
-//        treeTable.addItem(new Object[]{ "Module1", "v1"}, "id1");
-//        treeTable.addItem(new Object[]{"version1", "v3"}, 3);
-//
-//        treeTable.setParent(3, "id1");
-
-
-
+        Module module = ESSuiteTest.moduleDao.get( ESSuiteTest.MODULE_ID_1 );
+        LOG.info( "Module by ID: {} is {}", ESSuiteTest.MODULE_ID_1, module.toString() );
+        assertEquals( ESSuiteTest.MODULE_GROUPID, module.getGroupId() );
     }
 
 }

@@ -16,6 +16,7 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.*;
@@ -31,34 +32,34 @@ public class RunDao extends Dao<Run> {
     private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
-    public RunDao(ElasticSearchClient elasticSearchClient) {
-        super(elasticSearchClient);
+    public RunDao( IElasticSearchClient elasticSearchClient ) {
+        super( elasticSearchClient );
     }
 
-    public boolean save(Run run) throws Exception {
+    public boolean save( Run run ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "run", run.getId())
+                .prepareIndex( "modules", "run", run.getId() )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field("commitId", run.getCommitId())
-                                .field("runner", run.getRunner())
-                                .field("runNumber", run.getRunNumber())
-                                .field("testName", run.getTestName())
-                                .field("chopType", run.getChopType())
-                                .field("iterations", run.getIterations())
-                                .field("totalTestsRun", run.getTotalTestsRun())
-                                .field("threads", run.getThreads())
-                                .field("delay", run.getDelay())
-                                .field("time", run.getTime())
-                                .field("actualTime", run.getActualTime())
-                                .field("minTime", run.getMinTime())
-                                .field("maxTime", run.getMaxTime())
-                                .field("meanTime", run.getAvgTime())
-                                .field("failures", run.getFailures())
-                                .field("ignores", run.getIgnores())
-                                .field("saturate", run.getSaturate())
+                                .field( "commitId", run.getCommitId() )
+                                .field( "runner", run.getRunner() )
+                                .field( "runNumber", run.getRunNumber() )
+                                .field( "testName", run.getTestName() )
+                                .field( "chopType", run.getChopType() )
+                                .field( "iterations", run.getIterations() )
+                                .field( "totalTestsRun", run.getTotalTestsRun() )
+                                .field( "threads", run.getThreads() )
+                                .field( "delay", run.getDelay() )
+                                .field( "time", run.getTime() )
+                                .field( "actualTime", run.getActualTime() )
+                                .field( "minTime", run.getMinTime() )
+                                .field( "maxTime", run.getMaxTime() )
+                                .field( "meanTime", run.getAvgTime() )
+                                .field( "failures", run.getFailures() )
+                                .field( "ignores", run.getIgnores() )
+                                .field( "saturate", run.getSaturate() )
                                 // Error in ElasticSearch while saving Long - tries to store as Integer
                                 //.field("startTime", run.getStartTime())
                                 //.field("stopTime", run.getStopTime())
@@ -74,53 +75,53 @@ public class RunDao extends Dao<Run> {
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch( "modules" )
-                .setTypes("run")
-                .setQuery( termQuery("_id", runId) )
+                .setTypes( "run" )
+                .setQuery( termQuery( "_id", runId ) )
                 .execute()
                 .actionGet();
 
         SearchHit hits[] = response.getHits().hits();
 
-        return hits.length > 0 ? toRun(hits[0]) : null;
+        return hits.length > 0 ? toRun( hits[0] ) : null;
     }
 
     // <runId, Run>
-    public Map<String, Run> getMap(String commitId, int runNumber, String testName) {
+    public Map<String, Run> getMap( String commitId, int runNumber, String testName ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must( termQuery("commitId", commitId.toLowerCase()) )
-                .must( termQuery("runNumber", runNumber) )
-                .must( termQuery("testName", testName.toLowerCase()) );
+                .must( termQuery( "commitId", commitId.toLowerCase() ) )
+                .must( termQuery( "runNumber", runNumber ) )
+                .must( termQuery( "testName", testName.toLowerCase() ) );
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setQuery(queryBuilder)
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( queryBuilder )
+                .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
 
         HashMap<String, Run> runs = new HashMap<String, Run>();
 
-        for (SearchHit hit : response.getHits().hits()) {
-            runs.put( hit.getId(), toRun(hit) );
+        for ( SearchHit hit : response.getHits().hits() ) {
+            runs.put( hit.getId(), toRun( hit ) );
         }
 
         return runs;
     }
 
-    public static Run toRun(SearchHit hit) {
+    public static Run toRun( SearchHit hit ) {
 
         Map<String, Object> json = hit.getSource();
 
         BasicRun run = new BasicRun(
-                Util.getString(json, "commitId"),
-                Util.getString(json, "runner"),
-                Util.getInt(json, "runNumber"),
-                Util.getString(json, "testName")
+                Util.getString( json, "commitId" ),
+                Util.getString( json, "runner" ),
+                Util.getInt( json, "runNumber" ),
+                Util.getString( json, "testName" )
         );
 
-        run.copyJson(hit.getSource());
+        run.copyJson( hit.getSource() );
 
         return run;
     }
@@ -128,34 +129,32 @@ public class RunDao extends Dao<Run> {
     public List<Run> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
-//        System.out.println(response);
-
-        return toList(response);
+        return toList( response );
     }
 
-    public List<Run> getList(String commitId, String testName) {
+    public List<Run> getList( String commitId, String testName ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must( termQuery("testName", testName.toLowerCase()) )
-                .must( termQuery("commitId", commitId.toLowerCase()) );
+                .must( termQuery( "testName", testName.toLowerCase() ) )
+                .must( termQuery( "commitId", commitId.toLowerCase() ) );
 
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setQuery(queryBuilder)
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( queryBuilder )
+                .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
-        return toList(response);
+        return toList( response );
     }
 
-    public List<Run> getList(String commitId, int runNumber) {
+    public List<Run> getList( String commitId, int runNumber ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must( termQuery( "commitId", commitId.toLowerCase() ) )
@@ -169,43 +168,41 @@ public class RunDao extends Dao<Run> {
                 .execute()
                 .actionGet();
 
-        return toList(response);
+        return toList( response );
     }
 
-    public List<Run> getList(List<Commit> commits, String testName) {
+    public List<Run> getList( List<Commit> commits, String testName ) {
 
-        String commitIds = StringUtils.join(commits, ' ');
+        String commitIds = StringUtils.join( commits, ' ' );
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setQuery( multiMatchQuery(commitIds, "commitId") )
-                .setQuery( termQuery("testName", testName.toLowerCase()) )
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( multiMatchQuery( commitIds, "commitId" ) )
+                .setQuery( termQuery( "testName", testName.toLowerCase() ) )
+                .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
 
-        return toList(response);
+        return toList( response );
     }
 
-    public Set<String> getTestNames(List<Commit> commits) {
+    public Set<String> getTestNames( List<Commit> commits ) {
 
-        String commitIds = StringUtils.join(commits, ' ');
+        String commitIds = StringUtils.join( commits, ' ' );
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setQuery( multiMatchQuery(commitIds, "commitId") )
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( multiMatchQuery( commitIds, "commitId" ) )
+                .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
-
-//        System.out.println(response);
 
         HashSet<String> names = new HashSet<String>();
 
-        for (SearchHit hit : response.getHits().hits()) {
-            names.add( Util.getString(hit.getSource(), "testName") );
+        for ( SearchHit hit : response.getHits().hits() ) {
+            names.add( Util.getString( hit.getSource(), "testName" ) );
         }
 
         return names;
@@ -215,27 +212,27 @@ public class RunDao extends Dao<Run> {
 
         ArrayList<Run> list = new ArrayList<Run>();
 
-        for (SearchHit hit : response.getHits().hits()) {
-            list.add( toRun(hit) );
+        for ( SearchHit hit : response.getHits().hits() ) {
+            list.add( toRun( hit ) );
         }
 
         return list;
     }
 
-    public int getNextRunNumber(String commitId) {
+    public int getNextRunNumber( String commitId ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("run")
-                .setQuery( termQuery("commitId", commitId) )
-                .setSize(0)
-                .addFacet( statisticalFacet("stat").field("runNumber") )
+                .prepareSearch( "modules" )
+                .setTypes( "run" )
+                .setQuery( termQuery( "commitId", commitId ) )
+                .setSize( 0 )
+                .addFacet( statisticalFacet( "stat" ).field( "runNumber" ) )
                 .execute()
                 .actionGet();
 
-        StatisticalFacet facet = (StatisticalFacet) response.getFacets().facets().get(0);
+        StatisticalFacet facet = ( StatisticalFacet ) response.getFacets().facets().get( 0 );
 
-        return facet.getCount() > 0 ? (int) facet.getMax() + 1 : 1;
+        return facet.getCount() > 0 ? ( int ) facet.getMax() + 1 : 1;
     }
 
 }

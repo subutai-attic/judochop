@@ -8,40 +8,26 @@ import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+
 public class RunnerDaoTest {
 
-    @Inject
-    private RunnerDao runnerDao = null;
+    private static Logger LOG = LoggerFactory.getLogger( RunnerDaoTest.class );
 
-    @Test
-    public void save() throws Exception {
-
-        BasicRunner runner = new BasicRunner(
-            "127.0.0.1",
-            "localhost",
-            8080,
-            "http://localhost:8080",
-            "/tmp"
-        );
-
-        boolean created = runnerDao.save(runner, "commitId");
-        System.out.println(created + ": " + runner);
-    }
 
     @Test
     public void delete() {
-        System.out.println( runnerDao.delete("localhost") );
+        //System.out.println( runnerDao.delete("localhost") );
     }
 
     @Test
     public void getRunners() {
-        System.out.println( runnerDao.getRunners("commitId") );
+        //System.out.println( runnerDao.getRunners("commitId") );
     }
 
 }
