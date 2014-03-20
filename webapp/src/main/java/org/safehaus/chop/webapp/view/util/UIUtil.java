@@ -6,12 +6,13 @@ import com.vaadin.ui.ComboBox;
 
 public class UIUtil {
 
-    public static ComboBox getCombo(String caption, String ... values) {
+    public static ComboBox getCombo(AbsoluteLayout layout, String caption, String position, String... values) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
         combo.setNullSelectionAllowed(false);
 
+        layout.addComponent(combo, position);
         populateCombo(combo, values);
 
         return combo;
@@ -28,20 +29,23 @@ public class UIUtil {
         }
     }
 
-    public static Button getButton(String caption, String width) {
+    public static Button getButton(AbsoluteLayout layout, String caption, String position, String width) {
 
         Button button = new Button(caption);
         button.setWidth(width);
+        layout.addComponent(button, position);
 
         return button;
     }
 
-    public static AbsoluteLayout getLayout(String id, String width, String height) {
+    public static AbsoluteLayout getLayout(AbsoluteLayout parent, String id, String position, String height, String width) {
 
         AbsoluteLayout layout = new AbsoluteLayout();
         layout.setId(id);
         layout.setWidth(width);
         layout.setHeight(height);
+
+        parent.addComponent(layout, position);
 
         return layout;
     }

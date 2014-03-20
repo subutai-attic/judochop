@@ -42,76 +42,43 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     }
 
     protected void addControls(String chartId) {
-        addTestNamesCombo();
-        addMetricCombo();
-        addPercentileCombo();
-        addFailureCombo();
-        addSubmitButton();
-        addChartLayout(chartId);
-    }
+        testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;");
 
-    private void addChartLayout(String id) {
-        AbsoluteLayout chartLayout = UIUtil.getLayout(id, "700px", "400px");
-        addComponent(chartLayout, "left: 10px; top: 150px;");
+        String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
+        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", metrics);
+
+        String percentileValues[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
+        percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;", percentileValues);
+
+        String failureValues[] = {"ALL", "FAILED", "SUCCESS"};
+        failureCombo = UIUtil.getCombo(this, "Interation Points to Plot:", "left: 400px; top: 80px;", failureValues);
+
+        addSubmitButton();
+
+        UIUtil.getLayout(this, chartId, "left: 10px; top: 150px;", "400px", "700px");
     }
 
     protected void addSubmitButton() {
 
-        Button button = UIUtil.getButton("Submit", "100px");
-        addComponent(button, "left: 600px; top: 80px;");
+        Button button = UIUtil.getButton(this, "Submit", "left: 600px; top: 80px;", "100px");
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                submitButtonClicked();
+                System.out.println("submit");
             }
         });
-    }
-
-    protected void submitButtonClicked() {
-        System.out.println("submit");
     }
 
     protected void addNextChartButton() {
 
-        Button button = UIUtil.getButton("next chart", "150px");
+        Button button = UIUtil.getButton(this, "next chart", "left: 800px; top: 30px;", "200px");
         button.setStyleName(Reindeer.BUTTON_LINK);
-        addComponent(button, "left: 800px; top: 30px;");
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                nextChartButtonClicked();
+                chartLayoutContext.show( nextLayout, getParams() );
             }
         });
-    }
-
-    private void nextChartButtonClicked() {
-        chartLayoutContext.show(nextLayout, getParams());
-    }
-
-    private void addTestNamesCombo() {
-        testNamesCombo = UIUtil.getCombo("Test Names:");
-        addComponent(testNamesCombo, "left: 10px; top: 30px;");
-    }
-
-    private void addMetricCombo() {
-        String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
-
-        metricCombo = UIUtil.getCombo("Metric:", metrics);
-        addComponent(metricCombo, "left: 10px; top: 80px;");
-    }
-
-    protected void addPercentileCombo() {
-        String values[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
-
-        percentileCombo = UIUtil.getCombo("Percentile:", values);
-        addComponent(percentileCombo, "left: 200px; top: 80px;");
-    }
-
-    protected void addFailureCombo() {
-        String values[] = {"ALL", "FAILED", "SUCCESS"};
-
-        failureCombo = UIUtil.getCombo("Interation Points to Plot:", values);
-        addComponent(failureCombo, "left: 400px; top: 80px;");
     }
 
     protected void populateTestNames() {
