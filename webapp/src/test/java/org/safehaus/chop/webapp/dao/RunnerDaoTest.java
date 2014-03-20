@@ -1,47 +1,52 @@
 package org.safehaus.chop.webapp.dao;
 
-import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.dao.model.BasicRunner;
+import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+import static org.junit.Assert.assertEquals;
+
+
 public class RunnerDaoTest {
 
-    @Inject
-    private RunnerDao runnerDao = null;
+    private static Logger LOG = LoggerFactory.getLogger( RunnerDaoTest.class );
 
-    @Test
-    public void save() throws Exception {
-
-        BasicRunner runner = new BasicRunner(
-            "127.0.0.1",
-            "localhost",
-            8080,
-            "http://localhost:8080",
-            "/tmp"
-        );
-
-        boolean created = runnerDao.save(runner, "commitId");
-        System.out.println(created + ": " + runner);
-    }
 
     @Test
     public void delete() {
-        System.out.println( runnerDao.delete("localhost") );
+        LOG.info( "\n===RunnerDaoTest.delete===\n" );
+
+        LOG.info( "Runners before delete: " );
+
+        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_2 );
+
+        for( Runner runner: runners ) {
+            LOG.info( runner.toString() );
+        }
+
+        ESSuiteTest.runnerDao.delete( ESSuiteTest.RUNNER_HOSTNAME_3 );
+
+        runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_2 );
+
+        assertEquals( 0, runners.size() );
     }
 
     @Test
     public void getRunners() {
-        System.out.println( runnerDao.getRunners("commitId") );
+
+        LOG.info( "\n===RunnerDaoTest.getRunners===\n" );
+
+        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_1 );
+
+        for( Runner runner: runners ) {
+            LOG.info( runner.toString() );
+        }
+
+        assertEquals( 2, runners.size() );
     }
 
 }

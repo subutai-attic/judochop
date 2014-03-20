@@ -13,7 +13,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.ProviderParams;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import com.google.inject.Inject;
@@ -28,7 +28,7 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
     private static final String TYPE_KEY = "providerparam";
 
     @Inject
-    public ProviderParamsDao ( ElasticSearchClient e ) {
+    public ProviderParamsDao ( IElasticSearchClient e ) {
         super( e );
     }
 
@@ -38,6 +38,7 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( INDEX_KEY, TYPE_KEY, pp.getUsername() )
+                .setRefresh( true )
                 .setSource(
                     jsonBuilder()
                         .startObject()

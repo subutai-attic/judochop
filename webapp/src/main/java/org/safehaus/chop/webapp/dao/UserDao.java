@@ -3,15 +3,12 @@ package org.safehaus.chop.webapp.dao;
 import com.google.inject.Inject;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchOperationThreading;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.dao.model.User;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public class UserDao extends Dao<User> {
     private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
-    public UserDao( ElasticSearchClient elasticSearchClient ) {
+    public UserDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
@@ -35,6 +32,7 @@ public class UserDao extends Dao<User> {
 
         IndexResponse response = elasticSearchClient.getClient()
                 .prepareIndex( "users", "user", user.getUsername() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
@@ -91,6 +89,7 @@ public class UserDao extends Dao<User> {
 
         DeleteResponse response = elasticSearchClient.getClient()
                 .prepareDelete( "users", "user", username )
+                .setRefresh( true )
                 .execute()
                 .actionGet();
 

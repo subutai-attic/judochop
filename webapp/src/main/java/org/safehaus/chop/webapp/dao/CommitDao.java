@@ -6,7 +6,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.ArrayList;
@@ -22,20 +22,21 @@ public class CommitDao extends Dao<Commit> {
     private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
-    public CommitDao(ElasticSearchClient elasticSearchClient) {
-        super(elasticSearchClient);
+    public CommitDao( IElasticSearchClient elasticSearchClient ) {
+        super( elasticSearchClient );
     }
 
     @Override
-    public boolean save(Commit commit) throws Exception {
+    public boolean save( Commit commit ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "commit", commit.getId())
+                .prepareIndex( "modules", "commit", commit.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
                                 .field("moduleId", commit.getModuleId())
-                                .field("warMd5", commit.getMd5())
+                                .field("md5", commit.getMd5())
                                 .field("createTime", commit.getCreateTime())
                                 .endObject()
                 )
@@ -45,21 +46,19 @@ public class CommitDao extends Dao<Commit> {
         return response.isCreated();
     }
 
-    public List<Commit> getByModule(String moduleId) {
+    public List<Commit> getByModule( String moduleId ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("commit")
-                .setQuery( termQuery("moduleId", moduleId) )
-                .addSort( fieldSort("createTime") )
-                .setSize(MAX_RESULT_SIZE)
+                .prepareSearch( "modules" )
+                .setTypes( "commit" )
+                .setQuery( termQuery( "moduleId", moduleId ) )
+                .addSort( fieldSort( "createTime" ) )
+                .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
-
-//        System.out.println(response);
 
         ArrayList<Commit> list = new ArrayList<Commit>();
 
-        for (SearchHit hit : response.getHits().hits()) {
+        for ( SearchHit hit : response.getHits().hits() ) {
             Map<String, Object> json = hit.getSource();
 
             BasicCommit commit = new BasicCommit(
@@ -69,7 +68,7 @@ public class CommitDao extends Dao<Commit> {
                     Util.toDate(Util.getString(json, "createTime")),
                     Util.getString(json, "runnerPath" ) );
 
-            list.add(commit);
+            list.add( commit );
         }
 
         return list;

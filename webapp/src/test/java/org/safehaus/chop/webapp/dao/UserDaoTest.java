@@ -1,42 +1,73 @@
 package org.safehaus.chop.webapp.dao;
 
-import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.dao.model.Note;
-import org.safehaus.chop.webapp.dao.model.User;
+import java.util.List;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+import org.junit.Test;
+import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.assertEquals;
+
+
 public class UserDaoTest {
 
-    @Inject
-    private UserDao userDao;
+    private static Logger LOG = LoggerFactory.getLogger( UserDaoTest.class );
+
 
     @Test
-    public void save() throws Exception {
-        User user = new User( "testuser", "password" );
+    public void getAll() {
 
-        boolean created = userDao.save( user );
+        LOG.info( "\n===UserDaoTest.getAll===\n" );
 
-        System.out.println( created + ": " + user );
+        List<User> users = ESSuiteTest.userDao.getList();
+
+        for( User user : users ) {
+            LOG.info( "User is: {}", user.toString() );
+        }
+
     }
+
 
     @Test
     public void get() {
-        System.out.println( userDao.get( "testuser" ) );
+
+        LOG.info( "\n===UserDaoTest.get===\n" );
+
+        User user = ESSuiteTest.userDao.get( ESSuiteTest.USER_1 );
+
+        LOG.info( "User is: {}", user.toString() );
+
+        assertEquals( "password", user.getPassword() );
     }
+
 
     @Test
     public void delete() {
-        System.out.println( userDao.delete( "testuser" ) );
+
+        LOG.info( "\n===UserDaoTest.delete===\n" );
+
+        LOG.info( "Users before delete: " );
+
+        List<User> users = ESSuiteTest.userDao.getList();
+
+        for( User user : users ) {
+            LOG.info( "    {}", user.toString() );
+        }
+
+        ESSuiteTest.userDao.delete( ESSuiteTest.USER_2 );
+
+        LOG.info( "Users after delete: " );
+
+        users = ESSuiteTest.userDao.getList();
+
+        for( User user : users ) {
+            LOG.info( "    {}", user.toString() );
+        }
+
+        assertEquals( 1, users.size() );
     }
 
-    @Test
-    public void getList() {
-        System.out.println( userDao.getList() );
-    }
+
 }

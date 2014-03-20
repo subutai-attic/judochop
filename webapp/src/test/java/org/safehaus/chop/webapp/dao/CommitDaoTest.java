@@ -1,25 +1,21 @@
 package org.safehaus.chop.webapp.dao;
 
-import com.google.inject.Inject;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
+import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+import static org.junit.Assert.assertEquals;
+
+
 public class CommitDaoTest {
 
-    @Inject
-    @SuppressWarnings("unuzed")
-    private CommitDao commitDao;
+    private static Logger LOG = LoggerFactory.getLogger( CommitDaoTest.class );
 
     @Test
     public void save() throws Exception {
@@ -34,19 +30,34 @@ public class CommitDaoTest {
                 "/some/dummy/path"
         );
 
-        boolean created = commitDao.save(commit);
+        boolean created = ESSuiteTest.commitDao.save(commit);
         System.out.println(created + ": " + commit);
     }
 
     @Test
-    public void testGetAll() {
+    public void testGetByModule() {
 
-        List<Commit> list = commitDao.getByModule("1168044208");
+        LOG.info( "\n===CommitDaoTest.testGetByModule===\n" );
+
+        List<Commit> list = ESSuiteTest.commitDao.getByModule( ESSuiteTest.MODULE_ID_2 );
 
         for (Commit commit : list) {
-            System.out.println(commit);
+            LOG.info( commit.toString() );
         }
 
-        System.out.println("count: " + list.size());
+        assertEquals( 2, list.size() );
+    }
+
+
+    @Test
+    public void testGet() {
+
+        LOG.info( "\n===CommitDaoTest.testGet===\n" );
+
+        Commit commit = ESSuiteTest.commitDao.getByModule( ESSuiteTest.MODULE_ID_1 ).get( 0 );
+
+        LOG.info( commit.toString() );
+
+        assertEquals( ESSuiteTest.COMMIT_ID_1, commit.getId() );
     }
 }

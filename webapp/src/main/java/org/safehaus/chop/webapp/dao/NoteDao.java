@@ -6,41 +6,37 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.dao.model.Note;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class NoteDao extends Dao<Note> {
 
     private static final int MAX_RESULT_SIZE = 10000;
 
     @Inject
-    public NoteDao(ElasticSearchClient elasticSearchClient) {
-        super(elasticSearchClient);
+    public NoteDao( IElasticSearchClient elasticSearchClient ) {
+        super( elasticSearchClient );
     }
 
     @Override
-    public boolean save(Note note) throws IOException {
+    public boolean save( Note note ) throws IOException {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "note", note.getId())
+                .prepareIndex( "modules", "note", note.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field("commitId", note.getCommitId())
-                                .field("runNumber", note.getRunNumber())
-                                .field("text", note.getText())
+                                .field( "commitId", note.getCommitId() )
+                                .field( "runNumber", note.getRunNumber() )
+                                .field( "text", note.getText() )
                                 .endObject()
                 )
                 .execute()
@@ -52,8 +48,8 @@ public class NoteDao extends Dao<Note> {
     public Note get( String commitId, int runNumber ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must( termQuery("commitId", commitId.toLowerCase() ) )
-                .must( termQuery("runNumber", runNumber) );
+                .must( termQuery( "commitId", commitId.toLowerCase() ) )
+                .must( termQuery( "runNumber", runNumber ) );
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch( "modules" )
