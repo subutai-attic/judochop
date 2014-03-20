@@ -10,7 +10,7 @@ public class Params {
     private String commitId;
     private int runNumber;
     private String metricType;
-    private int percentile;
+    private int percentile = 100;
     private String failureValue;
 
     public Params(String testName, String commitId, String metricType, int percentile, String failureValue) {

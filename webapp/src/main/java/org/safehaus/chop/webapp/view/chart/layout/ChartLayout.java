@@ -81,11 +81,6 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         });
     }
 
-    protected void populateTestNames() {
-        Set<String> testNames = dataService.getTestNames( params.getModuleId() );
-        UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]));
-    }
-
     protected Params getParams() {
         return new Params(
                 params.getModuleId(),
@@ -98,11 +93,34 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         );
     }
 
-    public void show(Params params_) {
+    protected void populateTestNames() {
+        Set<String> testNames = dataService.getTestNames( params.getModuleId() );
+        UIUtil.populateCombo( testNamesCombo, testNames.toArray(new String[0]) );
+    }
 
-        this.params = params_;
-
+    private void populateControls() {
         populateTestNames();
+
+        if (params.getTestName() != null) {
+            testNamesCombo.select( params.getTestName() );
+        }
+
+        if (params.getMetricType() != null) {
+            metricCombo.select( params.getMetricType() );
+        }
+
+        percentileCombo.select( "" + params.getPercentile() );
+
+        if (params.getFailureValue() != null) {
+            failureCombo.select( params.getFailureValue() );
+        }
+    }
+
+    public void show(Params params) {
+        this.params = params;
+
+        populateControls();
+
         String chart = chartBuilder.getChart( getParams() );
         JavaScriptUtil.loadChart(chart, jsCallbackName, this);
     }
