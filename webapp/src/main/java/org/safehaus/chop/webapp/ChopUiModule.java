@@ -11,10 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shiro.guice.web.GuiceShiroFilter;
+
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
 import org.safehaus.chop.webapp.coordinator.rest.RestFig;
 import org.safehaus.chop.webapp.elasticsearch.ElasticFig;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.view.util.VaadinServlet;
 import org.safehaus.guicyfig.GuicyFigModule;
 
@@ -38,12 +42,13 @@ public class ChopUiModule extends ServletModule {
 
     protected void configureServlets() {
         install( new GuicyFigModule( ChopUiFig.class, RestFig.class, ElasticFig.class ) );
+        install( new AmazonStoreModule() );
 //        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );
 
-//        bind( IElasticSearchClient.class ).to( ElasticSearchResourceTest.class );
+        bind( IElasticSearchClient.class ).to( ElasticSearchClient.class );
 
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
