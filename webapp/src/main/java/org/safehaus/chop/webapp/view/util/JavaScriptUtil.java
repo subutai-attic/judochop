@@ -5,15 +5,20 @@ import com.vaadin.ui.JavaScriptFunction;
 
 public class JavaScriptUtil {
 
-    public static void loadFile(String fileName) {
-        execute( FileUtil.getContent(fileName) );
-    }
-
-    public static void execute(String script) {
+    private static void execute(String script) {
         JavaScript.getCurrent().execute(script);
     }
 
-    public static void addCallback(String functionName, JavaScriptFunction callback) {
-        JavaScript.getCurrent().addFunction(functionName, callback);
+    private static void addCallback(String jsCallbackName, JavaScriptFunction jsCallback) {
+        JavaScript.getCurrent().addFunction(jsCallbackName, jsCallback);
+    }
+
+    public static void loadFile(String fileName) {
+        execute(FileUtil.getContent(fileName));
+    }
+
+    public static void loadChart(String chart, String jsCallbackName, JavaScriptFunction jsCallback) {
+        execute(chart);
+        addCallback(jsCallbackName, jsCallback);
     }
 }

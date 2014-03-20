@@ -6,7 +6,7 @@ import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
-import org.safehaus.chop.webapp.view.chart.overview.OverviewChart;
+import org.safehaus.chop.webapp.view.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
@@ -19,7 +19,8 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected ChartLayoutContext chartLayoutContext;
 //    private ChartView prevView;
     protected ChartLayout nextLayout;
-    //private ChartBuilder chartBuilder;
+    private ChartBuilder chartBuilder;
+    private String jsCallbackName;
 
     protected ComboBox testNamesCombo;
     protected ComboBox metricCombo;
@@ -28,11 +29,13 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected Params params;
 
-    protected ChartLayout(ChartLayoutContext layoutContext, ChartLayout prevLayout, ChartLayout nextLayout, String chartId) {
+    protected ChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName) {
 
         this.chartLayoutContext = layoutContext;
+        this.chartBuilder = chartBuilder;
 //        this.prevView = prevView;
         this.nextLayout = nextLayout;
+        this.jsCallbackName = jsCallbackName;
 
         setSizeFull();
         addControls(chartId);
@@ -111,8 +114,8 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         addComponent(failureCombo, "left: 400px; top: 80px;");
     }
 
-    protected void populateTestNames(String moduleId) {
-        Set<String> testNames = dataService.getTestNames(moduleId);
+    protected void populateTestNames() {
+        Set<String> testNames = dataService.getTestNames( params.getModuleId() );
         UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]));
     }
 
@@ -128,28 +131,16 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         );
     }
 
-    private OverviewChart overviewChart = new OverviewChart();
-
     public void show(Params params_) {
 
-//        this.moduleId = params_.getModuleId();
         this.params = params_;
-        System.out.println(this.params);
 
-        populateTestNames(params_.getModuleId());
-
-        Params params = getParams();
-        System.out.println(params);
-        System.out.println("-");
-
-        String chart = overviewChart.get(params);
-        JavaScriptUtil.execute(chart);
-        JavaScriptUtil.addCallback("overviewChartCallback", this);
+        populateTestNames();
+        String chart = chartBuilder.getChart( getParams() );
+        JavaScriptUtil.loadChart(chart, jsCallbackName, this);
     }
 
 //    public void showPrev() {}
-//    public void showNext() {}
 //    public void show() {}
-
 
 }

@@ -5,6 +5,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 import org.safehaus.chop.webapp.service.calc.Params;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
+import org.safehaus.chop.webapp.view.chart.builder.IterationsChartBuilder;
+import org.safehaus.chop.webapp.view.chart.builder.OverviewChartBuilder;
+import org.safehaus.chop.webapp.view.chart.builder.RunsChartBuilder;
 import org.safehaus.chop.webapp.view.chart.layout.ChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.IterationsChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.OverviewChartLayout;
@@ -28,9 +31,9 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
 
-        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, null, null);
-        ChartLayout runsLayout = new RunsChartLayout(layoutContext, null, iterationsLayout);
-        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, null, runsLayout);
+        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, new IterationsChartBuilder(), null, null);
+        ChartLayout runsLayout = new RunsChartLayout(layoutContext, new RunsChartBuilder(), iterationsLayout, null);
+        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, new OverviewChartBuilder(), null, runsLayout);
 
         return overviewLayout;
     }
