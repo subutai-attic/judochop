@@ -32,6 +32,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -70,8 +72,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.sun.jersey.multipart.FormDataParam;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeMultipart;
 
 
 /**
