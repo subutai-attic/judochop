@@ -10,11 +10,11 @@ import org.safehaus.chop.webapp.service.InjectorFactory;
 
 import java.util.List;
 
-public class ModuleTreeHelper {
+public class ModuleTreeBuilder {
 
     private static final String PARENT_PREFIX = "parent:";
 
-    public static TreeTable getTreeTable(ModuleSelectListener listener) {
+    public static TreeTable getTree(ModuleSelectListener listener) {
 
         TreeTable treeTable = new TreeTable("Modules");
         treeTable.addContainerProperty("Group", String.class, "");
@@ -60,8 +60,8 @@ public class ModuleTreeHelper {
 
         String parentId = String.format( PARENT_PREFIX + "%s-%s", module.getGroupId(), module.getArtifactId() );
         treeTable.addItem( new Object[]{ module.getGroupId(), module.getArtifactId() }, parentId );
-
         treeTable.addItem( new Object[]{ module.getVersion(), "" }, module.getId() );
+
         treeTable.setParent(module.getId(), parentId);
     }
 

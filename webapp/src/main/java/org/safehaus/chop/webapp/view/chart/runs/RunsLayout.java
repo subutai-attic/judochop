@@ -11,7 +11,7 @@ import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainView;
-import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.service.calc.Params;
 
 import java.util.List;
 
@@ -65,7 +65,7 @@ public class RunsLayout extends AbsoluteLayout {
     }
 
     private void runNumberButtonClicked() {
-        mainUI.showIterationsLayout(selectedRunNumber);
+//        mainUI.showIterationsLayout(selectedRunNumber);
     }
 
     private void addBackButton() {
@@ -77,7 +77,7 @@ public class RunsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                mainUI.showOverviewLayout();
+//                mainUI.showOverviewLayout();
             }
         });
     }

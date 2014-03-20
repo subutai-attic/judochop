@@ -4,7 +4,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.view.MainView;
-import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.service.calc.Params;
 
 public class IterationsLayout extends AbsoluteLayout {
 
@@ -109,8 +109,8 @@ public class IterationsLayout extends AbsoluteLayout {
     }
 
     private void loadChart(Params params, int runNumber) {
-        String chart = iterationsChart.get(params, runNumber);
-        JavaScript.getCurrent().execute(chart);
+//        String chart = iterationsChart.get(params, runNumber);
+//        JavaScript.getCurrent().execute(chart);
     }
 
     private int runNumber = 1;

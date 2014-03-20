@@ -11,7 +11,7 @@ import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainView;
-import org.safehaus.chop.webapp.view.chart.Params;
+import org.safehaus.chop.webapp.service.calc.Params;
 
 import java.util.List;
 import java.util.Set;
@@ -199,7 +199,7 @@ public class OverviewLayout extends AbsoluteLayout {
         String commitId = commitIdButton.getCaption();
 
 //        mainUI.showRunsLayout(commitId);
-        mainUI.showRunsLayout(getParams(commitId));
+//        mainUI.showRunsLayout(getParams(commitId));
     }
 
     public void loadChart(String moduleId) {
@@ -241,9 +241,9 @@ public class OverviewLayout extends AbsoluteLayout {
     }
 
     private void loadChart(String moduleId, Params params) {
-        String chart = overviewChart.get(moduleId, params);
-        JavaScript.getCurrent().execute(chart);
-        addJavaScriptCallback();
+//        String chart = overviewChart.get(moduleId, params);
+//        JavaScript.getCurrent().execute(chart);
+//        addJavaScriptCallback();
     }
 
 }

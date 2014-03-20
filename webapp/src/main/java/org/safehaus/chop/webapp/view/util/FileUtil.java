@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class FileUtil {
 
-    private static final Logger log = Logger.getLogger(FileUtil.class.getName());
+    private static final Logger LOG = Logger.getLogger( FileUtil.class.getName() );
     private static URLClassLoader classLoader;
 
     public static String getContent(String filePath) {
@@ -19,8 +19,7 @@ public class FileUtil {
         try {
             content = readFile(filePath);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Error while reading file: " + e);
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Error while reading file: " + e);
         }
 
         return content;
@@ -41,7 +40,7 @@ public class FileUtil {
             return classLoader;
         }
 
-        // Needed an instance to get URL, i.e. the static way doesn't work: FileUtil.class.getClass().
+        // Needed an instance to get URL b/c the static way doesn't work - FileUtil.class.getClass().
         URL url = new FileUtil().getClass().getProtectionDomain().getCodeSource().getLocation();
         classLoader = new URLClassLoader(new URL[]{ url }, Thread.currentThread().getContextClassLoader());
 
