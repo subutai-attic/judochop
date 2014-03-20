@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.view.chart.layout;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
+import org.apache.commons.lang.StringUtils;
 import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.Params;
@@ -64,7 +65,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                System.out.println("submit");
+                loadChart();
             }
         });
     }
@@ -120,9 +121,11 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         this.params = params;
 
         populateControls();
+        loadChart();
+    }
 
-        String chart = chartBuilder.getChart( getParams() );
-        JavaScriptUtil.loadChart(chart, jsCallbackName, this);
+    private void loadChart() {
+        JavaScriptUtil.loadChart(chartBuilder.getChart( getParams() ), jsCallbackName, this);
     }
 
 //    public void showPrev() {}
