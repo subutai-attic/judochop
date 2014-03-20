@@ -41,6 +41,19 @@ public class BasicCommit implements Commit {
         return createTime;
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other != null
+                && other instanceof BasicCommit
+                && ( (BasicCommit) other ).getId().equals(id);
+    }
+
+    @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id)
@@ -49,4 +62,6 @@ public class BasicCommit implements Commit {
                 .append("createTime", createTime)
                 .toString();
     }
+
+
 }

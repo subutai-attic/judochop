@@ -6,7 +6,7 @@ import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.calc.overview.OverviewCollector;
-import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.service.chart.dto.Params;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 
 import java.util.List;

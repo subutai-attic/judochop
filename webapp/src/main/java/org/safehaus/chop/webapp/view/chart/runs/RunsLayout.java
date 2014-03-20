@@ -11,7 +11,7 @@ import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.MainView;
-import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.service.chart.dto.Params;
 
 import java.util.List;
 

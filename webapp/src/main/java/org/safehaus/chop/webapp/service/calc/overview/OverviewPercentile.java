@@ -12,6 +12,8 @@ public class OverviewPercentile {
 
         double percentile = new DescriptiveStatistics( toArray(values) ).getPercentile(percent);
 
+        System.out.println(percent + ": " + percentile);
+
         return filterValues(values, percentile);
     }
 

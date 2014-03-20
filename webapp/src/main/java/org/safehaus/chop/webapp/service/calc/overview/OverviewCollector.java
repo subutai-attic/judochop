@@ -23,8 +23,11 @@ public class OverviewCollector {
         this.percentile = percentile;
         this.failureValue = failureValue;
 
+//        List<Commit> commits = commitDao.getByModule( params.getModuleId() );
+//        List<Run> runs = runDao.getList( commits, params.getTestName() );
+
         for (Commit commit : commits) {
-            values.put(commit.getId(), new HashMap<Integer, Metric>());
+            values.put( commit.getId(), new HashMap<Integer, Metric>() );
         }
     }
 
@@ -40,10 +43,6 @@ public class OverviewCollector {
         Metric metric = runs.get(run.getRunNumber());
 
         if (metric == null) {
-//            metric = new AvgMetric();
-//            metric = new MinMetric();
-//            metric = new MaxMetric();
-//            metric = new ActualMetric();
             metric = MetricFactory.getMetric(metricType);
             runs.put(run.getRunNumber(), metric);
         }
@@ -53,7 +52,6 @@ public class OverviewCollector {
 
     public Map<String, Map<Integer, Metric>> getValues() {
         Map<String, Map<Integer, Metric>> filteredValues = OverviewPercentile.filter(values, percentile);
-//        return FailureFilter.filter(filteredValues, "FAILED");
         return FailureFilter.filter(filteredValues, failureValue);
     }
 

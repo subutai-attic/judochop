@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
 import org.safehaus.chop.webapp.elasticsearch.ElasticFig;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.rest.TestGetResource;
 import org.safehaus.chop.webapp.rest.UploadResource;
 import org.safehaus.chop.webapp.rest.RestFig;
@@ -45,6 +47,7 @@ public class ChopUiModule extends ServletModule {
         bind( GuiceContainer.class );
 
 //        bind( IElasticSearchClient.class ).to( ElasticSearchResourceTest.class );
+        bind( IElasticSearchClient.class ).to( ElasticSearchClient.class );
 
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
         bind( JacksonJsonProvider.class ).asEagerSingleton();
