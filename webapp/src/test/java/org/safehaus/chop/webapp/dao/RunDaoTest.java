@@ -1,139 +1,109 @@
 package org.safehaus.chop.webapp.dao;
 
-import com.google.inject.Inject;
-import org.apache.commons.lang.StringUtils;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
+import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
+
 public class RunDaoTest {
 
-    @Inject
-    @SuppressWarnings("unused")
-    private RunDao runDao;
+    private static Logger LOG = LoggerFactory.getLogger( RunDaoTest.class );
 
-    @Inject
-    @SuppressWarnings("unuzed")
-    private CommitDao commitDao;
-
-    @Test
-    public void save() throws Exception {
-
-        BasicRun run = new BasicRun(
-                "testCommitId", // commitId
-                "testRunner", // runner
-                1, // runNumber
-                "testName" // testName
-        );
-
-        boolean created = runDao.save(run);
-        System.out.println(created + ": " + run);
-    }
 
     @Test
     public void getAll() {
 
-        List<Run> list = runDao.getAll();
+        LOG.info( "\n===RunDaoTest.getAll===\n" );
 
-        for (Run run : list) {
-            System.out.println(run);
+        List<Run> list = ESSuiteTest.runDao.getAll();
+
+        for ( Run run : list ) {
+            LOG.info( run.toString() );
         }
 
-        System.out.println("count: " + list.size());
+        assertEquals( 3, list.size() );
     }
+
 
     @Test
     public void getListByCommits() {
 
-        List<Commit> commits = commitDao.getByModule("1168044208");
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        LOG.info( "\n===RunDaoTest.getListByCommits===\n" );
 
-        List<Run> list = runDao.getList(commits, testName);
+        List<Commit> commits = ESSuiteTest.commitDao.getByModule( ESSuiteTest.MODULE_ID_2 );
 
-        for (Run run : list) {
-            System.out.println(run);
+        List<Run> list = ESSuiteTest.runDao.getList( commits, ESSuiteTest.TEST_NAME );
+
+        for ( Run run : list ) {
+            LOG.info( run.toString() );
         }
 
-        System.out.println("count: " + list.size());
+        assertEquals( 3, list.size() );
     }
+
 
     @Test
     public void getListByCommit() {
 
-//        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        String commitId = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        LOG.info( "\n===RunDaoTest.getListByCommit===\n" );
 
-        List<Run> list = runDao.getList(commitId, testName);
+        List<Run> list = ESSuiteTest.runDao.getList( ESSuiteTest.COMMIT_ID_2 , ESSuiteTest.TEST_NAME );
 
-        for (Run run : list) {
-            System.out.println(run);
+        for ( Run run : list ) {
+            LOG.info( run.toString() );
         }
 
-        System.out.println("count: " + list.size());
+        assertEquals( 2, list.size() );
     }
+
 
     @Test
     public void getListByCommitAndRunNumber() {
 
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        int runNumber = 1;
+        LOG.info( "\n===RunDaoTest.getListByCommitAndRunNumber===\n" );
 
-        List<Run> list = runDao.getList(commitId, runNumber);
+        int runNumber = 2;
+
+        List<Run> list = ESSuiteTest.runDao.getList( ESSuiteTest.COMMIT_ID_2, runNumber );
 
         for (Run run : list) {
-            System.out.println(run);
+            LOG.info( run.toString() );
         }
 
-        System.out.println("count: " + list.size());
+        assertEquals( 1, list.size() );
     }
+
 
     @Test
     public void getNextRunNumber() {
-        System.out.println( runDao.getNextRunNumber("7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e") );
+
+        LOG.info( "\n===RunDaoTest.getNextRunNumber===\n" );
+
+        int nextRunNumber = ESSuiteTest.runDao.getNextRunNumber( ESSuiteTest.COMMIT_ID_2 );
+        assertEquals( 3, nextRunNumber );
     }
 
-    @Test
-    public void get() {
-        System.out.println( runDao.get("129097161") );
-    }
 
     @Test
     public void getMapByCommitAndRunNumber() {
 
-        String commitId = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
-        String testName = "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest";
+        LOG.info( "\n===RunDaoTest.getMapByCommitAndRunNumber===\n" );
 
-        Map<String, Run> runs = runDao.getMap(commitId, 2, testName);
+        Map<String, Run> runs = ESSuiteTest.runDao.getMap( ESSuiteTest.COMMIT_ID_2, 2, ESSuiteTest.TEST_NAME );
 
-        for (String runId : runs.keySet()) {
-            System.out.println(runId + ": " + runs.get(runId));
+        for ( String runId : runs.keySet() ) {
+            LOG.info("{}: {}", runId, runs.get( runId ));
         }
 
-        System.out.println("count: " + runs.size());
+        assertEquals( 1, runs.size() );
     }
 
-    @Test
-    public void getTestNames() {
-
-        List<Commit> commits = commitDao.getByModule("1168044208");
-        Set<String> names = runDao.getTestNames(commits);
-
-        System.out.println(names);
-
-    }
 }

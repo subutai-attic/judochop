@@ -6,7 +6,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Module;
 import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
 import java.util.*;
@@ -18,24 +18,26 @@ public class ModuleDao extends Dao<Module> {
 
     private static final int MAX_RESULT_SIZE = 1000;
 
+
     @Inject
-    public ModuleDao(ElasticSearchClient elasticSearchClient) {
-        super(elasticSearchClient);
+    public ModuleDao( IElasticSearchClient elasticSearchClient ) {
+        super( elasticSearchClient );
     }
 
     @Override
-    public boolean save(Module module) throws Exception {
+    public boolean save( Module module ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex("modules", "module", module.getId())
+                .prepareIndex( "modules", "module", module.getId() )
+                .setRefresh( true )
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field("groupId", module.getGroupId())
-                                .field("artifactId", module.getArtifactId())
-                                .field("version", module.getVersion())
-                                .field("vcsRepoUrl", module.getVcsRepoUrl())
-                                .field("testPackageBase", module.getTestPackageBase())
+                                .field( "groupId", module.getGroupId() )
+                                .field( "artifactId", module.getArtifactId() )
+                                .field( "version", module.getVersion() )
+                                .field( "vcsRepoUrl", module.getVcsRepoUrl() )
+                                .field( "testPackageBase", module.getTestPackageBase() )
                                 .endObject()
                 )
                 .execute()
@@ -44,18 +46,18 @@ public class ModuleDao extends Dao<Module> {
         return response.isCreated();
     }
 
-    public Module get(String id) {
+    public Module get( String id ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch("modules")
-                .setTypes("module")
-                .setQuery(termQuery("_id", id))
+                .prepareSearch( "modules" )
+                .setTypes( "module" )
+                .setQuery( termQuery( "_id", id ) )
                 .execute()
                 .actionGet();
 
         SearchHit hits[] = response.getHits().hits();
 
-        return hits.length > 0 ? toModule(hits[0]) : null;
+        return hits.length > 0 ? toModule( hits[0] ) : null;
     }
 
     private static Module toModule( SearchHit hit ) {
@@ -82,7 +84,7 @@ public class ModuleDao extends Dao<Module> {
         ArrayList<Module> modules = new ArrayList<Module>();
 
         for ( SearchHit hit : response.getHits().hits() ) {
-            modules.add(toModule(hit));
+            modules.add( toModule( hit ) );
         }
 
         return modules;
