@@ -11,13 +11,18 @@ import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 public class RunsChartView extends ChartView {
 
     private RunsChart runsChart = new RunsChart();
-    private int runNumber;
 
     private String moduleId;
     private String commitId;
+    private int runNumber;
 
     public RunsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
         super(viewContext, prevView, nextView);
+    }
+
+    @Override
+    protected void addControls() {
+        super.addControls();
         addChartLayout("runsChart");
         addNextChartButton();
     }
@@ -29,26 +34,18 @@ public class RunsChartView extends ChartView {
     }
 
     @Override
-    protected void nextChartButtonClicked() {
-        chartViewContext.show( nextChartView, getParams() );
+    protected Params getParams() {
+        return super.getParams()
+                .setModuleId(moduleId)
+                .setCommitId(commitId)
+                .setRunNumber(runNumber);
     }
 
-    private Params getParams() {
-        return new Params(
-                moduleId,
-                (String) testNamesCombo.getValue(),
-                commitId,
-                runNumber,
-                (String) metricCombo.getValue(),
-                Integer.parseInt( (String) percentileCombo.getValue() ),
-                (String) failureCombo.getValue()
-        );
-    }
-
+    @Override
     public void show(Params params) {
 
-        this.moduleId = params.getModuleId();
-        this.commitId = params.getCommitId();
+        moduleId = params.getModuleId();
+        commitId = params.getCommitId();
 
         populateTestNames( params.getModuleId() );
 

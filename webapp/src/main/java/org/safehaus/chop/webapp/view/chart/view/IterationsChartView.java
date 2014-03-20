@@ -15,6 +15,13 @@ public class IterationsChartView extends ChartView {
 
     public IterationsChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
         super(viewContext, prevView, nextView);
+    }
+
+    @Override
+    protected void addControls() {
+        addPercentileCombo();
+        addFailureCombo();
+        addSubmitButton();
         addChartLayout("iterationsChart");
     }
 
@@ -24,9 +31,8 @@ public class IterationsChartView extends ChartView {
         System.out.println(json);
     }
 
+    @Override
     public void show(Params params) {
-        populateTestNames( params.getModuleId() );
-
         String chart = iterationsChart.get(params);
         JavaScriptUtil.execute(chart);
         JavaScriptUtil.addCallback("iterationsChartCallback", this);

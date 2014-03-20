@@ -10,20 +10,39 @@ import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 
 public class OverviewChartView extends ChartView {
 
+    private OverviewChart overviewChart = new OverviewChart();
+
     private String moduleId;
     private String commitId;
 
-    private OverviewChart overviewChart = new OverviewChart();
-
     public OverviewChartView(ChartViewContext viewContext, ChartView prevView, ChartView nextView) {
         super(viewContext, prevView, nextView);
+    }
+
+    @Override
+    protected void addControls() {
+        super.addControls();
         addChartLayout("overviewChart");
         addNextChartButton();
     }
 
-    public void show(String moduleId) {
+    @Override
+    protected Params getParams() {
+        return super.getParams()
+                .setModuleId(moduleId)
+                .setCommitId(commitId);
+    }
 
-        this.moduleId = moduleId;
+    @Override
+    public void call(JSONArray args) throws JSONException {
+        JSONObject json = args.getJSONObject(0);
+        commitId = json.getString("commitId");
+    }
+
+    @Override
+    public void show(Params params_) {
+
+        this.moduleId = params_.getModuleId();
 
         populateTestNames(moduleId);
 
@@ -33,27 +52,4 @@ public class OverviewChartView extends ChartView {
         JavaScriptUtil.execute(chart);
         JavaScriptUtil.addCallback("overviewChartCallback", this);
     }
-
-    private Params getParams() {
-        return new Params(
-                moduleId,
-                (String) testNamesCombo.getValue(),
-                commitId,
-                0,
-                (String) metricCombo.getValue(),
-                Integer.parseInt( (String) percentileCombo.getValue() ),
-                (String) failureCombo.getValue()
-        );
-    }
-
-    @Override
-    public void call(JSONArray args) throws JSONException {
-        JSONObject json = args.getJSONObject(0);
-        commitId = json.getString("commitId");
-    }
-
-    protected void nextChartButtonClicked() {
-        chartViewContext.show( nextChartView, getParams() );
-    }
-
 }

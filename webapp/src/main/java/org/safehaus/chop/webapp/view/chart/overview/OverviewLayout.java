@@ -199,7 +199,7 @@ public class OverviewLayout extends AbsoluteLayout {
         String commitId = commitIdButton.getCaption();
 
 //        mainUI.showRunsLayout(commitId);
-        mainUI.showRunsLayout(getParams(commitId));
+//        mainUI.showRunsLayout(getParams(commitId));
     }
 
     public void loadChart(String moduleId) {

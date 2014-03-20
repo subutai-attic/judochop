@@ -31,7 +31,10 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
         this.nextChartView = nextChartView;
 
         setSizeFull();
+        addControls();
+    }
 
+    protected void addControls() {
         addTestNamesCombo();
         addMetricCombo();
         addPercentileCombo();
@@ -40,12 +43,11 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
     }
 
     protected void addChartLayout(String id) {
-//        AbsoluteLayout chartLayout = UIUtil.getLayout("overviewChart", "700px", "400px");
         AbsoluteLayout chartLayout = UIUtil.getLayout(id, "700px", "400px");
         addComponent(chartLayout, "left: 10px; top: 150px;");
     }
 
-    private void addSubmitButton() {
+    protected void addSubmitButton() {
 
         Button button = UIUtil.getButton("Submit", "100px");
         addComponent(button, "left: 600px; top: 80px;");
@@ -57,7 +59,7 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
         });
     }
 
-    private void submitButtonClicked() {
+    protected void submitButtonClicked() {
         System.out.println("submit");
     }
 
@@ -74,8 +76,8 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
         });
     }
 
-    protected void nextChartButtonClicked() {
-        System.out.println("next");
+    private void nextChartButtonClicked() {
+        chartViewContext.show( nextChartView, getParams() );
     }
 
     private void addTestNamesCombo() {
@@ -90,23 +92,35 @@ public abstract class ChartView extends AbsoluteLayout implements JavaScriptFunc
         addComponent(metricCombo, "left: 10px; top: 80px;");
     }
 
-    private void addPercentileCombo() {
+    protected void addPercentileCombo() {
         String values[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
 
         percentileCombo = UIUtil.getCombo("Percentile:", values);
         addComponent(percentileCombo, "left: 200px; top: 80px;");
     }
 
-    private void addFailureCombo() {
+    protected void addFailureCombo() {
         String values[] = {"ALL", "FAILED", "SUCCESS"};
 
-        failureCombo = UIUtil.getCombo("Percentile:", values);
+        failureCombo = UIUtil.getCombo("Interation Points to Plot:", values);
         addComponent(failureCombo, "left: 400px; top: 80px;");
     }
 
     protected void populateTestNames(String moduleId) {
         Set<String> testNames = runService.getTestNames(moduleId);
         UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]));
+    }
+
+    protected Params getParams() {
+        return new Params(
+                null, // moduleId
+                (String) testNamesCombo.getValue(),
+                null, // commitId
+                0, // runNumber
+                (String) metricCombo.getValue(),
+                Integer.parseInt( (String) percentileCombo.getValue() ),
+                (String) failureCombo.getValue()
+        );
     }
 
     public void show(Params params) { }

@@ -65,7 +65,7 @@ public class RunsLayout extends AbsoluteLayout {
     }
 
     private void runNumberButtonClicked() {
-        mainUI.showIterationsLayout(selectedRunNumber);
+//        mainUI.showIterationsLayout(selectedRunNumber);
     }
 
     private void addBackButton() {
@@ -77,7 +77,7 @@ public class RunsLayout extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                mainUI.showOverviewLayout();
+//                mainUI.showOverviewLayout();
             }
         });
     }

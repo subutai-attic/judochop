@@ -5,13 +5,13 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 public class Params {
 
-    String moduleId;
-    String testName;
-    String commitId;
-    int runNumber;
-    String metricType;
-    int percentile;
-    String failureValue;
+    private String moduleId;
+    private String testName;
+    private String commitId;
+    private int runNumber;
+    private String metricType;
+    private int percentile;
+    private String failureValue;
 
     public Params(String testName, String commitId, String metricType, int percentile, String failureValue) {
         this.testName = testName;
@@ -19,6 +19,10 @@ public class Params {
         this.metricType = metricType;
         this.percentile = percentile;
         this.failureValue = failureValue;
+    }
+
+    public Params(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, String failureValue) {
@@ -57,6 +61,21 @@ public class Params {
 
     public String getFailureValue() {
         return failureValue;
+    }
+
+    public Params setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+        return this;
+    }
+
+    public Params setCommitId(String commitId) {
+        this.commitId = commitId;
+        return this;
+    }
+
+    public Params setRunNumber(int runNumber) {
+        this.runNumber = runNumber;
+        return this;
     }
 
     public String toString() {

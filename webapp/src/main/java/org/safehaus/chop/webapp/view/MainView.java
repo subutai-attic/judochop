@@ -22,7 +22,7 @@ import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 public class MainView extends UI implements ChartViewContext, ModuleSelectListener {
 
     private HorizontalSplitPanel splitPanel;
-    private OverviewChartView overviewChartView;
+    private ChartView overviewChartView;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -31,12 +31,11 @@ public class MainView extends UI implements ChartViewContext, ModuleSelectListen
         loadScripts();
     }
 
-    private static OverviewChartView initChartViews(ChartViewContext viewContext) {
+    private static ChartView initChartViews(ChartViewContext viewContext) {
 
         ChartView iterationsChartView = new IterationsChartView(viewContext, null, null);
         ChartView runsChartView = new RunsChartView(viewContext, null, iterationsChartView);
-
-        OverviewChartView overviewChartView = new OverviewChartView(viewContext, null, runsChartView);
+        ChartView overviewChartView = new OverviewChartView(viewContext, null, runsChartView);
 
         return overviewChartView;
     }
@@ -55,9 +54,9 @@ public class MainView extends UI implements ChartViewContext, ModuleSelectListen
         JavaScriptUtil.loadFile("js/highcharts.js");
     }
 
+    @Override
     public void onModuleSelect(String moduleId) {
-        overviewChartView.show(moduleId);
-        splitPanel.setSecondComponent(overviewChartView);
+        show( overviewChartView, new Params(moduleId) );
     }
 
     @Override
