@@ -3,14 +3,12 @@ package org.safehaus.chop.webapp.dao;
 import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,7 @@ public class CommitDao extends Dao<Commit> {
                         jsonBuilder()
                                 .startObject()
                                 .field("moduleId", commit.getModuleId())
-                                .field("warMd5", commit.getWarMd5())
+                                .field("warMd5", commit.getMd5())
                                 .field("createTime", commit.getCreateTime())
                                 .endObject()
                 )
@@ -67,9 +65,9 @@ public class CommitDao extends Dao<Commit> {
             BasicCommit commit = new BasicCommit(
                     hit.getId(),
                     Util.getString(json, "moduleId"),
-                    Util.getString(json, "warMd5"),
-                    Util.toDate(Util.getString(json, "createTime"))
-            );
+                    Util.getString(json, "md5"),
+                    Util.toDate(Util.getString(json, "createTime")),
+                    Util.getString(json, "runnerPath" ) );
 
             list.add(commit);
         }

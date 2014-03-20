@@ -2,7 +2,6 @@ package org.safehaus.chop.api;
 
 
 import java.util.Date;
-import java.util.UUID;
 
 
 /**

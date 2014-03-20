@@ -17,7 +17,7 @@
  *  under the License. 
  *  
  */
-package org.safehaus.chop.webapp.rest;
+package org.safehaus.chop.webapp.coordinator.rest;
 
 
 import java.io.File;
@@ -50,6 +50,7 @@ import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.stack.BasicStack;
 import org.safehaus.chop.stack.Stack;
 import org.safehaus.chop.webapp.ChopUiFig;
+import org.safehaus.chop.webapp.coordinator.Coordinator;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
@@ -72,8 +73,6 @@ import com.sun.jersey.multipart.FormDataParam;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.MimeMultipart;
 
-import sun.plugin.util.UserProfile;
-
 
 /**
  * REST operation to upload (a.k.a. deploy) a project war file.
@@ -85,6 +84,9 @@ public class UploadResource implements RestParams {
     public final static String ENDPOINT_URL = "/upload";
     private final static Logger LOG = LoggerFactory.getLogger( UploadResource.class );
 
+
+    @Inject
+    private Coordinator coordinator;
 
     @Inject
     private ChopUiFig chopUiFig;
