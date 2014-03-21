@@ -8,7 +8,7 @@ import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.Point;
 import org.safehaus.chop.webapp.service.chart.Series;
 import org.safehaus.chop.webapp.service.chart.group.GroupByRunNumber;
-import org.safehaus.chop.webapp.service.chart.value.RunValue;
+import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;
 
@@ -25,7 +25,7 @@ public class RunsChartBuilder extends ChartBuilder {
 
         List<Run> runs = runDao.getList( params.getCommitId(), params.getTestName() );
 
-        Collection<RunValue> groupedRuns = new GroupByRunNumber(runs).get();
+        Collection<Value> groupedRuns = new GroupByRunNumber( runs, params.getMetricType() ).get();
 
         ArrayList<Series> seriesList = new ArrayList<Series>();
         seriesList.add( new Series( toPoints( groupedRuns )) );
@@ -33,13 +33,13 @@ public class RunsChartBuilder extends ChartBuilder {
         return new Chart(seriesList);
     }
 
-    private static List<Point> toPoints(Collection<RunValue> values) {
+    private static List<Point> toPoints(Collection<Value> values) {
 
         ArrayList<Point> points = new ArrayList<Point>();
         int x = 1;
 
-        for (RunValue value : values) {
-            points.add( new Point( x, value.getValue(), value.getFailures(), value.getProperties() ) );
+        for (Value value : values) {
+            points.add( new Point(x, value) );
             x++;
         }
 

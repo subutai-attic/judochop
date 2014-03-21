@@ -68,8 +68,6 @@ public class RunnerDao {
                 .execute()
                 .actionGet();
 
-        System.out.println( response );
-
         ArrayList<Runner> runners = new ArrayList<Runner> ();
 
         for ( SearchHit hit : response.getHits().hits() ) {

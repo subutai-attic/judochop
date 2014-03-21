@@ -1,9 +1,7 @@
 package org.safehaus.chop.webapp.service.chart.group;
 
-import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.chart.value.RunValue;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;

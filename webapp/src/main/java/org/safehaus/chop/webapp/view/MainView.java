@@ -32,13 +32,13 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
 
-        IterationsChartBuilder chartBuilder1 = InjectorFactory.getInstance(IterationsChartBuilder.class);
-        RunsChartBuilder chartBuilder2 = InjectorFactory.getInstance(RunsChartBuilder.class);
-        OverviewChartBuilder chartBuilder3 = InjectorFactory.getInstance(OverviewChartBuilder.class);
+        IterationsChartBuilder iterationsChartBuilder = InjectorFactory.getInstance(IterationsChartBuilder.class);
+        RunsChartBuilder runsChartBuilder = InjectorFactory.getInstance(RunsChartBuilder.class);
+        OverviewChartBuilder overviewChartBuilder = InjectorFactory.getInstance(OverviewChartBuilder.class);
 
-        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, chartBuilder1, null, null);
-        ChartLayout runsLayout = new RunsChartLayout(layoutContext, chartBuilder2, iterationsLayout, null);
-        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, chartBuilder3, null, runsLayout);
+        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, iterationsChartBuilder, null, null);
+        ChartLayout runsLayout = new RunsChartLayout(layoutContext, runsChartBuilder, iterationsLayout, null);
+        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, overviewChartBuilder, null, runsLayout);
 
         return overviewLayout;
     }

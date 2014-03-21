@@ -2,7 +2,8 @@ package org.safehaus.chop.webapp.service.chart;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
+import org.safehaus.chop.webapp.service.chart.value.Value;
 
 public class Point {
 
@@ -11,11 +12,11 @@ public class Point {
     private long failures;
     private JSONObject properties;
 
-    public Point(int x, double y, long failures, JSONObject properties) {
+    public Point(int x, Value value) {
         this.x = x;
-        this.y = y;
-        this.failures = failures;
-        this.properties = properties;
+        this.y = value.getValue();
+        this.failures = value.getFailures();
+        this.properties = value.toJson();
     }
 
     public int getX() {

@@ -1,6 +1,5 @@
 package org.safehaus.chop.webapp.service.chart.filter;
 
-import org.safehaus.chop.webapp.service.chart.value.RunValue;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;

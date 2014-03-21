@@ -1,37 +1,36 @@
 package org.safehaus.chop.webapp.service.chart.value;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.json.simple.JSONObject;
-import org.safehaus.chop.api.RunResult;
+import org.safehaus.chop.api.Run;
+import org.safehaus.chop.webapp.service.util.JsonUtil;
 
 public class AvgValue extends Value {
 
     private int count;
 
-    public AvgValue() {
-        super(0, 0, 0);
+    private void doCalc(double d) {
+        value += d;
+        count++;
     }
 
-    public void merge(Value value) {
+    @Override
+    protected void calcValue(Run run) {
+        doCalc( run.getAvgTime() );
+    }
 
-        if (value == null) {
+    @Override
+    public void merge(Value other) {
+        if (other == null) {
             return;
         }
 
-        this.value += value.getValue();
-        count++;
-
-        failures += value.getFailures();
-//        ignores += runValue.getIgnores();
-
-//        properties.put( "commitId", run.getCommitId() );
-//        properties.put( "runNumber", run.getRunNumber() );
-        properties = value.getProperties();
+        doCalc(other.getValue() );
+        inc(other.getFailures(), other.getIgnores() );
+        copyProperties(other);
     }
 
-    public int getCount() {
-        return count;
+    private void copyProperties(Value other) {
+        JsonUtil.copy(other.properties, properties, "chopType");
+        JsonUtil.copy(other.properties, properties, "commitId");
     }
 
     @Override

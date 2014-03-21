@@ -2,7 +2,6 @@ package org.safehaus.chop.webapp.service.chart.filter;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.safehaus.chop.webapp.service.chart.value.RunValue;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;

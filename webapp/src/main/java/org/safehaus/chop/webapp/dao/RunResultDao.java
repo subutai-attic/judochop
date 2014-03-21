@@ -59,8 +59,6 @@ public class RunResultDao extends Dao<RunResult> {
                 .execute()
                 .actionGet();
 
-        System.out.println( response );
-
         return toList( response );
     }
 

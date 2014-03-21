@@ -1,9 +1,7 @@
 package org.safehaus.chop.webapp.service.chart.group;
 
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.webapp.service.chart.value.RunValue;
-import org.safehaus.chop.webapp.service.metric.Metric;
-import org.safehaus.chop.webapp.service.metric.MetricFactory;
+import org.safehaus.chop.webapp.service.chart.value.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,9 +9,11 @@ import java.util.HashMap;
 public class GroupByRunNumber {
 
     // <runNumber, Value>
-    private HashMap<Integer, RunValue> values = new HashMap<Integer, RunValue>();
+    private HashMap<Integer, Value> runNumberValues = new HashMap<Integer, Value>();
+    private String metric;
 
-    public GroupByRunNumber(Collection<Run> runs) {
+    public GroupByRunNumber(Collection<Run> runs, String metric) {
+        this.metric = metric;
         group(runs);
     }
 
@@ -24,19 +24,23 @@ public class GroupByRunNumber {
     }
 
     private void put(Run run) {
-        RunValue value = values.get( run.getRunNumber() );
+
+        Value value = runNumberValues.get( run.getRunNumber() );
 
         if (value == null) {
-//            value = MetricFactory.getMetric(metricType);
-            value = new RunValue();
-            values.put(run.getRunNumber(), value);
+            value = ValueFactory.get(metric);
+//            value = new AvgValue();
+//            value = new MinValue();
+//            value = new MaxValue();
+//            value = new ActualValue();
+            runNumberValues.put(run.getRunNumber(), value);
         }
 
         value.merge(run);
     }
 
-    public Collection<RunValue> get() {
-        return values.values();
+    public Collection<Value> get() {
+        return runNumberValues.values();
     }
 
 }

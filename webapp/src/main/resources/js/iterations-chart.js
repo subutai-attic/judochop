@@ -1,7 +1,7 @@
 function pointClicked() {
-    var point = this;
-    console.log(point.info);
-    iterationsChartCallback(point.info);
+    var properties = this.properties;
+    console.log(properties);
+    iterationsChartCallback(properties);
 }
 
 $('#iterationsChart').highcharts({

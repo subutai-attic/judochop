@@ -53,8 +53,7 @@ public class IterationsChartBuilder extends ChartBuilder {
 
         for ( String key : map.keySet() ) {
             Collection<Value> values = map.get(key);
-            System.out.println(key + ": " + values);
-            seriesList.add(new Series(key, toPoints(values)));
+            seriesList.add( new Series( key, toPoints(values) ) );
         }
 
         return seriesList;
@@ -67,7 +66,7 @@ public class IterationsChartBuilder extends ChartBuilder {
 
         for (Value value : values) {
             if (value != null) {
-                points.add( new Point( x, value.getValue(), value.getFailures(), value.getProperties() ) );
+                points.add( new Point(x, value) );
             }
             x++;
         }
