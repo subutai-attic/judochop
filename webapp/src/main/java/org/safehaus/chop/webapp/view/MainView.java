@@ -3,11 +3,12 @@ package org.safehaus.chop.webapp.view;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
+import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.Params;
+import org.safehaus.chop.webapp.service.chart.builder.IterationsChartBuilder;
+import org.safehaus.chop.webapp.service.chart.builder.OverviewChartBuilder;
+import org.safehaus.chop.webapp.service.chart.builder.RunsChartBuilder;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
-import org.safehaus.chop.webapp.view.chart.builder.IterationsChartBuilder;
-import org.safehaus.chop.webapp.view.chart.builder.OverviewChartBuilder;
-import org.safehaus.chop.webapp.view.chart.builder.RunsChartBuilder;
 import org.safehaus.chop.webapp.view.chart.layout.ChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.IterationsChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.OverviewChartLayout;
@@ -31,9 +32,13 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
 
-        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, new IterationsChartBuilder(), null, null);
-        ChartLayout runsLayout = new RunsChartLayout(layoutContext, new RunsChartBuilder(), iterationsLayout, null);
-        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, new OverviewChartBuilder(), null, runsLayout);
+        IterationsChartBuilder chartBuilder1 = InjectorFactory.getInstance(IterationsChartBuilder.class);
+        RunsChartBuilder chartBuilder2 = InjectorFactory.getInstance(RunsChartBuilder.class);
+        OverviewChartBuilder chartBuilder3 = InjectorFactory.getInstance(OverviewChartBuilder.class);
+
+        ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, chartBuilder1, null, null);
+        ChartLayout runsLayout = new RunsChartLayout(layoutContext, chartBuilder2, iterationsLayout, null);
+        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, chartBuilder3, null, runsLayout);
 
         return overviewLayout;
     }

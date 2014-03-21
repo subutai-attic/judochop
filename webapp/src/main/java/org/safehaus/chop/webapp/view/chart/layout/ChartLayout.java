@@ -4,9 +4,13 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
+import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
+import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
-import org.safehaus.chop.webapp.view.chart.builder.ChartBuilder;
+import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
+import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
+import org.safehaus.chop.webapp.view.util.FileUtil;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
@@ -21,6 +25,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected ChartLayout nextLayout;
     private ChartBuilder chartBuilder;
     private String jsCallbackName;
+    private String chartFile;
 
     protected ComboBox testNamesCombo;
     protected ComboBox metricCombo;
@@ -30,19 +35,22 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected Params params;
 
-    protected ChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName) {
+    protected ChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName,
+                          String chartFile) {
 
         this.chartLayoutContext = layoutContext;
         this.chartBuilder = chartBuilder;
 //        this.prevView = prevView;
         this.nextLayout = nextLayout;
         this.jsCallbackName = jsCallbackName;
+        this.chartFile = chartFile;
 
         setSizeFull();
         addControls(chartId);
     }
 
     protected void addControls(String chartId) {
+
         testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;");
 
         String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
@@ -124,11 +132,15 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         loadChart();
     }
 
-    private void loadChart() {
-        JavaScriptUtil.loadChart(chartBuilder.getChart( getParams() ), jsCallbackName, this);
-    }
+    protected void loadChart() {
 
-//    public void showPrev() {}
-//    public void show() {}
+        Chart chart = chartBuilder.getChart( getParams() );
+
+        String chartContent = FileUtil.getContent(chartFile);
+        chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
+        chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries() ) );
+
+        JavaScriptUtil.loadChart(chartContent, jsCallbackName, this);
+    }
 
 }

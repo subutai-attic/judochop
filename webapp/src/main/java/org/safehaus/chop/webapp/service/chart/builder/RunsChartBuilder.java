@@ -12,12 +12,12 @@ import org.safehaus.chop.webapp.service.chart.value.RunValue;
 
 import java.util.*;
 
-public class RunsChartBuilder_ extends ChartBuilder_ {
+public class RunsChartBuilder extends ChartBuilder {
 
     private RunDao runDao;
 
     @Inject
-    public RunsChartBuilder_(RunDao runDao) {
+    public RunsChartBuilder(RunDao runDao) {
         this.runDao = runDao;
     }
 

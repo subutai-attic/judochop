@@ -17,18 +17,20 @@ import org.safehaus.chop.webapp.service.chart.value.RunValue;
 
 import java.util.*;
 
-public class OverviewChartBuilder_ extends ChartBuilder_ {
+public class OverviewChartBuilder extends ChartBuilder {
 
     private CommitDao commitDao;
     private RunDao runDao;
 
     @Inject
-    public OverviewChartBuilder_(CommitDao commitDao, RunDao runDao) {
+    public OverviewChartBuilder(CommitDao commitDao, RunDao runDao) {
         this.commitDao = commitDao;
         this.runDao = runDao;
     }
 
     public Chart getChart(Params params) {
+
+        System.out.println(">> " + params);
 
         List<Commit> commits = commitDao.getByModule( params.getModuleId() );
         List<Run> runs = runDao.getList( commits, params.getTestName() );
