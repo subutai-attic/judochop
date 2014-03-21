@@ -3,7 +3,7 @@ package org.safehaus.chop.webapp.view.chart.format;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.safehaus.chop.webapp.service.chart.Point;
-import org.safehaus.chop.webapp.service.chart.Series;
+import org.safehaus.chop.webapp.service.chart.series.Series;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class SeriesFormat {
         json.put( "name", series.getName() );
         json.put("dashStyle", "shortdot");
         json.put("lineColor", "blue");
-        json.put( "data", getPoints( series.getPoints() ) );
+        json.put( "data", getPoints(series.getPoints() ) );
 
         return json;
     }
@@ -36,8 +36,12 @@ public class SeriesFormat {
 
         JSONArray arr = new JSONArray();
 
-        for (Point point : points) {
-            arr.add( getPoint(point) );
+        // Bug: Highcharts can't display more than 500 points
+        final int MAX_POINTS = 500;
+        int len = Math.min(points.size(), MAX_POINTS);
+
+        for (int i = 0; i < len; i++) {
+            arr.add(getPoint(points.get(i) ) );
         }
 
         return arr;

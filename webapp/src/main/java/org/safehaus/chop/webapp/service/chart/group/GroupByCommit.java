@@ -17,7 +17,7 @@ public class GroupByCommit {
 
     private void putCommits(List<Commit> commits) {
         for (Commit commit : commits) {
-            commitRuns.put( commit.getId(), new ArrayList<Run>() );
+            commitRuns.put(commit.getId(), new ArrayList<Run>() );
         }
     }
 
@@ -28,7 +28,7 @@ public class GroupByCommit {
     }
 
     private void putRun(Run run) {
-        List<Run> runs = commitRuns.get( run.getCommitId() );
+        List<Run> runs = commitRuns.get(run.getCommitId() );
         runs.add(run);
     }
 

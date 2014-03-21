@@ -11,28 +11,20 @@ public class Params {
     private int runNumber;
     private String metricType;
     private int percentile = 100;
-    private String failureValue;
-
-    public Params(String testName, String commitId, String metricType, int percentile, String failureValue) {
-        this.testName = testName;
-        this.commitId = commitId;
-        this.metricType = metricType;
-        this.percentile = percentile;
-        this.failureValue = failureValue;
-    }
+    private String failureType;
 
     public Params(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, String failureValue) {
+    public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, String failureType) {
         this.moduleId = moduleId;
         this.testName = testName;
         this.commitId = commitId;
         this.runNumber = runNumber;
         this.metricType = metricType;
         this.percentile = percentile;
-        this.failureValue = failureValue;
+        this.failureType = failureType;
     }
 
     public String getModuleId() {
@@ -59,8 +51,8 @@ public class Params {
         return percentile;
     }
 
-    public String getFailureValue() {
-        return failureValue;
+    public String getFailureType() {
+        return failureType;
     }
 
     public Params setModuleId(String moduleId) {
@@ -86,7 +78,7 @@ public class Params {
                 .append("runNumber", runNumber)
                 .append("metricType", metricType)
                 .append("percentile", percentile)
-                .append("failureValue", failureValue)
+                .append("failureType", failureType)
                 .toString();
     }
 }

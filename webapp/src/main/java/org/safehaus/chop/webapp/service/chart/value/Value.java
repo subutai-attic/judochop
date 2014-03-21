@@ -79,7 +79,7 @@ public class Value {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append( "value", getValue() )
+                .append("value", getValue() )
                 .toString();
     }
 }

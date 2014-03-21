@@ -120,8 +120,8 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         percentileCombo.select( "" + params.getPercentile() );
 
-        if (params.getFailureValue() != null) {
-            failureCombo.select( params.getFailureValue() );
+        if (params.getFailureType() != null) {
+            failureCombo.select( params.getFailureType() );
         }
     }
 

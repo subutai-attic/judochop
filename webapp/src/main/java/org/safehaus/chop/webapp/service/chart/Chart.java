@@ -1,5 +1,7 @@
 package org.safehaus.chop.webapp.service.chart;
 
+import org.safehaus.chop.webapp.service.chart.series.Series;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -29,10 +29,6 @@ public class GroupByRunNumber {
 
         if (value == null) {
             value = ValueFactory.get(metric);
-//            value = new AvgValue();
-//            value = new MinValue();
-//            value = new MaxValue();
-//            value = new ActualValue();
             runNumberValues.put(run.getRunNumber(), value);
         }
 

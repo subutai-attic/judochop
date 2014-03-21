@@ -8,49 +8,54 @@ import java.util.*;
 
 public class PercentileFilter {
 
-    public static <V extends Value> Map<String, Collection<V>> filter(Map<String, Collection<V>> map, int percent) {
+    public static Map<String, Collection<Value>> filter(Map<String, Collection<Value>> map, int percent) {
 
-        double percentile = new DescriptiveStatistics( toArray(map) ).getPercentile(percent);
-        Map<String, Collection<V>> resultMap = new LinkedHashMap<String, Collection<V>>();
+        double percentile = new DescriptiveStatistics(toArray(map) ).getPercentile(percent);
+        Map<String, Collection<Value>> resultMap = new LinkedHashMap<String, Collection<Value>>();
 
-        for ( String key : map.keySet() ) {
-            resultMap.put( key, doFilter(map.get(key), percentile) );
+        for (String key : map.keySet() ) {
+            resultMap.put(key, doFilter(map.get(key), percentile) );
         }
 
         return resultMap;
     }
 
-    private static <V extends Value> Collection<V> doFilter(Collection<V> values, double percentile) {
+    public static Collection<Value> filter(Collection<Value> values, double percent) {
+        double percentile = new DescriptiveStatistics(toArray(values) ).getPercentile(percent);
+        return doFilter(values, percentile);
+    }
 
-        ArrayList<V> resultValues = new ArrayList<V>();
+    private static Collection<Value> doFilter(Collection<Value> values, double percentile) {
 
-        for (V v : values) {
-            if (v.getValue() <= percentile) {
-                resultValues.add(v);
+        ArrayList<Value> resultValues = new ArrayList<Value>();
+
+        for (Value value : values) {
+            if (value.getValue() <= percentile) {
+                resultValues.add(value);
             }
         }
 
         return resultValues;
     }
 
-    private static <V extends Value> double[] toArray(Map<String, Collection<V>> map) {
+    private static double[] toArray(Map<String, Collection<Value>> map) {
 
         double arr[] = {};
 
-        for ( Collection<V> valueList : map.values() ) {
-            arr = ArrayUtils.addAll( arr, toArray(valueList) );
+        for (Collection<Value> valueList : map.values() ) {
+            arr = ArrayUtils.addAll(arr, toArray(valueList) );
         }
 
         return arr;
     }
 
-    private static <V extends Value> double[] toArray(Collection<V> values) {
+    private static double[] toArray(Collection<Value> values) {
 
-        double arr[] = new double[ values.size() ];
+        double arr[] = new double[values.size()];
         int i = 0;
 
-        for (V v : values) {
-            arr[i] = v.getValue();
+        for (Value value : values) {
+            arr[i] = value.getValue();
             i++;
         }
 

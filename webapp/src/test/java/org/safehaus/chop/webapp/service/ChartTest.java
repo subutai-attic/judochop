@@ -1,13 +1,12 @@
 package org.safehaus.chop.webapp.service;
 
 import org.junit.Test;
-import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.dao.RunResultDao;
+import org.safehaus.chop.webapp.dao.*;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.Point;
-import org.safehaus.chop.webapp.service.chart.Series;
+import org.safehaus.chop.webapp.service.chart.series.Series;
 import org.safehaus.chop.webapp.service.chart.builder.*;
 
 import java.util.ArrayList;
@@ -15,9 +14,9 @@ import java.util.ArrayList;
 public class ChartTest {
 
     private ElasticSearchClient esClient = new ElasticSearchClient();
-//    private OverviewChartBuilder_ seriesBuilder = new OverviewChartBuilder_( new CommitDao(esClient), new RunDao(esClient) );
+    private OverviewChartBuilder chartBuilder = new OverviewChartBuilder(new CommitDao(esClient), new RunDao(esClient) );
 //    private RunsChartBuilder_ chartBuilder = new RunsChartBuilder_( new RunDao(esClient) );
-    private IterationsChartBuilder chartBuilder = new IterationsChartBuilder( new RunDao(esClient), new RunResultDao(esClient) );
+//    private IterationsChartBuilder chartBuilder = new IterationsChartBuilder( new RunDao(esClient), new RunResultDao(esClient) );
 
     @Test
     public void test() {
@@ -26,11 +25,11 @@ public class ChartTest {
                 "1168044208",
                 "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest",
                 "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e",
-                2,
+                0,
                 "Avg Time",
                 100,
-//                "FAILED"
-                "ALL"
+                "FAILED"
+//                "ALL"
         );
 
         Chart chart = chartBuilder.getChart(params);

@@ -14,7 +14,7 @@ public class GroupByRunner {
         Map<String, Collection<Value>> runnerValues = new HashMap<String, Collection<Value>>();
 
         for ( Run run : runResults.keySet() ) {
-            runnerValues.put( run.getRunner(), toValueList( runResults.get(run) ) );
+            runnerValues.put(run.getRunner(), toValueList(runResults.get(run) ) );
         }
 
         return runnerValues;
@@ -25,7 +25,7 @@ public class GroupByRunner {
         ArrayList<Value> values = new ArrayList<Value>();
 
         for (RunResult runResult : runResults) {
-            values.add( new Value(runResult) );
+            values.add(new Value(runResult) );
         }
 
         return values;

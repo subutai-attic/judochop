@@ -6,35 +6,32 @@ import java.util.*;
 
 public class FailureFilter {
 
-    public static <V extends Value> Map<String, Collection<V>> filter(Map<String, Collection<V>> map, String type) {
+    public static Map<String, Collection<Value>> filter(Map<String, Collection<Value>> map, String failureType) {
 
-        Map<String, Collection<V>> resultMap = new LinkedHashMap<String, Collection<V>>();
+        Map<String, Collection<Value>> resultMap = new LinkedHashMap<String, Collection<Value>>();
 
-        for ( String key : map.keySet() ) {
-            resultMap.put( key, doFilter(map.get(key), type) );
+        for (String key : map.keySet() ) {
+            resultMap.put(key, filter(map.get(key), failureType) );
         }
 
         return resultMap;
     }
 
-    private static <V extends Value> Collection<V> doFilter(Collection<V> values, String type) {
+    public static Collection<Value> filter(Collection<Value> values, String failureType) {
 
-        ArrayList<V> resultValues = new ArrayList<V>();
+        ArrayList<Value> resultValues = new ArrayList<Value>();
 
-        for (V v : values) {
-            V newValue = null;
-
-            if ("ALL".equals(type)
-                    || ("FAILED".equals(type) && v.getFailures() > 0)
-                    || ("SUCCESS".equals(type) && v.getFailures() == 0)
-                    ) {
-//                resultValues.add(v);
-                newValue = v;
-            }
-
+        for (Value value : values) {
+            Value newValue = isValid(value, failureType) ? value : null;
             resultValues.add(newValue);
         }
 
         return resultValues;
+    }
+
+    private static boolean isValid(Value value, String failureType) {
+        return "ALL".equals(failureType)
+                || ("FAILED".equals(failureType) && value.getFailures() > 0)
+                || ("SUCCESS".equals(failureType) && value.getFailures() == 0);
     }
 }

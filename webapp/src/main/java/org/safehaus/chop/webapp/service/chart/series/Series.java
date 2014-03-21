@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.service.chart;
+package org.safehaus.chop.webapp.service.chart.series;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
