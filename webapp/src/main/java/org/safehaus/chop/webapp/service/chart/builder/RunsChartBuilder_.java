@@ -28,25 +28,9 @@ public class RunsChartBuilder_ extends ChartBuilder_ {
         Collection<RunValue> groupedRuns = new GroupByRunNumber(runs).get();
 
         ArrayList<Series> seriesList = new ArrayList<Series>();
-        seriesList.add( new Series("Runs", toPoints( groupedRuns )) );
+        seriesList.add( new Series( toPoints( groupedRuns )) );
 
         return new Chart(seriesList);
-
-
-//        List<Commit> commits = commitDao.getByModule( params.getModuleId() );
-//        List<Run> runs = runDao.getList( commits, params.getTestName() );
-//
-//        Map<String, List<Run>> commitRuns = new GroupByCommit(commits, runs).get();
-//        Map<String, Collection<RunValue>> groupedByRunNumber = groupByRunNumber(commitRuns);
-//
-//        Map<String, Collection<RunValue>> resultMap = PercentileFilter.filter( groupedByRunNumber, params.getPercentile() );
-//        resultMap = FailureFilter.filter( resultMap, params.getFailureValue() );
-//
-//        List<Series> series = toSeries(resultMap);
-//
-//        series.add(new Series("AVG", toPoints(getAvg(resultMap))));
-//
-//        return new Chart(series, resultMap.keySet());
     }
 
     private static List<Point> toPoints(Collection<RunValue> values) {
@@ -61,31 +45,5 @@ public class RunsChartBuilder_ extends ChartBuilder_ {
 
         return points;
     }
-
-//    private static List<Series> toSeries(Map<String, Collection<RunValue>> map) {
-//
-//        ArrayList<Series> seriesList = new ArrayList<Series>();
-//        int x = 0;
-//
-//        for ( String key : map.keySet() ) {
-//            Collection<RunValue> values = map.get(key);
-//            seriesList.add( new Series(key, toPoints(values, x) ) );
-//            x++;
-//        }
-//
-//        return seriesList;
-//    }
-//
-//    private static List<Point> toPoints(Collection<RunValue> values, int x) {
-//
-//        ArrayList<Point> points = new ArrayList<Point>();
-//
-//        for (RunValue value : values) {
-//            points.add( new Point( x, value.getValue(), value.getFailures() ) );
-//        }
-//
-//        return points;
-//    }
-
 
 }

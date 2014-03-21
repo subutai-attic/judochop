@@ -1,14 +1,15 @@
 package org.safehaus.chop.webapp.service.chart.filter;
 
 import org.safehaus.chop.webapp.service.chart.value.RunValue;
+import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;
 
 public class FailureFilter {
 
-    public static Map<String, Collection<RunValue>> filter(Map<String, Collection<RunValue>> map, String type) {
+    public static <V extends Value> Map<String, Collection<V>> filter(Map<String, Collection<V>> map, String type) {
 
-        Map<String, Collection<RunValue>> resultMap = new LinkedHashMap<String, Collection<RunValue>>();
+        Map<String, Collection<V>> resultMap = new LinkedHashMap<String, Collection<V>>();
 
         for ( String key : map.keySet() ) {
             resultMap.put( key, doFilter(map.get(key), type) );
@@ -17,16 +18,22 @@ public class FailureFilter {
         return resultMap;
     }
 
-    private static Collection<RunValue> doFilter(Collection<RunValue> values, String type) {
-        ArrayList<RunValue> resultValues = new ArrayList<RunValue>();
+    private static <V extends Value> Collection<V> doFilter(Collection<V> values, String type) {
 
-        for (RunValue value : values) {
+        ArrayList<V> resultValues = new ArrayList<V>();
+
+        for (V v : values) {
+            V newValue = null;
+
             if ("ALL".equals(type)
-                    || ("FAILED".equals(type) && value.getFailures() > 0)
-                    || ("SUCCESS".equals(type) && value.getFailures() == 0)
+                    || ("FAILED".equals(type) && v.getFailures() > 0)
+                    || ("SUCCESS".equals(type) && v.getFailures() == 0)
                     ) {
-                resultValues.add(value);
+//                resultValues.add(v);
+                newValue = v;
             }
+
+            resultValues.add(newValue);
         }
 
         return resultValues;

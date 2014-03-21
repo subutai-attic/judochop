@@ -16,8 +16,16 @@ public class Series {
         this.points = points;
     }
 
+    public Series(List<Point> points) {
+        this("", points);
+    }
+
     public List<Point> getPoints() {
         return points;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

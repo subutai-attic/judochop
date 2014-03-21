@@ -17,6 +17,11 @@ public class RunValue extends Value {
 //    protected int totalTestsRun;
 //    protected int iterations;
 
+
+    public RunValue() {
+        super(0, 0, 0);
+    }
+
     public void merge(Run run) {
         value += run.getAvgTime();
         count++;
@@ -45,12 +50,12 @@ public class RunValue extends Value {
         return value / count;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append( "value", getValue() )
-//                .append("runNumber", runNumber)
-                .toString();
-    }
+//    @Override
+//    public String toString() {
+//        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+//                .append("value", getValue())
+////                .append("runNumber", runNumber)
+//                .toString();
+//    }
 
 }

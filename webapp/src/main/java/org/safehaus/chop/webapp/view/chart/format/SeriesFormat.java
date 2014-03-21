@@ -21,10 +21,12 @@ public class SeriesFormat {
     }
 
     private static JSONObject format(Series series) {
+
         JSONObject json = new JSONObject();
 
-        json.put( "dashStyle", "shortdot" );
-        json.put( "lineColor", "blue" );
+        json.put( "name", series.getName() );
+        json.put("dashStyle", "shortdot");
+        json.put("lineColor", "blue");
         json.put( "data", getPoints( series.getPoints() ) );
 
         return json;

@@ -41,7 +41,7 @@ public class OverviewChartBuilder_ extends ChartBuilder_ {
 
         List<Series> series = toSeries(resultMap);
 
-        series.add(new Series("Average", toPoints(getAvg(resultMap))));
+        series.add( new Series( "Average", toPoints( getAvg(resultMap) ) ) );
 
         return new Chart(series, resultMap.keySet());
     }
@@ -89,7 +89,7 @@ public class OverviewChartBuilder_ extends ChartBuilder_ {
 
         for ( String key : map.keySet() ) {
             Collection<RunValue> values = map.get(key);
-            seriesList.add( new Series(key, toPoints(values, x) ) );
+            seriesList.add( new Series( toPoints(values, x) ) );
             x++;
         }
 
