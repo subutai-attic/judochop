@@ -26,23 +26,20 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     @Override
     protected void init(VaadinRequest request) {
-        /*overviewLayout = initChartViews(this);
+        overviewLayout = initChartViews(this);
         initLayout();
         loadScripts();
 
-        */
         // Some UI logic to open the sub-window
-        final Button open = new Button("Open Sub-Window");
-        open.addClickListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                UserSubwindow sub = new UserSubwindow();
-
-                // Add it to the root component
-                UI.getCurrent().addWindow(sub);
-            }
-        });
-
-        setContent(open);
+//        final Button open = new Button("Open Sub-Window");
+//        open.addClickListener(new Button.ClickListener() {
+//            public void buttonClick(Button.ClickEvent event) {
+//                UserSubwindow sub = new UserSubwindow();
+//                UI.getCurrent().addWindow(sub);
+//            }
+//        });
+//
+//        setContent(open);
     }
 
     private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
