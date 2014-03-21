@@ -7,36 +7,51 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.*;
-import org.safehaus.chop.webapp.shiro.MyShiroRealm;
+import org.safehaus.chop.api.ProviderParams;
+import org.safehaus.chop.webapp.dao.ProviderParamsDao;
+import org.safehaus.chop.webapp.dao.UserDao;
+import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
+import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.webapp.service.InjectorFactory;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by daralbaev on 3/17/14.
  */
 public class UserSubwindow extends Window {
 
+    private final UserDao userDao = InjectorFactory.getInstance(UserDao.class);
+    private final ProviderParamsDao providerParamsDao = InjectorFactory.getInstance(ProviderParamsDao.class);
     /* User interface components are stored in session. */
     private Table userList = new Table();
     private TextField searchField = new TextField();
+
     private Button addNewUserButton = new Button("New");
     private Button removeUserButton = new Button("Remove this user");
-    private Button editUserButton = new Button("Edit this user's groups");
+    //    private Button editUserButton = new Button("Edit this user's groups");
     private Button saveButton = new Button("Save all");
     private Button cancelButton = new Button("Cancel");
+
     private FormLayout editorLayout = new FormLayout();
     private FieldGroup editorFields = new FieldGroup();
 
-    private static final String USERNAME = "Username";
+    private static final String USERNAME = "username";
     private static final String PASSWORD = "Password";
-    private static final String[] fieldNames = new String[]{USERNAME, PASSWORD};
+    private static final String INSTANCETYPE = "Instance Type";
+    private static final String ACCESSKEY = "Access Key";
+    private static final String SECRETKEY = "Secret Key";
+    private static final String IMAGEID = "Image Id";
+    private static final String SECURITYGROUP = "Security Group";
+    private static final String KEYPAIRNAME = "Key Pair Name";
+    private static final String RUNNERNAME = "Runner Name";
+    private static final String AVAILABILITYZONE = "Availability Zone";
 
-    /*
-     * Any component can be bound to an external data source. This example uses
-     * just a dummy in-memory list, but there are many more practical
-     * implementations.
-     */
-    IndexedContainer userContainer = createUserDatasource();
+    private static final String[] fieldNames = new String[]{USERNAME, PASSWORD, INSTANCETYPE, ACCESSKEY, SECRETKEY,
+            IMAGEID, SECURITYGROUP, KEYPAIRNAME, RUNNERNAME, AVAILABILITYZONE};
+
+
+    IndexedContainer userContainer;
 
     /*
      * After UI class is created, init() is executed. You should build and wire
@@ -62,10 +77,6 @@ public class UserSubwindow extends Window {
         initAddRemoveButtons();
     }
 
-    /*
-    * In this example layouts are programmed in Java. You may choose use a
-    * visual editor, CSS or HTML templates for layout instead.
-    */
     private void initLayout() {
 
 		/* Root of the user interface component tree is set */
@@ -111,7 +122,7 @@ public class UserSubwindow extends Window {
     private void initEditor() {
 
         editorLayout.addComponent(removeUserButton);
-        editorLayout.addComponent(editUserButton);
+//        editorLayout.addComponent(editUserButton);
 
 		/* User interface can be created dynamically to reflect underlying data. */
         for (String fieldName : fieldNames) {
@@ -196,14 +207,14 @@ public class UserSubwindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
 
 				/*
-				 * Rows in the Container data model are called Item. Here we add
+                 * Rows in the Container data model are called Item. Here we add
 				 * a new row in the beginning of the list.
 				 */
                 userContainer.removeAllContainerFilters();
                 Object contactId = userContainer.addItemAt(0);
 
 				/*
-				 * Each Item has a set of Properties that hold values. Here we
+                 * Each Item has a set of Properties that hold values. Here we
 				 * set a couple of those.
 				 */
                 userList.getContainerProperty(contactId, USERNAME).setValue(
@@ -220,10 +231,13 @@ public class UserSubwindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 Object contactId = userList.getValue();
                 userList.removeItem(contactId);
+
+                String username = (String) userList.getItem(contactId).getItemProperty(USERNAME).getValue();
+                userDao.delete(username);
             }
         });
 
-        editUserButton.addClickListener(new Button.ClickListener() {
+        /*editUserButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 Object contactId = userList.getValue();
                 String username = (String) userList.getItem(contactId).getItemProperty(USERNAME).getValue();
@@ -232,28 +246,38 @@ public class UserSubwindow extends Window {
                 // Add it to the root component
                 UI.getCurrent().addWindow(sub);
             }
-        });
+        });*/
 
         cancelButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                close(); // Close the sub-window
-                MyShiroRealm.initRealm();
+                close();
             }
         });
 
         saveButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                Map<String, String> users = MyShiroRealm.getUsers();
-                users.clear();
-
-                for(Object itemId : userList.getItemIds()){
+                for (Object itemId : userList.getItemIds()) {
                     String username = (String) userList.getItem(itemId).getItemProperty(USERNAME).getValue();
                     String password = (String) userList.getItem(itemId).getItemProperty(PASSWORD).getValue();
-                    users.put(username, password);
+
+                    String instanceType = (String) userList.getItem(itemId).getItemProperty(INSTANCETYPE).getValue();
+                    String accessKey = (String) userList.getItem(itemId).getItemProperty(ACCESSKEY).getValue();
+                    String secretKey = (String) userList.getItem(itemId).getItemProperty(SECRETKEY).getValue();
+                    String imageId = (String) userList.getItem(itemId).getItemProperty(IMAGEID).getValue();
+                    String securityGroup = (String) userList.getItem(itemId).getItemProperty(SECURITYGROUP).getValue();
+                    String keyPairName = (String) userList.getItem(itemId).getItemProperty(KEYPAIRNAME).getValue();
+                    String runnerName = (String) userList.getItem(itemId).getItemProperty(RUNNERNAME).getValue();
+                    String availabilityZone = (String) userList.getItem(itemId).getItemProperty(AVAILABILITYZONE).getValue();
+                    try {
+                        userDao.save(new User(username, password));
+                        providerParamsDao.save(new BasicProviderParams(username, instanceType, availabilityZone,
+                                accessKey, secretKey, imageId, securityGroup, keyPairName, runnerName));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                close(); // Close the sub-window
-                MyShiroRealm.saveRealm();
+                close();
             }
         });
     }
@@ -269,7 +293,7 @@ public class UserSubwindow extends Window {
                 Object contactId = userList.getValue();
 
 				/*
-				 * When a contact is selected from the list, we want to show
+                 * When a contact is selected from the list, we want to show
 				 * that in our editor on the right. This is nicely done by the
 				 * FieldGroup that binds all the fields to the corresponding
 				 * Properties in our contact at once.
@@ -289,21 +313,58 @@ public class UserSubwindow extends Window {
      * we could be using SQLContainer, JPAContainer or some other to persist the
      * data.
      */
-    private static IndexedContainer createUserDatasource() {
+    private IndexedContainer createUserDatasource() {
         IndexedContainer ic = new IndexedContainer();
 
         for (String p : fieldNames) {
             ic.addContainerProperty(p, String.class, "");
         }
 
-        Map<String, String> users = MyShiroRealm.getUsers();
+        List<User> users = userDao.getList();
 
-        for(String username : users.keySet()){
+        for (User user : users) {
+            ProviderParams params = providerParamsDao.getByUser(user.getUsername());
+
             Object id = ic.addItem();
             ic.getContainerProperty(id, USERNAME).setValue(
-                    username);
+                    user.getUsername());
             ic.getContainerProperty(id, PASSWORD).setValue(
-                    users.get(username));
+                    user.getPassword());
+            if (params != null) {
+                ic.getContainerProperty(id, ACCESSKEY).setValue(
+                        params.getAccessKey());
+                ic.getContainerProperty(id, AVAILABILITYZONE).setValue(
+                        params.getAvailabilityZone());
+                ic.getContainerProperty(id, IMAGEID).setValue(
+                        params.getImageId());
+                ic.getContainerProperty(id, INSTANCETYPE).setValue(
+                        params.getInstanceType());
+                ic.getContainerProperty(id, KEYPAIRNAME).setValue(
+                        params.getKeyPairName());
+                ic.getContainerProperty(id, RUNNERNAME).setValue(
+                        params.getRunnerName());
+                ic.getContainerProperty(id, SECRETKEY).setValue(
+                        params.getSecretKey());
+                ic.getContainerProperty(id, SECURITYGROUP).setValue(
+                        params.getSecurityGroup());
+            } else {
+                ic.getContainerProperty(id, ACCESSKEY).setValue(
+                        "");
+                ic.getContainerProperty(id, AVAILABILITYZONE).setValue(
+                        "");
+                ic.getContainerProperty(id, IMAGEID).setValue(
+                        "");
+                ic.getContainerProperty(id, INSTANCETYPE).setValue(
+                        "");
+                ic.getContainerProperty(id, KEYPAIRNAME).setValue(
+                        "");
+                ic.getContainerProperty(id, RUNNERNAME).setValue(
+                        "");
+                ic.getContainerProperty(id, SECRETKEY).setValue(
+                        "");
+                ic.getContainerProperty(id, SECURITYGROUP).setValue(
+                        "");
+            }
         }
 
         return ic;

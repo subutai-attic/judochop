@@ -16,6 +16,7 @@ import org.safehaus.chop.webapp.view.chart.layout.RunsChartLayout;
 import org.safehaus.chop.webapp.view.tree.ModuleSelectListener;
 import org.safehaus.chop.webapp.view.tree.ModuleTreeBuilder;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
+import org.safehaus.chop.webapp.view.window.UserSubwindow;
 
 @Title("Judo Chop")
 public class MainView extends UI implements ChartLayoutContext, ModuleSelectListener {
@@ -25,9 +26,23 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     @Override
     protected void init(VaadinRequest request) {
-        overviewLayout = initChartViews(this);
+        /*overviewLayout = initChartViews(this);
         initLayout();
         loadScripts();
+
+        */
+        // Some UI logic to open the sub-window
+        final Button open = new Button("Open Sub-Window");
+        open.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                UserSubwindow sub = new UserSubwindow();
+
+                // Add it to the root component
+                UI.getCurrent().addWindow(sub);
+            }
+        });
+
+        setContent(open);
     }
 
     private static ChartLayout initChartViews(ChartLayoutContext layoutContext) {
