@@ -6,7 +6,7 @@ import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
-import org.safehaus.chop.webapp.service.chart.builder.OverviewChartBuilder_;
+import org.safehaus.chop.webapp.service.chart.builder.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +14,8 @@ import java.util.Set;
 public class ChartTest {
 
     private ElasticSearchClient esClient = new ElasticSearchClient();
-    private OverviewChartBuilder_ seriesBuilder = new OverviewChartBuilder_( new CommitDao(esClient), new RunDao(esClient) );
+//    private OverviewChartBuilder_ seriesBuilder = new OverviewChartBuilder_( new CommitDao(esClient), new RunDao(esClient) );
+    private RunsChartBuilder_ chartBuilder = new RunsChartBuilder_( new RunDao(esClient) );
 
     @Test
     public void test() {
@@ -29,8 +30,9 @@ public class ChartTest {
                 "ALL"
         );
 
-        Chart chart = seriesBuilder.getChart(params);
-        System.out.println(chart.getCategories());
+        Chart chart = chartBuilder.getChart(params);
+        System.out.println(chart);
+//        System.out.println(chart.getSeries());
 //
 //        for (Series s : list) {
 //            System.out.println(s);

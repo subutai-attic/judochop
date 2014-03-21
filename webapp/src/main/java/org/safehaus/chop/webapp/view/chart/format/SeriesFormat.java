@@ -46,6 +46,7 @@ public class SeriesFormat {
         JSONObject data = new JSONObject();
         data.put( "x", point.getX() );
         data.put( "y", point.getY() );
+        data.put( "properties", point.getProperties() );
 
         JSONObject marker = new JSONObject();
         marker.put( "radius", getRadius(point) );

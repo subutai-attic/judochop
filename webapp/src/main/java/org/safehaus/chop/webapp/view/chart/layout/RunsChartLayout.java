@@ -17,5 +17,7 @@ public class RunsChartLayout extends ChartLayout {
     public void call(JSONArray args) throws JSONException {
         JSONObject json = args.getJSONObject(0);
         params.setRunNumber( json.getInt("runNumber") );
+
+        nextChartButton.setCaption( "run: " + json.getInt("runNumber") );
     }
 }

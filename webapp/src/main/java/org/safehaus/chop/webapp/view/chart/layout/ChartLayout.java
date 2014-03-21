@@ -26,6 +26,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected ComboBox metricCombo;
     protected ComboBox percentileCombo;
     protected ComboBox failureCombo;
+    protected Button nextChartButton;
 
     protected Params params;
 
@@ -71,10 +72,10 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addNextChartButton() {
 
-        Button button = UIUtil.getButton(this, "next chart", "left: 800px; top: 30px;", "200px");
-        button.setStyleName(Reindeer.BUTTON_LINK);
+        nextChartButton = UIUtil.getButton(this, "...", "left: 800px; top: 30px;", "200px");
+        nextChartButton.setStyleName(Reindeer.BUTTON_LINK);
 
-        button.addClickListener(new Button.ClickListener() {
+        nextChartButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 chartLayoutContext.show( nextLayout, getParams() );
             }

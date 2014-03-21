@@ -39,11 +39,9 @@ public class OverviewChartBuilder_ extends ChartBuilder_ {
         Map<String, Collection<RunValue>> resultMap = PercentileFilter.filter( groupedByRunNumber, params.getPercentile() );
         resultMap = FailureFilter.filter( resultMap, params.getFailureValue() );
 
-//        Set<String> categories = resultMap.keySet();
-
         List<Series> series = toSeries(resultMap);
 
-        series.add(new Series("AVG", toPoints(getAvg(resultMap))));
+        series.add(new Series("Average", toPoints(getAvg(resultMap))));
 
         return new Chart(series, resultMap.keySet());
     }
@@ -54,7 +52,7 @@ public class OverviewChartBuilder_ extends ChartBuilder_ {
         int x = 0;
 
         for (RunValue value : values) {
-            points.add( new Point( x, value.getValue(), value.getFailures() ) );
+            points.add( new Point( x, value.getValue(), value.getFailures(), value.getProperties() ) );
             x++;
         }
 
@@ -103,7 +101,7 @@ public class OverviewChartBuilder_ extends ChartBuilder_ {
         ArrayList<Point> points = new ArrayList<Point>();
 
         for (RunValue value : values) {
-            points.add( new Point( x, value.getValue(), value.getFailures() ) );
+            points.add( new Point( x, value.getValue(), value.getFailures(), value.getProperties() ) );
         }
 
         return points;

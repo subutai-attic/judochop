@@ -17,5 +17,7 @@ public class OverviewChartLayout extends ChartLayout {
     public void call(JSONArray args) throws JSONException {
         JSONObject json = args.getJSONObject(0);
         params.setCommitId( json.getString("commitId") );
+
+        nextChartButton.setCaption( "commit: " + json.getString("commitId") );
     }
 }

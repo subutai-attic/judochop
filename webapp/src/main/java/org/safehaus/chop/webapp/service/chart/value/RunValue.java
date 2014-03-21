@@ -8,9 +8,8 @@ public class RunValue extends Value {
 
     private int count;
 
-    protected int runNumber;
-
 //    protected String chopType;
+//    protected int runNumber;
 //    protected long failures;
 //    protected int ignores;
 //    protected String commitId;
@@ -22,10 +21,11 @@ public class RunValue extends Value {
         value += run.getAvgTime();
         count++;
 
-        runNumber = run.getRunNumber();
         failures += run.getFailures();
         ignores += run.getIgnores();
 
+        properties.put( "commitId", run.getCommitId() );
+        properties.put( "runNumber", run.getRunNumber() );
     }
 
     public void merge(RunValue runValue) {
@@ -34,6 +34,10 @@ public class RunValue extends Value {
 
         failures += runValue.getFailures();
 //        ignores += runValue.getIgnores();
+
+//        properties.put( "commitId", run.getCommitId() );
+//        properties.put( "runNumber", run.getRunNumber() );
+        properties = runValue.getProperties();
     }
 
     @Override
@@ -45,7 +49,7 @@ public class RunValue extends Value {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append( "value", getValue() )
-                .append("runNumber", runNumber)
+//                .append("runNumber", runNumber)
                 .toString();
     }
 

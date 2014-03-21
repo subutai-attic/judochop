@@ -1,7 +1,7 @@
 function pointClicked() {
     var point = this;
-    console.log(point.info);
-    runsChartCallback(point.info);
+    console.log(point.properties);
+    runsChartCallback(point.properties);
 }
 
 $('#runsChart').highcharts({
