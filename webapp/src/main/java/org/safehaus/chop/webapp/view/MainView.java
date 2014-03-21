@@ -3,7 +3,7 @@ package org.safehaus.chop.webapp.view;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
-import org.safehaus.chop.webapp.service.chart.dto.Params;
+import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.builder.IterationsChartBuilder;
 import org.safehaus.chop.webapp.view.chart.builder.OverviewChartBuilder;

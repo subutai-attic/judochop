@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.service.chart.dto;
+package org.safehaus.chop.webapp.service.chart;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;

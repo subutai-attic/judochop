@@ -5,7 +5,7 @@ import org.safehaus.chop.api.RunResult;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.RunResultDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.chart.dto.Params;
+import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.calc.iterations.IterationsCollector;
 import org.safehaus.chop.webapp.view.chart.iterations.IterationsFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;

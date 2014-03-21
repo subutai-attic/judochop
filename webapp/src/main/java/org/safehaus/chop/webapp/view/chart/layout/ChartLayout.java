@@ -4,7 +4,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.chart.dto.Params;
+import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;

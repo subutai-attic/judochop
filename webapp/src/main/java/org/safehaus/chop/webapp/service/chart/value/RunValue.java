@@ -10,19 +10,30 @@ public class RunValue extends Value {
 
     protected int runNumber;
 
-    protected int failures;
-    protected int ignores;
-    protected String chopType;
-    protected String commitId;
-    protected int runners;
-    protected int totalTestsRun;
-    protected int iterations;
+//    protected String chopType;
+//    protected long failures;
+//    protected int ignores;
+//    protected String commitId;
+//    protected int runners;
+//    protected int totalTestsRun;
+//    protected int iterations;
 
     public void merge(Run run) {
         value += run.getAvgTime();
         count++;
 
         runNumber = run.getRunNumber();
+        failures += run.getFailures();
+        ignores += run.getIgnores();
+
+    }
+
+    public void merge(RunValue runValue) {
+        value += runValue.getValue();
+        count++;
+
+        failures += runValue.getFailures();
+//        ignores += runValue.getIgnores();
     }
 
     @Override

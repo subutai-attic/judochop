@@ -15,7 +15,8 @@ $('#overviewChart').highcharts({
         title: {
             text: 'Commits'
         },
-        categories: [$categories]
+//        categories: [$categories]
+        categories: $categories
     },
     yAxis: {
         title: {

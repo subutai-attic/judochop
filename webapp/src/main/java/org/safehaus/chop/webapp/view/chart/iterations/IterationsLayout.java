@@ -4,7 +4,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.safehaus.chop.webapp.view.MainView;
-import org.safehaus.chop.webapp.service.chart.dto.Params;
+import org.safehaus.chop.webapp.service.chart.Params;
 
 public class IterationsLayout extends AbsoluteLayout {
 
