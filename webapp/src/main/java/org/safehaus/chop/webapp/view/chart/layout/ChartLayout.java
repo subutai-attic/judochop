@@ -123,7 +123,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void loadChart() {
 
-        Chart chart = chartBuilder.getChart(getParams() );
+        Chart chart = chartBuilder.getChart( getParams() );
 
         String chartContent = FileUtil.getContent(chartFile);
         chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
