@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.service.chart.group;
 
 import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.service.chart.value.*;
+import org.safehaus.chop.webapp.service.chart.Params.Metric;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,9 +11,9 @@ public class GroupByRunNumber {
 
     // <runNumber, Value>
     private HashMap<Integer, Value> runNumberValues = new HashMap<Integer, Value>();
-    private String metric;
+    private Metric metric;
 
-    public GroupByRunNumber(Collection<Run> runs, String metric) {
+    public GroupByRunNumber(Collection<Run> runs, Metric metric) {
         this.metric = metric;
         group(runs);
     }

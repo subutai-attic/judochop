@@ -15,6 +15,7 @@ import org.safehaus.chop.webapp.service.chart.group.GroupByRunNumber;
 import org.safehaus.chop.webapp.service.chart.series.Series;
 import org.safehaus.chop.webapp.service.chart.series.SeriesBuilder;
 import org.safehaus.chop.webapp.service.chart.value.Value;
+import org.safehaus.chop.webapp.service.chart.Params.Metric;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class OverviewChartBuilder extends ChartBuilder {
         List<Run> runs = runDao.getList( commits, params.getTestName() );
 
         Map<String, List<Run>> commitRuns = new GroupByCommit(commits, runs).get();
-        Map<String, Collection<Value>> groupedByRunNumber = groupByRunNumber( commitRuns, params.getMetricType() );
+        Map<String, Collection<Value>> groupedByRunNumber = groupByRunNumber(commitRuns, params.getMetric() );
 
         Map<String, Collection<Value>> resultMap = PercentileFilter.filter(groupedByRunNumber, params.getPercentile() );
         resultMap = FailureFilter.filter(resultMap, params.getFailureType() );
@@ -46,7 +47,7 @@ public class OverviewChartBuilder extends ChartBuilder {
         return new Chart(series, resultMap.keySet());
     }
 
-    private static Map<String, Collection<Value>> groupByRunNumber(Map<String, List<Run>> commitRuns, String metric) {
+    private static Map<String, Collection<Value>> groupByRunNumber(Map<String, List<Run>> commitRuns, Metric metric) {
 
         Map<String, Collection<Value>> grouped = new LinkedHashMap<String, Collection<Value>>();
 

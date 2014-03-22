@@ -5,6 +5,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 public class Params {
 
+    public enum Metric {
+        AVG, MIN, MAX, ACTUAL
+    }
+
     public enum FailureType {
         ALL, FAILED, SUCCESS
     }
@@ -13,7 +17,7 @@ public class Params {
     private String testName;
     private String commitId;
     private int runNumber;
-    private String metricType;
+    private Metric metric;
     private int percentile = 100;
     public FailureType failureType;
 
@@ -21,12 +25,12 @@ public class Params {
         this.moduleId = moduleId;
     }
 
-    public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, FailureType failureType) {
+    public Params(String moduleId, String testName, String commitId, int runNumber, Metric metric, int percentile, FailureType failureType) {
         this.moduleId = moduleId;
         this.testName = testName;
         this.commitId = commitId;
         this.runNumber = runNumber;
-        this.metricType = metricType;
+        this.metric = metric;
         this.percentile = percentile;
         this.failureType = failureType;
     }
@@ -47,8 +51,8 @@ public class Params {
         return runNumber;
     }
 
-    public String getMetricType() {
-        return metricType;
+    public Metric getMetric() {
+        return metric;
     }
 
     public int getPercentile() {
@@ -80,7 +84,7 @@ public class Params {
                 .append("testName", testName)
                 .append("commitId", commitId)
                 .append("runNumber", runNumber)
-                .append("metricType", metricType)
+                .append("metricType", metric)
                 .append("percentile", percentile)
                 .append("failureType", failureType)
                 .toString();

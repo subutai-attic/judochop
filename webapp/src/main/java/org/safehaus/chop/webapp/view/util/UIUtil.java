@@ -29,6 +29,12 @@ public class UIUtil {
         }
     }
 
+    public static void select(ComboBox combo, Object value) {
+        if (value != null) {
+            combo.select(value);
+        }
+    }
+
     public static Button getButton(AbsoluteLayout layout, String caption, String position, String width) {
 
         Button button = new Button(caption);

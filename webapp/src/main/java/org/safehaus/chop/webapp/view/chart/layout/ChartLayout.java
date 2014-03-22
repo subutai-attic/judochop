@@ -7,6 +7,7 @@ import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.Params.FailureType;
+import org.safehaus.chop.webapp.service.chart.Params.Metric;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
@@ -54,8 +55,9 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;");
 
-        String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
-        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", metrics);
+//        String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
+//        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", metrics);
+        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", Metric.values() );
 
         String percentileValues[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
         percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;", percentileValues);
@@ -96,33 +98,22 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
                 (String) testNamesCombo.getValue(),
                 params.getCommitId(),
                 params.getRunNumber(),
-                (String) metricCombo.getValue(),
+                (Metric) metricCombo.getValue(),
                 Integer.parseInt( (String) percentileCombo.getValue() ),
-                (Params.FailureType) failureCombo.getValue()
+                (FailureType) failureCombo.getValue()
         );
     }
 
     protected void populateTestNames() {
-        Set<String> testNames = dataService.getTestNames( params.getModuleId() );
-        UIUtil.populateCombo( testNamesCombo, testNames.toArray(new String[0]) );
+        Set<String> testNames = dataService.getTestNames(params.getModuleId() );
+        UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]) );
     }
 
     private void populateControls() {
         populateTestNames();
-
-        if (params.getTestName() != null) {
-            testNamesCombo.select( params.getTestName() );
-        }
-
-        if (params.getMetricType() != null) {
-            metricCombo.select( params.getMetricType() );
-        }
-
-        percentileCombo.select( "" + params.getPercentile() );
-
-        if (params.getFailureType() != null) {
-            failureCombo.select( params.getFailureType() );
-        }
+        UIUtil.select(testNamesCombo, params.getTestName() );
+        UIUtil.select(metricCombo, params.getMetric() );
+        UIUtil.select(failureCombo, params.getFailureType() );
     }
 
     public void show(Params params) {

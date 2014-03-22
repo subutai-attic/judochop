@@ -5,6 +5,7 @@ import org.safehaus.chop.webapp.dao.*;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
+import org.safehaus.chop.webapp.service.chart.Params.Metric;
 import org.safehaus.chop.webapp.service.chart.Point;
 import org.safehaus.chop.webapp.service.chart.series.Series;
 import org.safehaus.chop.webapp.service.chart.builder.*;
@@ -26,9 +27,9 @@ public class ChartTest {
                 "org.apache.usergrid.persistence.collection.serialization.impl.MvccEntitySerializationStrategyImplTest",
                 "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e",
                 0,
-                "Avg Time",
+                Metric.AVG,
                 100,
-                Params.FailureType.ALL
+                Params.FailureType.SUCCESS
         );
 
         Chart chart = chartBuilder.getChart(params);
