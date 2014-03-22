@@ -13,8 +13,8 @@ import org.safehaus.chop.webapp.service.chart.Params.FailureType;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
 import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
-import org.safehaus.chop.webapp.view.main.DetailsTable;
-import org.safehaus.chop.webapp.view.main.NoteLayout;
+import org.safehaus.chop.webapp.view.chart.layout.item.DetailsTable;
+import org.safehaus.chop.webapp.view.chart.layout.item.NoteLayout;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
@@ -25,7 +25,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     private DataService dataService = InjectorFactory.getInstance(DataService.class);
 
-    private final Config config;
+    protected final Config config;
 
     protected ComboBox testNamesCombo;
     protected ComboBox metricCombo;
@@ -42,6 +42,8 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         setSizeFull();
         addControls();
     }
+
+    protected abstract void handleBreadcrumb();
 
     @Override
     public void call(JSONArray args) throws JSONException {
@@ -129,9 +131,10 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         this.params = params;
         populateControls();
         loadChart();
+        handleBreadcrumb();
     }
 
-    protected void loadChart() {
+    public void loadChart() {
 
         Chart chart = config.getChartBuilder().getChart( getParams() );
 

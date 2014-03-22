@@ -5,6 +5,6 @@ import org.safehaus.chop.webapp.view.chart.layout.ChartLayout;
 
 public interface ChartLayoutContext {
 
-    public void show(ChartLayout chartView, Params params);
+    public void show(ChartLayout chartLayout, Params params);
 
 }

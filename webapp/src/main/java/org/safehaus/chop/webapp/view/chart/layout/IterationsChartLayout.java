@@ -13,6 +13,7 @@ import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.service.util.JsonUtil;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
+import org.safehaus.chop.webapp.view.main.Breadcrumb;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
 public class IterationsChartLayout extends ChartLayout {
@@ -22,16 +23,16 @@ public class IterationsChartLayout extends ChartLayout {
     protected Button failuresButton;
     private String runResultId;
 
-    public IterationsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, ChartLayout prevLayout) {
+    public IterationsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
         super( new Config(
                 layoutContext,
                 chartBuilder,
-                prevLayout,
                 nextLayout,
                 "iterationsChart",
                 "iterationsChartCallback",
                 "js/iterations-chart.js",
-                new PointRadius(20, 15, 10, 10, 5, 7)
+                new PointRadius(20, 15, 10, 10, 5, 7),
+                breadcrumb
         ) );
     }
 
@@ -111,5 +112,11 @@ public class IterationsChartLayout extends ChartLayout {
         }
 
         return s;
+    }
+
+    @Override
+    protected void handleBreadcrumb() {
+        String caption = "Run: " + params.getRunNumber();
+        config.getBreadcrumb().setItem(this, caption, 2);
     }
 }
