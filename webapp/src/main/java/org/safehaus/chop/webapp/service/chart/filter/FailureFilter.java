@@ -1,12 +1,13 @@
 package org.safehaus.chop.webapp.service.chart.filter;
 
+import org.safehaus.chop.webapp.service.chart.Params.FailureType;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 
 import java.util.*;
 
 public class FailureFilter {
 
-    public static Map<String, Collection<Value>> filter(Map<String, Collection<Value>> map, String failureType) {
+    public static Map<String, Collection<Value>> filter(Map<String, Collection<Value>> map, FailureType failureType) {
 
         Map<String, Collection<Value>> resultMap = new LinkedHashMap<String, Collection<Value>>();
 
@@ -17,7 +18,7 @@ public class FailureFilter {
         return resultMap;
     }
 
-    public static Collection<Value> filter(Collection<Value> values, String failureType) {
+    public static Collection<Value> filter(Collection<Value> values, FailureType failureType) {
 
         ArrayList<Value> resultValues = new ArrayList<Value>();
 
@@ -29,9 +30,9 @@ public class FailureFilter {
         return resultValues;
     }
 
-    private static boolean isValid(Value value, String failureType) {
-        return "ALL".equals(failureType)
-                || ("FAILED".equals(failureType) && value.getFailures() > 0)
-                || ("SUCCESS".equals(failureType) && value.getFailures() == 0);
+    private static boolean isValid(Value value, FailureType failureType) {
+        return failureType == FailureType.ALL
+                || failureType == FailureType.FAILED && value.getFailures() > 0
+                || failureType == FailureType.SUCCESS && value.getFailures() == 0;
     }
 }

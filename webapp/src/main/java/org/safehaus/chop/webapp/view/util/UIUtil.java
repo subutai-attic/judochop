@@ -6,7 +6,7 @@ import com.vaadin.ui.ComboBox;
 
 public class UIUtil {
 
-    public static ComboBox getCombo(AbsoluteLayout layout, String caption, String position, String... values) {
+    public static ComboBox getCombo(AbsoluteLayout layout, String caption, String position, Object ... values) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
@@ -18,10 +18,10 @@ public class UIUtil {
         return combo;
     }
 
-    public static void populateCombo(ComboBox combo, String... values) {
+    public static void populateCombo(ComboBox combo, Object ... values) {
 
-        for (String testName : values) {
-            combo.addItem(testName);
+        for (Object value : values) {
+            combo.addItem(value);
         }
 
         if (values.length > 0) {

@@ -32,16 +32,16 @@ public class OverviewChartBuilder extends ChartBuilder {
     public Chart getChart(Params params) {
 
         List<Commit> commits = commitDao.getByModule(params.getModuleId() );
-        List<Run> runs = runDao.getList(commits, params.getTestName() );
+        List<Run> runs = runDao.getList( commits, params.getTestName() );
 
         Map<String, List<Run>> commitRuns = new GroupByCommit(commits, runs).get();
-        Map<String, Collection<Value>> groupedByRunNumber = groupByRunNumber(commitRuns, params.getMetricType() );
+        Map<String, Collection<Value>> groupedByRunNumber = groupByRunNumber( commitRuns, params.getMetricType() );
 
         Map<String, Collection<Value>> resultMap = PercentileFilter.filter(groupedByRunNumber, params.getPercentile() );
         resultMap = FailureFilter.filter(resultMap, params.getFailureType() );
 
         List<Series> series = SeriesBuilder.toSeries(resultMap);
-        series.add( new Series( "Average", SeriesBuilder.toPoints(OverviewAverage.calc(resultMap), 0) ) );
+        series.add( new Series("Average", SeriesBuilder.toPoints(OverviewAverage.calc(resultMap), 0) ) );
 
         return new Chart(series, resultMap.keySet());
     }
@@ -52,7 +52,7 @@ public class OverviewChartBuilder extends ChartBuilder {
 
         for ( String commitId : commitRuns.keySet() ) {
             List<Run> runs = commitRuns.get(commitId);
-            grouped.put( commitId, new GroupByRunNumber(runs, metric).get() );
+            grouped.put(commitId, new GroupByRunNumber(runs, metric).get() );
         }
 
         return grouped;

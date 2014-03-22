@@ -28,8 +28,7 @@ public class ChartTest {
                 0,
                 "Avg Time",
                 100,
-                "FAILED"
-//                "ALL"
+                Params.FailureType.ALL
         );
 
         Chart chart = chartBuilder.getChart(params);
@@ -42,11 +41,16 @@ public class ChartTest {
         }
     }
 
+    enum FailureType {
+        ALL, FAILED, SUCCESS
+    }
+
     @Test
     public void test2() {
 
-        ArrayList<String> list = new ArrayList<String>();
-        System.out.println( list.get(0) );
+        System.out.println( FailureType.values() );
+
+
     }
 
 

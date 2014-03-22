@@ -5,19 +5,23 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 public class Params {
 
+    public enum FailureType {
+        ALL, FAILED, SUCCESS
+    }
+
     private String moduleId;
     private String testName;
     private String commitId;
     private int runNumber;
     private String metricType;
     private int percentile = 100;
-    private String failureType;
+    public FailureType failureType;
 
     public Params(String moduleId) {
         this.moduleId = moduleId;
     }
 
-    public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, String failureType) {
+    public Params(String moduleId, String testName, String commitId, int runNumber, String metricType, int percentile, FailureType failureType) {
         this.moduleId = moduleId;
         this.testName = testName;
         this.commitId = commitId;
@@ -51,7 +55,7 @@ public class Params {
         return percentile;
     }
 
-    public String getFailureType() {
+    public FailureType getFailureType() {
         return failureType;
     }
 

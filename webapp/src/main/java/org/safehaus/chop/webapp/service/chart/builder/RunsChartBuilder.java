@@ -28,10 +28,10 @@ public class RunsChartBuilder extends ChartBuilder {
 
         List<Run> runs = runDao.getList( params.getCommitId(), params.getTestName() );
 
-        Collection<Value> groupedRuns = new GroupByRunNumber(runs, params.getMetricType() ).get();
+        Collection<Value> groupedRuns = new GroupByRunNumber( runs, params.getMetricType() ).get();
 
-        Collection<Value> filteredValues = PercentileFilter.filter(groupedRuns, params.getPercentile() );
-        filteredValues = FailureFilter.filter(filteredValues, params.getFailureType() );
+        Collection<Value> filteredValues = PercentileFilter.filter( groupedRuns, params.getPercentile() );
+        filteredValues = FailureFilter.filter( filteredValues, params.getFailureType() );
 
         ArrayList<Series> series = new ArrayList<Series>();
         series.add(new Series(SeriesBuilder.toPoints(filteredValues, 1)));

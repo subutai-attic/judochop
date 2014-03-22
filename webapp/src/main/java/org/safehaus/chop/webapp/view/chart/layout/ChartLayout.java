@@ -6,6 +6,7 @@ import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
+import org.safehaus.chop.webapp.service.chart.Params.FailureType;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
@@ -59,8 +60,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         String percentileValues[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
         percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;", percentileValues);
 
-        String failureValues[] = {"ALL", "FAILED", "SUCCESS"};
-        failureCombo = UIUtil.getCombo(this, "Interation Points to Plot:", "left: 400px; top: 80px;", failureValues);
+        failureCombo = UIUtil.getCombo(this, "Interation Points to Plot:", "left: 400px; top: 80px;", FailureType.values() );
 
         addSubmitButton();
 
@@ -98,7 +98,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
                 params.getRunNumber(),
                 (String) metricCombo.getValue(),
                 Integer.parseInt( (String) percentileCombo.getValue() ),
-                (String) failureCombo.getValue()
+                (Params.FailureType) failureCombo.getValue()
         );
     }
 
@@ -127,7 +127,6 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     public void show(Params params) {
         this.params = params;
-
         populateControls();
         loadChart();
     }
