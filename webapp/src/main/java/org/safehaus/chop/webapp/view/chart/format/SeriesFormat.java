@@ -28,7 +28,6 @@ public class SeriesFormat {
 
         json.put("name", series.getName() );
         json.put("dashStyle", "shortdot");
-//        json.put("lineColor", "gray");
         json.put("data", getPoints(series.getPoints(), pointRadius) );
 
         return json;

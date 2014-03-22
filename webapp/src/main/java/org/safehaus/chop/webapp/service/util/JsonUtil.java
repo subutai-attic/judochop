@@ -5,7 +5,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class JsonUtil {
 
@@ -47,6 +49,18 @@ public class JsonUtil {
         if (value != null) {
             put(dest, key, value);
         }
+    }
+
+    public static List<String> getKeys(JSONObject json) {
+
+        ArrayList<String> keys = new ArrayList<String>();
+        Iterator iter = json.keys();
+
+        while ( iter.hasNext() ) {
+            keys.add( (String) iter.next() );
+        }
+
+        return keys;
     }
 
 }

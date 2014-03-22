@@ -1,6 +1,5 @@
 package org.safehaus.chop.webapp.view.chart.layout;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.chart.Params;
@@ -36,9 +35,8 @@ public class IterationsChartLayout extends ChartLayout {
     }
 
     @Override
-    public void call(JSONArray args) throws JSONException {
-        JSONObject json = args.getJSONObject(0);
-        System.out.println(json);
+    protected void pointClicked(JSONObject json) throws JSONException {
+        detailsTable.setContent(json);
     }
 
 }

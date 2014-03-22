@@ -2,6 +2,9 @@ package org.safehaus.chop.webapp.view.chart.layout;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.DataService;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.Chart;
@@ -10,6 +13,7 @@ import org.safehaus.chop.webapp.service.chart.Params.FailureType;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
 import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
+import org.safehaus.chop.webapp.view.main.DetailsTable;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
@@ -27,6 +31,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected ComboBox percentileCombo;
     protected ComboBox failureCombo;
     protected Button nextChartButton;
+    protected DetailsTable detailsTable;
 
     protected Params params;
 
@@ -34,6 +39,14 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         this.config = config;
         setSizeFull();
         addControls();
+    }
+
+    protected abstract void pointClicked(JSONObject json) throws JSONException;
+
+    @Override
+    public void call(JSONArray args) throws JSONException {
+        JSONObject json = args.getJSONObject(0);
+        pointClicked(json);
     }
 
     protected void addControls() {
@@ -50,6 +63,9 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         addSubmitButton();
 
         UIUtil.getLayout(this, config.getChartId(), "left: 10px; top: 150px;", "400px", "700px");
+
+        detailsTable = new DetailsTable();
+        addComponent(detailsTable, "left: 750px; top: 150px;");
     }
 
     protected void addSubmitButton() {
@@ -106,9 +122,8 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     }
 
     protected void loadChart() {
-        System.out.println("loadChart");
+
         Chart chart = config.getChartBuilder().getChart( getParams() );
-        System.out.println(chart);
 
         String chartContent = FileUtil.getContent( config.getChartFile() );
         chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );

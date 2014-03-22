@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.view;
+package org.safehaus.chop.webapp.view.main;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
