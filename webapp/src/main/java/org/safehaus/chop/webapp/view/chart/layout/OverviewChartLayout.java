@@ -9,7 +9,7 @@ import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 public class OverviewChartLayout extends ChartLayout {
 
     public OverviewChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout) {
-        super(layoutContext, chartBuilder, prevLayout, nextLayout, "overviewChart", "overviewChartCallback", "js/overview-chart.js");
+        super( new Config(layoutContext, chartBuilder, prevLayout, nextLayout, "overviewChart", "overviewChartCallback", "js/overview-chart.js") );
         addNextChartButton();
     }
 

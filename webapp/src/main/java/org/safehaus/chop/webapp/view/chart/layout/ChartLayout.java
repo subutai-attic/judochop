@@ -8,8 +8,6 @@ import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.Params.FailureType;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
-import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
-import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
 import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
 import org.safehaus.chop.webapp.view.util.FileUtil;
@@ -22,12 +20,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     private DataService dataService = InjectorFactory.getInstance(DataService.class);
 
-    protected final ChartLayoutContext chartLayoutContext;
-//    private ChartView prevView;
-    protected final ChartLayout nextLayout;
-    private final ChartBuilder chartBuilder;
-    private final String jsCallbackName;
-    private final String chartFile;
+    private final Config config;
 
     protected ComboBox testNamesCombo;
     protected ComboBox metricCombo;
@@ -37,22 +30,13 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected Params params;
 
-    @SuppressWarnings("unused")
-    protected ChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName,
-                          String chartFile) {
-
-        this.chartLayoutContext = layoutContext;
-        this.chartBuilder = chartBuilder;
-//        this.prevView = prevView;
-        this.nextLayout = nextLayout;
-        this.jsCallbackName = jsCallbackName;
-        this.chartFile = chartFile;
-
+    protected ChartLayout(Config config) {
+        this.config = config;
         setSizeFull();
-        addControls(chartId);
+        addControls();
     }
 
-    protected void addControls(String chartId) {
+    protected void addControls() {
 
         testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;", null);
 
@@ -65,7 +49,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         addSubmitButton();
 
-        UIUtil.getLayout(this, chartId, "left: 10px; top: 150px;", "400px", "700px");
+        UIUtil.getLayout(this, config.getChartId(), "left: 10px; top: 150px;", "400px", "700px");
     }
 
     protected void addSubmitButton() {
@@ -86,7 +70,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         nextChartButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                chartLayoutContext.show( nextLayout, getParams() );
+                config.getLayoutContext().show(config.getNextLayout(), getParams());
             }
         });
     }
@@ -104,7 +88,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     }
 
     protected void populateTestNames() {
-        Set<String> testNames = dataService.getTestNames(params.getModuleId() );
+        Set<String> testNames = dataService.getTestNames( params.getModuleId() );
         UIUtil.populateCombo(testNamesCombo, testNames.toArray( new String[]{} ) );
     }
 
@@ -122,13 +106,14 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     }
 
     protected void loadChart() {
+        System.out.println("loadChart");
+        Chart chart = config.getChartBuilder().getChart( getParams() );
+        System.out.println(chart);
 
-        Chart chart = chartBuilder.getChart( getParams() );
-
-        String chartContent = FileUtil.getContent(chartFile);
+        String chartContent = FileUtil.getContent( config.getChartFile() );
         chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
         chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries() ) );
 
-        JavaScriptUtil.loadChart(chartContent, jsCallbackName, this);
+        JavaScriptUtil.loadChart(chartContent, config.getJsCallbackName(), this);
     }
 }

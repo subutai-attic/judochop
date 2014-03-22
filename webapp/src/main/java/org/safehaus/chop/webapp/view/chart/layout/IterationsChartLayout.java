@@ -8,8 +8,8 @@ import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 
 public class IterationsChartLayout extends ChartLayout {
 
-    public IterationsChartLayout(ChartLayoutContext viewContext, ChartBuilder chartBuilder, ChartLayout nextLayout, ChartLayout prevLayout) {
-        super(viewContext, chartBuilder, prevLayout, nextLayout, "iterationsChart", "iterationsChartCallback", "js/iterations-chart.js");
+    public IterationsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, ChartLayout prevLayout) {
+        super( new Config(layoutContext, chartBuilder, prevLayout, nextLayout, "iterationsChart", "iterationsChartCallback", "js/iterations-chart.js") );
     }
 
     private void setControlsReadOnly(boolean readOnly) {

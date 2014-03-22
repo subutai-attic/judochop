@@ -9,7 +9,7 @@ import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 public class RunsChartLayout extends ChartLayout {
 
     public RunsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, ChartLayout prevLayout) {
-        super(layoutContext, chartBuilder, prevLayout, nextLayout, "runsChart", "runsChartCallback", "js/runs-chart.js");
+        super( new Config(layoutContext, chartBuilder, prevLayout, nextLayout, "runsChart", "runsChartCallback", "js/runs-chart.js") );
         addNextChartButton();
     }
 
