@@ -25,6 +25,7 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
     private ChartLayout overviewLayout;
 
     private Breadcrumb breadcrumb = new Breadcrumb(this);
+    private Header header = new Header();
     private AbsoluteLayout mainLayout;
 
     @Override
@@ -59,13 +60,11 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     private AbsoluteLayout initMainContainer() {
 
-        Header header = new Header();
-
         AbsoluteLayout container = new AbsoluteLayout();
         container.addComponent(header, "left: 0px; top: 0px;");
         container.addComponent(breadcrumb, "left: 0px; top: 30px;");
 
-        mainLayout = UIUtil.addLayout(container, "", "left: 0px; top: 150px;", "1000px", "1000px");
+        mainLayout = UIUtil.addLayout(container, "", "left: 0px; top: 60px;", "1000px", "1000px");
 
         return container;
     }
@@ -77,6 +76,7 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     @Override
     public void onModuleSelect(String moduleId) {
+        header.showModule(moduleId);
         show(overviewLayout, new Params(moduleId) );
     }
 
