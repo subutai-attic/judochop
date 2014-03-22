@@ -8,6 +8,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.*;
 
+@SuppressWarnings("unchecked")
 class GroupSubwindow extends Window {
 
     /* User interface components are stored in session. */

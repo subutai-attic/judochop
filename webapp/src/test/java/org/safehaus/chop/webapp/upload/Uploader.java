@@ -18,6 +18,7 @@ import org.safehaus.chop.webapp.elasticsearch.Util;
 import java.io.File;
 import java.util.Iterator;
 
+@SuppressWarnings("unchecked")
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)
 public class Uploader {

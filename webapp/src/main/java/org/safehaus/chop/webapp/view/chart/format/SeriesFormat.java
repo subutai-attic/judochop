@@ -9,6 +9,7 @@ import java.util.List;
 
 public class SeriesFormat {
 
+    @SuppressWarnings("unchecked")
     public static String format(List<Series> seriesList) {
 
         JSONArray arr = new JSONArray();
@@ -20,18 +21,20 @@ public class SeriesFormat {
         return arr.toString();
     }
 
+    @SuppressWarnings("unchecked")
     private static JSONObject format(Series series) {
 
         JSONObject json = new JSONObject();
 
-        json.put( "name", series.getName() );
+        json.put("name", series.getName() );
         json.put("dashStyle", "shortdot");
         json.put("lineColor", "blue");
-        json.put( "data", getPoints(series.getPoints() ) );
+        json.put("data", getPoints(series.getPoints() ) );
 
         return json;
     }
 
+    @SuppressWarnings("unchecked")
     private static JSONArray getPoints(List<Point> points) {
 
         JSONArray arr = new JSONArray();
@@ -47,6 +50,7 @@ public class SeriesFormat {
         return arr;
     }
 
+    @SuppressWarnings("unchecked")
     protected static JSONObject getPoint(Point point) {
 
         JSONObject data = new JSONObject();
@@ -88,5 +92,4 @@ public class SeriesFormat {
 
         return color;
     }
-
 }

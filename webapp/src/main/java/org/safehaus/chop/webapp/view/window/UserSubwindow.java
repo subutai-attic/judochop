@@ -16,9 +16,7 @@ import org.safehaus.chop.webapp.service.InjectorFactory;
 
 import java.util.List;
 
-/**
- * Created by daralbaev on 3/17/14.
- */
+@SuppressWarnings("unchecked")
 public class UserSubwindow extends Window {
 
     private final UserDao userDao = InjectorFactory.getInstance(UserDao.class);

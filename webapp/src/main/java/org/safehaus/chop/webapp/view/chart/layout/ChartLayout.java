@@ -22,12 +22,12 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     private DataService dataService = InjectorFactory.getInstance(DataService.class);
 
-    protected ChartLayoutContext chartLayoutContext;
+    protected final ChartLayoutContext chartLayoutContext;
 //    private ChartView prevView;
-    protected ChartLayout nextLayout;
-    private ChartBuilder chartBuilder;
-    private String jsCallbackName;
-    private String chartFile;
+    protected final ChartLayout nextLayout;
+    private final ChartBuilder chartBuilder;
+    private final String jsCallbackName;
+    private final String chartFile;
 
     protected ComboBox testNamesCombo;
     protected ComboBox metricCombo;
@@ -37,6 +37,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected Params params;
 
+    @SuppressWarnings("unused")
     protected ChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName,
                           String chartFile) {
 
@@ -53,16 +54,14 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addControls(String chartId) {
 
-        testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;");
+        testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;", null);
 
-//        String metrics[] = {"Avg Time", "Min Time", "Max Time", "Actual Time"};
-//        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", metrics);
         metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", Metric.values() );
 
-        String percentileValues[] = {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"};
-        percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;", percentileValues);
+        percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;",
+                new String[] {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"} );
 
-        failureCombo = UIUtil.getCombo(this, "Interation Points to Plot:", "left: 400px; top: 80px;", FailureType.values() );
+        failureCombo = UIUtil.getCombo(this, "Points to Plot:", "left: 400px; top: 80px;", FailureType.values() );
 
         addSubmitButton();
 
@@ -106,7 +105,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void populateTestNames() {
         Set<String> testNames = dataService.getTestNames(params.getModuleId() );
-        UIUtil.populateCombo(testNamesCombo, testNames.toArray(new String[0]) );
+        UIUtil.populateCombo(testNamesCombo, testNames.toArray( new String[]{} ) );
     }
 
     private void populateControls() {
@@ -124,7 +123,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void loadChart() {
 
-        Chart chart = chartBuilder.getChart( getParams() );
+        Chart chart = chartBuilder.getChart(getParams() );
 
         String chartContent = FileUtil.getContent(chartFile);
         chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
@@ -132,5 +131,4 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         JavaScriptUtil.loadChart(chartContent, jsCallbackName, this);
     }
-
 }
