@@ -8,11 +8,11 @@ import java.text.DecimalFormat;
 
 public class DetailsTable extends Table {
 
-    double d = 1.234567;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     public DetailsTable() {
-        setWidth("300px");
+        setWidth("250px");
+        setHeight("250px");
         addContainerProperty("Details", String.class,  null);
         addContainerProperty("Value",  String.class,  null);
     }

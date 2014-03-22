@@ -14,6 +14,7 @@ import org.safehaus.chop.webapp.service.chart.Params.Metric;
 import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
 import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
 import org.safehaus.chop.webapp.view.main.DetailsTable;
+import org.safehaus.chop.webapp.view.main.NoteLayout;
 import org.safehaus.chop.webapp.view.util.FileUtil;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
@@ -32,6 +33,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected ComboBox failureCombo;
     protected Button nextChartButton;
     protected DetailsTable detailsTable;
+    protected NoteLayout noteLayout;
 
     protected Params params;
 
@@ -41,7 +43,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         addControls();
     }
 
-    protected abstract void pointClicked(JSONObject json) throws JSONException;
+
 
     @Override
     public void call(JSONArray args) throws JSONException {
@@ -66,6 +68,9 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         detailsTable = new DetailsTable();
         addComponent(detailsTable, "left: 750px; top: 150px;");
+
+        noteLayout = new NoteLayout();
+        addComponent(noteLayout, "left: 750px; top: 420px;");
     }
 
     protected void addSubmitButton() {
@@ -130,5 +135,13 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries(), config.getPointRadius() ) );
 
         JavaScriptUtil.loadChart(chartContent, config.getJsCallbackName(), this);
+    }
+
+    protected void pointClicked(JSONObject json) throws JSONException {
+        params.setCommitId( json.getString("commitId") );
+        params.setRunNumber( json.optInt("runNumber", 0) );
+
+        detailsTable.setContent(json);
+        noteLayout.load( params.getCommitId(), params.getRunNumber() );
     }
 }

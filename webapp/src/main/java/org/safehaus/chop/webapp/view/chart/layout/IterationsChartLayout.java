@@ -27,11 +27,15 @@ public class IterationsChartLayout extends ChartLayout {
         metricCombo.setReadOnly(readOnly);
     }
 
-
-    public void show(Params params) {
+    private void doShow(Params params) {
         setControlsReadOnly(false);
         super.show(params);
         setControlsReadOnly(true);
+    }
+
+    public void show(Params params) {
+        doShow(params);
+        noteLayout.load( params.getCommitId(), params.getRunNumber() );
     }
 
     @Override
