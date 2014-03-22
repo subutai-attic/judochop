@@ -1,7 +1,5 @@
 function pointClicked() {
-    var point = this;
-    console.log(point.info);
-    runsChartCallback(point.info);
+    runsChartCallback(this.properties);
 }
 
 $('#runsChart').highcharts({
@@ -9,7 +7,7 @@ $('#runsChart').highcharts({
         type: 'spline'
     },
     title: {
-        text: 'Runs in commit ${params.commitId}'
+        text: 'Runs'
     },
     xAxis: {
         title: {

@@ -11,7 +11,7 @@ import java.util.*;
 public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
     private static final String PARAM_UI = "UI";
-    private static final String MAIN_VIEW = "org.safehaus.chop.webapp.view.MainView";
+    private static final String MAIN_VIEW = "org.safehaus.chop.webapp.view.main.MainView";
     private static final Hashtable<String, String> PARAMS = getInitParams();
 
     @Override

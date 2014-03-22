@@ -6,7 +6,7 @@ import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.service.calc.Params;
+import org.safehaus.chop.webapp.service.chart.Params;
 
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)

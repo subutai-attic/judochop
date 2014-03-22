@@ -59,8 +59,6 @@ public class RunResultDao extends Dao<RunResult> {
                 .execute()
                 .actionGet();
 
-        System.out.println( response );
-
         return toList( response );
     }
 
@@ -89,11 +87,9 @@ public class RunResultDao extends Dao<RunResult> {
         );
     }
 
-    public Map<Run, List<RunResult>> getMap( Map<String, Run> runs ) {
+    public Map<Run, List<RunResult>> getMap(Map<String, Run> runs) {
 
-        String runIds = StringUtils.join( runs.keySet(), ' ' );
-
-        System.out.println( runIds );
+        String runIds = StringUtils.join(runs.keySet(), ' ');
 
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch( "modules" )
@@ -109,7 +105,7 @@ public class RunResultDao extends Dao<RunResult> {
         for ( SearchHit hit : response.getHits().hits() ) {
 
             RunResult runResult = toRunResult(hit);
-            Run run = runs.get(runResult.getRunId());
+            Run run = runs.get( runResult.getRunId() );
             List<RunResult> list = runResults.get(run);
 
             if ( list == null ) {

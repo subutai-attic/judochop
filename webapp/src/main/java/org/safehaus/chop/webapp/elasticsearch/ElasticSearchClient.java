@@ -18,8 +18,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
 
     @Inject
     public ElasticSearchClient( ElasticSearchFig elasticFig) {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .build();
+        Settings settings = ImmutableSettings.settingsBuilder().build();
 
         client = new TransportClient( settings ).addTransportAddress(
                 new InetSocketTransportAddress( elasticFig.getTransportHost(), elasticFig.getTransportPort() ) );

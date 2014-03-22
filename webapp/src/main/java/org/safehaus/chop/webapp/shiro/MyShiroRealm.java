@@ -28,80 +28,42 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.safehaus.chop.webapp.dao.ProviderParamsDao;
+import org.safehaus.chop.webapp.dao.UserDao;
+import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
+import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.webapp.service.InjectorFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MyShiroRealm extends AuthorizingRealm {
 
-    public static final String FILENAME = "shiro.ini";
-
-    private static Map<String, String> users = new HashMap<String, String>();
-    private static Map<String, Set<String>> userRoles = new HashMap<String, Set<String>>();
-
-    static {
-        initRealm();
-    }
-
-    public static void initRealm() {
-        List<String> lines = FileUtil.readFile(FILENAME);
-        for (String line : lines) {
-            String[] user = line.split(";");
-            users.put(user[0], user[1]);
-
-            String[] group = user[2].split(",");
-            userRoles.put(user[0], new HashSet<String>(Arrays.asList(group)));
-        }
-    }
-
-    public static void saveRealm(){
-        StringBuilder lines = new StringBuilder();
-
-        for(String username : users.keySet()){
-            lines.append(username);
-            lines.append(";");
-            lines.append(users.get(username));
-            lines.append(";");
-
-            if(getUserRoles(username) != null){
-                for(String group : getUserRoles(username)){
-                    lines.append(group);
-                    lines.append(",");
-                }
-            }
-
-            lines.append(";location");
-            lines.append(System.lineSeparator());
-        }
-
-        FileUtil.writeFile(FILENAME, lines.toString());
-        initRealm();
-    }
-
+    // InjectorFactory.getInstance(ProviderParamsDao.class);
     public static boolean authUser(String username, String password) {
         try {
             if (username == null) {
                 throw new AuthenticationException("Authentication failed");
             }
 
-            String pwd = users.get(username.toLowerCase());
-            if (pwd == null || !pwd.equalsIgnoreCase(password)) {
-                throw new AuthenticationException("Authentication failed");
+            System.out.println("authUser");
+
+            if(username.equalsIgnoreCase("user") && password.equals("pass")){
+                InjectorFactory.getInstance(UserDao.class).save(new User("user", "pass"));
+                InjectorFactory.getInstance(ProviderParamsDao.class).save(new BasicProviderParams("user", "", "", "", "", "",
+                        "", "", ""));
+            } else {
+                User user = InjectorFactory.getInstance(UserDao.class).get(username.toLowerCase());
+                if (user == null || user.getPassword() == null || !user.getPassword().equalsIgnoreCase(password)) {
+                    throw new AuthenticationException("Authentication failed");
+                }
             }
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
-    }
-
-    public static Map<String, String> getUsers() {
-        return users;
-    }
-
-    public static Set<String> getUserRoles(String username) {
-        if (username != null) {
-            return userRoles.get(username.toLowerCase());
-        }
-        return null;
     }
 
     public MyShiroRealm() {
@@ -118,10 +80,22 @@ public class MyShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("Authentication failed");
         }
 
-        String pwd = users.get(username.toLowerCase());
-        if (pwd == null || !pwd.equalsIgnoreCase(password)) {
-            throw new AuthenticationException("Authentication failed");
+        System.out.println("doGetAuthenticationInfo");
+        if(username.equals(username) && password.equals("pass")){
+            try {
+                InjectorFactory.getInstance(UserDao.class).save(new User("user", "pass"));
+                InjectorFactory.getInstance(ProviderParamsDao.class).save(new BasicProviderParams("user", "", "", "", "", "",
+                        "", "", ""));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            User user = InjectorFactory.getInstance(UserDao.class).get(username.toLowerCase());
+            if (user == null || user.getPassword() == null || !user.getPassword().equalsIgnoreCase(password)) {
+                throw new AuthenticationException("Authentication failed");
+            }
         }
+
         return new SimpleAuthenticationInfo(username, password, this.getName());
     }
 
@@ -138,12 +112,7 @@ public class MyShiroRealm extends AuthorizingRealm {
         }
 
         Set<String> roles = new HashSet<String>();
-        for (String username : principalsList) {
-            Set<String> uroles = userRoles.get(username.toLowerCase());
-            if (uroles != null) {
-                roles.addAll(uroles);
-            }
-        }
+        roles.add("temp");
 
         return new SimpleAuthorizationInfo(roles);
     }

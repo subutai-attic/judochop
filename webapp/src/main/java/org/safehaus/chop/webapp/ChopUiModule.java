@@ -27,7 +27,7 @@ import com.google.inject.servlet.ServletModule;
 import com.netflix.config.ConfigurationManager;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
-
+@SuppressWarnings("unchecked")
 public class ChopUiModule extends ServletModule {
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 

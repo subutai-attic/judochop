@@ -1,7 +1,5 @@
 function pointClicked() {
-    var point = this;
-    console.log(point.info);
-    iterationsChartCallback(point.info);
+    iterationsChartCallback(this.properties);
 }
 
 $('#iterationsChart').highcharts({
@@ -9,11 +7,11 @@ $('#iterationsChart').highcharts({
         type: 'spline'
     },
     title: {
-        text: "Runners' actual iterations in run #${params.runNumber}"
+        text: "Iterations"
     },
     xAxis: {
         title: {
-            text: 'Actual Iterations'
+            text: 'Iterations'
         }
     },
     yAxis: {
