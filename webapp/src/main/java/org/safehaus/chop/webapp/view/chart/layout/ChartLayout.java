@@ -50,6 +50,11 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     }
 
     protected void addControls() {
+        addMainControls();
+        addSubControls(460);
+    }
+
+    protected void addMainControls() {
 
         testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;", null);
 
@@ -66,9 +71,11 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         detailsTable = new DetailsTable();
         addComponent(detailsTable, "left: 750px; top: 180px;");
+    }
 
+    protected void addSubControls(int startTop) {
         noteLayout = new NoteLayout();
-        addComponent(noteLayout, "left: 750px; top: 460px;");
+        addComponent(noteLayout, String.format("left: 750px; top: %spx;", startTop) );
     }
 
     protected void addSubmitButton() {

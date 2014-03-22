@@ -25,6 +25,7 @@ public class Value {
         this.value = runResult.getRunTime();
         this.failures = runResult.getFailureCount();
         this.ignores = runResult.getIgnoreCount();
+        JsonUtil.put(properties, "id", runResult.getId() );
     }
 
     public void merge(Value value) {}

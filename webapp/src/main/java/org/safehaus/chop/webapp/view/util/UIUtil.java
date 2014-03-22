@@ -1,10 +1,7 @@
 package org.safehaus.chop.webapp.view.util;
 
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 
 public class UIUtil {
 
@@ -66,6 +63,18 @@ public class UIUtil {
         label.setWidth(width);
 
         parent.addComponent(label, position);
+    }
+
+    public static ListSelect addListSelect(AbsoluteLayout parent, String caption, String position, String width) {
+
+        ListSelect list = new ListSelect(caption);
+        list.setWidth(width);
+        list.setNullSelectionAllowed(false);
+        list.setImmediate(true);
+
+        parent.addComponent(list, position);
+
+        return list;
     }
 
 }

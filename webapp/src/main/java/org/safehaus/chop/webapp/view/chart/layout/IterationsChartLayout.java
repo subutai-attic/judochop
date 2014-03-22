@@ -41,6 +41,7 @@ public class IterationsChartLayout extends ChartLayout {
     @Override
     protected void pointClicked(JSONObject json) throws JSONException {
         detailsTable.setContent(json);
+        System.out.println(json);
     }
 
 }
