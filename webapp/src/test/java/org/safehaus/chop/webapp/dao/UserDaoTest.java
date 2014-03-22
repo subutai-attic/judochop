@@ -3,7 +3,7 @@ package org.safehaus.chop.webapp.dao;
 import java.util.List;
 
 import org.junit.Test;
-import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.stack.User;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

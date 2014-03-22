@@ -11,7 +11,7 @@ import org.safehaus.chop.api.ProviderParams;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
 import org.safehaus.chop.webapp.dao.UserDao;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
-import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.stack.User;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 
 import java.util.List;

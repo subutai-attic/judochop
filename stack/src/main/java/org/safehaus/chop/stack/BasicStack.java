@@ -13,6 +13,8 @@ public class BasicStack implements Stack {
     private String name;
     private UUID id = UUID.randomUUID();
     private List<Cluster> clusters = new ArrayList<Cluster>();
+    private BasicIpRuleSet ruleSet = new BasicIpRuleSet();
+    private String dataCenter;
 
 
     @Override
@@ -55,4 +57,46 @@ public class BasicStack implements Stack {
         clusters.add( cluster );
         return this;
     }
+
+
+    @Override
+    public IpRuleSet getIpRuleSet() {
+        return ruleSet;
+    }
+
+
+    public BasicStack setRuleSetName( String name ) {
+        this.ruleSet.setName( name );
+        return this;
+    }
+
+
+    public BasicStack setIpRuleSet( final BasicIpRuleSet ruleSet ) {
+        this.ruleSet = ruleSet;
+        return this;
+    }
+
+
+    public BasicStack addInboundRule( IpRule rule ) {
+        ruleSet.getInboundRules().add( rule );
+        return this;
+    }
+
+
+    public BasicStack addOutboundRule( IpRule rule ) {
+        ruleSet.getOutboundRules().add( rule );
+        return this;
+    }
+
+    @Override
+    public String getDataCenter() {
+        return dataCenter;
+    }
+
+
+    public BasicStack setDataCenter( final String dataCenter ) {
+        this.dataCenter = dataCenter;
+        return this;
+    }
+
 }

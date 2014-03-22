@@ -35,7 +35,7 @@ import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.webapp.dao.model.BasicRunner;
 import org.safehaus.chop.webapp.dao.model.Note;
-import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.stack.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

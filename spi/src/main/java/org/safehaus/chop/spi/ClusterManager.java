@@ -4,6 +4,7 @@ package org.safehaus.chop.spi;
 import java.util.Collection;
 
 import org.safehaus.chop.stack.Cluster;
+import org.safehaus.chop.stack.Instance;
 
 
 /**

@@ -4,6 +4,8 @@ package org.safehaus.chop.spi;
 import java.util.Collection;
 import java.util.Set;
 
+import org.safehaus.chop.stack.Instance;
+
 
 /**
  * A registry service for Runners.

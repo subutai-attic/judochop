@@ -25,12 +25,24 @@
         <configuration>
           <systemProperties>
             <property>
-              <name>accessKey</name>
+              <name>aws.s3.key</name>
               <value>${aws.s3.key}</value>
             </property>
             <property>
-              <name>secretKey</name>
+              <name>aws.s3.secret</name>
               <value>${aws.s3.secret}</value>
+            </property>
+            <property>
+              <name>aws.s3.bucket</name>
+              <value>${aws.s3.bucket}</value>
+            </property>
+            <property>
+              <name>aws.access.key</name>
+              <value>${aws.access.key}</value>
+            </property>
+            <property>
+              <name>aws.secret.key</name>
+              <value>${aws.secret.key}</value>
             </property>
             <property>
               <name>amiID</name>

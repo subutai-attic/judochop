@@ -1,8 +1,10 @@
-package org.safehaus.chop.webapp.dao.model;
+package org.safehaus.chop.stack;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+
+// @todo maybe this needs to be in the API
 public class User {
 
     String username;

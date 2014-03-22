@@ -134,8 +134,6 @@ public class WarMojo extends MainMojo {
             prop.setProperty( Project.ARTIFACT_ID_KEY, this.project.getArtifactId() );
             prop.setProperty( Project.PROJECT_VERSION_KEY, this.project.getVersion() );
             prop.setProperty( Project.TEST_PACKAGE_BASE, testPackageBase );
-            prop.setProperty( AmazonFig.AWS_BUCKET_KEY, bucketName );
-            prop.setProperty( AmazonFig.AWSKEY_KEY, accessKey );
             prop.setProperty( AmazonFig.AWS_SECRET_KEY, secretKey );
             prop.setProperty( Project.MANAGER_USERNAME_KEY, managerAppUsername );
             prop.setProperty( Project.MANAGER_PASSWORD_KEY, managerAppPassword );

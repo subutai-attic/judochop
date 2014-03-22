@@ -13,18 +13,29 @@ import org.safehaus.guicyfig.Key;
 @FigSingleton
 public interface AmazonFig extends GuicyFig {
 
-    String AWSKEY_KEY = "aws.s3.key";
+    String AWS_ACCESS_KEY = "aws.access.key";
 
-    @Key( AmazonFig.AWSKEY_KEY )
+    @Key( AmazonFig.AWS_ACCESS_KEY )
+    String getAwsAccessKey();
+
+
+
+    String AWS_SECRET_KEY = "aws.secret.key";
+
+    @Key( AmazonFig.AWS_SECRET_KEY )
+    String getAwsSecretKey();
+
+
+    String AWS_S3_KEY = "aws.s3.key";
+
+    @Key( AmazonFig.AWS_S3_KEY )
     String getAwsKey();
 
 
+    String AWS_S3_SECRET = "aws.s3.secret";
 
-    String AWS_SECRET_KEY = "aws.s3.secret";
-
-    @Key( AmazonFig.AWS_SECRET_KEY )
+    @Key( AmazonFig.AWS_S3_SECRET )
     String getAwsSecret();
-
 
 
     String AWS_BUCKET_KEY = "aws.s3.bucket";

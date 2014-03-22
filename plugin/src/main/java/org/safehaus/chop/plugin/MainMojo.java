@@ -12,7 +12,6 @@ import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.ProjectBuilder;
 import org.safehaus.chop.spi.Store;
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.SshValues;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 
@@ -256,12 +255,10 @@ public class MainMojo extends AbstractMojo implements Constants {
         this.store = mojo.store;
         this.testPackageBase = mojo.testPackageBase;
 
-        setEndpoint();
     }
 
 
     protected MainMojo() {
-        setEndpoint();
     }
 
 
@@ -324,44 +321,6 @@ public class MainMojo extends AbstractMojo implements Constants {
 //    }
 
 
-    public void setEndpoint() {
-        Injector injector = Guice.createInjector( new AmazonStoreModule() );
-        store = injector.getInstance( Store.class );
-
-        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
-        if ( availabilityZone != null ) {
-            if ( availabilityZone.contains( "us-east-1" ) ) {
-                endpoint = "ec2.us-east-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "us-west-1" ) ) {
-                endpoint = "ec2.us-west-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "us-west-2" ) ) {
-                endpoint = "ec2.us-west-2.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "eu-west-1" ) ) {
-                endpoint = "ec2.eu-west-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
-                endpoint = "ec2.ap-southeast-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
-                endpoint = "ec2.ap-southeast-2.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
-                endpoint = "ec2.ap-northeast-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "sa-east-1" ) ) {
-                endpoint = "ec2.sa-east-1.amazonaws.com";
-            }
-            else {
-                endpoint = "ec2.us-east-1.amazonaws.com";
-            }
-        }
-        else {
-            endpoint = "ec2.us-east-1.amazonaws.com";
-        }
-    }
 
 
     public String getProjectOutputJarPath() {
