@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
+import org.safehaus.chop.webapp.view.chart.format.PointRadius;
 
 class Config {
 
@@ -12,8 +13,10 @@ class Config {
     private final String chartId;
     private final String jsCallbackName;
     private final String chartFile;
+    private final PointRadius pointRadius;
 
-    Config(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName, String chartFile) {
+    Config(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName, String chartFile,
+           PointRadius pointRadius) {
         this.layoutContext = layoutContext;
         this.chartBuilder = chartBuilder;
         this.prevLayout = prevLayout;
@@ -21,6 +24,7 @@ class Config {
         this.chartId = chartId;
         this.jsCallbackName = jsCallbackName;
         this.chartFile = chartFile;
+        this.pointRadius = pointRadius;
     }
 
     ChartLayoutContext getLayoutContext() {
@@ -49,5 +53,9 @@ class Config {
 
     String getChartFile() {
         return chartFile;
+    }
+
+    PointRadius getPointRadius() {
+        return pointRadius;
     }
 }

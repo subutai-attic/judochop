@@ -112,7 +112,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
         String chartContent = FileUtil.getContent( config.getChartFile() );
         chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
-        chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries() ) );
+        chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries(), config.getPointRadius() ) );
 
         JavaScriptUtil.loadChart(chartContent, config.getJsCallbackName(), this);
     }

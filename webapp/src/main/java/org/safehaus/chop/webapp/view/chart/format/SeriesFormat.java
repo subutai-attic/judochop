@@ -10,32 +10,32 @@ import java.util.List;
 public class SeriesFormat {
 
     @SuppressWarnings("unchecked")
-    public static String format(List<Series> seriesList) {
+    public static String format(List<Series> series, PointRadius pointRadius) {
 
         JSONArray arr = new JSONArray();
 
-        for (Series series : seriesList) {
-            arr.add( format(series) );
+        for (Series s : series) {
+            arr.add( format(s, pointRadius) );
         }
 
         return arr.toString();
     }
 
     @SuppressWarnings("unchecked")
-    private static JSONObject format(Series series) {
+    private static JSONObject format(Series series, PointRadius pointRadius) {
 
         JSONObject json = new JSONObject();
 
         json.put("name", series.getName() );
         json.put("dashStyle", "shortdot");
         json.put("lineColor", "blue");
-        json.put("data", getPoints(series.getPoints() ) );
+        json.put("data", getPoints(series.getPoints(), pointRadius) );
 
         return json;
     }
 
     @SuppressWarnings("unchecked")
-    private static JSONArray getPoints(List<Point> points) {
+    private static JSONArray getPoints(List<Point> points, PointRadius pointRadius) {
 
         JSONArray arr = new JSONArray();
 
@@ -44,14 +44,14 @@ public class SeriesFormat {
         int len = Math.min(points.size(), MAX_POINTS);
 
         for (int i = 0; i < len; i++) {
-            arr.add(getPoint(points.get(i) ) );
+            arr.add( getPoint(points.get(i), pointRadius) );
         }
 
         return arr;
     }
 
     @SuppressWarnings("unchecked")
-    protected static JSONObject getPoint(Point point) {
+    private static JSONObject getPoint(Point point, PointRadius pointRadius) {
 
         JSONObject data = new JSONObject();
         data.put("x", point.getX() );
@@ -59,7 +59,7 @@ public class SeriesFormat {
         data.put("properties", point.getProperties() );
 
         JSONObject marker = new JSONObject();
-        marker.put("radius", getRadius(point) );
+        marker.put("radius", pointRadius.get(point) );
         marker.put("fillColor", getColor(point) );
 
         data.put("marker", marker );
@@ -67,21 +67,8 @@ public class SeriesFormat {
         return data;
     }
 
-    private static int getRadius(Point point) {
-        int radius = 4;
-
-        if (point.getFailures() > 1000) {
-            radius = 15;
-        } else if (point.getFailures() > 500) {
-            radius = 10;
-        } else if (point.getFailures() > 100) {
-            radius = 7;
-        }
-
-        return radius;
-    }
-
     private static String getColor(Point point) {
+
         String color = "white";
 
         if (point.getFailures() > 0) {
