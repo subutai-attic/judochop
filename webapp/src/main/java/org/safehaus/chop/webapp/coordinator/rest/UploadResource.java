@@ -71,7 +71,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.sun.jersey.multipart.FormDataParam;
 
 
 /**
