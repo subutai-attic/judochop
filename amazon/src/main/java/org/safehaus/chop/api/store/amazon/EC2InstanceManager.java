@@ -48,13 +48,14 @@ public class EC2InstanceManager implements InstanceManager {
 
     private static final long SLEEP_LENGTH = 3000;
 
-    @Inject
     private AmazonFig amazonFig;
 
     private AmazonEC2Client client;
 
 
-    public EC2InstanceManager() {
+    @Inject
+    public EC2InstanceManager( AmazonFig amazonFig ) {
+        this.amazonFig = amazonFig;
         client = getEC2Client( amazonFig.getAwsAccessKey(), amazonFig.getAwsSecretKey() );
 
     }
