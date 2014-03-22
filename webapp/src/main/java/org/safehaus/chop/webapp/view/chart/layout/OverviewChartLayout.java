@@ -27,4 +27,5 @@ public class OverviewChartLayout extends ChartLayout {
         super.pointClicked(json);
         nextChartButton.setCaption( "Commit: " + json.getString("commitId") );
     }
+
 }

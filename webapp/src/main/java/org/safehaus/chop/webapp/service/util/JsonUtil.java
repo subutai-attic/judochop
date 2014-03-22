@@ -1,5 +1,6 @@
 package org.safehaus.chop.webapp.service.util;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -61,6 +62,32 @@ public class JsonUtil {
         }
 
         return keys;
+    }
+
+    public static JSONArray parseArray(String s) {
+
+        JSONArray arr = new JSONArray();
+
+        try {
+            arr = new JSONArray(s);
+        } catch (JSONException e) {
+            LOG.error("Exception while parsing string to json: ", e);
+        }
+
+        return arr;
+    }
+
+    public static JSONObject get(JSONArray arr, int i) {
+
+        JSONObject json = null;
+
+        try {
+            json = arr.getJSONObject(i);
+        } catch (JSONException e) {
+            LOG.error("Exception while getting element from json array: ", e);
+        }
+
+        return json;
     }
 
 }

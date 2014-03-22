@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 public class DetailsTable extends Table {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#");
 
     public DetailsTable() {
         setWidth("250px");
@@ -24,7 +24,9 @@ public class DetailsTable extends Table {
 
     private void addValues(JSONObject json) {
         for ( String key : JsonUtil.getKeys(json) ) {
-            addItem(new Object[]{ key, getValue(json, key) }, key);
+            if ( !"id".equals(key) ) {
+                addItem(new Object[]{ key, getValue(json, key) }, key);
+            }
         }
     }
 

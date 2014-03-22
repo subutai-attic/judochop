@@ -57,7 +57,7 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
     private void initLayout() {
 
         splitPanel = new HorizontalSplitPanel();
-        splitPanel.setSplitPosition(25);
+        splitPanel.setSplitPosition(20);
         splitPanel.setFirstComponent( ModuleTreeBuilder.getTree(this) );
 
         setContent(splitPanel);

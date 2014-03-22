@@ -15,6 +15,7 @@ import java.util.*;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class RunResultDao extends Dao<RunResult> {
@@ -117,6 +118,20 @@ public class RunResultDao extends Dao<RunResult> {
         }
 
         return runResults;
+    }
+
+    public String getFailures( String runResultId ) {
+
+        SearchResponse response = elasticSearchClient.getClient()
+                .prepareSearch( "modules" )
+                .setTypes( "runResult" )
+                .setQuery( termQuery( "_id", runResultId ) )
+                .execute()
+                .actionGet();
+
+        SearchHit hits[] = response.getHits().hits();
+
+        return hits.length > 0 ? Util.getString(hits[0].getSource(), "failures") : "";
     }
 
 }
