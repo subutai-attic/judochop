@@ -3,7 +3,6 @@ package org.safehaus.chop.webapp.view.chart.layout;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
-import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
 
 public class OverviewChartLayout extends ChartLayout {

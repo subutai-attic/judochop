@@ -1,7 +1,6 @@
 package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
-import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
 
 class Config {

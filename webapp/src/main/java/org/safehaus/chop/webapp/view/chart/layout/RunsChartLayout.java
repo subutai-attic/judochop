@@ -9,7 +9,6 @@ import org.safehaus.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
-import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
@@ -43,7 +42,7 @@ public class RunsChartLayout extends ChartLayout {
     protected void addControls() {
         addMainControls();
         addSubControls(460);
-        super.addSubControls(650);
+        super.addSubControls(630);
     }
 
     @Override

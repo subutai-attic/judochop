@@ -5,7 +5,7 @@ import com.vaadin.ui.*;
 
 public class UIUtil {
 
-    public static ComboBox getCombo(AbsoluteLayout layout, String caption, String position, Object values[]) {
+    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, Object values[]) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
@@ -36,7 +36,7 @@ public class UIUtil {
         }
     }
 
-    public static Button getButton(AbsoluteLayout layout, String caption, String position, String width) {
+    public static Button addButton(AbsoluteLayout layout, String caption, String position, String width) {
 
         Button button = new Button(caption);
         button.setWidth(width);
@@ -45,7 +45,7 @@ public class UIUtil {
         return button;
     }
 
-    public static AbsoluteLayout getLayout(AbsoluteLayout parent, String id, String position, String height, String width) {
+    public static AbsoluteLayout addLayout(AbsoluteLayout parent, String id, String position, String width, String height) {
 
         AbsoluteLayout layout = new AbsoluteLayout();
         layout.setId(id);
@@ -75,6 +75,19 @@ public class UIUtil {
         parent.addComponent(list, position);
 
         return list;
+    }
+
+    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height) {
+
+        TextArea textArea = new TextArea(caption);
+        textArea.setWidth(width);
+        textArea.setHeight(height);
+        textArea.setWordwrap(false);
+        textArea.setReadOnly(true);
+
+        parent.addComponent(textArea, position);
+
+        return textArea;
     }
 
 }

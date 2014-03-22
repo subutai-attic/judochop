@@ -51,23 +51,23 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addControls() {
         addMainControls();
-        addSubControls(460);
+        addSubControls(440);
     }
 
     protected void addMainControls() {
 
-        testNamesCombo = UIUtil.getCombo(this, "Test Names:", "left: 10px; top: 30px;", null);
+        testNamesCombo = UIUtil.addCombo(this, "Test Names:", "left: 10px; top: 30px;", null);
 
-        metricCombo = UIUtil.getCombo(this, "Metric:", "left: 10px; top: 80px;", Metric.values() );
+        metricCombo = UIUtil.addCombo(this, "Metric:", "left: 10px; top: 80px;", Metric.values());
 
-        percentileCombo = UIUtil.getCombo(this, "Percentile:", "left: 200px; top: 80px;",
-                new String[] {"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"} );
+        percentileCombo = UIUtil.addCombo(this, "Percentile:", "left: 200px; top: 80px;",
+                new String[]{"100", "90", "80", "70", "60", "50", "40", "30", "20", "10"});
 
-        failureCombo = UIUtil.getCombo(this, "Points to Plot:", "left: 400px; top: 80px;", FailureType.values() );
+        failureCombo = UIUtil.addCombo(this, "Points to Plot:", "left: 400px; top: 80px;", FailureType.values());
 
         addSubmitButton();
 
-        UIUtil.getLayout(this, config.getChartId(), "left: 10px; top: 150px;", "400px", "700px");
+        UIUtil.addLayout(this, config.getChartId(), "left: 10px; top: 150px;", "700px", "400px");
 
         detailsTable = new DetailsTable();
         addComponent(detailsTable, "left: 750px; top: 180px;");
@@ -80,7 +80,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addSubmitButton() {
 
-        Button button = UIUtil.getButton(this, "Submit", "left: 600px; top: 80px;", "100px");
+        Button button = UIUtil.addButton(this, "Submit", "left: 600px; top: 80px;", "100px");
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
@@ -91,7 +91,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addNextChartButton() {
 
-        nextChartButton = UIUtil.getButton(this, "", "left: 750px; top: 150px;", "250px");
+        nextChartButton = UIUtil.addButton(this, "", "left: 750px; top: 150px;", "250px");
         nextChartButton.setStyleName(Reindeer.BUTTON_LINK);
 
         nextChartButton.addClickListener(new Button.ClickListener() {

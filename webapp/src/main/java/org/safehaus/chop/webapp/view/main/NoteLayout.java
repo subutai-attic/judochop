@@ -29,8 +29,8 @@ public class NoteLayout extends AbsoluteLayout {
 
     public NoteLayout() {
         init();
-        addTextArea();
         addButtons();
+        textArea = UIUtil.addTextArea(this, "", "left: 0px; top: 35px;", "250px", "100px");
     }
 
     private void init() {
@@ -38,27 +38,18 @@ public class NoteLayout extends AbsoluteLayout {
         setHeight("250px");
     }
 
-    private void addTextArea() {
-
-        textArea = new TextArea("Note for selected run:");
-        textArea.setWidth("250px");
-        textArea.setHeight("100px");
-        textArea.setWordwrap(false);
-        textArea.setReadOnly(true);
-
-        addComponent(textArea, "left: 0px; top: 15px;");
-    }
-
     private void addButtons() {
 
-        editButton = createButton("Edit", "left: 210px; top: 120px;", true);
+        UIUtil.addLabel(this, "Note for selected run:", "left: 0px; top: 10px;", "120px");
+
+        editButton = createButton("Edit", "left: 210px; top: 10px;", true);
         editButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 edit();
             }
         });
 
-        saveButton = createButton("Save", "left: 180px; top: 120px;", false);
+        saveButton = createButton("Save", "left: 180px; top: 10px;", false);
         saveButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 save();
@@ -66,7 +57,7 @@ public class NoteLayout extends AbsoluteLayout {
             }
         });
 
-        cancelButton = createButton("Cancel", "left: 210px; top: 120px;", false);
+        cancelButton = createButton("Cancel", "left: 210px; top: 10px;", false);
         cancelButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 restoreText();
@@ -81,7 +72,7 @@ public class NoteLayout extends AbsoluteLayout {
 
     private Button createButton(String caption, String position, boolean visible) {
 
-        Button button = UIUtil.getButton(this, caption, position, "50px");
+        Button button = UIUtil.addButton(this, caption, position, "50px");
         button.setStyleName(Reindeer.BUTTON_LINK);
         button.setVisible(visible);
 

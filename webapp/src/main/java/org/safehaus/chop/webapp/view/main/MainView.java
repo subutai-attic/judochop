@@ -8,7 +8,7 @@ import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.builder.IterationsChartBuilder;
 import org.safehaus.chop.webapp.service.chart.builder.OverviewChartBuilder;
 import org.safehaus.chop.webapp.service.chart.builder.RunsChartBuilder;
-import org.safehaus.chop.webapp.view.chart.ChartLayoutContext;
+import org.safehaus.chop.webapp.view.chart.layout.ChartLayoutContext;
 import org.safehaus.chop.webapp.view.chart.layout.ChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.IterationsChartLayout;
 import org.safehaus.chop.webapp.view.chart.layout.OverviewChartLayout;
@@ -16,7 +16,6 @@ import org.safehaus.chop.webapp.view.chart.layout.RunsChartLayout;
 import org.safehaus.chop.webapp.view.tree.ModuleSelectListener;
 import org.safehaus.chop.webapp.view.tree.ModuleTreeBuilder;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
-import org.safehaus.chop.webapp.view.window.UserSubwindow;
 
 @Title("Judo Chop")
 public class MainView extends UI implements ChartLayoutContext, ModuleSelectListener {
