@@ -1,7 +1,5 @@
 function pointClicked() {
-    var properties = this.properties;
-    console.log(properties);
-    overviewChartCallback(properties);
+    overviewChartCallback(this.properties);
 }
 
 $('#overviewChart').highcharts({
@@ -9,13 +7,12 @@ $('#overviewChart').highcharts({
         type: 'spline'
     },
     title: {
-        text: 'Commits / Runs'
+        text: 'Overview'
     },
     xAxis: {
         title: {
             text: 'Commits'
         },
-//        categories: [$categories]
         categories: $categories
     },
     yAxis: {
