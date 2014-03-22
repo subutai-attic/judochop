@@ -50,15 +50,15 @@ public class SeriesFormat {
     protected static JSONObject getPoint(Point point) {
 
         JSONObject data = new JSONObject();
-        data.put( "x", point.getX() );
-        data.put( "y", point.getY() );
-        data.put( "properties", point.getProperties() );
+        data.put("x", point.getX() );
+        data.put("y", point.getY() );
+        data.put("properties", point.getProperties() );
 
         JSONObject marker = new JSONObject();
-        marker.put( "radius", getRadius(point) );
-        marker.put( "fillColor", getColor(point) );
+        marker.put("radius", getRadius(point) );
+        marker.put("fillColor", getColor(point) );
 
-        data.put( "marker", marker );
+        data.put("marker", marker );
 
         return data;
     }
@@ -80,12 +80,10 @@ public class SeriesFormat {
     private static String getColor(Point point) {
         String color = "white";
 
-//        if (point.getIgnores() > 0) {
-//            color = "yellow";
-//        }
-
         if (point.getFailures() > 0) {
             color = "red";
+        } else if (point.getIgnores() > 0) {
+            color = "yellow";
         }
 
         return color;

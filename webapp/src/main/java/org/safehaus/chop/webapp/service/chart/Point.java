@@ -10,12 +10,14 @@ public class Point {
     private int x;
     private double y;
     private long failures;
+    private long ignores;
     private JSONObject properties;
 
     public Point(int x, Value value) {
         this.x = x;
         this.y = value.getValue();
         this.failures = value.getFailures();
+        this.ignores = value.getIgnores();
         this.properties = value.toJson();
     }
 
@@ -29,6 +31,10 @@ public class Point {
 
     public long getFailures() {
         return failures;
+    }
+
+    public long getIgnores() {
+        return ignores;
     }
 
     public JSONObject getProperties() {
