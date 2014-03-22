@@ -9,7 +9,9 @@ package org.safehaus.chop.client;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.store.amazon.AmazonS3Store;
 import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
+import org.safehaus.chop.spi.Store;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.google.inject.AbstractModule;

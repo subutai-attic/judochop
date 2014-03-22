@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.embedded.jetty.utils.CertUtils;
 import org.safehaus.embedded.jetty.utils.ContextListener;
 import org.safehaus.embedded.jetty.utils.FilterMapping;
@@ -46,6 +47,8 @@ public class ChopUiTest {
     @ClassRule
     public static JettyResource jetty = new JettyResource();
 
+    @ClassRule
+    public static ElasticSearchResource esResource = new ElasticSearchResource();
 
     @Test
     public void testGet() {

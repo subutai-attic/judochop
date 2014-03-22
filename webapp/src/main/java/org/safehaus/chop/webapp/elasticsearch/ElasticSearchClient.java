@@ -27,7 +27,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
                 .build();
 
         // TODO take as params or from config
-        String host = "192.168.1.102"; int port = 9300;
+        String host = "172.16.3.38"; int port = 5000;
 //        String host = "172.16.10.108"; int port = 9302;
 
         client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(host, port));

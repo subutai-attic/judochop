@@ -32,6 +32,24 @@ public interface Stack extends Serializable {
     UUID getId();
 
     /**
+     * The IP access rules for inbound and outbound traffic: in AWS this corresponds
+     * to a security group.
+     *
+     * @return the inbound and outbound IP traffic rules
+     */
+    @JsonProperty
+    IpRuleSet getIpRuleSet();
+
+    /**
+     * Gets the data center where the instances will be created. In AWS this
+     * corresponds to a region and an availability zone combination.
+     *
+     * @return the data center where instances are created
+     */
+    @JsonProperty
+    String getDataCenter();
+
+    /**
      * Gets a list of Clusters associated with this Stack where the list order
      * reflects Cluster creation order.
      *

@@ -40,24 +40,6 @@ public interface InstanceSpec {
     String getKeyName();
 
     /**
-     * The IP access rules for inbound and outbound traffic: in AWS this corresponds
-     * to a security group.
-     *
-     * @return the inbound and outbound IP traffic rules
-     */
-    @JsonProperty
-    IpRuleSet getIpRuleSet();
-
-    /**
-     * Gets the data center where the instances will be created. In AWS this
-     * corresponds to a region and an availability zone combination.
-     *
-     * @return the data center where instances are created
-     */
-    @JsonProperty
-    String getDataCenter();
-
-    /**
      * A list of scripts executed on newly created instances of this instance specification.
      *
      * @return the setup scripts

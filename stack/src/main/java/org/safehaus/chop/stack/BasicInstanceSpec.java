@@ -15,8 +15,6 @@ public class BasicInstanceSpec implements InstanceSpec
     private String imageId;
     private String type;
     private String keyName;
-    private BasicIpRuleSet ruleSet = new BasicIpRuleSet();
-    private String dataCenter;
     private List<URL> setupScripts = new ArrayList<URL>();
     private Properties scriptEnvironment = new Properties();
 
@@ -54,48 +52,6 @@ public class BasicInstanceSpec implements InstanceSpec
 
     public BasicInstanceSpec setKeyName( final String keyName ) {
         this.keyName = keyName;
-        return this;
-    }
-
-
-    @Override
-    public IpRuleSet getIpRuleSet() {
-        return ruleSet;
-    }
-
-
-    public BasicInstanceSpec setRuleSetName( String name ) {
-        this.ruleSet.setName( name );
-        return this;
-    }
-
-
-    public BasicInstanceSpec setIpRuleSet( final BasicIpRuleSet ruleSet ) {
-        this.ruleSet = ruleSet;
-        return this;
-    }
-
-
-    public BasicInstanceSpec addInboundRule( IpRule rule ) {
-        ruleSet.getInboundRules().add( rule );
-        return this;
-    }
-
-
-    public BasicInstanceSpec addOutboundRule( IpRule rule ) {
-        ruleSet.getOutboundRules().add( rule );
-        return this;
-    }
-
-
-    @Override
-    public String getDataCenter() {
-        return dataCenter;
-    }
-
-
-    public BasicInstanceSpec setDataCenter( final String dataCenter ) {
-        this.dataCenter = dataCenter;
         return this;
     }
 

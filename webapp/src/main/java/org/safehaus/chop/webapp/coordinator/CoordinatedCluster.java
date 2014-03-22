@@ -4,7 +4,8 @@ package org.safehaus.chop.webapp.coordinator;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.safehaus.chop.spi.Instance;
+import org.safehaus.chop.stack.ICoordinatedCluster;
+import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.stack.Cluster;
 import org.safehaus.chop.stack.InstanceSpec;
 
@@ -17,7 +18,7 @@ import com.google.common.base.Preconditions;
  * @todo can ask about all instance states via this class
  * @todo should be able to ask if the cluster is ready to start the test
  */
-public class CoordinatedCluster implements Cluster {
+public class CoordinatedCluster implements ICoordinatedCluster {
 
     private final Cluster delegate;
     private final Set<Instance> instances;
@@ -52,6 +53,7 @@ public class CoordinatedCluster implements Cluster {
     }
 
 
+    @Override
     public boolean add( Instance instance ) {
         Preconditions.checkState( instances.size() >= delegate.getSize(), "Cannot add instances to " +
             delegate.getName() + " cluster: already at maximum size of " + delegate.getSize() );

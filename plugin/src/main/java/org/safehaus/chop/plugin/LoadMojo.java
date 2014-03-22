@@ -254,8 +254,6 @@ public class LoadMojo extends MainMojo {
         // These are the values we're going to send to load to setup S3 properly
         Map<String, String> overrides = new HashMap<String, String>( 3 );
         overrides.put( AmazonFig.AWS_SECRET_KEY, secretKey );
-        overrides.put( AmazonFig.AWS_BUCKET_KEY, bucketName );
-        overrides.put( AmazonFig.AWSKEY_KEY, accessKey );
         overrides.put( Project.MANAGER_USERNAME_KEY, managerAppUsername );
         overrides.put( Project.MANAGER_PASSWORD_KEY, managerAppPassword );
         overrides.put( Constants.PARAM_PROJECT, loadKey );

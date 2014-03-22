@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.spi.Store;
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.api.store.amazon.InstanceValues;
 import org.safehaus.chop.client.ssh.AsyncSsh;
@@ -102,7 +101,6 @@ public class SetupMojo extends MainMojo {
     public void execute() throws MojoExecutionException {
         initCertStore();
         setSshValues();
-        setEndpoint();
 
         try {
             if ( ec2Manager == null ) {
@@ -166,10 +164,6 @@ public class SetupMojo extends MainMojo {
                 }
             }
 
-            if ( store == null ) {
-                Injector injector = Guice.createInjector( new AmazonStoreModule() );
-                this.store = injector.getInstance( Store.class );
-            }
 
             if ( instances == null ) {
                 instances = ec2Manager.getInstances( runnerName, InstanceStateName.Running );

@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
 import org.safehaus.chop.webapp.coordinator.rest.RestFig;
@@ -42,8 +41,6 @@ public class ChopUiModule extends ServletModule {
 
     protected void configureServlets() {
         install( new GuicyFigModule( ChopUiFig.class, RestFig.class, ElasticFig.class ) );
-        install( new AmazonStoreModule() );
-//        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );

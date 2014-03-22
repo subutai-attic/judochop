@@ -3,13 +3,19 @@ package org.safehaus.chop.webapp.elasticsearch;
 
 import java.io.File;
 
+import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.http.HttpInfo;
+import org.elasticsearch.http.HttpServerTransport;
+import org.elasticsearch.monitor.network.NetworkInfo;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.node.internal.InternalNode;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +51,9 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
                       .execute()
                       .actionGet();
 
+        TransportAddress ta = ( ( InternalNode ) node ).injector().getInstance( HttpServerTransport.class )
+                                   .boundAddress().publishAddress();
+        LOG.warn( "port: {}", ta );
     }
 
 
@@ -90,6 +99,7 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
                 .put( "index.number_of_shards", "1" )
                 .put( "index.number_of_replicas", "0" )
                 .put( "cluster.routing.schedule", "50ms" )
+                .put( "http.port", "0" )
                 .put( "node.local", true );
 
         return builder.build();
