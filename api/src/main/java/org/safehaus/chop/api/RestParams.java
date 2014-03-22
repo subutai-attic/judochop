@@ -19,4 +19,7 @@ public interface RestParams {
     String TEST_CLASS = "testClass";
     String RUN_NUMBER = "runNumber";
     String RUN_ID = "runId";
+    String VCS_REPO_URL = "vcsRepoUrl";
+    String TEST_PACKAGE = "testPackageBase";
+    String MD5 = "md5";
 }

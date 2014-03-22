@@ -1,8 +1,11 @@
 package org.safehaus.chop.webapp.service;
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.safehaus.chop.webapp.dao.*;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
@@ -14,7 +17,10 @@ import java.util.ArrayList;
 
 public class ChartTest {
 
-    private ElasticSearchClient esClient = new ElasticSearchClient();
+    @ClassRule
+    public static ElasticSearchResource resource = new ElasticSearchResource();
+
+    private ElasticSearchClient esClient = new ElasticSearchClient( resource.getConfig() );
     private OverviewChartBuilder chartBuilder = new OverviewChartBuilder(new CommitDao(esClient), new RunDao(esClient) );
 //    private RunsChartBuilder_ chartBuilder = new RunsChartBuilder_( new RunDao(esClient) );
 //    private IterationsChartBuilder chartBuilder = new IterationsChartBuilder( new RunDao(esClient), new RunResultDao(esClient) );

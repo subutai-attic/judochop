@@ -19,7 +19,7 @@ public class CommitFileReader {
 //                ModuleFileReader.read(filePath),
                 null,
                 props.getProperty("war.md5"),
-                DATE_FORMAT.parse( props.getProperty("create.timestamp") )
-        );
+                DATE_FORMAT.parse( props.getProperty("create.timestamp")),
+                props.getProperty( "runnerPath" ));
     }
 }

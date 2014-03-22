@@ -2,11 +2,13 @@ package org.safehaus.chop.stack;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /**
  * Represents a group of instances working together.
  */
+@JsonDeserialize( as = BasicCluster.class )
 public interface Cluster {
 
     /**
@@ -31,5 +33,5 @@ public interface Cluster {
      * @return the number of cluster instances
      */
     @JsonProperty
-    int size();
+    int getSize();
 }

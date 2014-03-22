@@ -1,16 +1,19 @@
 package org.safehaus.chop.stack;
 
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /**
  * A stack of clusters to be tested by Judo Chop.
  */
-public interface Stack {
+@JsonDeserialize( as = BasicStack.class )
+public interface Stack extends Serializable {
 
     /**
      * Gets a human legible name for this Stack.
@@ -35,5 +38,5 @@ public interface Stack {
      * @return list of Clusters in order of creation
      */
     @JsonProperty
-    List<Cluster> getClusters();
+    List<? extends Cluster> getClusters();
 }

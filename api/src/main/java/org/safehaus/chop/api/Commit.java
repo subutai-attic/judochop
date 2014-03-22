@@ -2,7 +2,6 @@ package org.safehaus.chop.api;
 
 
 import java.util.Date;
-import java.util.UUID;
 
 
 /**
@@ -14,7 +13,9 @@ public interface Commit {
 
     String getModuleId();
 
-    String getWarMd5();
+    String getMd5();
+
+    String getRunnerPath();
 
     Date getCreateTime();
 }
