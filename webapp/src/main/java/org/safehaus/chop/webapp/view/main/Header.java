@@ -9,7 +9,7 @@ import org.safehaus.chop.api.Module;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.util.UIUtil;
-import org.safehaus.chop.webapp.view.window.UserSubwindow;
+import org.safehaus.chop.webapp.view.user.UserSubwindow;
 
 public class Header extends AbsoluteLayout {
 

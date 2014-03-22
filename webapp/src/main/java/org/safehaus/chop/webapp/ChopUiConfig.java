@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.shiro.MyShiroWebModule;
+import org.safehaus.chop.webapp.service.shiro.MyShiroWebModule;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

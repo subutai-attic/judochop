@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.view.window;
+package org.safehaus.chop.webapp.view.user;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;

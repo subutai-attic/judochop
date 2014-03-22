@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.safehaus.chop.webapp.shiro;
+package org.safehaus.chop.webapp.service.shiro;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -27,14 +27,12 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author dilshat
- */
 public class FileUtil {
 
     private static String getJarLocation() throws URISyntaxException {
-        Path path = Paths.get(FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        return path.getParent().toString();
+//        Path path = Paths.get(FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+//        return path.getParent().toString();
+        return null;
     }
 
     /**

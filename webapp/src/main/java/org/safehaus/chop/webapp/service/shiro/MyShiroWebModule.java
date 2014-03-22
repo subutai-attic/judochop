@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.shiro;
+package org.safehaus.chop.webapp.service.shiro;
 
 import com.google.inject.Key;
 import com.google.inject.Singleton;
