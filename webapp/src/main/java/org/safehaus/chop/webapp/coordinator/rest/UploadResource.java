@@ -157,7 +157,7 @@ public class UploadResource implements RestParams {
         LOG.debug( "extracted {} = {}", RestParams.USERNAME, username );
 
         String filename = multipart.getBodyPart( RestParams.FILENAME ).getContent().toString();
-        LOG.debug( "extracted {} = {}", RestParams.FILENAME, username );
+        LOG.debug( "extracted {} = {}", RestParams.FILENAME, filename );
 
         String vcsRepoUrl = multipart.getBodyPart( RestParams.VCS_REPO_URL ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.VCS_REPO_URL, vcsRepoUrl );
@@ -247,10 +247,13 @@ public class UploadResource implements RestParams {
     @Path( "/results" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( MediaType.TEXT_PLAIN )
-    public Response uploadResults(
-        @FormDataParam( CONTENT ) InputStream in,
-        @FormDataParam( RUN_ID ) String runId ) throws Exception
+    public Response uploadResults( MimeMultipart multipart ) throws Exception
     {
+        String runId = multipart.getBodyPart( RestParams.RUN_ID ).getContent().toString();
+        LOG.debug( "extracted {} = {}", RestParams.RUN_ID, runId );
+
+        InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
+
         JSONObject object = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
         JSONArray runResults = ( JSONArray ) object.get( "runResults" );
         Iterator<JSONObject> iterator = runResults.iterator();
@@ -276,14 +279,17 @@ public class UploadResource implements RestParams {
     }
 
 
-//    @SuppressWarnings( "unchecked" )
     @POST
     @Path( "/summary" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( MediaType.TEXT_PLAIN )
-    public Response uploadSummary( @FormDataParam( CONTENT ) InputStream in,
-                                   @FormDataParam( RUNNER_HOSTNAME ) String runnerHostname ) throws Exception
+    public Response uploadSummary( MimeMultipart multipart ) throws Exception
     {
+        String runnerHostname = multipart.getBodyPart( RestParams.RUNNER_HOSTNAME ).getContent().toString();
+        LOG.debug( "extracted {} = {}", RestParams.RUNNER_HOSTNAME, runnerHostname );
+
+        InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
+
         JSONObject json = ( JSONObject ) new JSONParser().parse( new InputStreamReader( in ) );
         BasicRun run = new BasicRun(
                 COMMIT_ID,
