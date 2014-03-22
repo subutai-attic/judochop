@@ -11,6 +11,7 @@ import org.junit.runners.Suite;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
 import org.safehaus.chop.api.ProviderParams;
+import org.safehaus.chop.webapp.ChopUiModule;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.CommitDaoTest;
 import org.safehaus.chop.webapp.dao.ModuleDao;
@@ -37,6 +38,9 @@ import org.safehaus.chop.webapp.dao.model.Note;
 import org.safehaus.chop.stack.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 
 @RunWith( Suite.class )
@@ -82,12 +86,14 @@ public class ESSuiteTest {
     /** Populate elastic search for all tests */
     @BeforeClass
     public static void setUpData() throws Exception {
+        Injector injector = Guice.createInjector( new ChopUiModule() );
 
         LOG.info( "Setting up sample data for elasticsearch Dao tests..." );
 
 
         /** Save 2 different modules */
-        moduleDao = new ModuleDao( esClient );
+//        moduleDao = new ModuleDao( esClient );
+        moduleDao = injector.getInstance( ModuleDao.class );
         Module module = new BasicModule( // ID is 778087981
                 MODULE_GROUPID, // groupId
                 "chop-maven-plugin", // artifactId
@@ -108,7 +114,8 @@ public class ESSuiteTest {
 
 
         /** Save 3 commits, 2 under same module, 1 different */
-        commitDao = new CommitDao( esClient );
+//        commitDao = new CommitDao( esClient );
+        commitDao = injector.getInstance( CommitDao.class );
         Commit commit = new BasicCommit(
                 COMMIT_ID_1, // commitId
                 MODULE_ID_1, // moduleId
@@ -138,13 +145,15 @@ public class ESSuiteTest {
 
 
         /** Save a Note */
-        noteDao = new NoteDao( esClient );
+//        noteDao = new NoteDao( esClient );
+        noteDao = injector.getInstance( NoteDao.class );
         Note note = new Note( COMMIT_ID_1, 1, NOTE );
         noteDao.save( note );
 
 
         /** Save 2 provider params */
-        ppDao = new ProviderParamsDao( esClient );
+//        ppDao = new ProviderParamsDao( esClient );
+        ppDao = injector.getInstance( ProviderParamsDao.class );
         ProviderParams pp = new BasicProviderParams(
                 USER_1,
                 "m1.large",
@@ -175,7 +184,8 @@ public class ESSuiteTest {
         /** Save 2 runs for one commit, 1 run for another */
         String[] runIds = new String[ 3 ];
 
-        runDao = new RunDao( esClient );
+//        runDao = new RunDao( esClient );
+        runDao = injector.getInstance( RunDao.class );
         BasicRun run = new BasicRun(
                 COMMIT_ID_2, // commitId
                 RUNNER_ID_2, // runner
@@ -205,7 +215,8 @@ public class ESSuiteTest {
 
 
         /** Save 3 run results, one for each run */
-        runResultDao = new RunResultDao( esClient );
+//        runResultDao = new RunResultDao( esClient );
+        runResultDao = injector.getInstance( RunResultDao.class );
         BasicRunResult runResult = new BasicRunResult( runIds[ 0 ], 5, 1000, 0, 1 );
         runResultDao.save( runResult );
 
@@ -217,7 +228,8 @@ public class ESSuiteTest {
 
 
         /** Save 2 users */
-        userDao = new UserDao( esClient );
+//        userDao = new UserDao( esClient );
+        userDao = injector.getInstance( UserDao.class );
         User user = new User( USER_1 , "password" );
         userDao.save( user );
 
@@ -226,7 +238,8 @@ public class ESSuiteTest {
 
 
         /** Save 2 runners for COMMIT_ID_1, 1 runner for COMMIT_ID_2 */
-        runnerDao = new RunnerDao( esClient );
+//        runnerDao = new RunnerDao( esClient );
+        runnerDao = injector.getInstance( RunnerDao.class );
         BasicRunner runner = new BasicRunner(
                                 RUNNER_IPV4_1, // ipv4Address
                                 "ec2-54-227-39-116.compute-1.amazonaws.com", // hostname

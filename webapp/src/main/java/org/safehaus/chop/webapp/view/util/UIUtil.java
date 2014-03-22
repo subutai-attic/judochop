@@ -1,12 +1,11 @@
 package org.safehaus.chop.webapp.view.util;
 
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 
 public class UIUtil {
 
-    public static ComboBox getCombo(AbsoluteLayout layout, String caption, String position, String... values) {
+    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, Object values[]) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
@@ -18,18 +17,26 @@ public class UIUtil {
         return combo;
     }
 
-    public static void populateCombo(ComboBox combo, String... values) {
+    public static void populateCombo(ComboBox combo, Object values[]) {
 
-        for (String testName : values) {
-            combo.addItem(testName);
+        if (values == null || values.length == 0) {
+            return;
         }
 
-        if (values.length > 0) {
-            combo.select(values[0]);
+        for (Object value : values) {
+            combo.addItem(value);
+        }
+
+        combo.select(values[0]);
+    }
+
+    public static void select(ComboBox combo, Object value) {
+        if (value != null) {
+            combo.select(value);
         }
     }
 
-    public static Button getButton(AbsoluteLayout layout, String caption, String position, String width) {
+    public static Button addButton(AbsoluteLayout layout, String caption, String position, String width) {
 
         Button button = new Button(caption);
         button.setWidth(width);
@@ -38,7 +45,7 @@ public class UIUtil {
         return button;
     }
 
-    public static AbsoluteLayout getLayout(AbsoluteLayout parent, String id, String position, String height, String width) {
+    public static AbsoluteLayout addLayout(AbsoluteLayout parent, String id, String position, String width, String height) {
 
         AbsoluteLayout layout = new AbsoluteLayout();
         layout.setId(id);
@@ -48,6 +55,39 @@ public class UIUtil {
         parent.addComponent(layout, position);
 
         return layout;
+    }
+
+    public static void addLabel(AbsoluteLayout parent, String text, String position, String width) {
+
+        Label label = new Label(text, ContentMode.HTML);
+        label.setWidth(width);
+
+        parent.addComponent(label, position);
+    }
+
+    public static ListSelect addListSelect(AbsoluteLayout parent, String caption, String position, String width) {
+
+        ListSelect list = new ListSelect(caption);
+        list.setWidth(width);
+        list.setNullSelectionAllowed(false);
+        list.setImmediate(true);
+
+        parent.addComponent(list, position);
+
+        return list;
+    }
+
+    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height) {
+
+        TextArea textArea = new TextArea(caption);
+        textArea.setWidth(width);
+        textArea.setHeight(height);
+        textArea.setWordwrap(false);
+        textArea.setReadOnly(true);
+
+        parent.addComponent(textArea, position);
+
+        return textArea;
     }
 
 }

@@ -22,6 +22,7 @@ import org.safehaus.embedded.jetty.utils.JettyResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.google.inject.servlet.GuiceFilter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -48,7 +49,12 @@ public class ChopUiTest {
     public static JettyResource jetty = new JettyResource();
 
     @ClassRule
+<<<<<<< HEAD
     public static ElasticSearchResource esResource = new ElasticSearchResource();
+=======
+    public static ElasticSearchResource es = new ElasticSearchResource();
+
+>>>>>>> 51b77ad6b1da9a65aa181e9ffb6cc161b1c29bd5
 
     @Test
     public void testGet() {

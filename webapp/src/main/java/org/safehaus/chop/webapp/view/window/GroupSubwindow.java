@@ -1,6 +1,5 @@
 package org.safehaus.chop.webapp.view.window;
 
-import com.google.common.base.Strings;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -8,10 +7,8 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.ui.*;
-import org.safehaus.chop.webapp.shiro.MyShiroRealm;
 
-import java.util.Set;
-
+@SuppressWarnings("unchecked")
 class GroupSubwindow extends Window {
 
     /* User interface components are stored in session. */
@@ -207,14 +204,13 @@ class GroupSubwindow extends Window {
         cancelButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 close(); // Close the sub-window
-                MyShiroRealm.initRealm();
             }
         });
 
         saveButton.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
 
-                Set<String> groups = MyShiroRealm.getUserRoles(username);
+                /*Set<String> groups = MyShiroRealm.getUserRoles(username);
                 groups.clear();
 
                 for(Object itemId : groupList.getItemIds()){
@@ -223,7 +219,7 @@ class GroupSubwindow extends Window {
                 }
 
                 close(); // Close the sub-window
-                MyShiroRealm.saveRealm();
+                MyShiroRealm.saveRealm();*/
             }
         });
     }
@@ -266,7 +262,7 @@ class GroupSubwindow extends Window {
             ic.addContainerProperty(p, String.class, "");
         }
 
-        Set<String> groups = MyShiroRealm.getUserRoles(this.username);
+        /*Set<String> groups = MyShiroRealm.getUserRoles(this.username);
 
         if (groups != null && !groups.isEmpty()) {
             for (String gname : groups) {
@@ -276,7 +272,7 @@ class GroupSubwindow extends Window {
                             gname.trim());
                 }
             }
-        }
+        }*/
 
         return ic;
     }

@@ -1,42 +1,27 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.support.AbstractClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 
+@Singleton
 public class ElasticSearchClient implements IElasticSearchClient {
 
     private Client client;
 
+
     @Inject
-    private ElasticFig elasticFig;
+    public ElasticSearchClient( ElasticSearchFig elasticFig) {
+        Settings settings = ImmutableSettings.settingsBuilder().build();
 
-
-    public ElasticSearchClient() {
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put("client.transport.ignore_cluster_name", true)
-                .put("node.name", "ChopNode")
-                .build();
-
-        // TODO take as params or from config
-        String host = "172.16.3.38"; int port = 5000;
-//        String host = "172.16.10.108"; int port = 9302;
-
-        client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(host, port));
-    }
-
-
-    @Override
-    public Statement apply( final Statement base, final Description description ) {
-        return null;
+        client = new TransportClient( settings ).addTransportAddress(
+                new InetSocketTransportAddress( elasticFig.getTransportHost(), elasticFig.getTransportPort() ) );
     }
 
 

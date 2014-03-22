@@ -1,47 +1,115 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
-import org.elasticsearch.action.admin.cluster.node.info.NodeInfo;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.io.FileSystemUtils;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.http.HttpInfo;
-import org.elasticsearch.http.HttpServerTransport;
-import org.elasticsearch.monitor.network.NetworkInfo;
-import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.node.internal.InternalNode;
-import org.junit.rules.ExternalResource;
+import org.elasticsearch.transport.netty.NettyTransport;
+
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+
+import org.safehaus.guicyfig.GuicyFigModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
+import com.google.inject.Module;
 
-public class ElasticSearchResource extends ExternalResource implements IElasticSearchClient {
-
-    private Node node;
-    private Client client;
-
-    private static Logger LOG = LoggerFactory.getLogger( ElasticSearchResource.class );
+import static org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig.DATA_DIR_KEY;
 
 
-    protected void before() throws Throwable {
-        super.before();
+public class ElasticSearchResource implements TestRule {
+    private static final Logger LOG = LoggerFactory.getLogger( ElasticSearchResource.class );
 
-        LOG.info( "ElasticSearchResource external resource is being created..." );
-
-        node = NodeBuilder.nodeBuilder()
-                          .local( true )
-                          .settings( buildNodeSettings() )
-                          .node();
+    private InternalNode node;
+    private final ElasticSearchFig config;
 
 
+    public ElasticSearchResource() {
+        List<Module> modules = new ArrayList<Module>( 1 );
+        modules.add( new GuicyFigModule( ElasticSearchFig.class ) );
+        config = Guice.createInjector( modules ).getInstance( ElasticSearchFig.class );
+
+    }
+
+
+    protected void before() throws Exception {
+        node = ( InternalNode )
+                NodeBuilder.nodeBuilder().settings( getSettings() )
+                           .data( true )
+                           .clusterName( config.getClusterName() )
+                           .node();
+        extractTransportInfo();
+    }
+
+
+    private Settings getSettings() throws IOException {
+        String dataDir;
+        InputStream in = getClass().getClassLoader().getResourceAsStream( "ElasticSearchResource.properties" );
+
+        if ( in != null ) {
+            Properties props = new Properties();
+            props.load( in );
+            dataDir = props.getProperty( DATA_DIR_KEY );
+
+            if ( ! dataDir.equals( config.getDataDir() ) ) {
+                config.bypass( DATA_DIR_KEY, dataDir );
+            }
+
+            in.close();
+        }
+        else {
+            dataDir = config.getDataDir();
+        }
+
+        return ImmutableSettings.settingsBuilder()
+                .put( "path.data", dataDir )
+                .build();
+    }
+
+
+    /**
+     * This is a hack for now. Can't easily figure out how to get the transport information.
+     */
+    private void extractTransportInfo() {
+        TransportAddress ta = getTransportAddress();
+
+        LOG.info( "ta = {}", ta.toString() );
+
+        String[] strings = ta.toString().split( ":" );
+
+        String transportHost = strings[0].substring( 6 );
+        LOG.info( "host = {}", transportHost );
+        String transportPortStr = strings[1].substring( 0, strings[1].length() - 1 );
+
+        config.bypass( ElasticSearchFig.PORT_KEY, transportPortStr );
+        config.bypass( ElasticSearchFig.SERVERS_KEY, transportHost );
+    }
+
+
+    TransportAddress getTransportAddress() {
+        return node.injector()
+                   .getInstance( NettyTransport.class )
+                   .boundAddress()
+                   .publishAddress();
+    }
+
+
+    public Client getClient() {
         // Get a client
-        client = node.client();
+        Client client = node.client();
 
         // Wait for Yellow status
         client.admin().cluster()
@@ -51,57 +119,40 @@ public class ElasticSearchResource extends ExternalResource implements IElasticS
                       .execute()
                       .actionGet();
 
-        TransportAddress ta = ( ( InternalNode ) node ).injector().getInstance( HttpServerTransport.class )
-                                   .boundAddress().publishAddress();
-        LOG.warn( "port: {}", ta );
-    }
-
-
-    @Override
-    protected void after() {
-        super.after();
-
-        LOG.info( "ElasticSearchResource is being closed..." );
-
-        if ( client != null ) {
-
-            client.close();
-        }
-
-        if ( ( node != null ) && ( ! node.isClosed() ) ) {
-            node.stop();
-            node.close();
-
-            FileSystemUtils.deleteRecursively( new File( "./target/elasticsearch-test/" ), true );
-
-        }
-    }
-
-
-    @Override
-    public Client getClient() {
         return client;
     }
 
 
-    protected Settings buildNodeSettings() {
-        // Build settings
-        ImmutableSettings.Builder builder = ImmutableSettings.settingsBuilder()
-                .put( "node.name", "ChopNode" )
-                .put( "node.data", true )
-                .put( "cluster.name", "cluster-test-localhost" )
-                .put( "index.store.type", "memory" )
-                .put( "index.store.fs.memory.enabled", "true" )
-                .put( "gateway.type", "none" )
-                .put( "path.data", "./target/elasticsearch-test/data" )
-                .put( "path.work", "./target/elasticsearch-test/work" )
-                .put( "path.logs", "./target/elasticsearch-test/logs" )
-                .put( "index.number_of_shards", "1" )
-                .put( "index.number_of_replicas", "0" )
-                .put( "cluster.routing.schedule", "50ms" )
-                .put( "http.port", "0" )
-                .put( "node.local", true );
+    public ElasticSearchFig getConfig() {
+        return config;
+    }
 
-        return builder.build();
+
+    protected void after() throws Exception {
+        if ( ! node.isClosed() ) {
+            node.close();
+        }
+    }
+
+
+    private Statement statement( final Statement base ) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                before();
+                try {
+                    base.evaluate();
+                }
+                finally {
+                    after();
+                }
+            }
+        };
+    }
+
+
+    @Override
+    public Statement apply( final Statement base, final Description description ) {
+        return statement( base );
     }
 }

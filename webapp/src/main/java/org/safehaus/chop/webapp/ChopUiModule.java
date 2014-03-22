@@ -12,10 +12,11 @@ import java.util.Map;
 
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
+import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
 import org.safehaus.chop.webapp.coordinator.rest.RestFig;
-import org.safehaus.chop.webapp.elasticsearch.ElasticFig;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.view.util.VaadinServlet;
@@ -26,7 +27,7 @@ import com.google.inject.servlet.ServletModule;
 import com.netflix.config.ConfigurationManager;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
-
+@SuppressWarnings("unchecked")
 public class ChopUiModule extends ServletModule {
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
@@ -40,7 +41,9 @@ public class ChopUiModule extends ServletModule {
     }
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ChopUiFig.class, RestFig.class, ElasticFig.class ) );
+        install( new GuicyFigModule( ChopUiFig.class, RestFig.class, ElasticSearchFig.class ) );
+        install( new AmazonStoreModule() );
+//        install( new ChopClientModule() );
 
         // Hook Jersey into Guice Servlet
         bind( GuiceContainer.class );
