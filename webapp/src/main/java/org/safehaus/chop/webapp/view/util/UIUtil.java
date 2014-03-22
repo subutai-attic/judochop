@@ -1,8 +1,10 @@
 package org.safehaus.chop.webapp.view.util;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 
 public class UIUtil {
 
@@ -56,6 +58,14 @@ public class UIUtil {
         parent.addComponent(layout, position);
 
         return layout;
+    }
+
+    public static void addLabel(AbsoluteLayout parent, String text, String position, String width) {
+
+        Label label = new Label(text, ContentMode.HTML);
+        label.setWidth(width);
+
+        parent.addComponent(label, position);
     }
 
 }

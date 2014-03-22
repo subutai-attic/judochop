@@ -26,6 +26,6 @@ public class RunsChartLayout extends ChartLayout {
     @Override
     protected void pointClicked(JSONObject json) throws JSONException {
         super.pointClicked(json);
-        nextChartButton.setCaption( "run: " + json.getInt("runNumber") );
+        nextChartButton.setCaption( "Run: " + json.getInt("runNumber") );
     }
 }

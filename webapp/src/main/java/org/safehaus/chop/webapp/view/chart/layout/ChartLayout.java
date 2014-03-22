@@ -43,8 +43,6 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         addControls();
     }
 
-
-
     @Override
     public void call(JSONArray args) throws JSONException {
         JSONObject json = args.getJSONObject(0);
@@ -67,10 +65,10 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         UIUtil.getLayout(this, config.getChartId(), "left: 10px; top: 150px;", "400px", "700px");
 
         detailsTable = new DetailsTable();
-        addComponent(detailsTable, "left: 750px; top: 150px;");
+        addComponent(detailsTable, "left: 750px; top: 180px;");
 
         noteLayout = new NoteLayout();
-        addComponent(noteLayout, "left: 750px; top: 420px;");
+        addComponent(noteLayout, "left: 750px; top: 460px;");
     }
 
     protected void addSubmitButton() {
@@ -86,7 +84,7 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
 
     protected void addNextChartButton() {
 
-        nextChartButton = UIUtil.getButton(this, "...", "left: 800px; top: 30px;", "200px");
+        nextChartButton = UIUtil.getButton(this, "", "left: 750px; top: 150px;", "250px");
         nextChartButton.setStyleName(Reindeer.BUTTON_LINK);
 
         nextChartButton.addClickListener(new Button.ClickListener() {

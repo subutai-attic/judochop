@@ -26,6 +26,6 @@ public class OverviewChartLayout extends ChartLayout {
     @Override
     protected void pointClicked(JSONObject json) throws JSONException {
         super.pointClicked(json);
-        nextChartButton.setCaption( "commit: " + json.getString("commitId") );
+        nextChartButton.setCaption( "Commit: " + json.getString("commitId") );
     }
 }
