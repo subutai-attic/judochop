@@ -4,7 +4,7 @@ package org.safehaus.chop.api.store.amazon;
 import java.util.Collection;
 import java.util.Set;
 
-import org.safehaus.chop.spi.Instance;
+import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.spi.InstanceRegistry;
 
 

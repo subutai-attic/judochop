@@ -13,7 +13,6 @@ import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.State;
 import org.safehaus.chop.spi.Store;
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
 import org.safehaus.chop.api.store.amazon.EC2Manager;
 import org.safehaus.chop.api.store.amazon.RunnerInstance;
 import org.safehaus.chop.client.rest.AsyncRequest;
@@ -85,8 +84,6 @@ public class ResultsMojo extends MainMojo {
     public void execute() throws MojoExecutionException {
         preconditions();
 
-        Injector injector = Guice.createInjector( new AmazonStoreModule() );
-        Store store = injector.getInstance( Store.class );
         Project project = loadProjectConfiguration();
         FilenameFilter summaryAndResults = new FilenameFilter() {
             @Override

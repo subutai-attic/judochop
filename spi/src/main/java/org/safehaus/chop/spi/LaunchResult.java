@@ -1,6 +1,7 @@
 package org.safehaus.chop.spi;
 
 
+import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.stack.InstanceSpec;
 
 

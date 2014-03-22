@@ -8,12 +8,13 @@ import java.util.Set;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
-import org.safehaus.chop.spi.Instance;
+import org.safehaus.chop.stack.ICoordinatedCluster;
+import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.spi.InstanceManager;
 import org.safehaus.chop.spi.InstanceRegistry;
 import org.safehaus.chop.spi.LaunchResult;
 import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.webapp.dao.model.User;
+import org.safehaus.chop.stack.User;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -49,10 +50,10 @@ public class Coordinator {
 
             coordinatedStack = new CoordinatedStack( stack, user, commit, module );
 
-            for ( CoordinatedCluster cluster : coordinatedStack.getClusters() ) {
-                LaunchResult result = instanceManager.launchInstances(
-                        cluster.getInstanceSpec(), cluster.getSize(), 100000 );
-                instanceManager.getInstances( cluster.getName() );
+            for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
+                LaunchResult result = instanceManager.launchCluster(
+                        coordinatedStack, cluster, 100000 );
+                instanceManager.getClusterInstances( coordinatedStack, cluster );
 
                 for ( Instance instance : result.getInstances() ) {
                     cluster.add( instance );

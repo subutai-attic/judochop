@@ -3,16 +3,15 @@ package org.safehaus.chop.api.store.amazon;
 
 import java.util.Collection;
 
-import org.safehaus.chop.spi.Instance;
+import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.spi.IpRuleManager;
 import org.safehaus.chop.stack.IpRule;
 
 
-/**
- * Created with IntelliJ IDEA. User: akarasulu Date: 3/20/14 Time: 11:54 PM To change this template use File | Settings
- * | File Templates.
- */
+/**  */
 public class AmazonIpRuleManager implements IpRuleManager {
+
+
     @Override
     public boolean createRuleSet( final String name ) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.

@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.coordinator;
+package org.safehaus.chop.stack;
 
 
 import java.util.Collections;
