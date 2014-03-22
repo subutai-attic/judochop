@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.rest;
+package org.safehaus.chop.webapp.coordinator.rest;
 
 
 import org.safehaus.guicyfig.Default;

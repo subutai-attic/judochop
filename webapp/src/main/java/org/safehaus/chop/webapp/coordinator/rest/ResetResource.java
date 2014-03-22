@@ -17,7 +17,7 @@
  *  under the License. 
  *  
  */
-package org.safehaus.chop.webapp.rest;
+package org.safehaus.chop.webapp.coordinator.rest;
 
 
 import javax.ws.rs.POST;
@@ -41,19 +41,19 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StopResource.ENDPOINT_URL )
-public class StopResource {
-    public final static String ENDPOINT_URL = "/stop";
-    private static final Logger LOG = LoggerFactory.getLogger( StopResource.class );
+@Path( ResetResource.ENDPOINT_URL )
+public class ResetResource {
+    public final static String ENDPOINT_URL = "/reset";
+    private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
 
 
     @Inject
-    public StopResource() {
+    public ResetResource() {
     }
 
 
     @POST
-    public Result stop( Stack stack ) {
+    public Result setup( Stack stack ) {
         LOG.warn( "Calling setup" );
         return new BaseResult( ENDPOINT_URL, true, "Setup called", State.READY );
     }

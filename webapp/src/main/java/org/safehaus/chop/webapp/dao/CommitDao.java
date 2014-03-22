@@ -35,9 +35,9 @@ public class CommitDao extends Dao<Commit> {
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field( "moduleId", commit.getModuleId() )
-                                .field( "warMd5", commit.getWarMd5() )
-                                .field( "createTime", commit.getCreateTime() )
+                                .field("moduleId", commit.getModuleId())
+                                .field("md5", commit.getMd5())
+                                .field("createTime", commit.getCreateTime())
                                 .endObject()
                 )
                 .execute()
@@ -63,10 +63,10 @@ public class CommitDao extends Dao<Commit> {
 
             BasicCommit commit = new BasicCommit(
                     hit.getId(),
-                    Util.getString( json, "moduleId" ),
-                    Util.getString( json, "warMd5" ),
-                    Util.toDate( Util.getString( json, "createTime" ) )
-            );
+                    Util.getString(json, "moduleId"),
+                    Util.getString(json, "md5"),
+                    Util.toDate(Util.getString(json, "createTime")),
+                    Util.getString(json, "runnerPath" ) );
 
             list.add( commit );
         }

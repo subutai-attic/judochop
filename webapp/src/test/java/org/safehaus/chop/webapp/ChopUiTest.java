@@ -8,8 +8,9 @@ import javax.ws.rs.core.MediaType;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.webapp.rest.TestGetResource;
-import org.safehaus.chop.webapp.rest.UploadResource;
+import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
+import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.embedded.jetty.utils.CertUtils;
 import org.safehaus.embedded.jetty.utils.ContextListener;
 import org.safehaus.embedded.jetty.utils.FilterMapping;
@@ -21,6 +22,7 @@ import org.safehaus.embedded.jetty.utils.JettyResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.google.inject.servlet.GuiceFilter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -45,6 +47,9 @@ public class ChopUiTest {
     )
     @ClassRule
     public static JettyResource jetty = new JettyResource();
+
+    @ClassRule
+    public static ElasticSearchResource es = new ElasticSearchResource();
 
 
     @Test

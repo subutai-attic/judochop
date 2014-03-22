@@ -17,7 +17,7 @@
  *  under the License. 
  *  
  */
-package org.safehaus.chop.webapp.rest;
+package org.safehaus.chop.webapp.coordinator.rest;
 
 
 import javax.ws.rs.POST;
@@ -41,14 +41,14 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( VerifyResource.ENDPOINT_URL )
-public class VerifyResource {
-    public final static String ENDPOINT_URL = "/verify";
-    private static final Logger LOG = LoggerFactory.getLogger( VerifyResource.class );
+@Path( StartResource.ENDPOINT_URL )
+public class StartResource {
+    public final static String ENDPOINT_URL = "/start";
+    private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
 
 
     @Inject
-    public VerifyResource() {
+    public StartResource() {
     }
 
 

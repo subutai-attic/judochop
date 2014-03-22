@@ -10,8 +10,6 @@ import org.safehaus.chop.stack.InstanceSpec;
  * Manages instances.
  */
 public interface InstanceManager {
-    Provider getProvider();
-
     int getDefaultTimeout();
 
     String terminateInstances( Collection<String> instancesIds );
