@@ -39,8 +39,8 @@ public class IterationsChartLayout extends ChartLayout {
     @Override
     protected void addControls() {
         addMainControls();
-        addSubControls(440);
-        super.addSubControls(460);
+        addSubControls(410);
+        super.addSubControls(430);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class IterationsChartLayout extends ChartLayout {
     }
 
     private void setControlsReadOnly(boolean readOnly) {
-        testNamesCombo.setReadOnly(readOnly);
+        testNameCombo.setReadOnly(readOnly);
         metricCombo.setReadOnly(readOnly);
     }
 

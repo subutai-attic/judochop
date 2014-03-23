@@ -5,11 +5,12 @@ import com.vaadin.ui.*;
 
 public class UIUtil {
 
-    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, Object values[]) {
+    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, String width, Object values[]) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
         combo.setNullSelectionAllowed(false);
+        combo.setWidth(width);
 
         layout.addComponent(combo, position);
         populateCombo(combo, values);

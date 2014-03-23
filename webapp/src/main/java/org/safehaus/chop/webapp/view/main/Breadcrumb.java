@@ -13,26 +13,25 @@ public class Breadcrumb extends AbsoluteLayout {
 
     public Breadcrumb(MainView mainView) {
         this.mainView = mainView;
-        initSize();
         initItems();
     }
 
-    private void initSize() {
-        setWidth("1000px");
-        setHeight("500px");
-    }
-
     private void initItems() {
-        addButton(0, 10);
-        addButton(1, 140);
-        items[2] = UIUtil.addLabel(this, "", "left: 340px; top: 23px;", "100px");
+        items[0] = addButton(0, 10, "80px");
+        items[1] = addButton(1, 100, "110px");
+        items[2] = addLabel(240, "80px");
     }
 
-    private void addButton(final int pos, int left) {
+    private Label addLabel(int left, String width) {
+        String position = String.format("left: %spx; top: 10px;", left);
+        return UIUtil.addLabel(this, "", position, width);
+    }
+
+    private Button addButton(final int pos, int left, String width) {
 
         String position = String.format("left: %spx; top: 10px;", left);
 
-        Button button = UIUtil.addButton(this, "", position, "120px");
+        Button button = UIUtil.addButton(this, "", position, width);
         button.setStyleName(Reindeer.BUTTON_LINK);
 
         button.addClickListener(new Button.ClickListener() {
@@ -41,7 +40,7 @@ public class Breadcrumb extends AbsoluteLayout {
             }
         });
 
-        items[pos] = button;
+        return button;
     }
 
     private void buttonClicked(int pos) {
@@ -51,11 +50,19 @@ public class Breadcrumb extends AbsoluteLayout {
 
     public void setItem(ChartLayout chartLayout, String caption, int pos) {
 
-        items[pos].setCaption(caption);
+        setCaption(caption, pos);
         items[pos].setVisible(true);
         chartLayouts[pos] = chartLayout;
 
         hideItems(pos);
+    }
+
+    private void setCaption(String caption, int pos) {
+        if (pos == 2) {
+            ( (Label) items[pos] ).setValue( String.format("<b>%s</b>", caption) );
+        } else {
+            items[pos].setCaption(caption);
+        }
     }
 
     private void hideItems(int pos) {

@@ -16,16 +16,14 @@ public class Header extends AbsoluteLayout {
     private ModuleDao moduleDao = InjectorFactory.getInstance(ModuleDao.class);
 
     private Label moduleLabel = UIUtil.addLabel(this, "", "left: 10px; top: 10px;", "500px");
-    private Label userLabel = UIUtil.addLabel(this, "<b>[username]</b>", "left: 800px; top: 10px;", "100px");
 
     public Header() {
-        initSize();
         addManageButton();
     }
 
     private void addManageButton() {
 
-        Button button = UIUtil.addButton(this, "Manage", "left: 900px; top: 10px;", "100px");
+        Button button = UIUtil.addButton(this, "Manage", "left: 940px; top: 10px;", "80px");
         button.setStyleName(Reindeer.BUTTON_LINK);
 
         button.addClickListener(new Button.ClickListener() {
@@ -37,11 +35,6 @@ public class Header extends AbsoluteLayout {
 
     private void manageButtonClicked() {
         UI.getCurrent().addWindow( new UserSubwindow() );
-    }
-
-    private void initSize() {
-        setWidth("1000px");
-        setHeight("25px");
     }
 
     void showModule(String moduleId) {

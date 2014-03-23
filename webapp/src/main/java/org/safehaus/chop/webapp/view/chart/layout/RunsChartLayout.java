@@ -43,8 +43,8 @@ public class RunsChartLayout extends ChartLayout {
     @Override
     protected void addControls() {
         addMainControls();
-        addSubControls(460);
-        super.addSubControls(630);
+        addSubControls(430);
+        super.addSubControls(600);
     }
 
     @Override
