@@ -26,8 +26,10 @@ import java.util.Enumeration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.safehaus.chop.webapp.dao.SetupDao;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig;
 import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
+import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.shiro.MyShiroWebModule;
 import org.safehaus.guicyfig.Env;
@@ -93,6 +95,8 @@ public class ChopUiConfig extends GuiceServletContextListener {
             ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "PROD" );
             LOG.info( "Setting environment to: PROD" );
 
+
+
             /*
              * --------------------------------------------------------------------
              * Extract Configuration Settings from CommandLine
@@ -144,8 +148,26 @@ public class ChopUiConfig extends GuiceServletContextListener {
         if ( contextTempDir == null ) {
             LOG.info( "From ChopUiFig {} = {}", CONTEXT_TEMPDIR_KEY, chopUiFig.getContextTempDir() );
         }
+
+        // Works with with the local ES but fails with the embedded ES
+        setupStorage();
     }
 
+    private void setupStorage() {
+        LOG.info("Setting up the storage...");
+
+        IElasticSearchClient esClient = getInjector().getInstance( IElasticSearchClient.class );
+        SetupDao setupDao = getInjector().getInstance( SetupDao.class );
+
+        LOG.info("esClient: {}", esClient);
+        LOG.info("setupDao: {}", setupDao);
+
+        try {
+            setupDao.setup();
+        } catch (IOException e) {
+            LOG.error( "Failed to setup the storage!", e );
+        }
+    }
 
     @Override
     public void contextDestroyed( final ServletContextEvent servletContextEvent ) {

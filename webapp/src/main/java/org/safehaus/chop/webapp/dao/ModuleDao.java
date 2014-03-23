@@ -16,8 +16,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 public class ModuleDao extends Dao<Module> {
 
-    private static final int MAX_RESULT_SIZE = 1000;
 
+    private static final int MAX_RESULT_SIZE = 1000;
 
     @Inject
     public ModuleDao( IElasticSearchClient elasticSearchClient ) {
