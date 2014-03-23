@@ -1,5 +1,6 @@
 package org.safehaus.chop.webapp.service.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +68,10 @@ public class JsonUtil {
     public static JSONArray parseArray(String s) {
 
         JSONArray arr = new JSONArray();
+
+        if ( StringUtils.isEmpty(s) ) {
+            return arr;
+        }
 
         try {
             arr = new JSONArray(s);

@@ -27,6 +27,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 
+import static junit.framework.TestCase.assertEquals;
+
 
 /**
  * An integration test for the chop UI.
@@ -53,6 +55,7 @@ public class ChopUiIT {
         String serverUrl = jetty.getAppProperties().getProperty( Launcher.SERVER_URL );
         WebResource resource = Client.create().resource( serverUrl + TestGetResource.ENDPOINT_URL );
         String result = resource.type( MediaType.TEXT_PLAIN_TYPE ).get( String.class );
+        assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
 
 

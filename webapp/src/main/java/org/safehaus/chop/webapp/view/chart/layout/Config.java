@@ -2,28 +2,29 @@ package org.safehaus.chop.webapp.view.chart.layout;
 
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
+import org.safehaus.chop.webapp.view.main.Breadcrumb;
 
 class Config {
 
     private final ChartLayoutContext layoutContext;
     private final ChartBuilder chartBuilder;
-    private final ChartLayout prevLayout;
     private final ChartLayout nextLayout;
     private final String chartId;
     private final String jsCallbackName;
     private final String chartFile;
     private final PointRadius pointRadius;
+    private final Breadcrumb breadcrumb;
 
-    Config(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout, String chartId, String jsCallbackName, String chartFile,
-           PointRadius pointRadius) {
+    Config(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, String chartId, String jsCallbackName, String chartFile,
+           PointRadius pointRadius, Breadcrumb breadcrumb) {
         this.layoutContext = layoutContext;
         this.chartBuilder = chartBuilder;
-        this.prevLayout = prevLayout;
         this.nextLayout = nextLayout;
         this.chartId = chartId;
         this.jsCallbackName = jsCallbackName;
         this.chartFile = chartFile;
         this.pointRadius = pointRadius;
+        this.breadcrumb = breadcrumb;
     }
 
     ChartLayoutContext getLayoutContext() {
@@ -32,10 +33,6 @@ class Config {
 
     ChartBuilder getChartBuilder() {
         return chartBuilder;
-    }
-
-    ChartLayout getPrevLayout() {
-        return prevLayout;
     }
 
     ChartLayout getNextLayout() {
@@ -56,5 +53,9 @@ class Config {
 
     PointRadius getPointRadius() {
         return pointRadius;
+    }
+
+    Breadcrumb getBreadcrumb() {
+        return breadcrumb;
     }
 }

@@ -1,22 +1,24 @@
 package org.safehaus.chop.webapp.view.chart.layout;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
+import org.safehaus.chop.webapp.view.main.Breadcrumb;
 
 public class OverviewChartLayout extends ChartLayout {
 
-    public OverviewChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout prevLayout, ChartLayout nextLayout) {
+    public OverviewChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
         super( new Config(
                 layoutContext,
                 chartBuilder,
-                prevLayout,
                 nextLayout,
                 "overviewChart",
                 "overviewChartCallback",
                 "js/overview-chart.js",
-                new PointRadius()
+                new PointRadius(),
+                breadcrumb
         ) );
 
         addNextChartButton();
@@ -25,7 +27,13 @@ public class OverviewChartLayout extends ChartLayout {
     @Override
     protected void pointClicked(JSONObject json) throws JSONException {
         super.pointClicked(json);
-        nextChartButton.setCaption( "Commit: " + json.getString("commitId") );
+
+        String caption = "Commit: " + StringUtils.abbreviate(json.getString("commitId"), 10);
+        nextChartButton.setCaption(caption);
     }
 
+    @Override
+    protected void handleBreadcrumb() {
+        config.getBreadcrumb().setItem(this, "Overview", 0);
+    }
 }

@@ -20,6 +20,8 @@ public class UserDao extends Dao<User> {
 
     private static final int MAX_RESULT_SIZE = 10000;
 
+    public static final String INDEX = "users";
+
     @Inject
     public UserDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
@@ -29,7 +31,7 @@ public class UserDao extends Dao<User> {
     public boolean save( User user ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "users", "user", user.getUsername() )
+                .prepareIndex( INDEX, "user", user.getUsername() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -46,7 +48,7 @@ public class UserDao extends Dao<User> {
     public User get( String username ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "users" )
+                .prepareSearch( INDEX )
                 .setTypes( "user" )
                 .setQuery( termQuery( "_id", username ) )
                 .execute()
@@ -59,7 +61,7 @@ public class UserDao extends Dao<User> {
 
     public List<User> getList() {
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "users" )
+                .prepareSearch( INDEX )
                 .setTypes( "user" )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -86,7 +88,7 @@ public class UserDao extends Dao<User> {
     public boolean delete( String username ) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( "users", "user", username )
+                .prepareDelete( INDEX, "user", username )
                 .setRefresh( true )
                 .execute()
                 .actionGet();

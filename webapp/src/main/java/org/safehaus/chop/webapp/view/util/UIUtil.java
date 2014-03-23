@@ -5,11 +5,12 @@ import com.vaadin.ui.*;
 
 public class UIUtil {
 
-    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, Object values[]) {
+    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, String width, Object values[]) {
 
         ComboBox combo = new ComboBox(caption);
         combo.setTextInputAllowed(false);
         combo.setNullSelectionAllowed(false);
+        combo.setWidth(width);
 
         layout.addComponent(combo, position);
         populateCombo(combo, values);
@@ -57,12 +58,14 @@ public class UIUtil {
         return layout;
     }
 
-    public static void addLabel(AbsoluteLayout parent, String text, String position, String width) {
+    public static Label addLabel(AbsoluteLayout parent, String text, String position, String width) {
 
         Label label = new Label(text, ContentMode.HTML);
         label.setWidth(width);
 
         parent.addComponent(label, position);
+
+        return label;
     }
 
     public static ListSelect addListSelect(AbsoluteLayout parent, String caption, String position, String width) {

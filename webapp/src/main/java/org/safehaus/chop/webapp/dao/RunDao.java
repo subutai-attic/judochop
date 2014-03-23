@@ -30,6 +30,8 @@ import static org.elasticsearch.search.facet.FacetBuilders.termsFacet;
 public class RunDao extends Dao<Run> {
 
     private static final int MAX_RESULT_SIZE = 10000;
+    private static final String INDEX = "modules";
+    private static final String TYPE = "run";
 
     @Inject
     public RunDao( IElasticSearchClient elasticSearchClient ) {
@@ -74,9 +76,7 @@ public class RunDao extends Dao<Run> {
 
     public Run get( String runId ) {
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( termQuery( "_id", runId ) )
                 .execute()
                 .actionGet();
@@ -94,9 +94,7 @@ public class RunDao extends Dao<Run> {
                 .must( termQuery( "runNumber", runNumber ) )
                 .must( termQuery( "testName", testName.toLowerCase() ) );
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -129,9 +127,7 @@ public class RunDao extends Dao<Run> {
 
     public List<Run> getAll() {
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
@@ -144,10 +140,7 @@ public class RunDao extends Dao<Run> {
                 .must( termQuery( "testName", testName.toLowerCase() ) )
                 .must( termQuery( "commitId", commitId.toLowerCase() ) );
 
-
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
@@ -161,9 +154,7 @@ public class RunDao extends Dao<Run> {
                 .must( termQuery( "commitId", commitId.toLowerCase() ) )
                 .must( termQuery( "runNumber", runNumber ) );
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -172,29 +163,41 @@ public class RunDao extends Dao<Run> {
         return toList( response );
     }
 
+    private String concatIds( List<Commit> commits ) {
+
+        String ids = "";
+
+        for ( Commit commit : commits ) {
+            ids += commit.getId() + " ";
+        }
+
+        return ids;
+    }
+
     public List<Run> getList( List<Commit> commits, String testName ) {
 
-        String commitIds = StringUtils.join( commits, ' ' );
+        String commitIds = concatIds( commits );
+        LOG.info("commitIds: {}; testName: {}", commitIds, testName);
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( multiMatchQuery( commitIds, "commitId" ) )
                 .setQuery( termQuery( "testName", testName.toLowerCase() ) )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
 
-        return toList( response );
+        List<Run> runs = toList( response );
+
+        LOG.info( "runs found: {}", runs.size() );
+
+        return runs;
     }
 
     public Set<String> getTestNames( List<Commit> commits ) {
 
         String commitIds = StringUtils.join( commits, ' ' );
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( multiMatchQuery( commitIds, "commitId" ) )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -222,9 +225,7 @@ public class RunDao extends Dao<Run> {
 
     public int getNextRunNumber( String commitId ) {
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "run" )
+        SearchResponse response = getRequest( INDEX, TYPE )
                 .setQuery( termQuery( "commitId", commitId ) )
                 .setSize( 0 )
                 .addFacet( statisticalFacet( "stat" ).field( "runNumber" ) )
@@ -235,5 +236,4 @@ public class RunDao extends Dao<Run> {
 
         return facet.getCount() > 0 ? ( int ) facet.getMax() + 1 : 1;
     }
-
 }

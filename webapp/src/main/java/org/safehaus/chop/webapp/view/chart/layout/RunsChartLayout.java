@@ -3,6 +3,7 @@ package org.safehaus.chop.webapp.view.chart.layout;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.safehaus.chop.api.Run;
@@ -10,6 +11,7 @@ import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
 import org.safehaus.chop.webapp.view.chart.format.PointRadius;
+import org.safehaus.chop.webapp.view.main.Breadcrumb;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 
 import java.util.HashMap;
@@ -23,16 +25,16 @@ public class RunsChartLayout extends ChartLayout {
     private Map<String, Run> runners = new HashMap<String, Run>();
     private ListSelect runnersListSelect;
 
-    public RunsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, ChartLayout prevLayout) {
+    public RunsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
         super( new Config(
                 layoutContext,
                 chartBuilder,
-                prevLayout,
                 nextLayout,
                 "runsChart",
                 "runsChartCallback",
                 "js/runs-chart.js",
-                new PointRadius()
+                new PointRadius(),
+                breadcrumb
         ) );
 
         addNextChartButton();
@@ -41,8 +43,8 @@ public class RunsChartLayout extends ChartLayout {
     @Override
     protected void addControls() {
         addMainControls();
-        addSubControls(460);
-        super.addSubControls(630);
+        addSubControls(430);
+        super.addSubControls(600);
     }
 
     @Override
@@ -101,5 +103,11 @@ public class RunsChartLayout extends ChartLayout {
             runnersListSelect.addItem(run.getRunner());
             runners.put(run.getRunner(), run);
         }
+    }
+
+    @Override
+    protected void handleBreadcrumb() {
+        String caption = "Commit: " + StringUtils.abbreviate(params.getCommitId(), 10);
+        config.getBreadcrumb().setItem(this, caption, 1);
     }
 }

@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.view.main;
+package org.safehaus.chop.webapp.view.chart.layout.item;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;

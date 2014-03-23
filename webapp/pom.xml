@@ -101,7 +101,9 @@
             <exclude>**/RunsCalcTest.java</exclude>
             <exclude>**/OverviewCalcTest.java</exclude>
             <exclude>**/IterationsCalcTest.java</exclude>
+            <!--
             <exclude>**/ChopUiTest.java</exclude>
+            -->
             <exclude>**/DataServiceTest.java</exclude>
           </excludes>
         </configuration>

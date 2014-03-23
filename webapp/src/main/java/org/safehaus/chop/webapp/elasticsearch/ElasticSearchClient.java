@@ -17,7 +17,7 @@ public class ElasticSearchClient implements IElasticSearchClient {
 
 
     @Inject
-    public ElasticSearchClient( ElasticSearchFig elasticFig) {
+    public ElasticSearchClient( ElasticSearchFig elasticFig ) {
         Settings settings = ImmutableSettings.settingsBuilder().build();
 
         client = new TransportClient( settings ).addTransportAddress(

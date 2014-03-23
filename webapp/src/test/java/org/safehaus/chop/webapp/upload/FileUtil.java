@@ -20,7 +20,7 @@ public class FileUtil {
         InputStream input = null;
 
         try {
-            input = new FileInputStream("d:\\temp\\chop-data\\perftest-bucket-2\\tests\\2c6e5647\\project.properties");
+            input = new FileInputStream("<path-to-project.properties>");
             props.load(input);
         } catch (Exception e) {
             e.printStackTrace();
