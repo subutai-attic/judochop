@@ -80,6 +80,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
         ChopUiFig chopUiFig = injector.getInstance( ChopUiFig.class );
 
 
+
         /*
          * --------------------------------------------------------------------
          * Archaius Configuration Settings
@@ -111,7 +112,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
                 }
             }
             else {
-                LOG.info( "ChopUi not started via Launcher" );
+                LOG.warn( "ChopUi not started via Launcher - no command line argument processing will take place." );
             }
         }
         else if ( env == Env.UNIT ) {
@@ -125,8 +126,6 @@ public class ChopUiConfig extends GuiceServletContextListener {
          * Environment Based Configuration Property Adjustments
          * --------------------------------------------------------------------
          */
-
-        ServletContext context = servletContextEvent.getServletContext();
 
         if ( LOG.isDebugEnabled() ) {
             Enumeration<String> names = context.getAttributeNames();

@@ -11,7 +11,7 @@ import org.safehaus.guicyfig.Key;
 public interface ElasticSearchFig extends GuicyFig {
 
     String CLUSTER_NAME_DEFAULT = "elasticsearch";
-    String CLUSTER_NAME_KEY = "cluster.name";
+    String CLUSTER_NAME_KEY = "es.cluster.name";
     @Default( CLUSTER_NAME_DEFAULT )
     @Key( CLUSTER_NAME_KEY )
     String getClusterName();
