@@ -25,11 +25,15 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
+import org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig;
+import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.shiro.MyShiroWebModule;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.cli.CommandLine;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -43,8 +47,11 @@ import com.netflix.config.ConfigurationManager;
 public class ChopUiConfig extends GuiceServletContextListener {
 
     private final static Logger LOG = LoggerFactory.getLogger( ChopUiConfig.class );
+
+    private EsEmbedded esEmbedded;
     private Injector injector;
     private ServletContext context;
+
 
     @Override
     protected Injector getInjector() {
@@ -53,9 +60,8 @@ public class ChopUiConfig extends GuiceServletContextListener {
             return injector;
         }
 
-//        injector = Guice.createInjector( new ChopUiModule() );
-        injector = Guice.createInjector(new MyShiroWebModule(context), new ChopUiModule());
-        InjectorFactory.setInjector(injector);
+        injector = Guice.createInjector( new MyShiroWebModule( context ), new ChopUiModule() );
+        InjectorFactory.setInjector( injector );
 
         return injector;
     }
@@ -63,10 +69,27 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
     @Override
     public void contextInitialized( ServletContextEvent servletContextEvent ) {
-
-//        super.contextInitialized( servletContextEvent );
         context = servletContextEvent.getServletContext();
-        context.setAttribute(Injector.class.getName(), getInjector());
+        context.setAttribute( Injector.class.getName(), getInjector() );
+
+        Injector injector = getInjector();
+        ElasticSearchFig elasticSearchFig = injector.getInstance( ElasticSearchFig.class );
+
+        /*
+         * --------------------------------------------------------------------
+         * Extract Configuration Settings from CommandLine
+         * --------------------------------------------------------------------
+         */
+
+        if ( ChopUiLauncher.getCommandLine() != null ) {
+            CommandLine cl = ChopUiLauncher.getCommandLine();
+
+            if ( cl.hasOption( 'e' ) ) {
+                esEmbedded = new EsEmbedded( elasticSearchFig );
+                esEmbedded.start();
+            }
+        }
+
 
         /*
          * --------------------------------------------------------------------
@@ -78,8 +101,8 @@ public class ChopUiConfig extends GuiceServletContextListener {
         Env env = Env.getEnvironment();
 
         if ( env == Env.ALL ) {
-            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "CHOP" );
-            LOG.info( "Setting environment to: CHOP" );
+            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "PROD" );
+            LOG.info( "Setting environment to: PROD" );
         }
         else if ( env == Env.UNIT ) {
             LOG.info( "Operating in UNIT environment" );
@@ -102,4 +125,15 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
         ServletContext context = servletContextEvent.getServletContext();
     }
+
+
+    @Override
+    public void contextDestroyed( final ServletContextEvent servletContextEvent ) {
+        super.contextDestroyed( servletContextEvent );
+
+        if ( esEmbedded != null ) {
+            esEmbedded.stop();
+        }
+    }
 }
+

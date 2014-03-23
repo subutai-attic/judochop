@@ -8,6 +8,11 @@ import org.safehaus.embedded.jetty.utils.JettyConnectors;
 import org.safehaus.embedded.jetty.utils.JettyContext;
 import org.safehaus.embedded.jetty.utils.Launcher;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.PosixParser;
+
 import com.google.inject.servlet.GuiceFilter;
 
 
@@ -26,6 +31,9 @@ import com.google.inject.servlet.GuiceFilter;
 )
 public class ChopUiLauncher extends Launcher {
 
+    private static CommandLine cl;
+
+
     public ChopUiLauncher() {
         super( ChopUiLauncher.class.getSimpleName(), ChopUiLauncher.class.getClassLoader() );
     }
@@ -38,7 +46,30 @@ public class ChopUiLauncher extends Launcher {
 
 
     public static void main( String[] args ) throws Exception {
+        processCli( args );
         ChopUiLauncher launcher = new ChopUiLauncher();
         launcher.start();
+    }
+
+
+    public static CommandLine getCommandLine() {
+        return cl;
+    }
+
+
+    static void processCli( String[] args ) throws Exception {
+        CommandLineParser parser = new PosixParser();
+        cl = parser.parse( getOptions(), args );
+    }
+
+
+    static Options getOptions() {
+        Options options = new Options();
+
+        options.addOption( "e", "embedded", false, "Starts an embedded ES instance" );
+        options.addOption( "j", "join", true, "Joins an existing ES cluster: cluster name argument." );
+        options.addOption( "c", "client-only", true, "Client to existing ES cluster: transport address" );
+
+        return options;
     }
 }
