@@ -21,6 +21,7 @@ package org.safehaus.chop.webapp;
 
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -40,6 +41,8 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
+
+import static org.safehaus.chop.webapp.ChopUiFig.*;
 
 
 /** ... */
@@ -74,21 +77,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
         Injector injector = getInjector();
         ElasticSearchFig elasticSearchFig = injector.getInstance( ElasticSearchFig.class );
-
-        /*
-         * --------------------------------------------------------------------
-         * Extract Configuration Settings from CommandLine
-         * --------------------------------------------------------------------
-         */
-
-        if ( ChopUiLauncher.getCommandLine() != null ) {
-            CommandLine cl = ChopUiLauncher.getCommandLine();
-
-            if ( cl.hasOption( 'e' ) ) {
-                esEmbedded = new EsEmbedded( elasticSearchFig );
-                esEmbedded.start();
-            }
-        }
+        ChopUiFig chopUiFig = injector.getInstance( ChopUiFig.class );
 
 
         /*
@@ -103,19 +92,31 @@ public class ChopUiConfig extends GuiceServletContextListener {
         if ( env == Env.ALL ) {
             ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "PROD" );
             LOG.info( "Setting environment to: PROD" );
+
+            /*
+             * --------------------------------------------------------------------
+             * Extract Configuration Settings from CommandLine
+             * --------------------------------------------------------------------
+             */
+
+            if ( ChopUiLauncher.getCommandLine() != null ) {
+                CommandLine cl = ChopUiLauncher.getCommandLine();
+
+                if ( cl.hasOption( 'e' ) ) {
+                    LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
+                    esEmbedded = new EsEmbedded( elasticSearchFig );
+                    esEmbedded.start();
+                }
+            }
+            else {
+                LOG.info( "ChopUi not started via Launcher" );
+            }
         }
         else if ( env == Env.UNIT ) {
             LOG.info( "Operating in UNIT environment" );
         }
 
         ConfigurationManager.install( ccc );
-        try {
-            ConfigurationManager.loadCascadedPropertiesFromResources( "project" );
-        }
-        catch ( IOException e ) {
-            LOG.error( "Failed to load project properties!", e );
-            throw new RuntimeException( "Cannot do much without properly loading our configuration.", e );
-        }
 
         /*
          * --------------------------------------------------------------------
@@ -124,6 +125,23 @@ public class ChopUiConfig extends GuiceServletContextListener {
          */
 
         ServletContext context = servletContextEvent.getServletContext();
+
+        if ( LOG.isDebugEnabled() ) {
+            Enumeration<String> names = context.getAttributeNames();
+            LOG.debug( "Dumping attribute names: " );
+            while ( names.hasMoreElements() ) {
+                String name = names.nextElement();
+                LOG.debug( "attribute {} = {}", name, context.getAttribute( name ) );
+            }
+        }
+
+        // Checking if a temp directory is defined - usually null
+        String contextTempDir = ( String ) context.getAttribute( CONTEXT_TEMPDIR_KEY );
+        LOG.info( "From servlet context: {} = {}", CONTEXT_TEMPDIR_KEY, contextTempDir );
+
+        if ( contextTempDir == null ) {
+            LOG.info( "From ChopUiFig {} = {}", CONTEXT_TEMPDIR_KEY, chopUiFig.getContextTempDir() );
+        }
     }
 
 

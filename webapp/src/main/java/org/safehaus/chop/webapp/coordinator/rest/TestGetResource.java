@@ -39,6 +39,7 @@ import com.google.inject.Singleton;
 @Produces( MediaType.TEXT_PLAIN )
 @Path( TestGetResource.ENDPOINT_URL )
 public class TestGetResource {
+    public final static String TEST_MESSAGE = "/testget called";
     public final static String ENDPOINT_URL = "/testget";
     private static final Logger LOG = LoggerFactory.getLogger( TestGetResource.class );
 
@@ -47,6 +48,6 @@ public class TestGetResource {
     @Consumes( MediaType.TEXT_PLAIN )
     public String testget() {
         LOG.warn( "Calling testget" );
-        return "testget called";
+        return TEST_MESSAGE;
     }
 }

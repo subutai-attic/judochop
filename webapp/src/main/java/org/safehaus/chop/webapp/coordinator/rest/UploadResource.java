@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -112,26 +111,34 @@ public class UploadResource implements RestParams {
     private CommitDao commitDao;
 
 
-
+    /**
+     * Uploads a file to the servlet context temp directory. More for testing proper uploads.
+     */
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
+    @Produces( MediaType.TEXT_PLAIN )
     public Response upload( MimeMultipart multipart )
     {
         try {
-            String filename = multipart.getBodyPart(0).getContent().toString();
-            LOG.warn("FILENAME: " + filename);
-            InputStream in = multipart.getBodyPart(1).getInputStream();
-            String fileLocation = /* config.getWarUploadPath() + */ filename;
-            writeToFile(in, fileLocation);
-        } catch (MessagingException ex) {
-            LOG.error("upload", ex);
-        } catch (IOException ex) {
-            LOG.error("upload", ex);
+            String filename = multipart.getBodyPart( 0 ).getContent().toString();
+            LOG.warn( "FILENAME: " + filename );
+            InputStream in = multipart.getBodyPart( 1 ).getInputStream();
+            File tempDir = new File( chopUiFig.getContextTempDir() );
+            String fileLocation = new File( tempDir, filename ).getAbsolutePath();
+            writeToFile( in, fileLocation );
         }
-        return Response.status(Response.Status.CREATED).entity("ok").build();
+        catch ( Exception ex )  {
+            LOG.error( "upload", ex );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( ex.getMessage() ).build();
+        }
+
+        return Response.status( Response.Status.CREATED ).entity( "ok" ).build();
     }
 
 
+    /**
+     * Uploads an executable runner jar into a special path in the temp directory for the application.
+     */
     @POST
     @Path( "/runner" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
@@ -241,7 +248,7 @@ public class UploadResource implements RestParams {
 
 
 
-//    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( "unchecked" )
     @POST
     @Path( "/results" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )

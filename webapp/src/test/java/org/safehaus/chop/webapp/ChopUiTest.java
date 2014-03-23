@@ -22,12 +22,13 @@ import org.safehaus.embedded.jetty.utils.JettyResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
 import com.google.inject.servlet.GuiceFilter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
+
+import static junit.framework.TestCase.assertEquals;
 
 
 /**
@@ -51,15 +52,18 @@ public class ChopUiTest {
     @ClassRule
     public static ElasticSearchResource es = new ElasticSearchResource();
 
+
     static {
         CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
     }
+
 
     @Test
     public void testGet() {
         String serverUrl = jetty.getServerUrl().toExternalForm();
         WebResource resource = Client.create().resource( serverUrl + TestGetResource.ENDPOINT_URL );
         String result = resource.type( MediaType.TEXT_PLAIN_TYPE ).get( String.class );
+        assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
 
 
