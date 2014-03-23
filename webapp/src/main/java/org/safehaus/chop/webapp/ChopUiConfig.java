@@ -104,6 +104,8 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
                 if ( cl.hasOption( 'e' ) ) {
                     LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
+
+                    // This will set the parameters needed in the fig to attach to the embedded instance
                     esEmbedded = new EsEmbedded( elasticSearchFig );
                     esEmbedded.start();
                 }
