@@ -28,8 +28,11 @@ public class GroupByCommit {
     }
 
     private void putRun(Run run) {
-        List<Run> runs = commitRuns.get(run.getCommitId() );
-        runs.add(run);
+        List<Run> runs = commitRuns.get( run.getCommitId() );
+
+        if (runs != null) {
+            runs.add(run);
+        }
     }
 
     public Map<String, List<Run>> get() {

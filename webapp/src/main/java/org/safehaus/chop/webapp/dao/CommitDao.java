@@ -20,6 +20,8 @@ import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 public class CommitDao extends Dao<Commit> {
 
     private static final int MAX_RESULT_SIZE = 10000;
+    private static final String INDEX = "modules";
+    private static final String TYPE = "commit";
 
     @Inject
     public CommitDao( IElasticSearchClient elasticSearchClient ) {
@@ -48,29 +50,32 @@ public class CommitDao extends Dao<Commit> {
 
     public List<Commit> getByModule( String moduleId ) {
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "commit" )
+        LOG.info( "moduleId: {}", moduleId );
+
+        SearchResponse response = getRequest( INDEX, TYPE)
                 .setQuery( termQuery( "moduleId", moduleId ) )
                 .addSort( fieldSort( "createTime" ) )
                 .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
-        ArrayList<Commit> list = new ArrayList<Commit>();
+        ArrayList<Commit> commits = new ArrayList<Commit>();
 
         for ( SearchHit hit : response.getHits().hits() ) {
             Map<String, Object> json = hit.getSource();
 
             BasicCommit commit = new BasicCommit(
                     hit.getId(),
-                    Util.getString(json, "moduleId"),
-                    Util.getString(json, "md5"),
-                    Util.toDate(Util.getString(json, "createTime")),
-                    Util.getString(json, "runnerPath" ) );
+                    Util.getString( json, "moduleId" ),
+                    Util.getString( json, "md5" ),
+                    Util.toDate( Util.getString( json, "createTime" ) ),
+                    Util.getString( json, "runnerPath" )
+            );
 
-            list.add( commit );
+            commits.add( commit );
         }
 
-        return list;
+        LOG.info( "commits: {}", commits.size() );
+
+        return commits;
     }
 }

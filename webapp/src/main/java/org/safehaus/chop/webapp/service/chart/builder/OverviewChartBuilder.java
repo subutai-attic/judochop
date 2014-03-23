@@ -16,6 +16,8 @@ import org.safehaus.chop.webapp.service.chart.series.Series;
 import org.safehaus.chop.webapp.service.chart.series.SeriesBuilder;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -31,8 +33,9 @@ public class OverviewChartBuilder extends ChartBuilder {
     }
 
     public Chart getChart(Params params) {
+        LOG.info( params.toString() );
 
-        List<Commit> commits = commitDao.getByModule(params.getModuleId() );
+        List<Commit> commits = commitDao.getByModule( params.getModuleId() );
         List<Run> runs = runDao.getList( commits, params.getTestName() );
 
         Map<String, List<Run>> commitRuns = new GroupByCommit(commits, runs).get();
