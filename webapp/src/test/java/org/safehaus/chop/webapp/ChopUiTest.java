@@ -51,10 +51,12 @@ public class ChopUiTest {
     @ClassRule
     public static ElasticSearchResource es = new ElasticSearchResource();
 
+    static {
+        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
+    }
 
     @Test
     public void testGet() {
-        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
         String serverUrl = jetty.getServerUrl().toExternalForm();
         WebResource resource = Client.create().resource( serverUrl + TestGetResource.ENDPOINT_URL );
         String result = resource.type( MediaType.TEXT_PLAIN_TYPE ).get( String.class );
@@ -63,7 +65,6 @@ public class ChopUiTest {
 
     @Test
     public void testUpload() {
-        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
         String serverUrl = jetty.getServerUrl().toExternalForm();
         InputStream in = getClass().getClassLoader().getResourceAsStream( "log4j.properties" );
 
