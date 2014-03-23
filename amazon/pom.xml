@@ -77,6 +77,7 @@
         <filtering>true</filtering>
         <includes>
           <include>**/*.properties</include>
+          <include>**/*.json</include>
         </includes>
       </testResource>
     </testResources>
@@ -113,6 +114,11 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jukito</groupId>
+      <artifactId>jukito</artifactId>
     </dependency>
   </dependencies>
 </project>

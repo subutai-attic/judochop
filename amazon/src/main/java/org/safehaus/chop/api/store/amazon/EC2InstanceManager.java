@@ -90,6 +90,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
             runInstancesRequest = runInstancesRequest.withPlacement( new Placement( stack.getDataCenter() ) );
+            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
         }
 
         RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
@@ -129,7 +130,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if ( timeout > SLEEP_LENGTH ) {
             LOG.info( "Waiting for maximum {} msec until all instances are running", timeout );
-            boolean stateCheck = waitUntilRunning( instanceIds, timeout );
+            boolean stateCheck = waitUntil( instanceIds, InstanceState.Running, timeout );
 
             if ( ! stateCheck ) {
                 LOG.warn( "Waiting for instances to get into Running state has timed out" );
@@ -155,6 +156,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
             runInstancesRequest = runInstancesRequest.withPlacement( new Placement( stack.getDataCenter() ) );
+            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
         }
 
         RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
@@ -194,7 +196,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if ( timeout > SLEEP_LENGTH ) {
             LOG.info( "Waiting for maximum {} msec until all instances are running", timeout );
-            boolean stateCheck = waitUntilRunning( instanceIds, timeout );
+            boolean stateCheck = waitUntil( instanceIds, InstanceState.Running, timeout );
 
             if ( ! stateCheck ) {
                 LOG.warn( "Waiting for instances to get into Running state has timed out" );
@@ -210,7 +212,11 @@ public class EC2InstanceManager implements InstanceManager {
 
         String name = getInstanceName( stack, cluster );
 
-        return toInstances( getEC2Instances( name, null ) );
+        if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
+            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+        }
+
+        return toInstances( getEC2Instances( name, InstanceStateName.Running ) );
 
     }
 
@@ -220,7 +226,11 @@ public class EC2InstanceManager implements InstanceManager {
 
         String name = getRunnerName( stack );
 
-        return toInstances( getEC2Instances( name, null ) );
+        if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
+            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+        }
+
+        return toInstances( getEC2Instances( name, InstanceStateName.Running ) );
 
     }
 
@@ -305,13 +315,14 @@ public class EC2InstanceManager implements InstanceManager {
 
 
     /**
-     * Checks the state of all given instances in SLEEP_LENGTH intervals, returns when all instances are in running
+     * Checks the state of all given instances in SLEEP_LENGTH intervals, returns when all instances are in expected
      * state or state check times out
      * @param instanceIds List of instance IDs whose states are going to be checked
+     * @param state Expected state to check
      * @param timeout Timeout length in milliseconds
-     * @return Returns true if all instances are in running state, false if timeout occured
+     * @return Returns true if all instances are in given state, false if timeout occured
      */
-    protected boolean waitUntilRunning ( Collection<String> instanceIds, int timeout ) {
+    public boolean waitUntil ( Collection<String> instanceIds, InstanceState state,  int timeout ) {
 
         List<String> instanceIdCopy = new ArrayList<String>( instanceIds );
         Calendar cal = Calendar.getInstance();
@@ -326,9 +337,8 @@ public class EC2InstanceManager implements InstanceManager {
             Reservation reservation  = disresult.getReservations().iterator().next();
             for ( com.amazonaws.services.ec2.model.Instance in : reservation.getInstances() ) {
                 LOG.info( "{} is {}", in.getInstanceId(), in.getState().getName() );
-                if ( in.getState().getName().equals( InstanceStateName.Running.toString() ) ) {
+                if ( in.getState().getName().equals( state.toString() ) ) {
                     instanceIdCopy.remove( in.getInstanceId() );
-                    LOG.info( "Instance started running with ID: {}", in.getInstanceId() );
                 }
             }
             cal.setTime( new Date() );
@@ -367,6 +377,43 @@ public class EC2InstanceManager implements InstanceManager {
         configuration.setProtocol( Protocol.HTTPS );
         client.setConfiguration( configuration );
         return client;
+    }
+
+
+    protected static String getEndpoint( String availabilityZone ) {
+        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
+        if ( availabilityZone != null ) {
+            if ( availabilityZone.contains( "us-east-1" ) ) {
+                return "ec2.us-east-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "us-west-1" ) ) {
+                return "ec2.us-west-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "us-west-2" ) ) {
+                return "ec2.us-west-2.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "eu-west-1" ) ) {
+                return "ec2.eu-west-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
+                return "ec2.ap-southeast-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
+                return "ec2.ap-southeast-2.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
+                return "ec2.ap-northeast-1.amazonaws.com";
+            }
+            else if ( availabilityZone.contains( "sa-east-1" ) ) {
+                return "ec2.sa-east-1.amazonaws.com";
+            }
+            else {
+                return "ec2.us-east-1.amazonaws.com";
+            }
+        }
+        else {
+            return "ec2.us-east-1.amazonaws.com";
+        }
     }
 
 

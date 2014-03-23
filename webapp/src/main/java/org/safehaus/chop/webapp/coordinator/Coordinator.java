@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.stack.CoordinatedStack;
 import org.safehaus.chop.stack.ICoordinatedCluster;
 import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.spi.InstanceManager;

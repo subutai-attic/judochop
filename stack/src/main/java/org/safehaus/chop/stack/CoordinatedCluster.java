@@ -1,13 +1,8 @@
-package org.safehaus.chop.webapp.coordinator;
+package org.safehaus.chop.stack;
 
 
 import java.util.HashSet;
 import java.util.Set;
-
-import org.safehaus.chop.stack.ICoordinatedCluster;
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.stack.Cluster;
-import org.safehaus.chop.stack.InstanceSpec;
 
 import com.google.common.base.Preconditions;
 

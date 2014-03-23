@@ -57,22 +57,19 @@ public class StackTest {
     @Test
     public void testCombo() throws Exception {
         stack.setName( "UG-2.0" )
-             .setId( uuid )
-             .setDataCenter( "es-east-1c" )
-             .setRuleSetName( "UG-Chop-Rules" ).addInboundRule(
-                              new BasicIpRule().withFromPort( 80 ).withToPort( 8080 ).withIpRanges( "0.0.0.0/32" )
-                                               .withIpProtocol( "tcp" ) ).addInboundRule(
-                              new BasicIpRule().withFromPort( 443 ).withToPort( 8443 ).withIpRanges( "0.0.0.0/32" )
-                                               .withIpProtocol( "tcp" ) )
-             .add( new BasicCluster().setName( "ElasticSearch" ).setSize( 6 ).setInstanceSpec(
-                     new BasicInstanceSpec().setKeyName( "TestKeyPair" )
-                                            .setImageId( "ami-c56152ac" )
-                                            .setScriptEnvProperty( "ES_PATH", "/var/lib/elastic_search" )
-                                            .setScriptEnvProperty( "JAVA_HOME", "/user/lib/jvm/default" )
-                                            .setType( "m1.large" )
-                                            .addSetupScript( new URL( "file://./install_es.sh" ) )
-                                            .addSetupScript( new URL( "file://./setup_cassandra.sh" ) )
-                                             ) )
+            .setId( uuid )
+            .setDataCenter( "es-east-1c" )
+            .setRuleSetName( "UG-Chop-Rules" )
+            .addInboundRule( new BasicIpRule().withFromPort( 80 ).withToPort( 8080 ).withIpRanges( "0.0.0.0/32" )
+                                              .withIpProtocol( "tcp" ) )
+            .addInboundRule( new BasicIpRule().withFromPort( 443 ).withToPort( 8443 ).withIpRanges( "0.0.0.0/32" )
+                                              .withIpProtocol( "tcp" ) )
+            .add( new BasicCluster().setName( "ElasticSearch" ).setSize( 6 ).setInstanceSpec(
+                    new BasicInstanceSpec().setKeyName( "TestKeyPair" ).setImageId( "ami-c56152ac" )
+                                           .setScriptEnvProperty( "ES_PATH", "/var/lib/elastic_search" )
+                                           .setScriptEnvProperty( "JAVA_HOME", "/user/lib/jvm/default" )
+                                           .setType( "m1.large" ).addSetupScript( new URL( "file://./install_es.sh" ) )
+                                           .addSetupScript( new URL( "file://./setup_cassandra.sh" ) ) ) )
             .add( new BasicCluster().setName( "Cassandra" ).setSize( 6 ).setInstanceSpec(
                     new BasicInstanceSpec().setKeyName( "TestKeyPair" )
                                            .setImageId( "ami-c56152ac" )
@@ -81,12 +78,13 @@ public class StackTest {
                                            .setType( "m1.xlarge" )
                                            .addSetupScript( new URL( "file://./install_cassandra.sh" ) )
                                            .addSetupScript( new URL( "file://./setup_cassandra.sh" ) )
-                             ) );
+            ) 
+        );
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString( stack );
         LOG.info( json );
-        LOG.info( "--------------" );
+        LOG.info( "---------" );
 
         BasicStack foo = mapper.readValue( new StringReader( json ), BasicStack.class );
         assertEquals( "UG-2.0", foo.getName() );

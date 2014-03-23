@@ -1,4 +1,4 @@
-package org.safehaus.chop.webapp.coordinator;
+package org.safehaus.chop.stack;
 
 
 import java.util.ArrayList;
@@ -9,15 +9,6 @@ import java.util.UUID;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.stack.BasicIpRuleSet;
-import org.safehaus.chop.stack.ICoordinatedCluster;
-import org.safehaus.chop.stack.ICoordinatedStack;
-import org.safehaus.chop.stack.Cluster;
-import org.safehaus.chop.stack.IpRule;
-import org.safehaus.chop.stack.IpRuleSet;
-import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.stack.StackState;
-import org.safehaus.chop.stack.User;
 
 
 /**
@@ -38,7 +29,7 @@ public class CoordinatedStack implements ICoordinatedStack {
     private Set<Runner> runners;
 
 
-    CoordinatedStack( Stack delegate, User user, Commit commit, Module module ) {
+    public CoordinatedStack( Stack delegate, User user, Commit commit, Module module ) {
         this.delegate = delegate;
         this.clusters = new ArrayList<CoordinatedCluster>( delegate.getClusters().size() );
         this.user = user;
