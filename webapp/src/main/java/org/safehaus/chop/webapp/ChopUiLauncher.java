@@ -10,7 +10,10 @@ import org.safehaus.embedded.jetty.utils.Launcher;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import com.google.inject.servlet.GuiceFilter;
@@ -57,18 +60,45 @@ public class ChopUiLauncher extends Launcher {
     }
 
 
-    static void processCli( String[] args ) throws Exception {
+    static void processCli( String[] args ) {
         CommandLineParser parser = new PosixParser();
-        cl = parser.parse( getOptions(), args );
+        Options options = getOptions();
+
+        try {
+            cl = parser.parse( options, args );
+        }
+        catch ( ParseException e ) {
+            if ( e instanceof MissingArgumentException ) {
+                System.out.println( "Missing option: " + ( ( MissingArgumentException ) e ).getOption() );
+            }
+
+            help( options );
+            System.exit( 1 );
+        }
+
+        if ( cl.hasOption( 'h' ) ) {
+            help( options );
+            System.exit( 0 );
+        }
+    }
+
+
+    static void help( Options options ) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp( "ChopUi", options );
     }
 
 
     static Options getOptions() {
         Options options = new Options();
 
-        options.addOption( "e", "embedded", false, "Starts an embedded ES instance" );
+        options.addOption( "h", "help", false, "Print out help." );
+        options.addOption( "e", "embedded", false, "Starts an embedded ES instance." );
+        options.addOption( "d", "home-dir", true, "The home directory for ChopUi: path to " +
+                "home directory argument." );
         options.addOption( "j", "join", true, "Joins an existing ES cluster: cluster name argument." );
-        options.addOption( "c", "client-only", true, "Client to existing ES cluster: transport address" );
+        options.addOption( "c", "client-only", true, "Client to existing ES cluster: transport address argument " +
+                "(i.e. localhost:3456)" );
 
         return options;
     }
