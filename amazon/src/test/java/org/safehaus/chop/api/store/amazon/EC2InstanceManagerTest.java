@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
  */
 public class EC2InstanceManagerTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( EC2InstanceManagerTest.class );
+    private static final Logger LOG = LoggerFactory.getLogger( EC2InstanceManagerTest.class );
 
     private static AmazonFig amazonFig;
 
@@ -137,7 +137,7 @@ public class EC2InstanceManagerTest {
         }
 
         manager.terminateInstances( instanceIds );
-        boolean terminated = manager.waitUntil( instanceIds, InstanceState.Terminated, 100000 );
+        boolean terminated = manager.waitUntil( instanceIds, InstanceState.ShuttingDown, 100000 );
 
         if( ! terminated ) {
             instances = manager.getClusterInstances( stack, cluster );
@@ -166,7 +166,7 @@ public class EC2InstanceManagerTest {
         }
 
         manager.terminateInstances( instanceIds );
-        boolean terminated = manager.waitUntil( instanceIds, InstanceState.Terminated, 100000 );
+        boolean terminated = manager.waitUntil( instanceIds, InstanceState.ShuttingDown, 100000 );
 
         if( ! terminated ) {
             instances = manager.getRunnerInstances( stack );

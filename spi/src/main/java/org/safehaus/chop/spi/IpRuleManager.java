@@ -36,4 +36,6 @@ public interface IpRuleManager {
     void addRules( String name, Collection<String> ipRanges, String protocol, int fromPort, int toPort );
 
     void applyIpRuleSet( IpRuleSet ruleSet );
+
+    void setDataCenter( String dataCenter );
 }

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 /**
  * A basic IpRuleSet implementation.
@@ -59,5 +61,34 @@ public class BasicIpRuleSet implements IpRuleSet {
     public BasicIpRuleSet addOutboundRule( IpRule rule ) {
         this.outboundRules.add( rule );
         return this;
+    }
+
+
+    @Override
+    public boolean equals( final Object obj ) {
+        if( ! ( obj instanceof IpRuleSet ) ) {
+            return false;
+        }
+        IpRuleSet set = ( IpRuleSet )obj;
+
+        if ( ! name.equals( set.getName() ) || inboundRules.size() != set.getInboundRules().size() ||
+                outboundRules.size() != outboundRules.size() ) {
+            return false;
+        }
+
+        for( IpRule myRule: inboundRules ) {
+            boolean exists = false;
+            for ( IpRule rule: set.getInboundRules() ) {
+                if( myRule.equals( rule ) ) {
+                    exists = true;
+                    break;
+                }
+            }
+            if( ! exists ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

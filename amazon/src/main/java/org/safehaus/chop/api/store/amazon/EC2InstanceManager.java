@@ -321,6 +321,7 @@ public class EC2InstanceManager implements InstanceManager {
         cal.setTime( new Date() );
         long startTime = cal.getTimeInMillis();
         long timePassed;
+        String stateStr;
 
         do {
             DescribeInstancesRequest dis = ( new DescribeInstancesRequest() ).withInstanceIds( instanceIdCopy );
@@ -328,9 +329,45 @@ public class EC2InstanceManager implements InstanceManager {
             // Since the request is filtered with instance IDs, there is always only one Reservation object
             Reservation reservation  = disresult.getReservations().iterator().next();
             for ( com.amazonaws.services.ec2.model.Instance in : reservation.getInstances() ) {
+
+                stateStr = in.getState().getName();
                 LOG.info( "{} is {}", in.getInstanceId(), in.getState().getName() );
-                if ( in.getState().getName().equals( state.toString() ) ) {
-                    instanceIdCopy.remove( in.getInstanceId() );
+
+
+                /** If expected state is ShuttingDown, also accept the Terminated ones */
+                if( state == InstanceState.ShuttingDown ) {
+
+                    if ( stateStr.equals( state.toString() ) ||
+                            stateStr.equals( InstanceState.Terminated.toString() ) ) {
+
+                        instanceIdCopy.remove( in.getInstanceId() );
+                    }
+
+                }
+                /** If expected state is Pending, also accept the Running ones */
+                else if( state == InstanceState.Pending ) {
+
+                    if ( stateStr.equals( state.toString() ) ||
+                            stateStr.equals( InstanceState.Running.toString() ) ) {
+
+                        instanceIdCopy.remove( in.getInstanceId() );
+                    }
+
+                }
+                /** If expected state is Stopping, also accept the Stopped ones */
+                else if( state == InstanceState.Stopping ) {
+
+                    if ( stateStr.equals( state.toString() ) ||
+                            stateStr.equals( InstanceState.Stopped.toString() ) ) {
+
+                        instanceIdCopy.remove( in.getInstanceId() );
+                    }
+
+                }
+                else {
+                    if ( in.getState().getName().equals( state.toString() ) ) {
+                        instanceIdCopy.remove( in.getInstanceId() );
+                    }
                 }
             }
             cal.setTime( new Date() );

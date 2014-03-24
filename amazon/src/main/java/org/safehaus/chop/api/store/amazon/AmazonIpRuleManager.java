@@ -42,6 +42,12 @@ public class AmazonIpRuleManager implements IpRuleManager {
 
 
     @Override
+    public void setDataCenter( final String dataCenter ) {
+        client.setEndpoint( AmazonUtils.getEndpoint( dataCenter ) );
+    }
+
+
+    @Override
     public void applyIpRuleSet( final IpRuleSet ruleSet ) {
         if( exists( ruleSet.getName() ) ) {
             Collection<IpRule> inbound = getRules( ruleSet.getName(), true );
@@ -57,7 +63,7 @@ public class AmazonIpRuleManager implements IpRuleManager {
             addRules( ruleSet.getName(), rule.getIpRanges(), rule.getIpProtocol(), rule.getFromPort(),
                     rule.getToPort() );
         }
-        for( IpRule rule: ruleSet.getInboundRules() ) {
+        for( IpRule rule: ruleSet.getOutboundRules() ) {
             addRules( ruleSet.getName(), rule.getIpRanges(), rule.getIpProtocol(), rule.getFromPort(),
                                 rule.getToPort() );
         }

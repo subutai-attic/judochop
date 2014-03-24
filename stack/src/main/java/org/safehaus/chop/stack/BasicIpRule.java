@@ -87,4 +87,33 @@ public class BasicIpRule implements IpRule {
         Collections.addAll( this.ipRanges, ipRanges );
         return this;
     }
+
+
+    @Override
+    public boolean equals( final Object obj ) {
+        if( ! ( obj instanceof IpRule ) ) {
+            return false;
+        }
+        IpRule rule = ( IpRule )obj;
+
+        if( ! fromPort.equals( rule.getFromPort() ) || ! toPort.equals( rule.getToPort() ) ||
+                ! ipProtocol.equals( rule.getIpProtocol() ) || ipRanges.size() != rule.getIpRanges().size() ) {
+            return false;
+        }
+
+        for( String myRange: ipRanges ) {
+            boolean exists = false;
+            for( String range: rule.getIpRanges() ) {
+                if( myRange.equals( range ) ) {
+                    exists = true;
+                    break;
+                }
+            }
+            if( ! exists ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
