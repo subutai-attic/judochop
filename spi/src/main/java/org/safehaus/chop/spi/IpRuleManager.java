@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.stack.IpRule;
+import org.safehaus.chop.stack.IpRuleSet;
 
 
 /**
@@ -20,7 +21,9 @@ public interface IpRuleManager {
 
     boolean exists( String name );
 
-    Collection<IpRule> getRuleSet( String name, boolean inbound );
+    Collection<IpRule> getRules( String name, boolean inbound );
+
+    IpRuleSet getIpRuleSet( String name );
 
     void deleteRules( String name, IpRule... ipRules );
 
@@ -30,6 +33,7 @@ public interface IpRuleManager {
 
     void addRules( String name, Collection<String> ipRanges, String protocol, int port );
 
-    void updateRules( String name, Collection<Instance> instances, Collection<Integer> ports, boolean clearAllRecords );
+    void addRules( String name, Collection<String> ipRanges, String protocol, int fromPort, int toPort );
 
+    void applyIpRuleSet( IpRuleSet ruleSet );
 }

@@ -66,6 +66,11 @@ public class BasicIpRule implements IpRule {
     }
 
 
+    public void setToPort( Integer toPort ) {
+        this.toPort = toPort;
+    }
+
+
     @Override
     public List<String> getIpRanges() {
         return ipRanges;

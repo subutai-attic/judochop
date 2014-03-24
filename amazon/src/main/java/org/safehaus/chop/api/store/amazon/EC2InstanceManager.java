@@ -19,13 +19,6 @@ import org.safehaus.chop.stack.InstanceSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
@@ -56,8 +49,7 @@ public class EC2InstanceManager implements InstanceManager {
     @Inject
     public EC2InstanceManager( AmazonFig amazonFig ) {
         this.amazonFig = amazonFig;
-        client = getEC2Client( amazonFig.getAwsAccessKey(), amazonFig.getAwsSecretKey() );
-
+        client = AmazonUtils.getEC2Client( amazonFig.getAwsAccessKey(), amazonFig.getAwsSecretKey() );
     }
 
 
@@ -90,7 +82,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
             runInstancesRequest = runInstancesRequest.withPlacement( new Placement( stack.getDataCenter() ) );
-            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+            client.setEndpoint( AmazonUtils.getEndpoint( stack.getDataCenter() ) );
         }
 
         RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
@@ -156,7 +148,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
             runInstancesRequest = runInstancesRequest.withPlacement( new Placement( stack.getDataCenter() ) );
-            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+            client.setEndpoint( AmazonUtils.getEndpoint( stack.getDataCenter() ) );
         }
 
         RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
@@ -213,7 +205,7 @@ public class EC2InstanceManager implements InstanceManager {
         String name = getInstanceName( stack, cluster );
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
-            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+            client.setEndpoint( AmazonUtils.getEndpoint( stack.getDataCenter() ) );
         }
 
         return toInstances( getEC2Instances( name, InstanceStateName.Running ) );
@@ -227,7 +219,7 @@ public class EC2InstanceManager implements InstanceManager {
         String name = getRunnerName( stack );
 
         if( stack.getDataCenter() != null && ! stack.getDataCenter().isEmpty() ) {
-            client.setEndpoint( getEndpoint( stack.getDataCenter() ) );
+            client.setEndpoint( AmazonUtils.getEndpoint( stack.getDataCenter() ) );
         }
 
         return toInstances( getEC2Instances( name, InstanceStateName.Running ) );
@@ -353,67 +345,6 @@ public class EC2InstanceManager implements InstanceManager {
         while ( timePassed < timeout && instanceIdCopy.size() > 0 );
 
         return ( timePassed < timeout );
-    }
-
-
-    /**
-     * @param accessKey
-     * @param secretKey
-     * @return
-     */
-    protected AmazonEC2Client getEC2Client( String accessKey, String secretKey ) {
-        AWSCredentialsProvider provider;
-        if ( accessKey != null && secretKey != null ) {
-            AWSCredentials credentials = new BasicAWSCredentials( accessKey, secretKey );
-            provider = new StaticCredentialsProvider( credentials );
-        }
-        else {
-            provider = new DefaultAWSCredentialsProviderChain();
-        }
-
-        AmazonEC2Client client = new AmazonEC2Client( provider );
-
-        ClientConfiguration configuration = new ClientConfiguration();
-        configuration.setProtocol( Protocol.HTTPS );
-        client.setConfiguration( configuration );
-        return client;
-    }
-
-
-    protected static String getEndpoint( String availabilityZone ) {
-        // see http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region
-        if ( availabilityZone != null ) {
-            if ( availabilityZone.contains( "us-east-1" ) ) {
-                return "ec2.us-east-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "us-west-1" ) ) {
-                return "ec2.us-west-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "us-west-2" ) ) {
-                return "ec2.us-west-2.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "eu-west-1" ) ) {
-                return "ec2.eu-west-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-southeast-1" ) ) {
-                return "ec2.ap-southeast-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-southeast-2" ) ) {
-                return "ec2.ap-southeast-2.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "ap-northeast-1" ) ) {
-                return "ec2.ap-northeast-1.amazonaws.com";
-            }
-            else if ( availabilityZone.contains( "sa-east-1" ) ) {
-                return "ec2.sa-east-1.amazonaws.com";
-            }
-            else {
-                return "ec2.us-east-1.amazonaws.com";
-            }
-        }
-        else {
-            return "ec2.us-east-1.amazonaws.com";
-        }
     }
 
 
