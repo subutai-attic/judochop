@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
+
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -14,21 +15,24 @@ import java.util.*;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
-public class ModuleDao extends Dao<Module> {
+public class ModuleDao extends Dao {
 
+    public static final String DAO_INDEX_KEY = "modules";
+    public static final String DAO_TYPE_KEY = "module";
 
     private static final int MAX_RESULT_SIZE = 1000;
+
 
     @Inject
     public ModuleDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
-    @Override
+
     public boolean save( Module module ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "module", module.getId() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, module.getId() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -46,11 +50,12 @@ public class ModuleDao extends Dao<Module> {
         return response.isCreated();
     }
 
+
     public Module get( String id ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "module" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setQuery( termQuery( "_id", id ) )
                 .execute()
                 .actionGet();
@@ -59,6 +64,7 @@ public class ModuleDao extends Dao<Module> {
 
         return hits.length > 0 ? toModule( hits[0] ) : null;
     }
+
 
     private static Module toModule( SearchHit hit ) {
         Map<String, Object> json = hit.getSource();
@@ -75,8 +81,8 @@ public class ModuleDao extends Dao<Module> {
     public List<Module> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "module" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();

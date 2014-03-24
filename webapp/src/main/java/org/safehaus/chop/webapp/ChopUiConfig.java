@@ -164,7 +164,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
         try {
             setupDao.setup();
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error( "Failed to setup the storage!", e );
         }
     }

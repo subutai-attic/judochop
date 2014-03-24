@@ -18,19 +18,24 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
-public class RunResultDao extends Dao<RunResult> {
+public class RunResultDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "modules";
+    public static final String DAO_TYPE_KEY = "runResult";
 
     private static final int MAX_RESULT_SIZE = 1000000;
+
 
     @Inject
     public RunResultDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
+
     public boolean save( RunResult runResult ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "runResult", runResult.getId() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runResult.getId() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -50,11 +55,12 @@ public class RunResultDao extends Dao<RunResult> {
         return response.isCreated();
     }
 
+
     public List<RunResult> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "runResult" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .addSort( fieldSort( "createTime" ) )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -62,6 +68,7 @@ public class RunResultDao extends Dao<RunResult> {
 
         return toList( response );
     }
+
 
     private static List<RunResult> toList( SearchResponse response ) {
         ArrayList<RunResult> list = new ArrayList<RunResult>();
@@ -72,6 +79,7 @@ public class RunResultDao extends Dao<RunResult> {
 
         return list;
     }
+
 
     private static RunResult toRunResult( SearchHit hit ) {
 
@@ -88,13 +96,14 @@ public class RunResultDao extends Dao<RunResult> {
         );
     }
 
+
     public Map<Run, List<RunResult>> getMap(Map<String, Run> runs) {
 
         String runIds = StringUtils.join(runs.keySet(), ' ');
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "runResult" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setQuery( multiMatchQuery( runIds, "runId" ) )
                 .addSort( fieldSort( "createTime" ) )
                 .setSize( MAX_RESULT_SIZE )
@@ -120,11 +129,12 @@ public class RunResultDao extends Dao<RunResult> {
         return runResults;
     }
 
+
     public String getFailures( String runResultId ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "runResult" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY)
                 .setQuery( termQuery( "_id", runResultId ) )
                 .execute()
                 .actionGet();
@@ -133,5 +143,4 @@ public class RunResultDao extends Dao<RunResult> {
 
         return hits.length > 0 ? Util.getString(hits[0].getSource(), "failures") : "";
     }
-
 }

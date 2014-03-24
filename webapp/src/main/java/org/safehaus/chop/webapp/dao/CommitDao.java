@@ -17,18 +17,20 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
-public class CommitDao extends Dao<Commit> {
+public class CommitDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "modules";
+    public static final String DAO_TYPE_KEY = "commit";
 
     private static final int MAX_RESULT_SIZE = 10000;
-    private static final String INDEX = "modules";
-    private static final String TYPE = "commit";
+
 
     @Inject
     public CommitDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
-    @Override
+
     public boolean save( Commit commit ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
@@ -48,11 +50,12 @@ public class CommitDao extends Dao<Commit> {
         return response.isCreated();
     }
 
+
     public List<Commit> getByModule( String moduleId ) {
 
         LOG.info( "moduleId: {}", moduleId );
 
-        SearchResponse response = getRequest( INDEX, TYPE)
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( termQuery( "moduleId", moduleId ) )
                 .addSort( fieldSort( "createTime" ) )
                 .setSize( MAX_RESULT_SIZE )

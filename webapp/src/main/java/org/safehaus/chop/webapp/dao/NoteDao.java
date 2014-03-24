@@ -16,20 +16,24 @@ import java.util.Map;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-public class NoteDao extends Dao<Note> {
+public class NoteDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "modules";
+    public static final String DAO_TYPE_KEY = "note";
 
     private static final int MAX_RESULT_SIZE = 10000;
+
 
     @Inject
     public NoteDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
-    @Override
+
     public boolean save( Note note ) throws IOException {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "note", note.getId() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, note.getId() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -45,6 +49,7 @@ public class NoteDao extends Dao<Note> {
         return response.isCreated();
     }
 
+
     public Note get( String commitId, int runNumber ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
@@ -52,19 +57,19 @@ public class NoteDao extends Dao<Note> {
                 .must( termQuery( "runNumber", runNumber ) );
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "modules" )
-                .setTypes( "note" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setQuery( queryBuilder )
                 .execute()
                 .actionGet();
 
         SearchHit hits[] = response.getHits().getHits();
 
-        if (hits.length == 0) {
+        if ( hits.length == 0 ) {
             return null;
         }
 
-        Map<String, Object> json = hits[0].getSource();
+        Map<String, Object> json = hits[ 0 ].getSource();
 
         return new Note(
                 Util.getString( json, "moduleId" ),

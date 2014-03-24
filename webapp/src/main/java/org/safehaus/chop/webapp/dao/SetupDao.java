@@ -1,50 +1,58 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.webapp.dao.model.Note;
+
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.client.IndicesAdminClient;
+import org.reflections.Reflections;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.safehaus.chop.webapp.elasticsearch.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Set;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 public class SetupDao {
 
-    private final static Logger LOG = LoggerFactory.getLogger(SetupDao.class);
+    private final static Logger LOG = LoggerFactory.getLogger( SetupDao.class );
 
     protected IElasticSearchClient elasticSearchClient;
 
     @Inject
-    public SetupDao(IElasticSearchClient elasticSearchClient) {
+    public SetupDao( IElasticSearchClient elasticSearchClient ) {
         this.elasticSearchClient = elasticSearchClient;
     }
 
-    public void setup() throws IOException {
+    public void setup() throws IOException, NoSuchFieldException, IllegalAccessException {
 
-        IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "module", "testModule" )
-                .setRefresh(true)
-                .setSource(
-                        jsonBuilder()
-                                .startObject()
-                                .field("groupId", "testModuleGroup" )
-                                .endObject()
-                )
-                .execute()
-                .actionGet();
+        String key;
+        CreateIndexResponse ciResp;
 
-        boolean created = response.isCreated();
-        LOG.info("Index created: " + created);
+        Reflections reflections = new Reflections( "org.safehaus.chop.webapp.dao" );
+        Set<Class<? extends Dao>> daoClasses = reflections.getSubTypesOf( Dao.class );
+
+        IndicesAdminClient client = elasticSearchClient.getClient().admin().indices();
+
+        for( Class<? extends Dao> daoClass : daoClasses ) {
+
+            key = daoClass.getDeclaredField( "DAO_INDEX_KEY" ).get( null ).toString();
+
+            if( ! client.exists( new IndicesExistsRequest( key ) ).actionGet().isExists() ) {
+                ciResp = client.create( new CreateIndexRequest( key ) ).actionGet();
+                if( ciResp.isAcknowledged() ) {
+                    LOG.debug( "Index for key {} didn't exist, now created", key );
+                }
+                else {
+                    LOG.debug( "Could not create index for key: {}", key );
+                }
+            }
+            else {
+                LOG.debug( "Key {} already exists", key );
+            }
+        }
     }
 
 }

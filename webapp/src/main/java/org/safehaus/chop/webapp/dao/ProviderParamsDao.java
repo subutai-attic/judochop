@@ -21,11 +21,13 @@ import com.google.inject.Singleton;
 
 
 @Singleton
-public class ProviderParamsDao extends Dao<ProviderParams> {
+public class ProviderParamsDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "providerparams";
+    public static final String DAO_TYPE_KEY = "providerparam";
 
     private static final int MAX_RESULT_SIZE = 10000;
-    private static final String INDEX_KEY = "providerparams";
-    private static final String TYPE_KEY = "providerparam";
+
 
     @Inject
     public ProviderParamsDao ( IElasticSearchClient e ) {
@@ -33,11 +35,10 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
     }
 
 
-    @Override
     public boolean save( final ProviderParams pp ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( INDEX_KEY, TYPE_KEY, pp.getUsername() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, pp.getUsername() )
                 .setRefresh( true )
                 .setSource(
                     jsonBuilder()
@@ -65,8 +66,8 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
     public ProviderParams getByUser( String username ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-            .prepareSearch( INDEX_KEY )
-            .setTypes( TYPE_KEY )
+            .prepareSearch( DAO_INDEX_KEY )
+            .setTypes( DAO_TYPE_KEY )
             .setQuery( termQuery( "_id", username ) )
             .execute()
             .actionGet();
@@ -75,6 +76,7 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
 
         return hits.length > 0 ? toProviderParams( hits[0] ) : null;
     }
+
 
     private static ProviderParams toProviderParams( SearchHit hit ) {
 
@@ -93,11 +95,12 @@ public class ProviderParamsDao extends Dao<ProviderParams> {
         );
     }
 
+
     public List<ProviderParams> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( INDEX_KEY )
-                .setTypes( TYPE_KEY )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();

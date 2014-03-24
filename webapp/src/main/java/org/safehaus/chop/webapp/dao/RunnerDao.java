@@ -17,19 +17,22 @@ import java.util.Map;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-public class RunnerDao {
+public class RunnerDao extends Dao {
 
-    protected IElasticSearchClient elasticSearchClient;
+    public static final String DAO_INDEX_KEY = "runners";
+    public static final String DAO_TYPE_KEY = "runner";
+
 
     @Inject
     public RunnerDao( IElasticSearchClient elasticSearchClient ) {
-        this.elasticSearchClient = elasticSearchClient;
+        super( elasticSearchClient );
     }
+
 
     public boolean save( Runner runner, String commitId ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "runners", "runner", runner.getHostname() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -48,10 +51,11 @@ public class RunnerDao {
         return response.isCreated();
     }
 
+
     public boolean delete( String hostname ) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( "runners", "runner", hostname )
+                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, hostname )
                 .setRefresh( true )
                 .execute()
                 .actionGet();
@@ -59,11 +63,12 @@ public class RunnerDao {
         return response.isFound();
     }
 
+
     public List<Runner> getRunners( String commitId ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( "runners" )
-                .setTypes( "runner" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setQuery( termQuery( "commitId", commitId.toLowerCase() ) )
                 .execute()
                 .actionGet();
@@ -76,6 +81,7 @@ public class RunnerDao {
 
         return runners;
     }
+
 
     private static Runner toRunner( SearchHit hit ) {
 

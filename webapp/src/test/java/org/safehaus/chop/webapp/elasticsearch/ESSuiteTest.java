@@ -1,8 +1,10 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
+import java.util.Collection;
 import java.util.Date;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;

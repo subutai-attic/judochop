@@ -7,15 +7,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.facet.Facet;
-import org.elasticsearch.search.facet.FacetBuilder;
-import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.statistical.StatisticalFacet;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Run;
-import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;
 
@@ -25,23 +20,26 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.elasticsearch.search.facet.FacetBuilders.statisticalFacet;
-import static org.elasticsearch.search.facet.FacetBuilders.termsFacet;
 
-public class RunDao extends Dao<Run> {
+
+public class RunDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "modules";
+    public static final String DAO_TYPE_KEY = "run";
 
     private static final int MAX_RESULT_SIZE = 10000;
-    private static final String INDEX = "modules";
-    private static final String TYPE = "run";
+
 
     @Inject
     public RunDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
+
     public boolean save( Run run ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "run", run.getId() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, run.getId() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -74,9 +72,10 @@ public class RunDao extends Dao<Run> {
         return response.isCreated();
     }
 
+
     public Run get( String runId ) {
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( termQuery( "_id", runId ) )
                 .execute()
                 .actionGet();
@@ -86,6 +85,7 @@ public class RunDao extends Dao<Run> {
         return hits.length > 0 ? toRun( hits[0] ) : null;
     }
 
+
     // <runId, Run>
     public Map<String, Run> getMap( String commitId, int runNumber, String testName ) {
 
@@ -94,7 +94,7 @@ public class RunDao extends Dao<Run> {
                 .must( termQuery( "runNumber", runNumber ) )
                 .must( termQuery( "testName", testName.toLowerCase() ) );
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -108,6 +108,7 @@ public class RunDao extends Dao<Run> {
 
         return runs;
     }
+
 
     public static Run toRun( SearchHit hit ) {
 
@@ -125,14 +126,16 @@ public class RunDao extends Dao<Run> {
         return run;
     }
 
+
     public List<Run> getAll() {
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
         return toList( response );
     }
+
 
     public List<Run> getList( String commitId, String testName ) {
 
@@ -140,7 +143,7 @@ public class RunDao extends Dao<Run> {
                 .must( termQuery( "testName", testName.toLowerCase() ) )
                 .must( termQuery( "commitId", commitId.toLowerCase() ) );
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
@@ -148,13 +151,14 @@ public class RunDao extends Dao<Run> {
         return toList( response );
     }
 
+
     public List<Run> getList( String commitId, int runNumber ) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must( termQuery( "commitId", commitId.toLowerCase() ) )
                 .must( termQuery( "runNumber", runNumber ) );
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( queryBuilder )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -162,6 +166,7 @@ public class RunDao extends Dao<Run> {
 
         return toList( response );
     }
+
 
     private String concatIds( List<Commit> commits ) {
 
@@ -174,12 +179,13 @@ public class RunDao extends Dao<Run> {
         return ids;
     }
 
+
     public List<Run> getList( List<Commit> commits, String testName ) {
 
         String commitIds = concatIds( commits );
         LOG.info("commitIds: {}; testName: {}", commitIds, testName);
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( multiMatchQuery( commitIds, "commitId" ) )
                 .setQuery( termQuery( "testName", testName.toLowerCase() ) )
                 .setSize( MAX_RESULT_SIZE )
@@ -193,11 +199,12 @@ public class RunDao extends Dao<Run> {
         return runs;
     }
 
+
     public Set<String> getTestNames( List<Commit> commits ) {
 
         String commitIds = StringUtils.join( commits, ' ' );
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( multiMatchQuery( commitIds, "commitId" ) )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
@@ -212,6 +219,7 @@ public class RunDao extends Dao<Run> {
         return names;
     }
 
+
     private static List<Run> toList( SearchResponse response ) {
 
         ArrayList<Run> list = new ArrayList<Run>();
@@ -223,9 +231,10 @@ public class RunDao extends Dao<Run> {
         return list;
     }
 
+
     public int getNextRunNumber( String commitId ) {
 
-        SearchResponse response = getRequest( INDEX, TYPE )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( termQuery( "commitId", commitId ) )
                 .setSize( 0 )
                 .addFacet( statisticalFacet( "stat" ).field( "runNumber" ) )

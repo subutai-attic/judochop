@@ -16,22 +16,24 @@ import java.util.Map;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-public class UserDao extends Dao<User> {
+public class UserDao extends Dao {
+
+    public static final String DAO_INDEX_KEY = "users";
+    public static final String DAO_TYPE_KEY = "user";
 
     private static final int MAX_RESULT_SIZE = 10000;
 
-    public static final String INDEX = "users";
 
     @Inject
     public UserDao( IElasticSearchClient elasticSearchClient ) {
         super( elasticSearchClient );
     }
 
-    @Override
+
     public boolean save( User user ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( INDEX, "user", user.getUsername() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, user.getUsername() )
                 .setRefresh( true )
                 .setSource(
                         jsonBuilder()
@@ -45,11 +47,12 @@ public class UserDao extends Dao<User> {
         return response.isCreated();
     }
 
+
     public User get( String username ) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( INDEX )
-                .setTypes( "user" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setQuery( termQuery( "_id", username ) )
                 .execute()
                 .actionGet();
@@ -59,10 +62,11 @@ public class UserDao extends Dao<User> {
         return hits.length > 0 ? toUser( hits[0] ) : null;
     }
 
+
     public List<User> getList() {
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( INDEX )
-                .setTypes( "user" )
+                .prepareSearch( DAO_INDEX_KEY )
+                .setTypes( DAO_TYPE_KEY )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();
@@ -76,6 +80,7 @@ public class UserDao extends Dao<User> {
         return users;
     }
 
+
     public static User toUser( SearchHit hit ) {
         Map<String, Object> json = hit.getSource();
 
@@ -85,15 +90,15 @@ public class UserDao extends Dao<User> {
         );
     }
 
+
     public boolean delete( String username ) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( INDEX, "user", username )
+                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, username )
                 .setRefresh( true )
                 .execute()
                 .actionGet();
 
         return response.isFound();
     }
-
 }
