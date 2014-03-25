@@ -39,7 +39,7 @@ public class AmazonIpRuleManagerTest {
 
     @BeforeClass
     public static void setUpTestEnv() {
-        Injector injector = Guice.createInjector( new AmazonStoreModule() );
+        Injector injector = Guice.createInjector( new AmazonModule() );
         amazonFig = injector.getInstance( AmazonFig.class );
 
         String accessKey = amazonFig.getAwsAccessKey();
