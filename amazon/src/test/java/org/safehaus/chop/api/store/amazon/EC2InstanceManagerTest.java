@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.spi.LaunchResult;
 import org.safehaus.chop.stack.CoordinatedStack;
 import org.safehaus.chop.stack.ICoordinatedCluster;
 import org.safehaus.chop.stack.Instance;
@@ -123,7 +124,9 @@ public class EC2InstanceManagerTest {
         ICoordinatedCluster cluster = stack.getClusters().get( 0 );
         LOG.info( "Launching cluster {}'s {} instances...", cluster.getName(), cluster.getSize()  );
 
-        manager.launchCluster( stack,  stack.getClusters().get( 0 ), 100000 );
+        LaunchResult result = manager.launchCluster( stack, cluster, 100000 );
+
+        assertEquals( cluster.getSize(), result.getCount() );
 
         Collection<Instance> instances = manager.getClusterInstances( stack, cluster );
 
@@ -152,7 +155,9 @@ public class EC2InstanceManagerTest {
 
         int instanceCount = 2;
         InstanceSpec iSpec = stack.getClusters().get( 0 ).getInstanceSpec();
-        manager.launchRunners( stack, iSpec, instanceCount, 100000 );
+        LaunchResult result = manager.launchRunners( stack, iSpec, instanceCount, 100000 );
+
+        assertEquals( instanceCount, result.getCount() );
 
         Collection<Instance> instances = manager.getRunnerInstances( stack );
 
