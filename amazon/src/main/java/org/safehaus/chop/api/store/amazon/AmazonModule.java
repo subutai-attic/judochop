@@ -13,7 +13,6 @@ import java.util.List;
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.spi.InstanceManager;
-import org.safehaus.chop.spi.InstanceRegistry;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 
@@ -29,6 +28,5 @@ public class AmazonModule extends AbstractModule implements Constants {
         figs.add( Runner.class );
         install( new GuicyFigModule( figs ) );
         bind( InstanceManager.class ).to( EC2InstanceManager.class );
-        bind( InstanceRegistry.class ).to( EC2InstanceRegistry.class );
     }
 }

@@ -12,7 +12,6 @@ import org.safehaus.chop.stack.CoordinatedStack;
 import org.safehaus.chop.stack.ICoordinatedCluster;
 import org.safehaus.chop.stack.Instance;
 import org.safehaus.chop.spi.InstanceManager;
-import org.safehaus.chop.spi.InstanceRegistry;
 import org.safehaus.chop.spi.LaunchResult;
 import org.safehaus.chop.stack.Stack;
 import org.safehaus.chop.stack.User;
@@ -34,9 +33,6 @@ public class Coordinator {
 
     @Inject
     private InstanceManager instanceManager;
-
-    @Inject
-    private InstanceRegistry instanceRegistry;
 
 
     public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module ) {
