@@ -60,7 +60,7 @@ public class EC2InstanceManagerTest {
 
     @BeforeClass
     public static void setUpData() {
-        Injector injector = Guice.createInjector( new AmazonStoreModule() );
+        Injector injector = Guice.createInjector( new AmazonModule() );
         amazonFig = injector.getInstance( AmazonFig.class );
 
         String accessKey = amazonFig.getAwsAccessKey();

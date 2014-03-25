@@ -34,80 +34,40 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
-
 
 public class Utils {
 
     private final static Logger logger = Logger.getLogger( Utils.class.getName() );
 
 
-    public static AmazonS3 getS3Client( String accessKey, String secretKey ) {
-        AWSCredentialsProvider provider;
-        if ( accessKey != null && secretKey != null ) {
-            AWSCredentials credentials = new BasicAWSCredentials( accessKey, secretKey );
-            provider = new StaticCredentialsProvider( credentials );
-        }
-        else {
-            provider = new DefaultAWSCredentialsProviderChain();
-        }
-
-        return new AmazonS3Client( provider );
-    }
-
-
-    public static boolean uploadToS3( AmazonS3 s3, String bucketName, String destinationFile, File source ) {
-        TransferManager mgr = new TransferManager( s3 );
-        Upload upload = mgr.upload( bucketName, destinationFile, source );
-
-        try {
-            upload.waitForUploadResult();
-        }
-        catch ( InterruptedException e ) {
-            logger.log( Level.WARNING, "Upload to S3 failed", e );
-            return false;
-        }
-
-        return true;
-    }
-
-
     /**
-     * @param warFile War file to be extracted
-     * @param destinationFolder Folder which the warFile will be extracted to. War file's root will be this folder once
+     * @param jarFile Jar file to be extracted
+     * @param destinationFolder Folder which the jarFile will be extracted to. Jar file's root will be this folder once
      * it is extracted.
      */
-    public static void extractWar( File warFile, String destinationFolder ) throws MojoExecutionException {
+    public static void extractJar( File jarFile, String destinationFolder ) throws MojoExecutionException {
         try {
-            ZipUnArchiver unArchiver = new ZipUnArchiver( warFile );
+            ZipUnArchiver unArchiver = new ZipUnArchiver( jarFile );
             unArchiver.enableLogging( new ConsoleLogger( org.codehaus.plexus.logging.Logger.LEVEL_INFO, "console" ) );
             unArchiver.setDestDirectory( new File( destinationFolder ) );
             unArchiver.extract();
         }
         catch ( Exception e ) {
-            throw new MojoExecutionException( "Error while extracting WAR file", e );
+            throw new MojoExecutionException( "Error while extracting JAR file", e );
         }
     }
 
 
     /**
-     * @param warFile War file to be created
-     * @param sourceFolder War file will be created out of the contents of this folder. This corresponds to the root
-     * folder of the war file once it is created.
+     * @param jarFile Jar file to be created
+     * @param sourceFolder Jar file will be created out of the contents of this folder. This corresponds to the root
+     * folder of the jar file once it is created.
      */
-    public static void archiveWar( File warFile, String sourceFolder ) throws MojoExecutionException {
+    public static void archiveWar( File jarFile, String sourceFolder ) throws MojoExecutionException {
         try {
             ZipArchiver archiver = new ZipArchiver();
             archiver.enableLogging( new ConsoleLogger( org.codehaus.plexus.logging.Logger.LEVEL_INFO, "console" ) );
-            archiver.setDestFile( warFile );
+            archiver.setDestFile( jarFile );
             archiver.addDirectory( new File( sourceFolder ), "", new String[] { "**/*" }, null );
             archiver.createArchive();
         }

@@ -9,9 +9,7 @@ package org.safehaus.chop.client;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.store.amazon.AmazonS3Store;
-import org.safehaus.chop.api.store.amazon.AmazonStoreModule;
-import org.safehaus.chop.spi.Store;
+import org.safehaus.chop.api.store.amazon.AmazonModule;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.google.inject.AbstractModule;
@@ -22,7 +20,6 @@ public class ChopClientModule extends AbstractModule implements Constants {
     protected void configure() {
         //noinspection unchecked
         install( new GuicyFigModule( Project.class ) );
-        install( new AmazonStoreModule() );
-        bind( ChopClient.class ).to( ChopClientImpl.class );
+        install( new AmazonModule() );
     }
 }

@@ -7,6 +7,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 
 
+/** @todo is this still necessary? */
 @Mojo( name = "cert" )
 public class CertMojo extends MainMojo {
 
