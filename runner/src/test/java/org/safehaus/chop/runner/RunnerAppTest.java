@@ -4,12 +4,12 @@ package org.safehaus.chop.runner;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.embedded.jetty.utils.ContextListener;
-import org.safehaus.embedded.jetty.utils.FilterMapping;
-import org.safehaus.embedded.jetty.utils.HttpsConnector;
-import org.safehaus.embedded.jetty.utils.JettyConnectors;
-import org.safehaus.embedded.jetty.utils.JettyContext;
-import org.safehaus.embedded.jetty.utils.JettyResource;
+import org.safehaus.jettyjam.utils.ContextListener;
+import org.safehaus.jettyjam.utils.FilterMapping;
+import org.safehaus.jettyjam.utils.HttpsConnector;
+import org.safehaus.jettyjam.utils.JettyConnectors;
+import org.safehaus.jettyjam.utils.JettyContext;
+import org.safehaus.jettyjam.utils.JettyResource;
 
 import com.google.inject.servlet.GuiceFilter;
 

@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.spi.RunnerRegistry;
-import org.safehaus.embedded.jetty.utils.CertUtils;
+import org.safehaus.jettyjam.utils.CertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

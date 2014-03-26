@@ -73,35 +73,59 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <systemPropertyVariables>
+            <classes.base>${project.build.outputDirectory}</classes.base>
+            <archaius.deployment.environment>PROD</archaius.deployment.environment>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
 
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludeTransitive>false</excludeTransitive>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <finalName>${project.artifactId}-${project.version}</finalName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <artifactSet>
+                <includes>
+                  <include>org.safehaus.chop:chop-runner</include>
+                  <include>org.safehaus.jettyjam:jettyjam-utils</include>
+                </includes>
+              </artifactSet>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.safehaus.chop.runner.RunnerAppJarLauncher</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <finalName>${project.artifactId}-${project.version}</finalName>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>org.safehaus.chop.runner.RunnerAppLauncher</mainClass>
-              <packageName>org.safehaus.chop.runner</packageName>
-            </manifest>
-            <manifestEntries>
-              <mode>development</mode>
-              <url>${pom.url}</url>
-            </manifestEntries>
-          </archive>
-        </configuration>
       </plugin>
 
     </plugins>
@@ -128,7 +152,7 @@
 
     <dependency>
       <groupId>org.safehaus.jettyjam</groupId>
-      <artifactId>utils</artifactId>
+      <artifactId>jettyjam-utils</artifactId>
     </dependency>
 
     <dependency>

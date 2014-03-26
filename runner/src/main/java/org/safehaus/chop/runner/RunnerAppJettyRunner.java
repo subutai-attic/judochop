@@ -2,12 +2,12 @@ package org.safehaus.chop.runner;
 
 
 import org.safehaus.chop.api.Runner;
-import org.safehaus.embedded.jetty.utils.ContextListener;
-import org.safehaus.embedded.jetty.utils.FilterMapping;
-import org.safehaus.embedded.jetty.utils.HttpsConnector;
-import org.safehaus.embedded.jetty.utils.JettyConnectors;
-import org.safehaus.embedded.jetty.utils.JettyContext;
-import org.safehaus.embedded.jetty.utils.Launcher;
+import org.safehaus.jettyjam.utils.ContextListener;
+import org.safehaus.jettyjam.utils.FilterMapping;
+import org.safehaus.jettyjam.utils.HttpsConnector;
+import org.safehaus.jettyjam.utils.JettyConnectors;
+import org.safehaus.jettyjam.utils.JettyContext;
+import org.safehaus.jettyjam.utils.JettyRunner;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -25,21 +25,21 @@ import com.google.inject.servlet.GuiceFilter;
     defaultId = "https",
     httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
 )
-public class RunnerLauncher extends Launcher {
+public class RunnerAppJettyRunner extends JettyRunner {
 
-    protected RunnerLauncher() {
-        super( RunnerLauncher.class.getSimpleName(), RunnerLauncher.class.getClassLoader() );
+    protected RunnerAppJettyRunner() {
+        super( RunnerAppJettyRunner.class.getSimpleName() );
     }
 
 
     @Override
-    public String getPackageBase() {
-        return getClass().getPackage().getName();
+    public String getSubClass() {
+        return getClass().getName();
     }
 
 
     public static void main( String[] args ) throws Exception {
-        RunnerLauncher launcher = new RunnerLauncher();
+        RunnerAppJettyRunner launcher = new RunnerAppJettyRunner();
         launcher.start();
     }
 }

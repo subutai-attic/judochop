@@ -22,6 +22,9 @@ package org.safehaus.chop.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -45,6 +48,7 @@ import com.netflix.config.ConfigurationManager;
 @SuppressWarnings( "UnusedDeclaration" )
 public class RunnerConfig extends GuiceServletContextListener {
     private final static Logger LOG = LoggerFactory.getLogger( RunnerConfig.class );
+    public static final String CHOP_IT_MODE = "chop.it.mode";
     private Injector injector;
 
 
@@ -148,9 +152,27 @@ public class RunnerConfig extends GuiceServletContextListener {
 
         /*
          * --------------------------------------------------------------------
-         * Start Up The Store
+         * Start Up The RunnerRegistry and Register
          * --------------------------------------------------------------------
          */
+
+         if ( System.getProperties().containsKey( CHOP_IT_MODE ) && System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" ) ) {
+             runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
+             runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
+             project.bypass( Project.LOAD_KEY, "bogus-load-key" );
+             project.bypass( Project.ARTIFACT_ID_KEY, "bogus-artifact-id" );
+             project.bypass( Project.GROUP_ID_KEY, "org.safehaus.chop" );
+             project.bypass( Project.CHOP_VERSION_KEY, "bogus-chop-version" );
+
+             SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.HH.mm.ss" );
+             dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+             project.bypass( Project.CREATE_TIMESTAMP_KEY, dateFormat.format( new Date() ) );
+
+             project.bypass( Project.GIT_URL_KEY, "http://stash.safehaus.org/projects/CHOP/repos/main/browse" );
+             project.bypass( Project.GIT_UUID_KEY, "d637a8ce" );
+             project.bypass( Project.LOAD_TIME_KEY, dateFormat.format( new Date() ) );
+             project.bypass( Project.PROJECT_VERSION_KEY, "1.0.0-SNAPSHOT" );
+         }
 
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
             RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );

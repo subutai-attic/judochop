@@ -23,7 +23,9 @@ package org.safehaus.chop.runner.rest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
@@ -43,6 +45,12 @@ public class StartResource {
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
     public static final String ENDPOINT_URL = "/start";
 
+    public static final String ALREADY_RUNNING_MESSAGE = "Cannot start when already running.";
+    public static final String TEST_MESSAGE = "/start resource called in test mode";
+    public static final String TEST_PARAM = "test";
+    private static final String RESET_NEEDED_MESSAGE = "A reset is need before starting.";
+
+
     private final IController controller;
 
 
@@ -53,19 +61,23 @@ public class StartResource {
 
 
     @POST
-    public Result start() {
+    public Response start( @QueryParam( TEST_PARAM ) boolean test )
+    {
+        if ( test ) {
+            return Response.status( Response.Status.OK ).entity( TEST_MESSAGE ).build();
+        }
+
         if ( controller.isRunning() ) {
-            LOG.info( "Cannot start when already running." );
-            return new BaseResult( ENDPOINT_URL, false, "already running", controller.getState() );
+            LOG.warn( ALREADY_RUNNING_MESSAGE );
+            return Response.status( Response.Status.CONFLICT ).entity( ALREADY_RUNNING_MESSAGE ).build();
         }
 
         if ( controller.needsReset() ) {
-            LOG.info( "A reset is need before starting." );
-            return new BaseResult( ENDPOINT_URL, false, "reset needed - but save the last run data first!",
-                    controller.getState() );
+            LOG.warn( RESET_NEEDED_MESSAGE );
+            return Response.status( Response.Status.CONFLICT ).entity( RESET_NEEDED_MESSAGE ).build();
         }
 
         controller.start();
-        return new BaseResult( ENDPOINT_URL, true, "successfully started", controller.getState() );
+        return Response.status( Response.Status.OK ).entity( Boolean.TRUE ).build();
     }
 }
