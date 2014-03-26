@@ -90,6 +90,7 @@ public class EC2InstanceManager implements InstanceManager {
         LOG.info( "Created instances, setting the names now..." );
 
         List<String> instanceIds = new ArrayList<String>( cluster.getSize() );
+        Collection<Instance> instances = toInstances( runInstancesResult.getReservation().getInstances() );
 
         String instanceNames = getInstanceName( stack, cluster );
 
@@ -129,9 +130,7 @@ public class EC2InstanceManager implements InstanceManager {
             }
         }
 
-        // TODO should we run setup scripts here?
-
-        return null; // TODO LaunchResult
+        return new EC2LaunchResult( cluster.getInstanceSpec(), instances );
     }
 
 
@@ -156,6 +155,7 @@ public class EC2InstanceManager implements InstanceManager {
         LOG.info( "Created instances, setting the names now..." );
 
         List<String> instanceIds = new ArrayList<String>( count );
+        Collection<Instance> instances = toInstances( runInstancesResult.getReservation().getInstances() );
 
         String runnerNames = getRunnerName( stack );
 
@@ -195,7 +195,7 @@ public class EC2InstanceManager implements InstanceManager {
             }
         }
 
-        return null; // TODO LaunchResult
+        return new EC2LaunchResult( spec, instances );
     }
 
 
