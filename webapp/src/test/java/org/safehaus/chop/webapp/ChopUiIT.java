@@ -1,31 +1,22 @@
 package org.safehaus.chop.webapp;
 
 
-import java.io.InputStream;
-
-import javax.ws.rs.core.MediaType;
-
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
-import org.safehaus.embedded.jetty.utils.CertUtils;
-import org.safehaus.embedded.jetty.utils.ContextListener;
-import org.safehaus.embedded.jetty.utils.FilterMapping;
-import org.safehaus.embedded.jetty.utils.HttpsConnector;
-import org.safehaus.embedded.jetty.utils.JettyConnectors;
-import org.safehaus.embedded.jetty.utils.JettyContext;
-import org.safehaus.embedded.jetty.utils.JettyJarResource;
-import org.safehaus.embedded.jetty.utils.Launcher;
+import org.safehaus.jettyjam.utils.CertUtils;
+import org.safehaus.jettyjam.utils.ContextListener;
+import org.safehaus.jettyjam.utils.FilterMapping;
+import org.safehaus.jettyjam.utils.HttpsConnector;
+import org.safehaus.jettyjam.utils.JettyConnectors;
+import org.safehaus.jettyjam.utils.JettyContext;
+import org.safehaus.jettyjam.utils.JettyJarResource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -48,35 +39,22 @@ public class ChopUiIT {
     @ClassRule
     public static JettyJarResource jetty = new JettyJarResource();
 
+    static {
+        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
+    }
 
     @Test
     public void testGet() {
-        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
-        String serverUrl = jetty.getAppProperties().getProperty( Launcher.SERVER_URL );
-        WebResource resource = Client.create().resource( serverUrl + TestGetResource.ENDPOINT_URL );
-        String result = resource.type( MediaType.TEXT_PLAIN_TYPE ).get( String.class );
+        TestData testData = new TestData( jetty ).setLogger( LOG ).setEndpoint( TestGetResource.ENDPOINT_URL );
+        String result = TestUtils.testGet( testData );
         assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
 
 
     @Test
     public void testUpload() {
-        CertUtils.preparations( jetty.getHostname(), jetty.getPort() );
-        String serverUrl = jetty.getAppProperties().getProperty( Launcher.SERVER_URL );
-        InputStream in = getClass().getClassLoader().getResourceAsStream( "log4j.properties" );
-
-        FormDataMultiPart part = new FormDataMultiPart();
-        part.field( RestParams.FILENAME, "log4j.properties" );
-
-        FormDataBodyPart body = new FormDataBodyPart( UploadResource.CONTENT,
-                in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
-        part.bodyPart( body );
-
-        LOG.debug( "Server URL = {}", serverUrl );
-
-        WebResource resource = Client.create().resource( serverUrl + UploadResource.ENDPOINT_URL );
-        String result = resource.type( MediaType.MULTIPART_FORM_DATA_TYPE ).post( String.class, part );
-
+        TestData testData = new TestData( jetty ).setLogger( LOG ).setEndpoint( UploadResource.ENDPOINT_URL );
+        String result = TestUtils.testUpload( testData );
         LOG.debug( "Got back result = {}", result );
     }
 }

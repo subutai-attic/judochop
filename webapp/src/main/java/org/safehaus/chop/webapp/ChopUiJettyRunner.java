@@ -1,12 +1,12 @@
 package org.safehaus.chop.webapp;
 
 
-import org.safehaus.embedded.jetty.utils.ContextListener;
-import org.safehaus.embedded.jetty.utils.FilterMapping;
-import org.safehaus.embedded.jetty.utils.HttpsConnector;
-import org.safehaus.embedded.jetty.utils.JettyConnectors;
-import org.safehaus.embedded.jetty.utils.JettyContext;
-import org.safehaus.embedded.jetty.utils.Launcher;
+import org.safehaus.jettyjam.utils.ContextListener;
+import org.safehaus.jettyjam.utils.FilterMapping;
+import org.safehaus.jettyjam.utils.HttpsConnector;
+import org.safehaus.jettyjam.utils.JettyConnectors;
+import org.safehaus.jettyjam.utils.JettyContext;
+import org.safehaus.jettyjam.utils.JettyRunner;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -32,25 +32,25 @@ import com.google.inject.servlet.GuiceFilter;
     defaultId = "https",
     httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
 )
-public class ChopUiLauncher extends Launcher {
+public class ChopUiJettyRunner extends JettyRunner {
 
     private static CommandLine cl;
 
 
-    public ChopUiLauncher() {
-        super( ChopUiLauncher.class.getSimpleName(), ChopUiLauncher.class.getClassLoader() );
+    public ChopUiJettyRunner() {
+        super( ChopUiJettyRunner.class.getSimpleName() );
     }
 
 
     @Override
-    public String getPackageBase() {
-        return getClass().getPackage().getName();
+    public String getSubClass() {
+        return getClass().getName();
     }
 
 
     public static void main( String[] args ) throws Exception {
         processCli( args );
-        ChopUiLauncher launcher = new ChopUiLauncher();
+        ChopUiJettyRunner launcher = new ChopUiJettyRunner();
         launcher.start();
     }
 

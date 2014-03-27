@@ -17,7 +17,7 @@
 
 
   <build>
-    <finalName>${project.artifactId}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
 
     <resources>
       <resource>
@@ -77,6 +77,7 @@
           <systemPropertyVariables>
             <classes.base>${project.build.outputDirectory}</classes.base>
             <archaius.deployment.environment>PROD</archaius.deployment.environment>
+            <chop.it.mode>true</chop.it.mode>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -20,7 +20,6 @@
 package org.safehaus.chop.webapp;
 
 
-import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -104,8 +103,8 @@ public class ChopUiConfig extends GuiceServletContextListener {
              * --------------------------------------------------------------------
              */
 
-            if ( ChopUiLauncher.getCommandLine() != null ) {
-                CommandLine cl = ChopUiLauncher.getCommandLine();
+            if ( ChopUiJettyRunner.getCommandLine() != null ) {
+                CommandLine cl = ChopUiJettyRunner.getCommandLine();
 
                 if ( cl.hasOption( 'e' ) ) {
                     LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );

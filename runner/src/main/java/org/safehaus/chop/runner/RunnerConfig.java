@@ -185,6 +185,11 @@ public class RunnerConfig extends GuiceServletContextListener {
     }
 
 
+    public static boolean isTestMode() {
+        return System.getProperties().containsKey( CHOP_IT_MODE ) && System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" );
+    }
+
+
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
         super.contextDestroyed( servletContextEvent );

@@ -67,7 +67,7 @@
         </executions>
         <configuration>
           <excludes>
-            <exclude>**/ChopUiIT.java</exclude>
+            <!--<exclude>**/ChopUiIT.java</exclude>-->
           </excludes>
         </configuration>
       </plugin>
@@ -101,43 +101,59 @@
             <exclude>**/RunsCalcTest.java</exclude>
             <exclude>**/OverviewCalcTest.java</exclude>
             <exclude>**/IterationsCalcTest.java</exclude>
-            <!--
-            <exclude>**/ChopUiTest.java</exclude>
-            -->
             <exclude>**/DataServiceTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
 
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludeTransitive>false</excludeTransitive>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>attached</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <finalName>${project.artifactId}-${project.version}</finalName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <artifactSet>
+                <includes>
+                  <include>org.safehaus.chop:chop-webapp</include>
+                  <include>org.safehaus.jettyjam:jettyjam-utils</include>
+                </includes>
+              </artifactSet>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.safehaus.chop.webapp.ChopUiJarLauncher</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <finalName>${project.artifactId}-${project.version}</finalName>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>org.safehaus.chop.webapp.ChopUiLauncher</mainClass>
-              <packageName>org.safehaus.chop.webapp</packageName>
-            </manifest>
-            <manifestEntries>
-              <mode>development</mode>
-              <url>${project.url}</url>
-            </manifestEntries>
-          </archive>
-        </configuration>
       </plugin>
+
     </plugins>
   </build>
 
@@ -293,7 +309,7 @@
 
     <dependency>
       <groupId>org.safehaus.jettyjam</groupId>
-      <artifactId>utils</artifactId>
+      <artifactId>jettyjam-utils</artifactId>
     </dependency>
 
     <dependency>

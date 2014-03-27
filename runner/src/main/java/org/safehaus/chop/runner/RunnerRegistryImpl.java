@@ -101,6 +101,10 @@ public class RunnerRegistryImpl implements RunnerRegistry {
 
     @Override
     public void register( final Runner runner ) {
+        if ( RunnerConfig.isTestMode() ) {
+            return;
+        }
+
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
         String result = resource.path( coordinatorFig.getRunnersRegisterPath() )
@@ -112,6 +116,10 @@ public class RunnerRegistryImpl implements RunnerRegistry {
 
     @Override
     public void unregister( final Runner runner ) {
+        if ( RunnerConfig.isTestMode() ) {
+            return;
+        }
+
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
         String result = resource.path( coordinatorFig.getRunnersUnregisterPath() )

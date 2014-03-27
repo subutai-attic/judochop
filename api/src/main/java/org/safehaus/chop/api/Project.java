@@ -2,6 +2,7 @@ package org.safehaus.chop.api;
 
 
 import org.safehaus.guicyfig.Default;
+import org.safehaus.guicyfig.FigSingleton;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.Key;
 
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 /**
  * Information about the project to be chopped up!
  */
+@FigSingleton
 @JsonSerialize( using = ProjectSerializer.class )
 @JsonDeserialize( using = ProjectDeserializer.class )
 public interface Project extends GuicyFig {

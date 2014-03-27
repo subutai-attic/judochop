@@ -59,7 +59,7 @@ public class RunnerAppIT {
         String serverUrl = jetty.getAppProperties().getProperty( JettyRunner.SERVER_URL );
         WebResource resource = Client.create().resource( serverUrl + StartResource.ENDPOINT_URL );
         String result = resource.queryParam( StartResource.TEST_PARAM, Boolean.TRUE.toString() )
-                                .type( MediaType.TEXT_PLAIN_TYPE ).get( String.class );
+                                .type( MediaType.TEXT_PLAIN_TYPE ).post( String.class );
         assertEquals( StartResource.TEST_MESSAGE, result );
     }
 }
