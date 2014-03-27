@@ -10,6 +10,7 @@ import org.safehaus.jettyjam.utils.HttpsConnector;
 import org.safehaus.jettyjam.utils.JettyConnectors;
 import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
+import org.safehaus.jettyjam.utils.JettyUnitResource;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -29,7 +30,7 @@ public class RunnerAppTest {
         httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyResource();
+    public static JettyResource jetty = new JettyUnitResource();
 
 
     @Test

@@ -1,10 +1,11 @@
 package org.safehaus.chop.webapp;
 
 
+import javax.ws.rs.core.MediaType;
+
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
-import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.CertUtils;
 import org.safehaus.jettyjam.utils.ContextListener;
@@ -14,8 +15,7 @@ import org.safehaus.jettyjam.utils.JettyConnectors;
 import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.safehaus.jettyjam.utils.JettyUnitResource;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -26,8 +26,6 @@ import static junit.framework.TestCase.assertEquals;
  * Tests the ChopUi.
  */
 public class ChopUiTest {
-    private static final Logger LOG = LoggerFactory.getLogger( ChopUiTest.class );
-
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
@@ -38,7 +36,7 @@ public class ChopUiTest {
         httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyResource();
+    public static JettyResource jetty = new JettyUnitResource();
 
     @ClassRule
     public static ElasticSearchResource es = new ElasticSearchResource();
@@ -50,15 +48,11 @@ public class ChopUiTest {
 
     @Test
     public void testGet() {
-        TestData testData = new TestData( jetty ).setLogger( LOG ).setEndpoint( TestGetResource.ENDPOINT_URL );
-        String result = TestUtils.testGet( testData );
+        String result = jetty.newTestParams()
+                             .setEndpoint( TestGetResource.ENDPOINT_URL )
+                             .newWebResource()
+                             .accept( MediaType.TEXT_PLAIN )
+                             .get( String.class );
         assertEquals( TestGetResource.TEST_MESSAGE, result );
-    }
-
-    @Test
-    public void testUpload() {
-        TestData testData = new TestData( jetty ).setLogger( LOG ).setEndpoint( UploadResource.ENDPOINT_URL );
-        String result = TestUtils.testUpload( testData );
-        LOG.debug( "Got back result = {}", result );
     }
 }

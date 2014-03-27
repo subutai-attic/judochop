@@ -57,6 +57,7 @@
           <systemPropertyVariables>
             <classes.base>${project.build.outputDirectory}</classes.base>
             <archaius.deployment.environment>UNIT</archaius.deployment.environment>
+            <test.mode>UNIT</test.mode>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -76,8 +77,8 @@
         <configuration>
           <systemPropertyVariables>
             <classes.base>${project.build.outputDirectory}</classes.base>
-            <archaius.deployment.environment>PROD</archaius.deployment.environment>
-            <chop.it.mode>true</chop.it.mode>
+            <archaius.deployment.environment>INTEG</archaius.deployment.environment>
+            <test.mode>INTEG</test.mode>
           </systemPropertyVariables>
         </configuration>
       </plugin>

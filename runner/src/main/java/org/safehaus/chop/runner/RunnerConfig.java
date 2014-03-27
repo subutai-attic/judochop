@@ -34,6 +34,7 @@ import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ import com.netflix.config.ConfigurationManager;
 @SuppressWarnings( "UnusedDeclaration" )
 public class RunnerConfig extends GuiceServletContextListener {
     private final static Logger LOG = LoggerFactory.getLogger( RunnerConfig.class );
-    public static final String CHOP_IT_MODE = "chop.it.mode";
+    public static final String CHOP_IT_MODE = TestMode.TEST_MODE_PROPERTY;
     private Injector injector;
 
 
@@ -110,11 +111,11 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        if ( env == Env.UNIT ) {
+        if ( env == Env.UNIT || env == Env.INTEG || env == Env.ALL) {
             runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
             runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
         }
-        else {
+        else if ( env == Env.CHOP ) {
             Ec2Metadata.applyBypass( runner );
         }
 

@@ -28,8 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.safehaus.chop.runner.IController;
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class StartResource {
 
     public static final String ALREADY_RUNNING_MESSAGE = "Cannot start when already running.";
     public static final String TEST_MESSAGE = "/start resource called in test mode";
-    public static final String TEST_PARAM = "test";
+    public static final String TEST_PARAM = TestMode.TEST_MODE_PROPERTY;
     private static final String RESET_NEEDED_MESSAGE = "A reset is need before starting.";
 
 
@@ -61,9 +60,10 @@ public class StartResource {
 
 
     @POST
-    public Response start( @QueryParam( TEST_PARAM ) boolean test )
+    public Response start( @QueryParam( TEST_PARAM ) String test )
     {
-        if ( test ) {
+        if ( test != null && ( test.equals( TestMode.INTEG.toString() ) || test.equals( TestMode.UNIT.toString() ) ) )
+        {
             return Response.status( Response.Status.OK ).entity( TEST_MESSAGE ).build();
         }
 
