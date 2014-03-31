@@ -44,7 +44,6 @@ import com.google.inject.Singleton;
 @Path( StatsResource.ENDPOINT )
 public class StatsResource extends TestableResource {
     public static final String ENDPOINT = "/stats";
-    public static final String TEST_JSON = "";
     private final IController controller;
 
 
