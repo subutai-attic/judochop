@@ -25,12 +25,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** ... */
 public class StatsSnapshot {
-    private final long testClassRuns;
-    private final long maxTime;
-    private final long minTime;
-    private final long meanTime;
-    private final boolean running;
-    private final long startTime;
+    private long testClassRuns;
+    private long maxTime;
+    private long minTime;
+    private long meanTime;
+    private boolean running;
+    private long startTime;
+
+
+    @SuppressWarnings( "UnusedDeclaration" )
+    public StatsSnapshot() {
+    }
 
 
     public StatsSnapshot( long testClassRuns, long maxTime, long minTime, long meanTime, boolean running, long startTime ) {
@@ -49,9 +54,21 @@ public class StatsSnapshot {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setTestClassRuns( long testClassRuns ) {
+        this.testClassRuns = testClassRuns;
+    }
+
+
     @JsonProperty
     public long getMaxTime() {
         return maxTime;
+    }
+
+
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setMaxTime( long maxTime ) {
+        this.maxTime = maxTime;
     }
 
 
@@ -61,9 +78,21 @@ public class StatsSnapshot {
     }
 
 
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setMinTime( long minTime ) {
+        this.minTime = minTime;
+    }
+
+
     @JsonProperty
     public long getMeanTime() {
         return meanTime;
+    }
+
+
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setMeanTime( long meanTime ) {
+        this.meanTime = meanTime;
     }
 
 
@@ -73,8 +102,19 @@ public class StatsSnapshot {
     }
 
 
+    public void setRunning( boolean running ) {
+        this.running = running;
+    }
+
+
     @JsonProperty
     public long getStartTime() {
         return startTime;
+    }
+
+
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setStartTime( long startTime ) {
+        this.startTime = startTime;
     }
 }

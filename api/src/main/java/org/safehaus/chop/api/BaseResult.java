@@ -67,6 +67,11 @@ public class BaseResult implements Result {
     }
 
 
+    public void setState( State state ) {
+        this.state = state;
+    }
+
+
     @JsonProperty
     @Override
     public String getMessage() {
