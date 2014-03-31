@@ -46,5 +46,23 @@ public class RunnerAppTest {
     public void testReset() {
         RunnerTestUtils.testReset( jetty.newTestParams().setLogger( LOG ) );
     }
+
+
+    @Test
+    public void testStop() {
+        RunnerTestUtils.testStop( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testStats() {
+        RunnerTestUtils.testStats( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testStatus() {
+        RunnerTestUtils.testStatus( jetty.newTestParams().setLogger( LOG ) );
+    }
 }
 

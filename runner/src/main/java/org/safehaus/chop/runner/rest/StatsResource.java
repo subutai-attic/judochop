@@ -20,13 +20,19 @@
 package org.safehaus.chop.runner.rest;
 
 
+import java.util.Date;
+
+import javax.annotation.Nullable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.runner.IController;
+import org.safehaus.jettyjam.utils.TestMode;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -35,19 +41,26 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( "/stats" )
-public class StatsResource {
-    private final IController runner;
+@Path( StatsResource.ENDPOINT )
+public class StatsResource extends TestableResource {
+    public static final String ENDPOINT = "/stats";
+    public static final String TEST_JSON = "";
+    private final IController controller;
 
 
     @Inject
-    public StatsResource( IController runner ) {
-        this.runner = runner;
+    public StatsResource( IController controller ) {
+        super( ENDPOINT );
+        this.controller = controller;
     }
 
 
     @GET
-    public StatsSnapshot getCallStatsSnapshot() {
-        return runner.getCurrentChopStats();
+    public Response getCallStatsSnapshot( @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode ) {
+        if ( inTestMode( testMode ) ) {
+            return Response.ok( new StatsSnapshot( 5L, 333L, 111L, 222L, true, new Date().getTime() ) ).build();
+        }
+
+        return Response.ok( controller.getCurrentChopStats() ).build();
     }
 }

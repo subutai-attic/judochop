@@ -1,6 +1,7 @@
 package org.safehaus.chop.runner;
 
 
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.State;
@@ -55,6 +56,11 @@ public interface IController {
      * itself after running all chops to fall back into the State.READY state.
      */
     void stop();
+
+    /**
+     * Takes a signal parameter to determine whether to start, stop, reset etc.
+     */
+    void send( Signal signal );
 
     /**
      * The project that is currently being run.

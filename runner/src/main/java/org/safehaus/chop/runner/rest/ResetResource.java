@@ -28,13 +28,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.runner.IController;
-import org.safehaus.jettyjam.utils.TestMode;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -43,50 +39,21 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( ResetResource.ENDPOINT_URL )
-public class ResetResource {
-    public final static String ENDPOINT_URL = "/reset";
-    private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
-    private final IController runner;
+@Path( ResetResource.ENDPOINT )
+public class ResetResource extends SignalResource {
+    public final static String ENDPOINT = "/reset";
 
 
     @Inject
-    private Project project;
-
-    @Inject
-    public ResetResource( IController runner ) {
-        this.runner = runner;
+    public ResetResource( IController controller, Project project ) {
+        super( controller, project, ENDPOINT, Signal.RESET );
     }
 
 
     @POST
-    public Response reset( @QueryParam( TestMode.TEST_MODE_PROPERTY ) @Nullable String testMode ) {
-        if ( testMode != null && ( testMode.equals( TestMode.INTEG.toString() )
-                || testMode.equals( TestMode.UNIT.toString() ) ) ) {
-            BaseResult result = new BaseResult( ENDPOINT_URL, false, "called in test mode: " + testMode,
-                    runner.getState() );
-            result.setProject( project );
-            return Response.status( Response.Status.OK ).entity( result ).build();
-        }
-
-        if ( runner.isRunning() ) {
-            BaseResult result = new BaseResult( ENDPOINT_URL, false, "still running stop before resetting",
-                    runner.getState() );
-            result.setProject( project );
-            return Response.status( Response.Status.CONFLICT ).entity( result ).build();
-        }
-
-        if ( runner.needsReset() ) {
-            runner.reset();
-
-            BaseResult result = new BaseResult( ENDPOINT_URL, true, "resetting", runner.getState() );
-            result.setProject( project );
-            return Response.status( Response.Status.OK ).entity( result ).build();
-        }
-
-        LOG.warn( "Calling reset is not needed." );
-        BaseResult result = new BaseResult( ENDPOINT_URL, false, "reset not required", runner.getState() );
-        result.setProject( project );
-        return Response.status( Response.Status.CONFLICT ).entity( result ).build();
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response reset( @Nullable @QueryParam( TEST_PARAM ) String test )
+    {
+        return op( inTestMode( test ) );
     }
 }

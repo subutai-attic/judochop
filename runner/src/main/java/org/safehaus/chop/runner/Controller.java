@@ -180,6 +180,20 @@ public class Controller implements IController, Runnable {
     }
 
 
+    @Override
+    public void send( final Signal signal ) {
+        Preconditions.checkState( state.accepts( signal ), state.getMessage( signal ) );
+
+        switch ( signal ) {
+            case STOP: stop(); break;
+            case START: start(); break;
+            case RESET: reset(); break;
+            default:
+                throw new IllegalStateException( "Just accepting start, stop, and reset." );
+        }
+    }
+
+
     /**
      * Gets the collection of runners that are still executing a chop on a test class.
      *

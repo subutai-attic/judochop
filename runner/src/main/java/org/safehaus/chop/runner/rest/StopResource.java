@@ -20,14 +20,17 @@
 package org.safehaus.chop.runner.rest;
 
 
+import javax.annotation.Nullable;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.runner.IController;
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -36,26 +39,20 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StopResource.ENDPOINT_URL )
-public class StopResource {
-    public static final String ENDPOINT_URL = "/stop";
-    private final IController runner;
+@Path( StopResource.ENDPOINT )
+public class StopResource extends SignalResource {
+    public static final String ENDPOINT = "/stop";
 
 
     @Inject
-    public StopResource( IController runner ) {
-        this.runner = runner;
+    public StopResource( IController controller, Project project ) {
+        super( controller, project, ENDPOINT, Signal.STOP );
     }
 
 
     @POST
-    public Result stop() {
-        if ( runner.isRunning() ) {
-            runner.stop();
-
-            return new BaseResult( ENDPOINT_URL, true, "stopped", runner.getState() );
-        }
-
-        return new BaseResult( ENDPOINT_URL, false, "must be running to stop", runner.getState() );
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response stop( @Nullable @QueryParam( TEST_PARAM ) String test ) {
+        return op( inTestMode( test ) );
     }
 }
