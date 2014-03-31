@@ -27,6 +27,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
@@ -44,40 +46,58 @@ public class StartResource {
     private static final Logger LOG = LoggerFactory.getLogger( StartResource.class );
     public static final String ENDPOINT_URL = "/start";
 
+    public static final String TEST_PARAM = TestMode.TEST_MODE_PROPERTY;
+    public static final String SUCCESS_MESSAGE = "Controller started executing tests.";
     public static final String ALREADY_RUNNING_MESSAGE = "Cannot start when already running.";
     public static final String TEST_MESSAGE = "/start resource called in test mode";
-    public static final String TEST_PARAM = TestMode.TEST_MODE_PROPERTY;
     private static final String RESET_NEEDED_MESSAGE = "A reset is need before starting.";
 
 
     private final IController controller;
+    private final Project project;
 
 
     @Inject
-    public StartResource( IController runner ) {
+    public StartResource( IController runner, Project project ) {
         this.controller = runner;
+        this.project = project;
     }
 
 
     @POST
+    @Produces( MediaType.APPLICATION_JSON )
     public Response start( @QueryParam( TEST_PARAM ) String test )
     {
+        BaseResult result = new BaseResult();
+        result.setProject( project );
+        result.setEndpoint( ENDPOINT_URL );
+
         if ( test != null && ( test.equals( TestMode.INTEG.toString() ) || test.equals( TestMode.UNIT.toString() ) ) )
         {
-            return Response.status( Response.Status.OK ).entity( TEST_MESSAGE ).build();
+            result.setStatus( true );
+            result.setMessage( TEST_MESSAGE );
+            LOG.info( TEST_MESSAGE );
+            return Response.ok( result, MediaType.APPLICATION_JSON_TYPE ).build();
         }
 
         if ( controller.isRunning() ) {
+            result.setStatus( false );
+            result.setMessage( ALREADY_RUNNING_MESSAGE );
             LOG.warn( ALREADY_RUNNING_MESSAGE );
-            return Response.status( Response.Status.CONFLICT ).entity( ALREADY_RUNNING_MESSAGE ).build();
+            return Response.status( Response.Status.CONFLICT ).entity( result ).build();
         }
 
         if ( controller.needsReset() ) {
+            result.setStatus( false );
+            result.setMessage( RESET_NEEDED_MESSAGE );
             LOG.warn( RESET_NEEDED_MESSAGE );
-            return Response.status( Response.Status.CONFLICT ).entity( RESET_NEEDED_MESSAGE ).build();
+            return Response.status( Response.Status.CONFLICT ).entity( result ).build();
         }
 
         controller.start();
-        return Response.status( Response.Status.OK ).entity( Boolean.TRUE ).build();
+        result.setStatus( true );
+        result.setMessage( SUCCESS_MESSAGE );
+        LOG.info( SUCCESS_MESSAGE );
+        return Response.status( Response.Status.OK ).entity( result ).build();
     }
 }

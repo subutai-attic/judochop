@@ -3,13 +3,9 @@ package org.safehaus.chop.runner;
 
 import java.util.Properties;
 
-import javax.ws.rs.core.MediaType;
-
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.runner.rest.StartResource;
-import org.safehaus.jettyjam.utils.CertUtils;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
@@ -23,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
-
-import static junit.framework.TestCase.assertEquals;
 
 
 /**
@@ -48,18 +42,17 @@ public class RunnerAppIT {
         httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyIntegResource();
+    public static JettyResource jetty = new JettyIntegResource( systemProperties );
 
 
     @Test
     public void testStart() {
-        LOG.info( "test start ..." );
+        RunnerTestUtils.testStart( jetty.newTestParams().setLogger( LOG ) );
+    }
 
-        String result = jetty.newTestParams()
-                             .setEndpoint( StartResource.ENDPOINT_URL )
-                             .newWebResource()
-                             .type( MediaType.TEXT_PLAIN_TYPE )
-                             .post( String.class );
-        assertEquals( StartResource.TEST_MESSAGE, result );
+
+    @Test
+    public void testReset() {
+        RunnerTestUtils.testReset( jetty.newTestParams().setLogger( LOG ) );
     }
 }

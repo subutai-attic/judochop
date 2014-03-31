@@ -34,8 +34,8 @@ import com.google.inject.Singleton;
 
 /** ... */
 @Singleton
-@Produces(MediaType.APPLICATION_JSON)
-@Path("/stats")
+@Produces( MediaType.APPLICATION_JSON )
+@Path( "/stats" )
 public class StatsResource {
     private final IController runner;
 

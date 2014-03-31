@@ -11,6 +11,8 @@ import org.safehaus.jettyjam.utils.JettyConnectors;
 import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
 import org.safehaus.jettyjam.utils.JettyUnitResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -19,6 +21,7 @@ import com.google.inject.servlet.GuiceFilter;
  * Tests the Runner.
  */
 public class RunnerAppTest {
+    private static final Logger LOG = LoggerFactory.getLogger( RunnerAppTest.class );
 
     @JettyContext(
         enableSession = true,
@@ -34,7 +37,14 @@ public class RunnerAppTest {
 
 
     @Test
-    public void testRunner() {
+    public void testStart() {
+        RunnerTestUtils.testStart( jetty.newTestParams().setLogger( LOG ) );
+    }
 
+
+    @Test
+    public void testReset() {
+        RunnerTestUtils.testReset( jetty.newTestParams().setLogger( LOG ) );
     }
 }
+

@@ -20,14 +20,19 @@
 package org.safehaus.chop.runner.rest;
 
 
+import javax.annotation.Nullable;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.runner.IController;
+import org.safehaus.jettyjam.utils.TestMode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,24 +51,42 @@ public class ResetResource {
 
 
     @Inject
+    private Project project;
+
+    @Inject
     public ResetResource( IController runner ) {
         this.runner = runner;
     }
 
 
     @POST
-    public Result reset() {
+    public Response reset( @QueryParam( TestMode.TEST_MODE_PROPERTY ) @Nullable String testMode ) {
+        if ( testMode != null && ( testMode.equals( TestMode.INTEG.toString() )
+                || testMode.equals( TestMode.UNIT.toString() ) ) ) {
+            BaseResult result = new BaseResult( ENDPOINT_URL, false, "called in test mode: " + testMode,
+                    runner.getState() );
+            result.setProject( project );
+            return Response.status( Response.Status.OK ).entity( result ).build();
+        }
+
         if ( runner.isRunning() ) {
-            return new BaseResult( ENDPOINT_URL, false, "still running stop before resetting", runner.getState() );
+            BaseResult result = new BaseResult( ENDPOINT_URL, false, "still running stop before resetting",
+                    runner.getState() );
+            result.setProject( project );
+            return Response.status( Response.Status.CONFLICT ).entity( result ).build();
         }
 
         if ( runner.needsReset() ) {
             runner.reset();
 
-            return new BaseResult( ENDPOINT_URL, true, "reset complete", runner.getState() );
+            BaseResult result = new BaseResult( ENDPOINT_URL, true, "resetting", runner.getState() );
+            result.setProject( project );
+            return Response.status( Response.Status.OK ).entity( result ).build();
         }
 
-        LOG.warn( "Calling reset yet it's not needed." );
-        return new BaseResult( ENDPOINT_URL, false, "reset not required", runner.getState() );
+        LOG.warn( "Calling reset is not needed." );
+        BaseResult result = new BaseResult( ENDPOINT_URL, false, "reset not required", runner.getState() );
+        result.setProject( project );
+        return Response.status( Response.Status.CONFLICT ).entity( result ).build();
     }
 }

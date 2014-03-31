@@ -111,7 +111,7 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        if ( env == Env.UNIT || env == Env.INTEG || env == Env.ALL) {
+        if ( env == Env.UNIT || env == Env.INTEG || env == Env.ALL ) {
             runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
             runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
         }
