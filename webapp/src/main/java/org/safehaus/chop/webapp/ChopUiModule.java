@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.store.amazon.AmazonModule;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
@@ -42,7 +43,7 @@ public class ChopUiModule extends ServletModule {
     }
 
     protected void configureServlets() {
-        install( new GuicyFigModule( ChopUiFig.class, RestFig.class, ElasticSearchFig.class ) );
+        install( new GuicyFigModule( ChopUiFig.class, Project.class, RestFig.class, ElasticSearchFig.class ) );
         install( new AmazonModule() );
 //        install( new ChopClientModule() );
 

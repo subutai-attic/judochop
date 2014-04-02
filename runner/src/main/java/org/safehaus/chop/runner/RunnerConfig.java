@@ -157,7 +157,9 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-         if ( System.getProperties().containsKey( CHOP_IT_MODE ) && System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" ) ) {
+         if ( System.getProperties().containsKey( CHOP_IT_MODE ) &&
+              System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" ) )
+         {
              runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
              runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
              project.bypass( Project.LOAD_KEY, "bogus-load-key" );
@@ -181,7 +183,7 @@ public class RunnerConfig extends GuiceServletContextListener {
             LOG.info( "Registered runner information in store." );
         }
         else {
-            LOG.warn( "Store not started, and not registered: insufficient configuration parameters." );
+            LOG.warn( "Runner registry not started, and not registered: insufficient configuration parameters." );
         }
     }
 
