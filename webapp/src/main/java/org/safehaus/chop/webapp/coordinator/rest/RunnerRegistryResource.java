@@ -23,6 +23,7 @@ package org.safehaus.chop.webapp.coordinator.rest;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,10 +34,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
-import org.mockito.internal.verification.checkers.MissingInvocationChecker;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.RunnerDao;
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,8 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( RunnerRegistryResource.ENDPOINT)
+@Consumes( MediaType.APPLICATION_JSON )
+@Path( RunnerRegistryResource.ENDPOINT )
 public class RunnerRegistryResource extends TestableResource {
     public final static String ENDPOINT = "/runners";
     private static final Logger LOG = LoggerFactory.getLogger( RunnerRegistryResource.class );
@@ -67,17 +69,28 @@ public class RunnerRegistryResource extends TestableResource {
 
     @GET
     @Path( "/list" )
-    @Produces( MediaType.APPLICATION_JSON )
-    public Response list( @QueryParam(  RestParams.COMMIT_ID ) String commitId ) throws Exception {
-        LOG.warn( "Calling list ..." );
+    public Response list(
 
+            @QueryParam(  RestParams.COMMIT_ID ) String commitId,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
+
+                        ) throws Exception
+    {
         List<Runner> runnerList = Collections.emptyList();
+
+        if ( inTestMode( testMode ) ) {
+            LOG.info( "Calling /runners/list in test mode ..." );
+            return Response.ok( runnerList ).build();
+        }
+
+        LOG.info( "Calling /runners/list ..." );
+        Preconditions.checkNotNull( commitId, "The commitId must not be null." );
 
         try {
             runnerList = runnerDao.getRunners( commitId );
         }
         catch ( IndexMissingException e ) {
-            LOG.warn( "Got a missing index exception." );
+            LOG.warn( "Got a missing index exception. Returning empty list of Runners." );
         }
 
         Runner[] runners = new Runner[runnerList.size()];
@@ -87,40 +100,65 @@ public class RunnerRegistryResource extends TestableResource {
 
     @POST
     @Path( "/register" )
+    @Produces( MediaType.APPLICATION_JSON )
     @Consumes( MediaType.APPLICATION_JSON )
-    public Response register( @QueryParam( RestParams.COMMIT_ID ) String commitId, Runner runner ) throws Exception
+    public Response register(
+
+            @QueryParam( RestParams.COMMIT_ID ) String commitId,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode,
+            Runner runner
+
+                            ) throws Exception
     {
-        LOG.warn( "Calling register ..." );
+        if ( inTestMode( testMode ) ) {
+            LOG.info( "Calling /runners/register in test mode ..." );
+            return Response.ok( false ).build();
+        }
+
+        LOG.info( "Calling /runners/register ..." );
 
         Preconditions.checkNotNull( commitId, "The commitId cannot be null." );
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
 
         if ( runnerDao.save( runner, commitId ) ) {
             LOG.info( "registered runner {}", runner.getHostname() );
-            return Response.status( Response.Status.CREATED ).entity( true ).build();
+            return Response.ok( true ).build();
         }
         else {
             LOG.warn( "failed to register runner {}", runner.getHostname() );
-            return Response.status( Response.Status.CREATED ).entity( false ).build();
+            return Response.ok( false ).build();
         }
     }
 
 
     @POST
     @Path( "/unregister" )
-    @Consumes( MediaType.APPLICATION_JSON )
-    @Produces( MediaType.TEXT_PLAIN )
-    public Response unregister( @QueryParam( RestParams.RUNNER_HOSTNAME ) String runnerHostname )
-    {
-        LOG.warn( "Calling unregister ..." );
+    public Response unregister(
 
-        if ( runnerDao.delete( runnerHostname ) ) {
-            LOG.info( "unregistered runner {}", runnerHostname );
-            return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+            @QueryParam( RestParams.RUNNER_HOSTNAME ) String runnerHostname,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
+
+                              )
+    {
+        if ( inTestMode( testMode ) ) {
+            LOG.info( "Calling /runners/unregister ..." );
+            return Response.ok( true ).build();
         }
-        else {
-            LOG.warn( "failed to unregister runner {}", runnerHostname );
-            return Response.status( Response.Status.CREATED ).entity( "FALSE" ).build();
+
+        LOG.info( "Calling /runners/unregister ..." );
+        try {
+            if ( runnerDao.delete( runnerHostname ) ) {
+                LOG.info( "unregistered runner {}", runnerHostname );
+                return Response.ok( true ).build();
+            }
+            else {
+                LOG.warn( "failed to unregister runner {}", runnerHostname );
+                return Response.ok( false ).build();
+            }
+        }
+        catch ( IndexMissingException e ) {
+            LOG.warn( "Got missing index exception so returning false for unregister operation." );
+            return Response.ok( false ).build();
         }
     }
 }
