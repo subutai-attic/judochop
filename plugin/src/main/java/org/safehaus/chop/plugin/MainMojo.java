@@ -128,17 +128,17 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    /** @return Returns the extracted path of RUNNER_WAR file with a '/' at the end */
+    /** @return Returns the extracted path of RUNNER_JAR file with a '/' at the end */
     public String getExtractedWarRootPath() {
         return getProjectBaseDirectory() + "target/runner/";
     }
 
 
     /** @return Returns the full path of created runner.war file */
-    public String getWarToUploadPath() {
+    public String getRunnerToUploadPath() {
         String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
 
-        return projectBaseDirectory + "/target/" + RUNNER_WAR;
+        return projectBaseDirectory + "/target/" + RUNNER_JAR;
     }
 
 
@@ -177,8 +177,8 @@ public class MainMojo extends AbstractMojo implements Constants {
         if ( ! projectFile.exists() ) {
             getLog().warn( "It seems as though the project properties file " + projectFile
                     + " does not exist. Creating it and the war now." );
-            JarMojo jarMojo = new JarMojo( this );
-            jarMojo.execute();
+            RunnerMojo runnerMojo = new RunnerMojo( this );
+            runnerMojo.execute();
 
             if ( projectFile.exists() ) {
                 getLog().info( "War is generated and project file exists." );

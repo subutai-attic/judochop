@@ -6,8 +6,8 @@ public interface Constants {
     /** the project HTTP parameter */
     String PARAM_PROJECT = "project";
 
-    /** the default name to use for the runner's war file */
-    String RUNNER_WAR = "runner.war";
+    /** the default name to use for the runner's jar file */
+    String RUNNER_JAR = "runner.jar";
 
     /** the number of characters of the UUID to use for UUID path component */
     int CHARS_OF_UUID = 8;

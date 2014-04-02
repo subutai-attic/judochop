@@ -33,21 +33,28 @@ public class DeployMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-//        String sourceFile = getWarToUploadPath();
-//        String destinationFile = getWarOnS3Path();
-//        String projectFileKey = getProjectFilePath();
-//        File source = new File( sourceFile );
-//
-//        if ( ! isReadyToDeploy() ) {
-//            getLog().info( "War is not ready to upload to store, calling chop:war goal now..." );
-//            WarMojo warMojo = new WarMojo( this );
-//            warMojo.execute();
-//        }
-//
-//        if ( ! isReadyToDeploy() ) {
-//            throw new MojoExecutionException( "Files to be deployed are not ready and chop:war failed" );
-//        }
-//
+        File buildDir = new File( project.getBuild().getDirectory() );
+        getLog().info( "buildDir = " + buildDir.getAbsolutePath() );
+
+        File source = new File( buildDir, RUNNER_JAR );
+        if ( source.exists() ) {
+            getLog().info( source.getAbsolutePath() + " exists!" );
+        }
+        else {
+            getLog().info( source.getAbsolutePath() + " does not exist." );
+        }
+
+
+        if ( ! isReadyToDeploy() ) {
+            getLog().info( RUNNER_JAR + " is not ready to upload to store, calling chop:runner goal now..." );
+            RunnerMojo runnerMojo = new RunnerMojo( this );
+            runnerMojo.execute();
+        }
+
+        if ( ! isReadyToDeploy() ) {
+            throw new MojoExecutionException( "Files to be deployed are not ready and chop:runner failed" );
+        }
+
 //        String configPropertiesFilePath = getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE;
 //        FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
 //
@@ -97,7 +104,7 @@ public class DeployMojo extends MainMojo {
 
 
     private boolean isReadyToDeploy() {
-        File source = new File( getWarToUploadPath() );
+        File source = new File( getRunnerToUploadPath() );
         try {
             if ( ! source.exists() ) {
                 return false;

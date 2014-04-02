@@ -8,10 +8,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "jar", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST)
-public class JarMojo extends MainMojo {
+public class RunnerMojo extends MainMojo {
 
 
-    protected JarMojo( MainMojo mojo ) {
+    protected RunnerMojo( MainMojo mojo ) {
         this.username = mojo.username;
         this.password = mojo.password;
         this.endpoint = mojo.endpoint;
@@ -110,7 +110,7 @@ public class JarMojo extends MainMojo {
 //            String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
 //                    commitId.substring( commitId.length() - CHARS_OF_UUID/2 );
 //
-//            prop.setProperty( Project.LOAD_KEY, TESTS_PATH + '/' + uuid + '/' + RUNNER_WAR );
+//            prop.setProperty( Project.LOAD_KEY, TESTS_PATH + '/' + uuid + '/' + RUNNER_JAR );
 //            prop.setProperty( Project.LOAD_TIME_KEY, String.valueOf( System.currentTimeMillis() ) );
 //            prop.setProperty( Project.CHOP_VERSION_KEY, plugin.getVersion() );
 //
@@ -120,7 +120,7 @@ public class JarMojo extends MainMojo {
 //            prop.store( writer, "Generated with chop:war" );
 //
 //            // Create the final WAR
-//            String finalWarPath = getWarToUploadPath();
+//            String finalWarPath = getRunnerToUploadPath();
 //            File finalWarFile = new File( finalWarPath );
 //            Utils.archiveWar( finalWarFile, extractedWarRoot );
 //        }

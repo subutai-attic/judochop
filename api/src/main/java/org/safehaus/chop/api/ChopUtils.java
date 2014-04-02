@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
-import static org.safehaus.chop.api.Constants.RUNNER_WAR;
+import static org.safehaus.chop.api.Constants.RUNNER_JAR;
 
 
 /**
@@ -82,7 +82,7 @@ public class ChopUtils {
      */
     public static String getTestBase( String loadKey ) {
         Preconditions.checkNotNull( loadKey, "The loadKey argument cannot be null." );
-        return loadKey.substring( 0, loadKey.length() - RUNNER_WAR.length() );
+        return loadKey.substring( 0, loadKey.length() - RUNNER_JAR.length() );
     }
 
 
