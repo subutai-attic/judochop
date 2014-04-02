@@ -27,7 +27,7 @@ import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.google.inject.Inject;
 
 
-/** TODO check outbound stuff */
+/** TODO check outbound rules */
 public class AmazonIpRuleManager implements IpRuleManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( AmazonIpRuleManager.class );
@@ -41,6 +41,10 @@ public class AmazonIpRuleManager implements IpRuleManager {
     }
 
 
+    /**
+     * Note that you have to set the data center before any other operation,
+     * if you are to use a different data center than Amazon's default
+     */
     @Override
     public void setDataCenter( final String dataCenter ) {
         client.setEndpoint( AmazonUtils.getEndpoint( dataCenter ) );

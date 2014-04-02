@@ -315,7 +315,7 @@ public class UploadResource implements RestParams {
     }
 
 
-    private void writeToFile( InputStream in, String fileLocation )
+    public static void writeToFile( InputStream in, String fileLocation )
     {
         OutputStream out = null;
 
