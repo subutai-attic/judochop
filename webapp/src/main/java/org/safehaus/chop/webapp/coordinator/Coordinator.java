@@ -16,7 +16,6 @@ import org.safehaus.chop.api.Commit;
 import org.safehaus.chop.api.Module;
 import org.safehaus.chop.api.store.amazon.InstanceValues;
 import org.safehaus.chop.spi.IpRuleManager;
-import org.safehaus.chop.stack.Cluster;
 import org.safehaus.chop.stack.CoordinatedStack;
 import org.safehaus.chop.stack.ICoordinatedCluster;
 import org.safehaus.chop.stack.Instance;
