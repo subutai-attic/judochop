@@ -20,6 +20,7 @@
 package org.safehaus.chop.webapp.coordinator.rest;
 
 
+import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,13 +30,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.elasticsearch.indices.IndexMissingException;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.Coordinator;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.dao.RunnerDao;
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -44,9 +48,9 @@ import com.google.inject.Singleton;
  * REST operation to setup the Stack under test.
  */
 @Singleton
-@Path( RunManagerResource.ENDPOINT_URL )
-public class RunManagerResource {
-    public final static String ENDPOINT_URL = "/run";
+@Path( RunManagerResource.ENDPOINT )
+public class RunManagerResource extends TestableResource {
+    public final static String ENDPOINT = "/run";
     private static final Logger LOG = LoggerFactory.getLogger( RunManagerResource.class );
 
 
@@ -60,14 +64,43 @@ public class RunManagerResource {
     private RunDao runDao;
 
 
+    protected RunManagerResource() {
+        super( ENDPOINT );
+    }
+
+
     @GET
     @Path( "/next" )
-    @Produces( MediaType.TEXT_PLAIN )
-    public Response next( @QueryParam( RestParams.COMMIT_ID ) String commitId ) throws Exception
-    {
-        LOG.warn( "Calling next ..." );
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response next(
 
-        int next = runDao.getNextRunNumber( commitId );
+            @QueryParam( RestParams.COMMIT_ID ) String commitId,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
+
+                        ) throws Exception
+    {
+        int next;
+
+        if ( inTestMode( testMode ) ) {
+            LOG.info( "Calling /run/next in test mode ..." );
+            return Response.ok( 0 ).build();
+        }
+
+        LOG.info( "Calling /run/next ..." );
+        Preconditions.checkNotNull( commitId, "The commitId should not be null." );
+
+        try {
+            next = runDao.getNextRunNumber( commitId );
+        }
+        catch ( IndexMissingException e ) {
+            LOG.warn( "Got an index missing exception while looking up the next run number." );
+            return Response.ok( 0 ).build();
+        }
+        catch ( Exception e ) {
+            LOG.error( "Failed to get the next run number for commitId = " + commitId, e );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( e.getMessage() ).build();
+        }
+
         LOG.info( "Next run number to return is {}", next );
         return Response.ok( next ).build();
     }

@@ -82,7 +82,7 @@ public interface CoordinatorFig extends GuicyFig {
 
 
     String ENDPOINT = "coordinator.endpoint";
-    String ENDPOINT_DEFAULT = "http://localhost:8443";
+    String ENDPOINT_DEFAULT = "https://localhost:8443";
     @Key( ENDPOINT )
     @Default( ENDPOINT_DEFAULT )
     String getEndpoint();

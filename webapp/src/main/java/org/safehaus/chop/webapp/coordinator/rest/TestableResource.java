@@ -1,4 +1,4 @@
-package org.safehaus.chop.runner.rest;
+package org.safehaus.chop.webapp.coordinator.rest;
 
 
 import org.safehaus.jettyjam.utils.TestMode;

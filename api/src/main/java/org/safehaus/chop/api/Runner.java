@@ -7,10 +7,14 @@ import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.Key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 
 /** Minimal requirements for runner information. */
 @FigSingleton
+@JsonSerialize( using = RunnerSerializer.class )
+@JsonDeserialize( using = RunnerDeserializer.class )
 public interface Runner extends GuicyFig {
 
 

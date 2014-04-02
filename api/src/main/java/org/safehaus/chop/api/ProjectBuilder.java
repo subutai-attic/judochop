@@ -31,7 +31,7 @@ public class ProjectBuilder {
     private String commitId;
     private String loadKey;
     private String chopVersion;
-    private String warMd5;
+    private String md5;
     private String loadTime;
     private String managerUsername;
     private String managerPassword;
@@ -76,7 +76,7 @@ public class ProjectBuilder {
             this.commitId = supplied.getVcsVersion();
             this.loadKey = supplied.getLoadKey();
             this.chopVersion = supplied.getChopVersion();
-            this.warMd5 = supplied.getMd5();
+            this.md5 = supplied.getMd5();
             this.loadTime = supplied.getLoadTime();
             this.managerPassword = supplied.getManagerPassword();
             this.managerUsername = supplied.getManagerUsername();
@@ -137,7 +137,7 @@ public class ProjectBuilder {
             }
 
             if ( props.containsKey( Project.MD5_KEY ) ) {
-                this.warMd5 = props.getProperty( Project.MD5_KEY );
+                this.md5 = props.getProperty( Project.MD5_KEY );
             }
         }
     }
@@ -207,8 +207,8 @@ public class ProjectBuilder {
 
 
     @JsonProperty
-    public ProjectBuilder setWarMd5( final String warMd5 ) {
-        this.warMd5 = warMd5;
+    public ProjectBuilder setMd5( final String md5 ) {
+        this.md5 = md5;
         return this;
     }
 
@@ -311,7 +311,7 @@ public class ProjectBuilder {
 
             @Override
             public String getMd5() {
-                return warMd5;
+                return md5;
             }
 
 

@@ -182,7 +182,7 @@ public class RunnerConfig extends GuiceServletContextListener {
 
             if ( env == Env.CHOP ) {
                 registry.register( runner );
-                LOG.info( "Registered runner information in store." );
+                LOG.info( "Registered runner information in coordinator registry." );
             }
             else {
                 LOG.warn( "Env = {} so we are not registering this runner.", env );

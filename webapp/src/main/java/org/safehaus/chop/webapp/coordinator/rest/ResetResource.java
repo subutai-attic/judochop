@@ -42,9 +42,9 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( ResetResource.ENDPOINT_URL )
+@Path( ResetResource.ENDPOINT )
 public class ResetResource {
-    public final static String ENDPOINT_URL = "/reset";
+    public final static String ENDPOINT = "/reset";
     private static final Logger LOG = LoggerFactory.getLogger( ResetResource.class );
 
 
@@ -70,7 +70,7 @@ public class ResetResource {
     {
         BaseResult result = new BaseResult();
         result.setProject( project );
-        result.setEndpoint( ENDPOINT_URL );
+        result.setEndpoint( ENDPOINT );
 
         if ( test != null && ( test.equals( TestMode.INTEG.toString() ) || test.equals( TestMode.UNIT.toString() ) ) )
         {

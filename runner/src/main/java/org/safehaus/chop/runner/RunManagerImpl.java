@@ -123,14 +123,13 @@ public class RunManagerImpl implements RunManager, RestParams {
 
     @Override
     public int getNextRunNumber( final Project project ) {
-        // get run status information
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, me );
-        String result = resource.path( coordinatorFig.getRunStatusPath() )
-                                  .type( MediaType.TEXT_PLAIN ).get( String.class );
+        Integer result = resource.path( coordinatorFig.getRunNextPath() )
+                                .type( MediaType.APPLICATION_JSON_TYPE ).get( Integer.class );
 
         LOG.debug( "Got back result from next run number get = {}", result );
 
-        return Integer.parseInt( result );
+        return result;
     }
 }

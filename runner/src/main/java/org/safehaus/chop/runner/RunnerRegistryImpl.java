@@ -101,14 +101,10 @@ public class RunnerRegistryImpl implements RunnerRegistry {
 
     @Override
     public void register( final Runner runner ) {
-        if ( RunnerConfig.isTestMode() ) {
-            return;
-        }
-
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
-        String result = resource.path( coordinatorFig.getRunnersRegisterPath() )
-                                .type( MediaType.TEXT_PLAIN ).post( String.class, runner );
+        Boolean result = resource.path( coordinatorFig.getRunnersRegisterPath() )
+                                .type( MediaType.APPLICATION_JSON ).post( Boolean.class, runner );
 
         LOG.debug( "Got back results from register post = {}", result );
     }

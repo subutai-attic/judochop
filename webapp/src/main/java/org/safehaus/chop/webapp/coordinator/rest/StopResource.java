@@ -41,9 +41,9 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StopResource.ENDPOINT_URL )
+@Path( StopResource.ENDPOINT )
 public class StopResource {
-    public final static String ENDPOINT_URL = "/stop";
+    public final static String ENDPOINT = "/stop";
     private static final Logger LOG = LoggerFactory.getLogger( StopResource.class );
 
 
@@ -55,6 +55,6 @@ public class StopResource {
     @POST
     public Result stop( Stack stack ) {
         LOG.warn( "Calling setup" );
-        return new BaseResult( ENDPOINT_URL, true, "Setup called", State.READY );
+        return new BaseResult( ENDPOINT, true, "Setup called", State.READY );
     }
 }

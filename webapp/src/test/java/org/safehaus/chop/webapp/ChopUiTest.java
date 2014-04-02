@@ -16,6 +16,8 @@ import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
 
 import org.safehaus.jettyjam.utils.JettyUnitResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -26,6 +28,8 @@ import static junit.framework.TestCase.assertEquals;
  * Tests the ChopUi.
  */
 public class ChopUiTest {
+    private static final Logger LOG = LoggerFactory.getLogger( ChopUiTest.class );
+
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
@@ -49,10 +53,17 @@ public class ChopUiTest {
     @Test
     public void testGet() {
         String result = jetty.newTestParams()
-                             .setEndpoint( TestGetResource.ENDPOINT_URL )
-                             .newWebResource()
-                             .accept( MediaType.TEXT_PLAIN )
-                             .get( String.class );
+                .setLogger( LOG )
+                .setEndpoint( TestGetResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.TEXT_PLAIN )
+                .get( String.class );
         assertEquals( TestGetResource.TEST_MESSAGE, result );
+    }
+
+
+    @Test
+    public void testRunManagerNext() {
+        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
     }
 }

@@ -69,9 +69,9 @@ public class ProjectDeserializer extends JsonDeserializer<Project> {
                 jp.nextToken();
                 builder.setProjectVersion( jp.getText() );
             }
-            else if ( tmp.equals( "warMd5" ) ) {
+            else if ( tmp.equals( "md5" ) ) {
                 jp.nextToken();
-                builder.setWarMd5( jp.getText() );
+                builder.setMd5( jp.getText() );
             }
             else if ( tmp.equals( "loadKey" ) ) {
                 jp.nextToken();

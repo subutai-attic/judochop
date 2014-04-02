@@ -20,6 +20,7 @@
 package org.safehaus.chop.webapp.coordinator.rest;
 
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -31,12 +32,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.elasticsearch.indices.IndexMissingException;
+import org.mockito.internal.verification.checkers.MissingInvocationChecker;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.RunnerDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -46,9 +50,9 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( RunnerRegistryResource.ENDPOINT_URL )
-public class RunnerRegistryResource {
-    public final static String ENDPOINT_URL = "/runners";
+@Path( RunnerRegistryResource.ENDPOINT)
+public class RunnerRegistryResource extends TestableResource {
+    public final static String ENDPOINT = "/runners";
     private static final Logger LOG = LoggerFactory.getLogger( RunnerRegistryResource.class );
 
 
@@ -56,12 +60,26 @@ public class RunnerRegistryResource {
     private RunnerDao runnerDao;
 
 
+    public RunnerRegistryResource() {
+        super( ENDPOINT );
+    }
+
+
     @GET
     @Path( "/list" )
     @Produces( MediaType.APPLICATION_JSON )
     public Response list( @QueryParam(  RestParams.COMMIT_ID ) String commitId ) throws Exception {
         LOG.warn( "Calling list ..." );
-        List<Runner> runnerList = runnerDao.getRunners( commitId );
+
+        List<Runner> runnerList = Collections.emptyList();
+
+        try {
+            runnerList = runnerDao.getRunners( commitId );
+        }
+        catch ( IndexMissingException e ) {
+            LOG.warn( "Got a missing index exception." );
+        }
+
         Runner[] runners = new Runner[runnerList.size()];
         return Response.status( Response.Status.CREATED ).entity( runnerList.toArray( runners ) ).build();
     }
@@ -70,18 +88,20 @@ public class RunnerRegistryResource {
     @POST
     @Path( "/register" )
     @Consumes( MediaType.APPLICATION_JSON )
-    @Produces( MediaType.TEXT_PLAIN )
     public Response register( @QueryParam( RestParams.COMMIT_ID ) String commitId, Runner runner ) throws Exception
     {
         LOG.warn( "Calling register ..." );
 
+        Preconditions.checkNotNull( commitId, "The commitId cannot be null." );
+        Preconditions.checkNotNull( runner, "The runner cannot be null." );
+
         if ( runnerDao.save( runner, commitId ) ) {
             LOG.info( "registered runner {}", runner.getHostname() );
-            return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
+            return Response.status( Response.Status.CREATED ).entity( true ).build();
         }
         else {
             LOG.warn( "failed to register runner {}", runner.getHostname() );
-            return Response.status( Response.Status.CREATED ).entity( "FALSE" ).build();
+            return Response.status( Response.Status.CREATED ).entity( false ).build();
         }
     }
 
