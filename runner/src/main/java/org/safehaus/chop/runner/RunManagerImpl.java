@@ -108,10 +108,12 @@ public class RunManagerImpl implements RunManager, RestParams {
         // get run status information
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, runner );
-        String result = resource.path( coordinatorFig.getRunStatusPath() )
-                                  .queryParam( RUN_NUMBER, String.valueOf( runNumber ) )
-                                  .queryParam( TEST_CLASS, testClass.getName() )
-                                  .type( MediaType.TEXT_PLAIN ).get( String.class );
+        String result = resource.path( coordinatorFig.getRunCompletedPath() )
+                                .queryParam( RUNNER_HOSTNAME, runner.getHostname() )
+                                .queryParam( COMMIT_ID, project.getVcsVersion() )
+                                .queryParam( RUN_NUMBER, String.valueOf( runNumber ) )
+                                .queryParam( TEST_CLASS, testClass.getName() )
+                                .type( MediaType.TEXT_PLAIN ).get( String.class );
 
         LOG.debug( "Got back result from run status get = {}", result );
 

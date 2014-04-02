@@ -10,7 +10,6 @@ package org.safehaus.chop.runner;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.client.ChopClientModule;
 import org.safehaus.chop.runner.rest.ResetResource;
 import org.safehaus.chop.runner.rest.StartResource;

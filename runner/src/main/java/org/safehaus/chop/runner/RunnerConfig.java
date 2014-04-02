@@ -179,8 +179,15 @@ public class RunnerConfig extends GuiceServletContextListener {
 
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
             RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
-            registry.register( runner );
-            LOG.info( "Registered runner information in store." );
+
+            if ( env == Env.CHOP ) {
+                registry.register( runner );
+                LOG.info( "Registered runner information in store." );
+            }
+            else {
+                LOG.warn( "Env = {} so we are not registering this runner.", env );
+            }
+
         }
         else {
             LOG.warn( "Runner registry not started, and not registered: insufficient configuration parameters." );

@@ -18,6 +18,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 public class DeployMojo extends MainMojo {
 
 
+    public DeployMojo() {
+
+    }
+
     protected DeployMojo( MainMojo mojo ) {
         this.username = mojo.username;
         this.password = mojo.password;
@@ -33,10 +37,7 @@ public class DeployMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        File buildDir = new File( project.getBuild().getDirectory() );
-        getLog().info( "buildDir = " + buildDir.getAbsolutePath() );
-
-        File source = new File( buildDir, RUNNER_JAR );
+        File source = getRunnerFile();
         if ( source.exists() ) {
             getLog().info( source.getAbsolutePath() + " exists!" );
         }
@@ -44,9 +45,8 @@ public class DeployMojo extends MainMojo {
             getLog().info( source.getAbsolutePath() + " does not exist." );
         }
 
-
         if ( ! isReadyToDeploy() ) {
-            getLog().info( RUNNER_JAR + " is not ready to upload to store, calling chop:runner goal now..." );
+            getLog().info( RUNNER_JAR + " is NOT present to upload, calling chop:runner goal now..." );
             RunnerMojo runnerMojo = new RunnerMojo( this );
             runnerMojo.execute();
         }
@@ -55,7 +55,7 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( "Files to be deployed are not ready and chop:runner failed" );
         }
 
-//        String configPropertiesFilePath = getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE;
+//        String configPropertiesFilePath = getExtractedRunnerPath() + "WEB-INF/classes/" + PROJECT_FILE;
 //        FileUtils.mkdir( configPropertiesFilePath.substring( 0, configPropertiesFilePath.lastIndexOf( '/' ) ) );
 //
 //        try {
@@ -104,13 +104,13 @@ public class DeployMojo extends MainMojo {
 
 
     private boolean isReadyToDeploy() {
-        File source = new File( getRunnerToUploadPath() );
+        File source = getRunnerFile();
         try {
             if ( ! source.exists() ) {
                 return false;
             }
 
-            File extractedConfigPropFile = new File( getExtractedWarRootPath() + "WEB-INF/classes/project.properties" );
+            File extractedConfigPropFile = new File( getExtractedRunnerPath() + "WEB-INF/classes/project.properties" );
             if ( extractedConfigPropFile.exists() ) {
                 Properties props = new Properties();
                 FileInputStream inputStream = new FileInputStream( extractedConfigPropFile );

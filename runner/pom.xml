@@ -142,6 +142,12 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>chop-spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>chop-client</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -235,21 +241,6 @@
     <dependency>
       <groupId>com.netflix.archaius</groupId>
       <artifactId>archaius-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.blitz4j</groupId>
-      <artifactId>blitz4j</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-aws</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-jclouds</artifactId>
     </dependency>
 
     <dependency>

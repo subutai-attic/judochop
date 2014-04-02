@@ -77,6 +77,13 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /**
+     * This is the package base to use when scanning for chopped tests.
+     */
+    @Parameter( property = "testPackageBase", required = true )
+    protected String testPackageBase;
+
+
+    /**
      * @todo is this still necessary?
      *
      * Leaving this null will default to the use of "changeit" for the passphrase.
@@ -129,22 +136,20 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /** @return Returns the extracted path of RUNNER_JAR file with a '/' at the end */
-    public String getExtractedWarRootPath() {
+    public String getExtractedRunnerPath() {
         return getProjectBaseDirectory() + "target/runner/";
     }
 
 
     /** @return Returns the full path of created runner.war file */
-    public String getRunnerToUploadPath() {
-        String projectBaseDirectory = Utils.forceNoSlashOnDir( project.getBasedir().getAbsolutePath() );
-
-        return projectBaseDirectory + "/target/" + RUNNER_JAR;
+    public File getRunnerFile() {
+        return new File( project.getBuild().getDirectory(), RUNNER_JAR );
     }
 
 
     /** @return Returns the full path of created project.json file */
     public String getProjectFileToUploadPath() {
-        return getExtractedWarRootPath() + "WEB-INF/classes/" + PROJECT_FILE;
+        return getExtractedRunnerPath() + "WEB-INF/classes/" + PROJECT_FILE;
     }
 
 
@@ -154,13 +159,13 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    /** @return Returns the full path of the original chop-runner war file inside the local maven repository */
-    public String getServerWarPath() {
+    /** @return Returns the full path of the original chop-runner jar file in the local maven repository */
+    public String getRunnerInLocalRepo() {
         String path = localRepository;
-        Artifact perftestArtifact = plugin.getPluginArtifact();
+        Artifact chopPluginArtifact = plugin.getPluginArtifact();
 
-        path += "/" + perftestArtifact.getGroupId().replace( '.', '/' ) + "/chop-runner/" +
-                perftestArtifact.getVersion() + "/chop-runner-" + perftestArtifact.getVersion() + ".war";
+        path += "/" + chopPluginArtifact.getGroupId().replace( '.', '/' ) + "/chop-runner/" +
+                chopPluginArtifact.getVersion() + "/chop-runner-" + chopPluginArtifact.getVersion() + ".jar";
 
         return path;
     }

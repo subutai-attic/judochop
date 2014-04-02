@@ -76,7 +76,7 @@ public class ProjectBuilder {
             this.commitId = supplied.getVcsVersion();
             this.loadKey = supplied.getLoadKey();
             this.chopVersion = supplied.getChopVersion();
-            this.warMd5 = supplied.getWarMd5();
+            this.warMd5 = supplied.getMd5();
             this.loadTime = supplied.getLoadTime();
             this.managerPassword = supplied.getManagerPassword();
             this.managerUsername = supplied.getManagerUsername();
@@ -136,8 +136,8 @@ public class ProjectBuilder {
                 this.testPackageBase = props.getProperty( Project.TEST_PACKAGE_BASE );
             }
 
-            if ( props.containsKey( Project.WAR_MD5_KEY ) ) {
-                this.warMd5 = props.getProperty( Project.WAR_MD5_KEY );
+            if ( props.containsKey( Project.MD5_KEY ) ) {
+                this.warMd5 = props.getProperty( Project.MD5_KEY );
             }
         }
     }
@@ -310,7 +310,7 @@ public class ProjectBuilder {
 
 
             @Override
-            public String getWarMd5() {
+            public String getMd5() {
                 return warMd5;
             }
 

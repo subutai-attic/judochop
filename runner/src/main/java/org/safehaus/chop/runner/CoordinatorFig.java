@@ -47,6 +47,19 @@ public interface CoordinatorFig extends GuicyFig {
     String getRunStatsPath();
 
 
+    String RUN_NEXT_PATH = "coordinator.endpoint.run.next";
+    String RUN_NEXT_PATH_DEFAULT = "/run/next";
+    @Key( RUN_NEXT_PATH )
+    @Default( RUN_NEXT_PATH_DEFAULT )
+    String getRunNextPath();
+
+    String RUN_COMPLETED_PATH = "coordinator.endpoint.run.completed";
+    String RUN_COMPLETED_PATH_DEFAULT = "/run/completed";
+    @Key( RUN_COMPLETED_PATH )
+    @Default( RUN_COMPLETED_PATH_DEFAULT )
+    String getRunCompletedPath();
+
+
     String RUNNERS_LIST_PATH = "coordinator.endpoint.runners.list";
     String RUNNERS_LIST_PATH_DEFAULT = "/runners/list";
     @Key( RUNNERS_LIST_PATH )

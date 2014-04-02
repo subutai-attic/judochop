@@ -42,7 +42,7 @@ public class ProjectSerDeserTest {
         assertEquals( "org.safehaus.chop", value.getGroupId() );
         assertEquals( "chop-example", value.getArtifactId() );
         assertEquals( "1.0-SNAPSHOT", value.getVersion() );
-        assertEquals( "1f31add62c0f1da0eb5aa74d4c441e2c", value.getWarMd5() );
+        assertEquals( "1f31add62c0f1da0eb5aa74d4c441e2c", value.getMd5() );
         assertEquals( "tests/3d2ccc1b2b96a45936e58b782c4c2d5f8c1ba76e/runner.war", value.getLoadKey() );
         assertEquals( "2013.12.24.06.14.24", value.getLoadTime() );
 

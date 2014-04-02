@@ -34,7 +34,7 @@ public class ProjectSerializer extends JsonSerializer<Project> {
 
         jgen.writeStringField( "projectVersion", value.getVersion() );
 
-        jgen.writeStringField( "warMd5", value.getWarMd5() );
+        jgen.writeStringField( "warMd5", value.getMd5() );
 
         jgen.writeStringField( "loadKey", value.getLoadKey() );
 

@@ -172,17 +172,17 @@ public interface Project extends GuicyFig {
 
 
 
-    String WAR_MD5_KEY = "war.md5";
+    String MD5_KEY = "md5";
 
     /**
-     * Gets the MD5 checksum of the Runner. Uses {@link Project#WAR_MD5_KEY} to
+     * Gets the MD5 checksum of the Runner. Uses {@link Project#MD5_KEY} to
      * access the MD5 checksum.
      *
-     * @return the MD5 checksum of the Runner war
+     * @return the MD5 checksum of the Runner
      */
     @JsonProperty
-    @Key( WAR_MD5_KEY )
-    String getWarMd5();
+    @Key( MD5_KEY )
+    String getMd5();
 
 
     String MANAGER_USERNAME_KEY = "manager.app.username";
