@@ -202,6 +202,17 @@ public class RunnerConfig extends GuiceServletContextListener {
 
     @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent ) {
+        Env env = Env.getEnvironment();
+        RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
+
+        if ( env == Env.CHOP ) {
+            registry.unregister( injector.getInstance( Runner.class ) );
+            LOG.info( "Unregistered runner information in coordinator registry." );
+        }
+        else {
+            LOG.warn( "Environment is set to {} so we are not un-registering this runner.", env );
+        }
+
         super.contextDestroyed( servletContextEvent );
     }
 }

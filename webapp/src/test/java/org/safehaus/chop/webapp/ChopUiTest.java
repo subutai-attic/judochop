@@ -66,4 +66,16 @@ public class ChopUiTest {
     public void testRunManagerNext() {
         ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
     }
+
+
+    @Test
+    public void testRunnerRegistryList() {
+        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistryRegister() {
+        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
+    }
 }
