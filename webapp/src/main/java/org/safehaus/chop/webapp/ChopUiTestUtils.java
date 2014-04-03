@@ -138,8 +138,6 @@ public class ChopUiTestUtils {
                 .get( new GenericType<List<Runner>>() {} );
 
         assertNotNull( runnerList );
-
-        =====> This line below is failing
         assertEquals( 1, runnerList.size() );
 
         Runner runner = runnerList.get( 0 );

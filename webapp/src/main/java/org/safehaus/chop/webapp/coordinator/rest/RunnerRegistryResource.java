@@ -121,7 +121,7 @@ public class RunnerRegistryResource extends TestableResource {
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
 
         if ( runnerDao.save( runner, commitId ) ) {
-            LOG.info( "registered runner {}", runner.getHostname() );
+            LOG.info( "registered runner {} for commit {}", runner.getHostname(), commitId );
             return Response.ok( true ).build();
         }
         else {
