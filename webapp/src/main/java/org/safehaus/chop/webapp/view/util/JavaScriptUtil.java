@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.view.util;
 
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
+import org.safehaus.chop.webapp.service.util.FileUtil;
 
 public class JavaScriptUtil {
 
@@ -14,7 +15,7 @@ public class JavaScriptUtil {
     }
 
     public static void loadFile(String fileName) {
-        execute(FileUtil.getContent(fileName));
+        execute( FileUtil.getContent(fileName) );
     }
 
     public static void loadChart(String chart, String jsCallbackName, JavaScriptFunction jsCallback) {

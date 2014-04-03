@@ -1,6 +1,8 @@
 package org.safehaus.chop.api;
 
 
+import java.util.Map;
+
 /**
  * This contains the parameters necessary to manage all environment dependant cluster operations,
  * such as creating, launching, destroying instances
@@ -25,8 +27,11 @@ public interface ProviderParams {
 
     String getSecurityGroup();
 
-    String getKeyPairName();
-
     String getRunnerName();
+
+    /**
+     * Path to key files identified by key-pair-names.
+     */
+    Map<String, String> getKeys();
 
 }
