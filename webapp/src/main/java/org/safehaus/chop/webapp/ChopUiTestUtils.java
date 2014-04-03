@@ -152,6 +152,33 @@ public class ChopUiTestUtils {
          * Let's unregister the runner from the registry and check
          * ------------------------------------------------------------
          */
+        result = testParams
+                .newWebResource( null )
+                .queryParam( RestParams.RUNNER_HOSTNAME, hostname )
+                .path( "/unregister" )
+                .type( MediaType.APPLICATION_JSON_TYPE )
+                .accept( MediaType.APPLICATION_JSON_TYPE )
+                .post( Boolean.class );
+
+        assertTrue( result );
+
+        /*
+         * ------------------------------------------------------------
+         * Let's make sure we do NOT get the runner from the registry
+         * ------------------------------------------------------------
+         */
+        runnerList.clear();
+        runnerList = testParams
+                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+                .newWebResource( null )
+                .queryParam( RestParams.COMMIT_ID, commitId )
+                .path( "/list" )
+                .type( MediaType.APPLICATION_JSON_TYPE )
+                .accept( MediaType.APPLICATION_JSON_TYPE )
+                .get( new GenericType<List<Runner>>() {} );
+
+        assertNotNull( runnerList );
+        assertEquals( 0, runnerList.size() );
     }
 
 

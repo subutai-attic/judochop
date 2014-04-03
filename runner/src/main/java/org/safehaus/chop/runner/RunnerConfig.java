@@ -178,10 +178,17 @@ public class RunnerConfig extends GuiceServletContextListener {
          }
 
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
-            RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
+            final RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
 
             if ( env == Env.CHOP ) {
                 registry.register( runner );
+                Runtime.getRuntime().addShutdownHook( new Thread( new Runnable() {
+                    @Override
+                    public void run() {
+                        registry.unregister( runner );
+                        LOG.info( "Unregistering runner on shutdownx: {}", runner.getHostname() );
+                    }
+                } ) );
                 LOG.info( "Registered runner information in coordinator registry." );
             }
             else {

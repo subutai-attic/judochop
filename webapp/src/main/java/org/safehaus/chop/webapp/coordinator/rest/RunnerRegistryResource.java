@@ -145,6 +145,9 @@ public class RunnerRegistryResource extends TestableResource {
             return Response.ok( false ).build();
         }
 
+
+        Preconditions.checkNotNull( runnerHostname, "The runnerHostname cannot be null." );
+
         LOG.info( "Calling /runners/unregister ..." );
         try {
             if ( runnerDao.delete( runnerHostname ) ) {

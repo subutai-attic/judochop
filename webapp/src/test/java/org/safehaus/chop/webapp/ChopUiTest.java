@@ -90,7 +90,4 @@ public class ChopUiTest {
     public void testRunnerRegistrySequence() {
         ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams().setLogger( LOG ) );
     }
-
-
-
 }

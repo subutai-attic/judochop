@@ -77,7 +77,9 @@ public class RunnerRegistryImpl implements RunnerRegistry {
         WebResource resource = Client.create().resource( coordinatorFig.getEndpoint() );
         resource = addQueryParameters( resource, project, me );
         List<Runner> runners = resource.path( coordinatorFig.getRunnersListPath() )
-                                  .type( MediaType.APPLICATION_JSON ).get( new GenericType<List<Runner>>() {} );
+                                  .type( MediaType.APPLICATION_JSON )
+                                  .accept( MediaType.APPLICATION_JSON_TYPE )
+                                  .get( new GenericType<List<Runner>>() {} );
 
         LOG.debug( "Got back runners list = {}", runners );
 
