@@ -39,7 +39,7 @@ public class RestFilter extends AccessControlFilter {
         }
         String username = (request.getParameter("user"));
         String password = (request.getParameter("pwd"));
-        if (MyShiroRealm.authUser(username, password)) {
+        if (ShiroRealm.authUser(username, password)) {
             SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password));
             return true;
         }

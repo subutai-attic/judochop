@@ -1,17 +1,34 @@
-package org.safehaus.chop.webapp.view.util;
+package org.safehaus.chop.webapp.service.util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FileUtil {
 
-    private static final Logger LOG = Logger.getLogger( FileUtil.class.getName() );
+    private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class.getName());
     private static URLClassLoader classLoader;
+
+    public static Properties readProperties(String filePath) {
+
+        Properties props = new Properties();
+        String content = FileUtil.getContent(filePath);
+
+        try {
+            props.load( new StringReader(content) );
+        } catch (IOException e) {
+            LOG.error("Error to read properties file: ", e);
+        }
+
+        return props;
+    }
 
     public static String getContent(String filePath) {
         String content = "";
@@ -19,7 +36,7 @@ public class FileUtil {
         try {
             content = readFile(filePath);
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error while reading file: " + e);
+            LOG.error("Error while reading file: " + e);
         }
 
         return content;

@@ -33,61 +33,70 @@ import org.safehaus.chop.webapp.dao.UserDao;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
 import org.safehaus.chop.stack.User;
 import org.safehaus.chop.webapp.service.InjectorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MyShiroRealm extends AuthorizingRealm {
+public class ShiroRealm extends AuthorizingRealm {
 
-    // InjectorFactory.getInstance(ProviderParamsDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ShiroRealm.class);
+
+    private static final String DEFAULT_USER = "user";
+    private static final String DEFAULT_PASSWORD = "pass";
+
+    public ShiroRealm() {
+        super(new MemoryConstrainedCacheManager(), new SimpleCredentialsMatcher());
+    }
+
     public static boolean authUser(String username, String password) {
         try {
             if (username == null) {
                 throw new AuthenticationException("Authentication failed");
             }
 
-            System.out.println("authUser");
+            LOG.info("username: {}", username);
 
-            if(username.equalsIgnoreCase("user") && password.equals("pass")){
-                InjectorFactory.getInstance(UserDao.class).save(new User("user", "pass"));
-                InjectorFactory.getInstance(ProviderParamsDao.class).save(new BasicProviderParams("user", "", "", "", "", "",
-                        "", "", ""));
+            if (username.equalsIgnoreCase("user") && password.equals("pass")) {
+//                InjectorFactory.getInstance(UserDao.class).save( new User(DEFAULT_USER, DEFAULT_PASSWORD) );
+//                InjectorFactory.getInstance(ProviderParamsDao.class).save( new BasicProviderParams("user") );
+                initUserData();
             } else {
                 User user = InjectorFactory.getInstance(UserDao.class).get(username.toLowerCase());
                 if (user == null || user.getPassword() == null || !user.getPassword().equalsIgnoreCase(password)) {
                     throw new AuthenticationException("Authentication failed");
                 }
             }
+
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error while authentication: ", e);
         }
         return false;
     }
 
-    public MyShiroRealm() {
-        super(new MemoryConstrainedCacheManager(), new SimpleCredentialsMatcher());
-    }
-
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
-        String username = upToken.getUsername();
-        String password = String.valueOf(upToken.getPassword());
+        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
+        String username = token.getUsername();
+        String password = String.valueOf(token.getPassword());
+
         if (username == null) {
             throw new AuthenticationException("Authentication failed");
         }
 
-        System.out.println("doGetAuthenticationInfo");
-        if(username.equals(username) && password.equals("pass")){
+        LOG.info("username: {}", username);
+
+        if (username.equals(username) && password.equals("pass")) {
             try {
-                InjectorFactory.getInstance(UserDao.class).save(new User("user", "pass"));
-                InjectorFactory.getInstance(ProviderParamsDao.class).save(new BasicProviderParams("user", "", "", "", "", "",
-                        "", "", ""));
+//                InjectorFactory.getInstance(UserDao.class).save( new User(DEFAULT_USER, DEFAULT_PASSWORD) );
+//                InjectorFactory.getInstance(ProviderParamsDao.class).save( new BasicProviderParams("user") );
+                initUserData();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Error while authentication: ", e);
             }
         } else {
             User user = InjectorFactory.getInstance(UserDao.class).get(username.toLowerCase());
@@ -97,6 +106,19 @@ public class MyShiroRealm extends AuthorizingRealm {
         }
 
         return new SimpleAuthenticationInfo(username, password, this.getName());
+    }
+
+    private static void initUserData() throws Exception {
+
+        UserDao userDao = InjectorFactory.getInstance(UserDao.class);
+        User user = userDao.get(DEFAULT_USER);
+
+        if (user != null){
+            return;
+        }
+
+        InjectorFactory.getInstance(UserDao.class).save( new User(DEFAULT_USER, DEFAULT_PASSWORD) );
+        InjectorFactory.getInstance(ProviderParamsDao.class).save( new BasicProviderParams(DEFAULT_USER) );
     }
 
     @Override

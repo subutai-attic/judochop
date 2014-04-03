@@ -1,10 +1,8 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
-import java.util.Collection;
 import java.util.Date;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -164,7 +162,6 @@ public class ESSuiteTest {
                 "ad911213ab21ef23ab4e0e",
                 IMAGE_ID,
                 "chop-security",
-                "Ec2KeyPair",
                 "chop-runner"
         );
         ppDao.save( pp );
@@ -177,7 +174,6 @@ public class ESSuiteTest {
                 "ad911213ab21ef23ab4e0e",
                 "ami-2143224",
                 "chop-security-2",
-                "ChopKeyPair",
                 "chop-runner"
         );
         ppDao.save( pp );
