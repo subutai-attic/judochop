@@ -142,7 +142,7 @@ public class RunnerRegistryResource extends TestableResource {
     {
         if ( inTestMode( testMode ) ) {
             LOG.info( "Calling /runners/unregister ..." );
-            return Response.ok( true ).build();
+            return Response.ok( false ).build();
         }
 
         LOG.info( "Calling /runners/unregister ..." );
