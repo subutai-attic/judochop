@@ -78,4 +78,10 @@ public class ChopUiTest {
     public void testRunnerRegistryRegister() {
         ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
     }
+
+
+    @Test
+    public void testUploadRunner() throws Exception {
+        ChopUiTestUtils.testUpload( jetty.newTestParams().setLogger( LOG ) );
+    }
 }

@@ -32,11 +32,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -64,6 +66,7 @@ import org.safehaus.chop.webapp.dao.model.BasicRun;
 import org.safehaus.chop.webapp.dao.model.BasicRunResult;
 import org.safehaus.chop.stack.User;
 import org.safehaus.chop.webapp.elasticsearch.Util;
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +80,9 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.TEXT_PLAIN )
-@Path( UploadResource.ENDPOINT_URL )
-public class UploadResource implements RestParams {
-    public final static String ENDPOINT_URL = "/upload";
+@Path( UploadResource.ENDPOINT )
+public class UploadResource extends TestableResource implements RestParams {
+    public final static String ENDPOINT = "/upload";
     private final static Logger LOG = LoggerFactory.getLogger( UploadResource.class );
 
 
@@ -111,12 +114,15 @@ public class UploadResource implements RestParams {
     private CommitDao commitDao;
 
 
+    public UploadResource() { super( ENDPOINT ); }
+
+
     /**
      * Uploads a file to the servlet context temp directory. More for testing proper uploads.
      */
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
-    @Produces( MediaType.TEXT_PLAIN )
+    @Produces( MediaType.APPLICATION_JSON )
     public Response upload( MimeMultipart multipart )
     {
         try {
@@ -143,9 +149,19 @@ public class UploadResource implements RestParams {
     @Path( "/runner" )
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( MediaType.TEXT_PLAIN )
-    public Response uploadRunner( MimeMultipart multipart ) throws Exception
+    public Response uploadRunner(
+
+            MimeMultipart multipart,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
+
+                                ) throws Exception
     {
-        LOG.warn( "/upload/runner called ..." );
+        if( inTestMode( testMode ) ) {
+            LOG.info( "Calling /upload/runner in test mode ..." );
+        }
+        else {
+            LOG.warn( "/upload/runner called ..." );
+        }
 
         String commitId = multipart.getBodyPart( RestParams.COMMIT_ID ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.COMMIT_ID, commitId );
@@ -177,6 +193,13 @@ public class UploadResource implements RestParams {
         User user = userDao.get( username );
         ProviderParams providerParams = providerParamsDao.getByUser( username );
         InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
+
+        if( inTestMode( testMode ) ) {
+            return Response.status( Response.Status.CREATED )
+                           .entity( "Test parameters are OK" )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
+        }
 
         /*
          * File storage scheme:
@@ -242,7 +265,7 @@ public class UploadResource implements RestParams {
         ObjectMapper mapper = new ObjectMapper();
         Stack stack = mapper.readValue( classLoader.getResourceAsStream( "stack.json" ), BasicStack.class );
 
-        return Response.status( Response.Status.CREATED ).entity( runnerFile.getAbsoluteFile() ).build();
+        return Response.status( Response.Status.CREATED ).entity( runnerFile.getAbsolutePath() ).build();
     }
 
 

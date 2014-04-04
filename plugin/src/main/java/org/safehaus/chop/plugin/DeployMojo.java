@@ -18,6 +18,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
@@ -146,16 +147,17 @@ public class DeployMojo extends MainMojo {
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( endpoint ).path( "/upload" );
 
-        Response resp = resource.path( "/runner" )
+        ClientResponse resp = resource.path( "/runner" )
                                 .accept( MediaType.TEXT_PLAIN )
-                                .post( Response.class, multipart );
+                                .post( ClientResponse.class, multipart );
 
         if( resp.getStatus() == Response.Status.CREATED.getStatusCode() ) {
-            getLog().info( "Runner Jar uploaded to the coordinator successfully" );
+            getLog().info( "Runner Jar uploaded to the coordinator successfully on path: " +
+                    resp.getEntity( String.class ) );
         }
         else {
             getLog().error( "Could not upload successfully, HTTP status: " + resp.getStatus() );
-            getLog().error( "Error Message: " + resp.getEntity() );
+            getLog().error( "Error Message: " + resp.getEntity( String.class ) );
 
             throw new MojoExecutionException( "Upload failed" );
         }
