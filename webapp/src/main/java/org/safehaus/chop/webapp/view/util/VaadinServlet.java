@@ -16,7 +16,11 @@ public class VaadinServlet extends com.vaadin.server.VaadinServlet {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        super.init(getServletConfig(servletConfig));
+
+        // Disable Vaadin debug mode
+        servletConfig.getServletContext().setInitParameter("productionMode", "true");
+
+        super.init( getServletConfig(servletConfig) );
     }
 
     private static Hashtable<String, String> getInitParams() {
