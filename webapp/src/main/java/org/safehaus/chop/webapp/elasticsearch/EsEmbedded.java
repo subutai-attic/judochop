@@ -41,27 +41,14 @@ public class EsEmbedded {
 
     public void start() {
         inode = newInstance( config );
+        Client client = inode.client();
+        client.admin().cluster().prepareHealth().setWaitForGreenStatus().setTimeout(
+                TimeValue.timeValueSeconds( 5 ) ).execute().actionGet();
     }
 
 
     public void stop() {
         inode.close();
-    }
-
-
-    public Client getClient() {
-        // Get a client
-        Client client = inode.client();
-
-        // Wait for Yellow status
-        client.admin().cluster()
-                      .prepareHealth()
-                      .setWaitForGreenStatus()
-                      .setTimeout( TimeValue.timeValueMinutes( 1 ) )
-                      .execute()
-                      .actionGet();
-
-        return client;
     }
 
 

@@ -148,17 +148,13 @@ public class ChopUiConfig extends GuiceServletContextListener {
         setupStorage();
     }
 
-    private static EsEmbedded startEmbeddedES(ElasticSearchFig elasticSearchFig) {
+
+    private static EsEmbedded startEmbeddedES( ElasticSearchFig elasticSearchFig ) {
         LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
 
         // This will set the parameters needed in the fig to attach to the embedded instance
         EsEmbedded es = new EsEmbedded( elasticSearchFig );
         es.start();
-
-        int pause = 5000;
-        LOG.info( "Making pause for {} ms so embedded elasticsearch can complete its initialization.", pause);
-        TimeUtil.sleep(pause);
-
         return es;
     }
 

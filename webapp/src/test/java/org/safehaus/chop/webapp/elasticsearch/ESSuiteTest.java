@@ -1,7 +1,6 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
-import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.AfterClass;
