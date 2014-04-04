@@ -23,6 +23,15 @@ public abstract class Dao {
                 .prepareSearch( index )
                 .setTypes( type );
     }
+
+    /**
+     * By default ElasticSearch searches with lower-case and ignores the dash. We need this fix to get correct result.
+     */
+    protected static String fixTermValue(String value) {
+        return value != null
+            ? value.toLowerCase().replaceAll("-", "")
+            : null;
+    }
 }
 
 

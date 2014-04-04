@@ -84,4 +84,16 @@ public class ChopUiTest {
     public void testUploadRunner() throws Exception {
         ChopUiTestUtils.testUpload( jetty.newTestParams().setLogger( LOG ) );
     }
+
+
+    @Test
+    public void testRunnerRegistryUnregister() {
+        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistrySequence() {
+        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams().setLogger( LOG ) );
+    }
 }

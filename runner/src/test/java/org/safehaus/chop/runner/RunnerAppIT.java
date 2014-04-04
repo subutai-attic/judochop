@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.chop.api.Runner;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
@@ -15,6 +14,7 @@ import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyIntegResource;
 import org.safehaus.jettyjam.utils.JettyResource;
 
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class RunnerAppIT {
     private final static Properties systemProperties = new Properties();
 
     static {
-        systemProperties.setProperty( RunnerConfig.CHOP_IT_MODE, "true" );
+        systemProperties.setProperty( TestMode.TEST_MODE_PROPERTY, TestMode.INTEG.toString() );
     }
 
     @JettyContext(
@@ -39,7 +39,7 @@ public class RunnerAppIT {
     )
     @JettyConnectors(
         defaultId = "https",
-        httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
+        httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
     )
     @ClassRule
     public static JettyResource jetty = new JettyIntegResource( systemProperties );

@@ -50,8 +50,8 @@ public class ProviderParamsDao extends Dao {
                         .field( "secretKey", pp.getSecretKey() )
                         .field( "imageId", pp.getImageId() )
                         .field( "securityGroup", pp.getSecurityGroup() )
-                        .field( "keyPairName", pp.getKeyPairName() )
                         .field( "runnerName", pp.getRunnerName() )
+                        .field( "keys", pp.getKeys().toString() )
                 )
                 .execute()
                 .actionGet();
@@ -65,9 +65,7 @@ public class ProviderParamsDao extends Dao {
      */
     public ProviderParams getByUser( String username ) {
 
-        SearchResponse response = elasticSearchClient.getClient()
-            .prepareSearch( DAO_INDEX_KEY )
-            .setTypes( DAO_TYPE_KEY )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
             .setQuery( termQuery( "_id", username ) )
             .execute()
             .actionGet();
@@ -82,7 +80,7 @@ public class ProviderParamsDao extends Dao {
 
         Map<String, Object> json = hit.getSource();
 
-        return new BasicProviderParams(
+        BasicProviderParams params = new BasicProviderParams(
                 Util.getString( json, "username" ),
                 Util.getString( json, "instanceType" ),
                 Util.getString( json, "availabilityZone" ),
@@ -90,17 +88,17 @@ public class ProviderParamsDao extends Dao {
                 Util.getString( json, "secretKey" ),
                 Util.getString( json, "imageId" ),
                 Util.getString( json, "securityGroup" ),
-                Util.getString( json, "keyPairName" ),
                 Util.getString( json, "runnerName" )
         );
-    }
 
+        params.setKeys( Util.getMap( json, "keys" ) );
+
+        return params;
+    }
 
     public List<ProviderParams> getAll() {
 
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setSize( MAX_RESULT_SIZE )
                 .execute()
                 .actionGet();

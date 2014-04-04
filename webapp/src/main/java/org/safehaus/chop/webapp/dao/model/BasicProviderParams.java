@@ -6,6 +6,9 @@ import org.safehaus.chop.api.ProviderParams;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class BasicProviderParams implements ProviderParams {
 
@@ -16,18 +19,15 @@ public class BasicProviderParams implements ProviderParams {
     private String secretKey;
     private String imageId;
     private String securityGroup;
-    private String keyPairName;
     private String runnerName;
-
+    private Map<String, String> keys = new HashMap<String, String>();
 
     public BasicProviderParams ( String username ) {
-        this.username = username;
+        this(username, "", "", "", "", "", "", "");
     }
-
 
     public BasicProviderParams ( String username, String instanceType, String availabilityZone, String accessKey,
-                                 String secretKey, String imageId, String securityGroup, String keyPairName,
-                                 String runnerName ) {
+                                 String secretKey, String imageId, String securityGroup, String runnerName ) {
 
         this.username = username;
         this.instanceType = instanceType;
@@ -36,50 +36,8 @@ public class BasicProviderParams implements ProviderParams {
         this.secretKey = secretKey;
         this.imageId = imageId;
         this.securityGroup = securityGroup;
-        this.keyPairName = keyPairName;
         this.runnerName = runnerName;
     }
-
-
-    public void setInstanceType( final String instanceType ) {
-        this.instanceType = instanceType;
-    }
-
-
-    public void setAvailabilityZone( final String availabilityZone ) {
-        this.availabilityZone = availabilityZone;
-    }
-
-
-    public void setAccessKey( final String accessKey ) {
-        this.accessKey = accessKey;
-    }
-
-
-    public void setSecretKey( final String secretKey ) {
-        this.secretKey = secretKey;
-    }
-
-
-    public void setImageId( final String imageId ) {
-        this.imageId = imageId;
-    }
-
-
-    public void setSecurityGroup( final String securityGroup ) {
-        this.securityGroup = securityGroup;
-    }
-
-
-    public void setKeyPairName( final String keyPairName ) {
-        this.keyPairName = keyPairName;
-    }
-
-
-    public void setRunnerName( final String runnerName ) {
-        this.runnerName = runnerName;
-    }
-
 
     @Override
     public String getUsername() {
@@ -122,16 +80,18 @@ public class BasicProviderParams implements ProviderParams {
         return securityGroup;
     }
 
-
-    @Override
-    public String getKeyPairName() {
-        return keyPairName;
-    }
-
-
     @Override
     public String getRunnerName() {
         return runnerName;
+    }
+
+    @Override
+    public Map<String, String> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(Map<String, String> keys) {
+        this.keys = keys;
     }
 
     @Override
@@ -144,8 +104,8 @@ public class BasicProviderParams implements ProviderParams {
                 .append( "secretKey", secretKey )
                 .append( "imageId", imageId )
                 .append( "securityGroup", securityGroup )
-                .append( "keyPairName", keyPairName )
                 .append( "runnerName", runnerName )
+                .append( "keys", keys )
                 .toString();
     }
 }

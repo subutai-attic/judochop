@@ -37,7 +37,7 @@ public class RunnerDao extends Dao {
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field( "commitId", commitId )
+                                .field( "commitId", fixTermValue(commitId) )
                                 .field( "ipv4Address", runner.getIpv4Address() )
                                 .field( "hostname", runner.getHostname() )
                                 .field( "serverPort", runner.getServerPort() )
@@ -50,6 +50,7 @@ public class RunnerDao extends Dao {
 
         return response.isCreated();
     }
+
 
 
     public boolean delete( String hostname ) {
@@ -69,7 +70,7 @@ public class RunnerDao extends Dao {
         SearchResponse response = elasticSearchClient.getClient()
                 .prepareSearch( DAO_INDEX_KEY )
                 .setTypes( DAO_TYPE_KEY )
-                .setQuery( termQuery( "commitId", commitId.toLowerCase() ) )
+                .setQuery( termQuery( "commitId", fixTermValue(commitId) ) )
                 .execute()
                 .actionGet();
 

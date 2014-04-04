@@ -28,7 +28,7 @@ public class JsonUtil {
             long value = json.optLong(key) + incValue;
             json.put(key, value);
         } catch (JSONException e) {
-            LOG.error("Exception while put to json: ", e);
+            LOG.error("Exception while inc json: ", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class JsonUtil {
                 put(dest, key, src.get(key) );
             }
         } catch (JSONException e) {
-            LOG.error("Exception while coping json: ", e);
+            LOG.error("Exception while copying json: ", e);
         }
     }
 

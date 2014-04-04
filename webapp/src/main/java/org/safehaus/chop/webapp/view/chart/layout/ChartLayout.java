@@ -15,7 +15,7 @@ import org.safehaus.chop.webapp.view.chart.format.CategoriesFormat;
 import org.safehaus.chop.webapp.view.chart.format.SeriesFormat;
 import org.safehaus.chop.webapp.view.chart.layout.item.DetailsTable;
 import org.safehaus.chop.webapp.view.chart.layout.item.NoteLayout;
-import org.safehaus.chop.webapp.view.util.FileUtil;
+import org.safehaus.chop.webapp.service.util.FileUtil;
 import org.safehaus.chop.webapp.view.util.JavaScriptUtil;
 import org.safehaus.chop.webapp.view.util.UIUtil;
 

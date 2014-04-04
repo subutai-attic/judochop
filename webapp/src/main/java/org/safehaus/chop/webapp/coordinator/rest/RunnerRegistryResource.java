@@ -121,7 +121,7 @@ public class RunnerRegistryResource extends TestableResource {
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
 
         if ( runnerDao.save( runner, commitId ) ) {
-            LOG.info( "registered runner {}", runner.getHostname() );
+            LOG.info( "registered runner {} for commit {}", runner.getHostname(), commitId );
             return Response.ok( true ).build();
         }
         else {
@@ -142,8 +142,11 @@ public class RunnerRegistryResource extends TestableResource {
     {
         if ( inTestMode( testMode ) ) {
             LOG.info( "Calling /runners/unregister ..." );
-            return Response.ok( true ).build();
+            return Response.ok( false ).build();
         }
+
+
+        Preconditions.checkNotNull( runnerHostname, "The runnerHostname cannot be null." );
 
         LOG.info( "Calling /runners/unregister ..." );
         try {

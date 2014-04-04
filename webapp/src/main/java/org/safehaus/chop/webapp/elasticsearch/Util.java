@@ -1,8 +1,11 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Util {
@@ -28,16 +31,43 @@ public class Util {
 
     public static long getLong(Map<String, Object> json, String key) {
         Long n = (Long) json.get(key);
-        return n != null ? n.longValue() : 0;
+        return n != null ? n : 0;
     }
 
     public static boolean getBoolean(Map<String, Object> json, String key) {
-        Boolean v = (Boolean) json.get(key);
-        return v != null ? v.booleanValue() : false;
+        Boolean bool = (Boolean) json.get(key);
+        return bool != null && bool;
     }
 
     public static String getString(Map<String, Object> json, String key) {
         return (String) json.get(key);
+    }
+
+    /**
+     * Converts a string to map. String should have this format: {2=b, 1=a}.
+     */
+    public static Map<String, String> getMap(Map<String, Object> json, String key) {
+
+        HashMap<String, String> map = new HashMap<String, String>();
+        String str = getString(json, key);
+
+        if (StringUtils.isEmpty(str)
+                || !str.startsWith("{")
+                || !str.endsWith("}")
+                || str.equals("{}") ) {
+            return map;
+        }
+
+        String values[] = StringUtils.substringBetween(str, "{", "}").split(",");
+
+        for (String s : values) {
+            map.put(
+                StringUtils.substringBefore(s, "="),
+                StringUtils.substringAfter(s, "=")
+            );
+        }
+
+        return map;
     }
 
 }

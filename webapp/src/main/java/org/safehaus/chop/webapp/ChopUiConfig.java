@@ -30,7 +30,7 @@ import org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig;
 import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.shiro.MyShiroWebModule;
+import org.safehaus.chop.webapp.service.shiro.CustomShiroWebModule;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
             return injector;
         }
 
-        injector = Guice.createInjector( new MyShiroWebModule( context ), new ChopUiModule() );
+        injector = Guice.createInjector( new CustomShiroWebModule( context ), new ChopUiModule() );
         InjectorFactory.setInjector( injector );
 
         return injector;
@@ -157,12 +157,13 @@ public class ChopUiConfig extends GuiceServletContextListener {
         IElasticSearchClient esClient = getInjector().getInstance( IElasticSearchClient.class );
         SetupDao setupDao = getInjector().getInstance( SetupDao.class );
 
-        LOG.info("esClient: {}", esClient);
-        LOG.info("setupDao: {}", setupDao);
+        LOG.info( "esClient: {}", esClient );
+        LOG.info( "setupDao: {}", setupDao );
 
         try {
             setupDao.setup();
-        } catch (Exception e) {
+        }
+        catch ( Exception e ) {
             LOG.error( "Failed to setup the storage!", e );
         }
     }

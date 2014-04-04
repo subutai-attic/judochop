@@ -3,7 +3,6 @@ package org.safehaus.chop.runner;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.chop.api.Runner;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
@@ -30,7 +29,7 @@ public class RunnerAppTest {
     )
     @JettyConnectors(
         defaultId = "https",
-        httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
+        httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
     )
     @ClassRule
     public static JettyResource jetty = new JettyUnitResource();

@@ -50,4 +50,34 @@ public class ChopUiIT {
                              .get( String.class );
         assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
+
+
+    @Test
+    public void testRunManagerNext() {
+        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistryList() {
+        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistryRegister() {
+        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistryUnregister() {
+        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testRunnerRegistrySequence() {
+        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams().setLogger( LOG ) );
+    }
 }

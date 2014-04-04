@@ -23,11 +23,11 @@ public class SetupDao {
 
     @Inject
     public SetupDao( IElasticSearchClient elasticSearchClient ) {
+        LOG.info( "Acquired client: {}", elasticSearchClient );
         this.elasticSearchClient = elasticSearchClient;
     }
 
     public void setup() throws IOException, NoSuchFieldException, IllegalAccessException {
-
         String key;
         CreateIndexResponse ciResp;
 
