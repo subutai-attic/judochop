@@ -49,7 +49,6 @@ import com.netflix.config.ConfigurationManager;
 @SuppressWarnings( "UnusedDeclaration" )
 public class RunnerConfig extends GuiceServletContextListener {
     private final static Logger LOG = LoggerFactory.getLogger( RunnerConfig.class );
-    public static final String CHOP_IT_MODE = TestMode.TEST_MODE_PROPERTY;
     private Injector injector;
 
 
@@ -157,8 +156,7 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-         if ( System.getProperties().containsKey( CHOP_IT_MODE ) &&
-              System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" ) )
+         if ( isTestMode() )
          {
              runner.bypass( Runner.HOSTNAME_KEY, "localhost" );
              runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
@@ -185,6 +183,7 @@ public class RunnerConfig extends GuiceServletContextListener {
                 Runtime.getRuntime().addShutdownHook( new Thread( new Runnable() {
                     @Override
                     public void run() {
+                        System.err.println( "Premature shutdown, attempting to unregister this runner." );
                         registry.unregister( runner );
                         LOG.info( "Unregistering runner on shutdownx: {}", runner.getHostname() );
                     }
@@ -202,8 +201,23 @@ public class RunnerConfig extends GuiceServletContextListener {
     }
 
 
+    static TestMode mode = null;
+
+    public static TestMode getTestMode() {
+        if ( mode == null ) {
+            boolean hasKey = System.getProperties().containsKey( TestMode.TEST_MODE_PROPERTY );
+
+            if ( hasKey ) {
+                mode = TestMode.valueOf( System.getProperty( TestMode.TEST_MODE_PROPERTY,
+                        TestMode.UNDEFINED.toString() ) );
+            }
+        }
+
+        return mode;
+    }
+
     public static boolean isTestMode() {
-        return System.getProperties().containsKey( CHOP_IT_MODE ) && System.getProperty( CHOP_IT_MODE ).equalsIgnoreCase( "true" );
+        return mode != null && ( mode == TestMode.INTEG || mode == TestMode.UNIT );
     }
 
 

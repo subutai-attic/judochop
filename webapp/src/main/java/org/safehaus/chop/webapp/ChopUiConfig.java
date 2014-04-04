@@ -157,12 +157,13 @@ public class ChopUiConfig extends GuiceServletContextListener {
         IElasticSearchClient esClient = getInjector().getInstance( IElasticSearchClient.class );
         SetupDao setupDao = getInjector().getInstance( SetupDao.class );
 
-        LOG.info("esClient: {}", esClient);
-        LOG.info("setupDao: {}", setupDao);
+        LOG.info( "esClient: {}", esClient );
+        LOG.info( "setupDao: {}", setupDao );
 
         try {
             setupDao.setup();
-        } catch (Exception e) {
+        }
+        catch ( Exception e ) {
             LOG.error( "Failed to setup the storage!", e );
         }
     }

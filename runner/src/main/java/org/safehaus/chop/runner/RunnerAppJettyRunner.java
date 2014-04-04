@@ -1,7 +1,6 @@
 package org.safehaus.chop.runner;
 
 
-import org.safehaus.chop.api.Runner;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
@@ -23,7 +22,7 @@ import com.google.inject.servlet.GuiceFilter;
 )
 @JettyConnectors(
     defaultId = "https",
-    httpsConnectors = { @HttpsConnector( id = "https", port = Runner.DEFAULT_SERVER_PORT_INT ) }
+    httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
 )
 public class RunnerAppJettyRunner extends JettyRunner {
 
