@@ -8,6 +8,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.jettyjam.utils.CertUtils;
@@ -59,15 +60,15 @@ public class RunnerRegistryImpl implements RunnerRegistry {
 
 
     private WebResource addQueryParameters( WebResource resource, Project project, Runner runner ) {
-        return resource.queryParam( "runnerHostname", runner.getHostname() )
-                .queryParam( "runnerPort", String.valueOf( runner.getServerPort() ) )
-                .queryParam( "runnerIpv4Address", runner.getIpv4Address() )
-                .queryParam( "moduleGroupId", project.getGroupId() )
-                .queryParam( "moduleArtifactId", project.getArtifactId() )
-                .queryParam( "moduleVersion", project.getVersion() )
-                .queryParam( "commitId", project.getVcsVersion() )
-                .queryParam( "username", coordinatorFig.getUsername() )
-                .queryParam( "password", coordinatorFig.getPassword() );
+        return resource.queryParam( RestParams.RUNNER_HOSTNAME, runner.getHostname() )
+                .queryParam( RestParams.RUNNER_PORT, String.valueOf( runner.getServerPort() ) )
+                .queryParam( RestParams.RUNNER_IPV4_ADDRESS, runner.getIpv4Address() )
+                .queryParam( RestParams.MODULE_GROUPID, project.getGroupId() )
+                .queryParam( RestParams.MODULE_ARTIFACTID, project.getArtifactId() )
+                .queryParam( RestParams.MODULE_VERSION, project.getVersion() )
+                .queryParam( RestParams.COMMIT_ID, project.getVcsVersion() )
+                .queryParam( RestParams.USERNAME, coordinatorFig.getUsername() )
+                .queryParam( RestParams.PASSWORD, coordinatorFig.getPassword() );
     }
 
 

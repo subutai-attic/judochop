@@ -34,9 +34,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
+import org.safehaus.chop.api.Module;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.dao.RunnerDao;
+import org.safehaus.chop.webapp.dao.model.BasicModule;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,9 @@ public class RunnerRegistryResource extends TestableResource {
 
 
     @Inject
+    private ModuleDao moduleDao;
+
+    @Inject
     private RunnerDao runnerDao;
 
 
@@ -71,6 +77,10 @@ public class RunnerRegistryResource extends TestableResource {
     @Path( "/list" )
     public Response list(
 
+            @QueryParam( RestParams.USERNAME ) String user,
+            @QueryParam( RestParams.MODULE_ARTIFACTID ) String artifactId,
+            @QueryParam( RestParams.MODULE_GROUPID ) String groupId,
+            @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam(  RestParams.COMMIT_ID ) String commitId,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
 
@@ -83,12 +93,24 @@ public class RunnerRegistryResource extends TestableResource {
             return Response.ok( runnerList ).build();
         }
 
-        LOG.info( "Calling /runners/list ..." );
-        Preconditions.checkNotNull( commitId, "The commitId must not be null." );
+        Preconditions.checkNotNull( user, "The 'user' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( artifactId, "The 'artifactId' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( groupId, "The 'groupId' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( version, "The 'version' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( commitId, "The 'commitId' request parameter MUST NOT be null." );
+
+        String moduleId = BasicModule.createId( groupId, artifactId, version );
+        Module inStore = moduleDao.get( moduleId );
+        if ( inStore == null ) {
+            LOG.warn( "Returning empty runner list for request associated with non-existent module: {}",
+                    groupId + "." + artifactId + "-" + version );
+            return Response.ok( runnerList ).build();
+        }
+
+        LOG.info( "Calling /runners/list for commitId {} on module {}", commitId, moduleId );
 
         try {
-            // TODO: get user and moduleId
-            runnerList = runnerDao.getRunners( "user", commitId, "moduleId" );
+            runnerList = runnerDao.getRunners( user, commitId, inStore.getId() );
         }
         catch ( IndexMissingException e ) {
             LOG.warn( "Got a missing index exception. Returning empty list of Runners." );
@@ -105,6 +127,11 @@ public class RunnerRegistryResource extends TestableResource {
     @Consumes( MediaType.APPLICATION_JSON )
     public Response register(
 
+            @QueryParam( RestParams.USERNAME ) String user,
+            @QueryParam( RestParams.MODULE_ARTIFACTID ) String artifactId,
+            @QueryParam( RestParams.MODULE_GROUPID ) String groupId,
+            @QueryParam( RestParams.MODULE_VERSION ) String version,
+            @QueryParam( RestParams.TEST_PACKAGE ) String testPackageBase,
             @QueryParam( RestParams.COMMIT_ID ) String commitId,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode,
             Runner runner
@@ -116,13 +143,27 @@ public class RunnerRegistryResource extends TestableResource {
             return Response.ok( false ).build();
         }
 
-        LOG.info( "Calling /runners/register with commitId = {} and runner = {}", commitId, runner );
-
+        Preconditions.checkNotNull( user, "The 'user' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( artifactId, "The 'artifactId' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( groupId, "The 'groupId' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( version, "The 'version' request parameter MUST NOT be null." );
+        Preconditions.checkNotNull( version, "The 'testPackageBase' request parameter MUST NOT be null." );
         Preconditions.checkNotNull( commitId, "The commitId cannot be null." );
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
 
+        String moduleId = BasicModule.createId( groupId, artifactId, version );
+        Module module = moduleDao.get( moduleId );
+        if ( module == null ) {
+            LOG.warn( "Module {} does not exist for runner {}. Creating and storing it ...",
+                    groupId + "." + artifactId + "-" + version, runner );
+            module = new BasicModule( groupId, artifactId, version, commitId, testPackageBase );
+            moduleDao.save( module );
+        }
+
+        LOG.info( "Calling /runners/register with commitId = {} and runner = {}", commitId, runner );
+
         // TODO: get user and moduleId
-        if ( runnerDao.save( runner, "user", commitId, "moduleId" ) ) {
+        if ( runnerDao.save( runner, user, commitId, moduleId ) ) {
             LOG.info( "registered runner {} for commit {}", runner.getHostname(), commitId );
             return Response.ok( true ).build();
         }
@@ -146,7 +187,6 @@ public class RunnerRegistryResource extends TestableResource {
             LOG.info( "Calling /runners/unregister ..." );
             return Response.ok( false ).build();
         }
-
 
         Preconditions.checkNotNull( runnerHostname, "The runnerHostname cannot be null." );
 

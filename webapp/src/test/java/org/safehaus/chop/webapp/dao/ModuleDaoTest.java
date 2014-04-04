@@ -27,7 +27,7 @@ public class ModuleDaoTest {
             LOG.info( m.toString() );
         }
 
-        assertEquals( "Wrong number of modules in elasticsearch", 2, modules.size() );
+        assertEquals( "Wrong number of modules in elasticsearch", 3, modules.size() );
     }
 
     @Test

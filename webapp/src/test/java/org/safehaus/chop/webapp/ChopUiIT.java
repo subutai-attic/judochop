@@ -1,11 +1,17 @@
 package org.safehaus.chop.webapp;
 
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import javax.ws.rs.core.MediaType;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
+import org.safehaus.jettyjam.utils.CertUtils;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
@@ -27,7 +33,7 @@ import static junit.framework.TestCase.assertEquals;
  */
 public class ChopUiIT {
     private final static Logger LOG = LoggerFactory.getLogger( ChopUiIT.class );
-
+    private final static Map<String,String> queryParams = new HashMap<String, String>();
     private final static String[] args = new String[] { "-e" };
 
     @JettyContext(
@@ -42,6 +48,15 @@ public class ChopUiIT {
     @ClassRule
     public static JettyResource jetty = new JettyIntegResource( args );
 
+    static {
+        queryParams.put( RestParams.PASSWORD, "pass" );
+        queryParams.put( RestParams.USERNAME, "user" );
+        queryParams.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
+        queryParams.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
+        queryParams.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
+        queryParams.put( RestParams.MODULE_GROUPID, "org.safehaus.chop" );
+        queryParams.put( RestParams.TEST_PACKAGE, "org.safehaus.chop.example" );
+    }
 
     @Test
     public void testGet() {
@@ -56,30 +71,36 @@ public class ChopUiIT {
 
     @Test
     public void testRunManagerNext() {
-        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
+        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams( queryParams ).setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryList() {
-        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams().setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams( queryParams ).setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryRegister() {
-        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testUploadRunner() throws Exception {
+        ChopUiTestUtils.testUpload( jetty.newTestParams( queryParams ).setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryUnregister() {
-        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams( queryParams ).setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistrySequence() {
-        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams().setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams( queryParams ).setLogger( LOG ) );
     }
 }
