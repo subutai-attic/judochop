@@ -28,6 +28,8 @@ import static junit.framework.TestCase.assertEquals;
 public class ChopUiIT {
     private final static Logger LOG = LoggerFactory.getLogger( ChopUiIT.class );
 
+    private final static String[] args = new String[] { "-e" };
+
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
@@ -38,7 +40,7 @@ public class ChopUiIT {
         httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyIntegResource();
+    public static JettyResource jetty = new JettyIntegResource( args );
 
 
     @Test

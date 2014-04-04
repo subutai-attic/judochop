@@ -115,7 +115,7 @@ public class RunnerRegistryResource extends TestableResource {
             return Response.ok( false ).build();
         }
 
-        LOG.info( "Calling /runners/register ..." );
+        LOG.info( "Calling /runners/register with commitId = {} and runner = {}", commitId, runner );
 
         Preconditions.checkNotNull( commitId, "The commitId cannot be null." );
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
