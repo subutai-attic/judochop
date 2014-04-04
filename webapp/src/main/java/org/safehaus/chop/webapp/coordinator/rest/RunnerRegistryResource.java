@@ -87,7 +87,7 @@ public class RunnerRegistryResource extends TestableResource {
         Preconditions.checkNotNull( commitId, "The commitId must not be null." );
 
         try {
-            runnerList = runnerDao.getRunners( commitId );
+            runnerList = runnerDao.getRunners( "user", commitId, "moduleId" );
         }
         catch ( IndexMissingException e ) {
             LOG.warn( "Got a missing index exception. Returning empty list of Runners." );
@@ -120,7 +120,7 @@ public class RunnerRegistryResource extends TestableResource {
         Preconditions.checkNotNull( commitId, "The commitId cannot be null." );
         Preconditions.checkNotNull( runner, "The runner cannot be null." );
 
-        if ( runnerDao.save( runner, commitId ) ) {
+        if ( runnerDao.save( runner, "user", commitId, "moduleId" ) ) {
             LOG.info( "registered runner {} for commit {}", runner.getHostname(), commitId );
             return Response.ok( true ).build();
         }

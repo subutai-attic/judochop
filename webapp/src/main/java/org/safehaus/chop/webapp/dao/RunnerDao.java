@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -28,16 +29,25 @@ public class RunnerDao extends Dao {
         super( elasticSearchClient );
     }
 
+    private static String getGroupId(String user, String commitId, String moduleId) {
+        String id = "" + new HashCodeBuilder()
+                .append( user )
+                .append( commitId )
+                .append( moduleId )
+                .toHashCode();
 
-    public boolean save( Runner runner, String commitId ) throws Exception {
+        return fixTermValue( id );
+    }
+
+    public boolean save( Runner runner, String user, String commitId, String moduleId ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname() )
-                .setRefresh( true )
+                .prepareIndex(DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname())
+                .setRefresh(true)
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field( "commitId", fixTermValue(commitId) )
+                                .field( "groupId", getGroupId( user, commitId, moduleId ) )
                                 .field( "ipv4Address", runner.getIpv4Address() )
                                 .field( "hostname", runner.getHostname() )
                                 .field( "serverPort", runner.getServerPort() )
@@ -52,25 +62,10 @@ public class RunnerDao extends Dao {
     }
 
 
+    public List<Runner> getRunners( String user, String commitId, String moduleId ) {
 
-    public boolean delete( String hostname ) {
-
-        DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, hostname )
-                .setRefresh( true )
-                .execute()
-                .actionGet();
-
-        return response.isFound();
-    }
-
-
-    public List<Runner> getRunners( String commitId ) {
-
-        SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
-                .setQuery( termQuery( "commitId", fixTermValue(commitId) ) )
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
+                .setQuery( termQuery( "groupId", getGroupId(user, commitId, moduleId ) ) )
                 .execute()
                 .actionGet();
 
@@ -81,6 +76,18 @@ public class RunnerDao extends Dao {
         }
 
         return runners;
+    }
+
+
+    public boolean delete( String hostname ) {
+
+        DeleteResponse response = elasticSearchClient.getClient()
+                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, hostname )
+                .setRefresh( true )
+                .execute()
+                .actionGet();
+
+        return response.isFound();
     }
 
 

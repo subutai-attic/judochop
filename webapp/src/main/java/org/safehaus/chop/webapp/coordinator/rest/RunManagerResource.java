@@ -58,9 +58,6 @@ public class RunManagerResource extends TestableResource {
     private Coordinator coordinator;
 
     @Inject
-    private RunnerDao runnerDao;
-
-    @Inject
     private RunDao runDao;
 
 

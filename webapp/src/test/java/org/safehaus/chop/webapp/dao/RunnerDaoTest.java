@@ -15,14 +15,13 @@ public class RunnerDaoTest {
 
     private static Logger LOG = LoggerFactory.getLogger( RunnerDaoTest.class );
 
-
     @Test
     public void delete() {
         LOG.info( "\n===RunnerDaoTest.delete===\n" );
 
         LOG.info( "Runners before delete: " );
 
-        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_2 );
+        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_2, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
         for( Runner runner: runners ) {
             LOG.info( runner.toString() );
@@ -30,7 +29,7 @@ public class RunnerDaoTest {
 
         ESSuiteTest.runnerDao.delete( ESSuiteTest.RUNNER_HOSTNAME_3 );
 
-        runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_2 );
+        runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_2, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
         assertEquals( 0, runners.size() );
     }
@@ -40,7 +39,7 @@ public class RunnerDaoTest {
 
         LOG.info( "\n===RunnerDaoTest.getRunners===\n" );
 
-        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.COMMIT_ID_1 );
+        List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_1, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
         for( Runner runner: runners ) {
             LOG.info( runner.toString() );
@@ -48,5 +47,7 @@ public class RunnerDaoTest {
 
         assertEquals( 2, runners.size() );
     }
+
+
 
 }

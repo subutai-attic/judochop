@@ -21,7 +21,7 @@ public class RunResultDaoTest {
     @Test
     public void getAll() {
 
-        LOG.info( "\n===RunResultDaoTest.getAll===\n" );
+        LOG.info( "\n\n===RunResultDaoTest.getAll===" );
 
         List<RunResult> list = ESSuiteTest.runResultDao.getAll();
 
@@ -32,10 +32,11 @@ public class RunResultDaoTest {
         assertEquals( 3, list.size() );
     }
 
+
     @Test
     public void getMap() {
 
-        LOG.info( "\n===RunResultDaoTest.getMap===\n" );
+        LOG.info( "\n\n===RunResultDaoTest.getMap===" );
 
         Map<String, Run> runs = ESSuiteTest.runDao.getMap( ESSuiteTest.COMMIT_ID_2, 2, ESSuiteTest.TEST_NAME );
         Map<Run, List<RunResult>> runResults = ESSuiteTest.runResultDao.getMap( runs );
@@ -49,6 +50,21 @@ public class RunResultDaoTest {
         }
 
         assertEquals( 1, runResults.size() );
+    }
+
+
+    @Test
+    public void deleteAll() {
+
+        LOG.info( "\n\n=== RunResultDaoTest.deleteAll() ===" );
+
+        for ( RunResult runResult : ESSuiteTest.runResultDao.getAll() ) {
+            ESSuiteTest.runResultDao.delete( runResult.getId() );
+        }
+
+        List<RunResult> list = ESSuiteTest.runResultDao.getAll();
+
+        assertEquals( 0, list.size() );
     }
 
 }

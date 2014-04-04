@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.dao;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -55,6 +56,16 @@ public class RunResultDao extends Dao {
         return response.isCreated();
     }
 
+    public boolean delete( String id ) {
+
+        DeleteResponse response = elasticSearchClient.getClient()
+                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, id )
+                .setRefresh( true )
+                .execute()
+                .actionGet();
+
+        return response.isFound();
+    }
 
     public List<RunResult> getAll() {
 

@@ -1,6 +1,7 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.AfterClass;
@@ -83,106 +84,29 @@ public class ESSuiteTest {
     public static UserDao userDao;
     public static RunnerDao runnerDao;
 
-    /** Populate elastic search for all tests */
+    // Populate elastic search for all tests
     @BeforeClass
     public static void setUpData() throws Exception {
-        Injector injector = Guice.createInjector( new ChopUiModule() );
-
         LOG.info( "Setting up sample data for elasticsearch Dao tests..." );
 
+        Injector injector = Guice.createInjector( new ChopUiModule() );
 
-        /** Save 2 different modules */
-//        moduleDao = new ModuleDao( esClient );
-        moduleDao = injector.getInstance( ModuleDao.class );
-        Module module = new BasicModule( // ID is 778087981
-                MODULE_GROUPID, // groupId
-                "chop-maven-plugin", // artifactId
-                "1.0-SNAPSHOT", // version
-                "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
-                MODULE_GROUPID // testPackageBase
-        );
-        moduleDao.save( module );
+        setupModules( injector );
+        setupCommits( injector );
+        setupNotes( injector );
+        setupProviderParams( injector );
+        String[] runIds = setupRuns( injector );
+        setupRunResults( injector, runIds );
+        setupUsers( injector );
+        setupRunners( injector );
 
-        module = new BasicModule( // ID is -975269068
-                MODULE_GROUPID, // groupId
-                "chop-client", // artifactId
-                "1.0-SNAPSHOT", // version
-                "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
-                MODULE_GROUPID // testPackageBase
-        );
-        moduleDao.save( module );
+        LOG.info( "Sample data for dao tests are saved into elasticsearch" );
+    }
 
+    private static String[] setupRuns(Injector injector) throws Exception {
 
-        /** Save 3 commits, 2 under same module, 1 different */
-//        commitDao = new CommitDao( esClient );
-        commitDao = injector.getInstance( CommitDao.class );
-        Commit commit = new BasicCommit(
-                COMMIT_ID_1, // commitId
-                MODULE_ID_1, // moduleId
-                "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
-                new Date(), // createDate
-                "/some/dummy/path"
-        );
-        commitDao.save( commit );
-
-        commit = new BasicCommit(
-                COMMIT_ID_2, // commitId
-                MODULE_ID_2, // moduleId
-                "395cfdfc3b77242a6f957d6d92da8958", // warMD5
-                new Date(), // createDate
-                "/some/dummy/path"
-        );
-        commitDao.save( commit );
-
-        commit = new BasicCommit(
-                COMMIT_ID_3, // commitId
-                MODULE_ID_2, // moduleId
-                "b9860ffa5e39b6f7123ed8c72c4b7046", // warMD5
-                new Date(), // createDate
-                "/some/dummy/path"
-        );
-        commitDao.save( commit );
-
-
-        /** Save a Note */
-//        noteDao = new NoteDao( esClient );
-        noteDao = injector.getInstance( NoteDao.class );
-        Note note = new Note( COMMIT_ID_1, 1, NOTE );
-        noteDao.save( note );
-
-
-        /** Save 2 provider params */
-//        ppDao = new ProviderParamsDao( esClient );
-        ppDao = injector.getInstance( ProviderParamsDao.class );
-        ProviderParams pp = new BasicProviderParams(
-                USER_1,
-                "m1.large",
-                "es-east",
-                "1230d4353459da23ec21a259a",
-                "ad911213ab21ef23ab4e0e",
-                IMAGE_ID,
-                "chop-security",
-                "chop-runner"
-        );
-        ppDao.save( pp );
-
-        pp = new BasicProviderParams(
-                "testuser2",
-                "t1.micro",
-                "es-west",
-                "1230d4353459da23ec21a259a",
-                "ad911213ab21ef23ab4e0e",
-                "ami-2143224",
-                "chop-security-2",
-                "chop-runner"
-        );
-        ppDao.save( pp );
-
-
-        /** Save 2 runs for one commit, 1 run for another */
         String[] runIds = new String[ 3 ];
 
-//        runDao = new RunDao( esClient );
         runDao = injector.getInstance( RunDao.class );
         BasicRun run = new BasicRun(
                 COMMIT_ID_2, // commitId
@@ -211,10 +135,101 @@ public class ESSuiteTest {
         runDao.save( run );
         runIds[ 2 ] = run.getId();
 
+        return runIds;
+    }
 
-        /** Save 3 run results, one for each run */
-//        runResultDao = new RunResultDao( esClient );
+    private static void setupProviderParams(Injector injector) throws Exception {
+        ppDao = injector.getInstance( ProviderParamsDao.class );
+        ProviderParams pp = new BasicProviderParams(
+                USER_1,
+                "m1.large",
+                "es-east",
+                "1230d4353459da23ec21a259a",
+                "ad911213ab21ef23ab4e0e",
+                IMAGE_ID,
+                "chop-security",
+                "chop-runner"
+        );
+        ppDao.save( pp );
+
+        pp = new BasicProviderParams(
+                "testuser2",
+                "t1.micro",
+                "es-west",
+                "1230d4353459da23ec21a259a",
+                "ad911213ab21ef23ab4e0e",
+                "ami-2143224",
+                "chop-security-2",
+                "chop-runner"
+        );
+        ppDao.save( pp );
+    }
+
+    private static void setupNotes(Injector injector) throws Exception {
+        noteDao = injector.getInstance( NoteDao.class );
+        Note note = new Note( COMMIT_ID_1, 1, NOTE );
+        noteDao.save( note );
+    }
+
+    private static void setupModules(Injector injector) throws Exception {
+
+        moduleDao = injector.getInstance( ModuleDao.class );
+
+        Module module = new BasicModule( // ID is 778087981
+                MODULE_GROUPID, // groupId
+                "chop-maven-plugin", // artifactId
+                "1.0-SNAPSHOT", // version
+                "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
+                MODULE_GROUPID // testPackageBase
+        );
+
+        moduleDao.save( module );
+
+        module = new BasicModule( // ID is -975269068
+                MODULE_GROUPID, // groupId
+                "chop-client", // artifactId
+                "1.0-SNAPSHOT", // version
+                "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
+                MODULE_GROUPID // testPackageBase
+        );
+
+        moduleDao.save( module );
+    }
+
+    private static void setupCommits(Injector injector) throws Exception {
+        commitDao = injector.getInstance( CommitDao.class );
+        Commit commit = new BasicCommit(
+                COMMIT_ID_1, // commitId
+                MODULE_ID_1, // moduleId
+                "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
+                new Date(), // createDate
+                "/some/dummy/path"
+        );
+        commitDao.save( commit );
+
+        commit = new BasicCommit(
+                COMMIT_ID_2, // commitId
+                MODULE_ID_2, // moduleId
+                "395cfdfc3b77242a6f957d6d92da8958", // warMD5
+                new Date(), // createDate
+                "/some/dummy/path"
+        );
+        commitDao.save( commit );
+
+        commit = new BasicCommit(
+                COMMIT_ID_3, // commitId
+                MODULE_ID_2, // moduleId
+                "b9860ffa5e39b6f7123ed8c72c4b7046", // warMD5
+                new Date(), // createDate
+                "/some/dummy/path"
+        );
+        commitDao.save( commit );
+    }
+
+    private static void setupRunResults(Injector injector, String[] runIds) throws Exception {
+
         runResultDao = injector.getInstance( RunResultDao.class );
+
         BasicRunResult runResult = new BasicRunResult( runIds[ 0 ], 5, 1000, 0, 1 );
         runResultDao.save( runResult );
 
@@ -223,51 +238,46 @@ public class ESSuiteTest {
 
         runResult = new BasicRunResult( runIds[ 2 ], 17, 15789, 2, 2 );
         runResultDao.save( runResult );
+    }
 
-
-        /** Save 2 users */
-//        userDao = new UserDao( esClient );
+    private static void setupUsers(Injector injector) throws Exception {
         userDao = injector.getInstance( UserDao.class );
         User user = new User( USER_1 , "password" );
         userDao.save( user );
 
         user = new User( USER_2 , "sosecretsuchcryptowow" );
         userDao.save( user );
+    }
 
+    private static void setupRunners(Injector injector) throws Exception {
 
-        /** Save 2 runners for COMMIT_ID_1, 1 runner for COMMIT_ID_2 */
-//        runnerDao = new RunnerDao( esClient );
         runnerDao = injector.getInstance( RunnerDao.class );
         BasicRunner runner = new BasicRunner(
-                                RUNNER_IPV4_1, // ipv4Address
-                                "ec2-54-227-39-116.compute-1.amazonaws.com", // hostname
-                                24981,// serverPort
-                                "https://ec2-54-227-39-116.compute-1.amazonaws.com:24981", // url
-                                "/tmp" // tempDir
+                RUNNER_IPV4_1, // ipv4Address
+                "ec2-54-227-39-116.compute-1.amazonaws.com", // hostname
+                24981,// serverPort
+                "https://ec2-54-227-39-116.compute-1.amazonaws.com:24981", // url
+                "/tmp" // tempDir
         );
-        runnerDao.save( runner, COMMIT_ID_1 );
+        runnerDao.save( runner, USER_1, COMMIT_ID_1, MODULE_ID_1 );
 
         runner = new BasicRunner(
-                                RUNNER_IPV4_2, // ipv4Address
-                                "ec2-23-20-162-161.compute-1.amazonaws.com", // hostname
-                                8443, // serverPort
-                                "https://ec2-23-20-162-161.compute-1.amazonaws.com:8443", // url
-                                "/tmp" // tempDir
+                RUNNER_IPV4_2, // ipv4Address
+                "ec2-23-20-162-161.compute-1.amazonaws.com", // hostname
+                8443, // serverPort
+                "https://ec2-23-20-162-161.compute-1.amazonaws.com:8443", // url
+                "/tmp" // tempDir
         );
-        runnerDao.save( runner, COMMIT_ID_1 );
+        runnerDao.save( runner, USER_1, COMMIT_ID_1, MODULE_ID_1 );
 
         runner = new BasicRunner(
-                                "84.197.213.159", // ipv4Address
-                                RUNNER_HOSTNAME_3, // hostname
-                                24981,// serverPort
-                                "https://ec2-84-197-213-159.compute-1.amazonaws.com:24981", // url
-                                "/tmp" // tempDir
+                "84.197.213.159", // ipv4Address
+                RUNNER_HOSTNAME_3, // hostname
+                24981,// serverPort
+                "https://ec2-84-197-213-159.compute-1.amazonaws.com:24981", // url
+                "/tmp" // tempDir
         );
-        runnerDao.save( runner, COMMIT_ID_2 );
-
-
-        LOG.info( "Sample data for dao tests are saved into elasticsearch" );
-
+        runnerDao.save( runner, USER_2, COMMIT_ID_1, MODULE_ID_1 );
     }
 
     @AfterClass
