@@ -308,7 +308,6 @@
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
-      <!--<version>0.90.3</version>-->
       <version>1.0.0</version>
     </dependency>
 

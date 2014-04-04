@@ -31,6 +31,7 @@ import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.shiro.CustomShiroWebModule;
+import org.safehaus.chop.webapp.service.util.TimeUtil;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
 
         ConcurrentCompositeConfiguration ccc = new ConcurrentCompositeConfiguration();
         Env env = Env.getEnvironment();
+        boolean embedded = false;
 
         if ( env == Env.ALL ) {
             ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "PROD" );
@@ -107,11 +109,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
                 CommandLine cl = ChopUiJettyRunner.getCommandLine();
 
                 if ( cl.hasOption( 'e' ) ) {
-                    LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
-
-                    // This will set the parameters needed in the fig to attach to the embedded instance
-                    esEmbedded = new EsEmbedded( elasticSearchFig );
-                    esEmbedded.start();
+                    startEmbeddedES( elasticSearchFig );
                 }
             }
             else {
@@ -147,8 +145,21 @@ public class ChopUiConfig extends GuiceServletContextListener {
             LOG.info( "From ChopUiFig {} = {}", CONTEXT_TEMPDIR_KEY, chopUiFig.getContextTempDir() );
         }
 
-        // Works with with the local ES but fails with the embedded ES
         setupStorage();
+    }
+
+    private static EsEmbedded startEmbeddedES(ElasticSearchFig elasticSearchFig) {
+        LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
+
+        // This will set the parameters needed in the fig to attach to the embedded instance
+        EsEmbedded es = new EsEmbedded( elasticSearchFig );
+        es.start();
+
+        int pause = 5000;
+        LOG.info( "Making pause for {} ms so embedded elasticsearch can complete its initialization.", pause);
+        TimeUtil.sleep(pause);
+
+        return es;
     }
 
     private void setupStorage() {
