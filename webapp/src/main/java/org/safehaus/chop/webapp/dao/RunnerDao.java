@@ -42,7 +42,6 @@ public class RunnerDao extends Dao {
     public boolean save( Runner runner, String user, String commitId, String moduleId ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-//                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname() )
                 .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getUrl() )
                 .setRefresh(true)
                 .setSource(

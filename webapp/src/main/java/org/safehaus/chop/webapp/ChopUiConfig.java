@@ -31,6 +31,7 @@ import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.shiro.CustomShiroWebModule;
+import org.safehaus.chop.webapp.service.util.TimeUtil;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +155,12 @@ public class ChopUiConfig extends GuiceServletContextListener {
         // This will set the parameters needed in the fig to attach to the embedded instance
         EsEmbedded es = new EsEmbedded( elasticSearchFig );
         es.start();
+
+        long pause = 5000;
+        LOG.info("Making pause for {} ms so embedded elasticsearch can complete its initialization.", pause);
+
+        TimeUtil.sleep( 5000 );
+
         return es;
     }
 

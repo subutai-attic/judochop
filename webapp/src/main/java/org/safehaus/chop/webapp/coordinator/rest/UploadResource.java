@@ -190,7 +190,6 @@ public class UploadResource extends TestableResource implements RestParams {
         String md5 = multipart.getBodyPart( RestParams.MD5 ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.MD5, md5 );
 
-        User user = userDao.get( username );
         ProviderParams providerParams = providerParamsDao.getByUser( username );
         InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
 
