@@ -44,7 +44,7 @@ import com.google.inject.Singleton;
 @Singleton
 public class StackCoordinator {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Coordinator.class );
+    private static final Logger LOG = LoggerFactory.getLogger( StackCoordinator.class );
 
     private Map<User, Set<CoordinatedStack>> activeStacksByUser = new HashMap<User, Set<CoordinatedStack>>();
     private Map<Commit, Set<CoordinatedStack>> activeStacksByCommit = new HashMap<Commit, Set<CoordinatedStack>>();
