@@ -54,10 +54,10 @@ public class BasicRunner implements Runner {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("url", url)
                 .append("ipv4Address", ipv4Address)
                 .append("hostname", hostname)
                 .append("serverPort", serverPort)
-                .append("url", url)
                 .append("tempDir", tempDir)
                 .toString();
     }

@@ -23,11 +23,10 @@ public class RunnerDaoTest {
 
         List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_2, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
-        for( Runner runner: runners ) {
+        for( Runner runner : runners ) {
             LOG.info( runner.toString() );
+            ESSuiteTest.runnerDao.delete( runner.getUrl() );
         }
-
-        ESSuiteTest.runnerDao.delete( ESSuiteTest.RUNNER_HOSTNAME_3 );
 
         runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_2, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
@@ -41,13 +40,12 @@ public class RunnerDaoTest {
 
         List<Runner> runners = ESSuiteTest.runnerDao.getRunners( ESSuiteTest.USER_1, ESSuiteTest.COMMIT_ID_1, ESSuiteTest.MODULE_ID_1 );
 
-        for( Runner runner: runners ) {
+        for( Runner runner : runners ) {
             LOG.info( runner.toString() );
+            ESSuiteTest.runnerDao.delete( runner.getUrl() );
         }
 
         assertEquals( 2, runners.size() );
     }
-
-
 
 }
