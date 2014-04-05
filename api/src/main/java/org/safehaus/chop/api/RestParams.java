@@ -7,6 +7,7 @@ package org.safehaus.chop.api;
 public interface RestParams {
     String CONTENT = "content";
     String FILENAME = "file";
+    String RUNNER_URL = "runnerUrl";
     String RUNNER_HOSTNAME = "runnerHostname";
     String RUNNER_PORT = "runnerPort";
     String RUNNER_IPV4_ADDRESS = "runnerIpv4Address";

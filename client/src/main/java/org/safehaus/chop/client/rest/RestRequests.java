@@ -4,6 +4,9 @@ package org.safehaus.chop.client.rest;
 import javax.net.ssl.SSLHandshakeException;
 
 import org.safehaus.chop.api.ChopUtils;
+import org.safehaus.chop.api.CoordinatorFig;
+import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.StatsSnapshot;
@@ -184,4 +187,40 @@ public class RestRequests {
         preparations( runner );
         return newStatsOp( runner ).execute( StatsSnapshot.class );
     }
+
+
+    public static WebResource addParams( WebResource resource, CoordinatorFig coordinator ) {
+        Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
+        Preconditions.checkNotNull( coordinator, "The 'coordinator' MUST NOT be null." );
+
+        resource = resource.queryParam( RestParams.USERNAME, coordinator.getUsername() );
+        return resource.queryParam( RestParams.PASSWORD, coordinator.getPassword() );
+    }
+
+
+    public static WebResource addParams( WebResource resource, Runner runner ) {
+        Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
+        Preconditions.checkNotNull( runner, "The 'runner' MUST NOT be null." );
+
+        resource = resource.queryParam( RestParams.RUNNER_URL, runner.getUrl() );
+        resource = resource.queryParam( RestParams.RUNNER_HOSTNAME, runner.getHostname() );
+        resource = resource.queryParam( RestParams.RUNNER_IPV4_ADDRESS, runner.getIpv4Address() );
+        return resource.queryParam( RestParams.RUNNER_PORT, String.valueOf( runner.getServerPort() ) );
+    }
+
+
+    public static WebResource addParams( WebResource resource, Project project ) {
+        Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
+        Preconditions.checkNotNull( project, "The 'project' MUST NOT be null." );
+
+        resource = resource.queryParam( RestParams.MODULE_ARTIFACTID, project.getArtifactId() );
+        resource = resource.queryParam( RestParams.MODULE_GROUPID, project.getGroupId() );
+        resource = resource.queryParam( RestParams.MODULE_VERSION, project.getVersion() );
+        resource = resource.queryParam( RestParams.COMMIT_ID, project.getVcsVersion() );
+        resource = resource.queryParam( RestParams.TEST_PACKAGE, project.getTestPackageBase() );
+        resource = resource.queryParam( RestParams.MD5, project.getMd5() );
+        return resource.queryParam( RestParams.VCS_REPO_URL, project.getVcsRepoUrl() );
+    }
 }
+
+

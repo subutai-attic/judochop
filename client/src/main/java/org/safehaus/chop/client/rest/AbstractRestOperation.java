@@ -3,10 +3,15 @@ package org.safehaus.chop.client.rest;
 
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.CoordinatorFig;
+import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.Runner;
 
+import com.google.common.base.Preconditions;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+
+import static org.safehaus.chop.client.rest.RestRequests.addParams;
 
 
 /**
@@ -19,17 +24,51 @@ public abstract class AbstractRestOperation<R> implements RestOperation<R> {
     private final HttpOp op;
 
 
+
     public AbstractRestOperation( HttpOp op, WebResource resource ) {
-        this.resource = resource;
+        Preconditions.checkNotNull( op, "The 'op' MUST NOT be null." );
+        Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
+
         this.path = null;
         this.op = op;
+        this.resource = resource;
     }
 
 
     public AbstractRestOperation( HttpOp op, String path, Runner runner ) {
-        this.resource = Client.create().resource( runner.getUrl() ).path( getPath() );
+        Preconditions.checkNotNull( op, "The 'op' MUST NOT be null." );
+        Preconditions.checkNotNull( path, "The 'path' MUST NOT be null." );
+        Preconditions.checkNotNull( runner, "The 'runner' MUST NOT be null." );
+
         this.path = path;
         this.op = op;
+        this.resource = Client.create().resource( runner.getUrl() ).path( getPath() );
+
+        resource = addParams( resource, runner );
+    }
+
+
+    public AbstractRestOperation( HttpOp op, WebResource resource, CoordinatorFig coordinator, Project project, Runner runner ) {
+        Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
+        Preconditions.checkNotNull( coordinator, "The 'coordinator' MUST NOT be null." );
+        Preconditions.checkNotNull( runner, "The 'runner' MUST NOT be null." );
+        Preconditions.checkNotNull( project, "The 'project' MUST NOT be null." );
+
+        this.path = null;
+        this.op = op;
+        this.resource = resource;
+
+        if ( runner != null ) {
+            this.resource = addParams( resource, runner );
+        }
+
+        if ( coordinator != null ) {
+            this.resource = addParams( resource, runner );
+        }
+
+        if ( project != null ) {
+            this.resource = addParams( resource, project );
+        }
     }
 
 
@@ -58,6 +97,12 @@ public abstract class AbstractRestOperation<R> implements RestOperation<R> {
     @Override
     public String getPath() {
         return path;
+    }
+
+
+    @Override
+    public WebResource queryParameter( String key, String value ) {
+        return resource = resource.queryParam( key, value );
     }
 
 

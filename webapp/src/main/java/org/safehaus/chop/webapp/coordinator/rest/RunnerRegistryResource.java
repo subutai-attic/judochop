@@ -177,7 +177,7 @@ public class RunnerRegistryResource extends TestableResource {
     @Path( "/unregister" )
     public Response unregister(
 
-            @QueryParam( RestParams.RUNNER_HOSTNAME ) String runnerHostname,
+            @QueryParam( RestParams.RUNNER_URL ) String runnerUrl,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
 
                               )
@@ -187,16 +187,16 @@ public class RunnerRegistryResource extends TestableResource {
             return Response.ok( false ).build();
         }
 
-        Preconditions.checkNotNull( runnerHostname, "The runnerHostname cannot be null." );
+        Preconditions.checkNotNull( runnerUrl, "The 'runnerUrl' MUST NOT be null." );
 
         LOG.info( "Calling /runners/unregister ..." );
         try {
-            if ( runnerDao.delete( runnerHostname ) ) {
-                LOG.info( "unregistered runner {}", runnerHostname );
+            if ( runnerDao.delete( runnerUrl ) ) {
+                LOG.info( "unregistered runner {}", runnerUrl );
                 return Response.ok( true ).build();
             }
             else {
-                LOG.warn( "failed to unregister runner {}", runnerHostname );
+                LOG.warn( "failed to unregister runner {}", runnerUrl );
                 return Response.ok( false ).build();
             }
         }

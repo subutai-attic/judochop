@@ -165,7 +165,7 @@ public class ChopUiTestUtils {
          */
         result = testParams
                 .newWebResource( null )
-                .queryParam( RestParams.RUNNER_HOSTNAME, hostname )
+                .queryParam( RestParams.RUNNER_URL, runner.getUrl() )
                 .path( "/unregister" )
                 .type( MediaType.APPLICATION_JSON_TYPE )
                 .accept( MediaType.APPLICATION_JSON_TYPE )

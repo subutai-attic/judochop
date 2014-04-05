@@ -1,6 +1,9 @@
 package org.safehaus.chop.webapp.elasticsearch;
 
 
+import java.io.File;
+
+import org.elasticsearch.common.io.FileSystemUtils;
 import org.junit.rules.ExternalResource;
 
 
@@ -9,6 +12,7 @@ public class ElasticSearchResource extends ExternalResource {
 
 
     protected void before() throws Exception {
+        FileSystemUtils.deleteRecursively( new File( embedded.getConfig().getDataDir() ) );
         embedded.start();
     }
 
@@ -20,5 +24,6 @@ public class ElasticSearchResource extends ExternalResource {
 
     protected void after() {
         embedded.stop();
+        FileSystemUtils.deleteRecursively( new File( embedded.getConfig().getDataDir() ) );
     }
 }

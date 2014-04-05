@@ -15,4 +15,6 @@ public interface RestOperation<R> {
     String getPath();
 
     R execute( Class<? extends R> rClass );
+
+    WebResource queryParameter( String key, String value );
 }
