@@ -34,7 +34,7 @@ import com.google.inject.Singleton;
  * Coordinates all chop runs in the server.
  */
 @Singleton
-public class Coordinator {
+public class StackCoordinator {
 
     private Map<User, Set<CoordinatedStack>> activeStacksByUser = new HashMap<User, Set<CoordinatedStack>>();
     private Map<Commit, Set<CoordinatedStack>> activeStacksByCommit = new HashMap<Commit, Set<CoordinatedStack>>();
