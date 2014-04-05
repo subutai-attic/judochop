@@ -2,6 +2,7 @@ package org.safehaus.chop.webapp.coordinator;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -13,8 +14,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.safehaus.chop.api.Commit;
+import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Module;
+import org.safehaus.chop.api.ProviderParams;
 import org.safehaus.chop.api.store.amazon.InstanceValues;
+import org.safehaus.chop.client.ssh.AsyncSsh;
+import org.safehaus.chop.client.ssh.SSHCommands;
 import org.safehaus.chop.spi.IpRuleManager;
 import org.safehaus.chop.stack.CoordinatedStack;
 import org.safehaus.chop.stack.ICoordinatedCluster;
@@ -25,6 +30,9 @@ import org.safehaus.chop.stack.Stack;
 import org.safehaus.chop.stack.User;
 import org.safehaus.chop.webapp.ChopUiFig;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
+import org.safehaus.chop.webapp.dao.ProviderParamsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -35,6 +43,8 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class Coordinator {
+
+    private static final Logger LOG = LoggerFactory.getLogger( Coordinator.class );
 
     private Map<User, Set<CoordinatedStack>> activeStacksByUser = new HashMap<User, Set<CoordinatedStack>>();
     private Map<Commit, Set<CoordinatedStack>> activeStacksByCommit = new HashMap<Commit, Set<CoordinatedStack>>();
@@ -49,6 +59,9 @@ public class Coordinator {
     @Inject
     private IpRuleManager ipRuleManager;
 
+    @Inject
+    private ProviderParamsDao providerParamsDao;
+
 
     public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module ) throws Exception {
         CoordinatedStack coordinatedStack;
@@ -62,27 +75,45 @@ public class Coordinator {
 
             coordinatedStack = new CoordinatedStack( stack, user, commit, module );
 
+            /*
+             * File storage scheme:
+             *
+             * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
+             */
             File runnerJar = new File( chopUiFig.getContextPath() );
             runnerJar = new File( runnerJar, user.getUsername() );
             runnerJar = new File( runnerJar, module.getGroupId() );
             runnerJar = new File( runnerJar, module.getArtifactId() );
             runnerJar = new File( runnerJar, module.getVersion() );
             runnerJar = new File( runnerJar, commit.getId() );
-            runnerJar = new File( runnerJar, "runner.jar" ); // TODO fig this?
+            runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
 
             ipRuleManager.setDataCenter( stack.getDataCenter() );
             ipRuleManager.applyIpRuleSet( stack.getIpRuleSet() );
 
-            Collection<InstanceValues> sshCommands = new LinkedList<InstanceValues>();
+            ProviderParams providerParams = providerParamsDao.getByUser( user.getUsername() );
 
             for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
+
+                String keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
+                if( keyFile == null || ! ( new File( keyFile ) ).exists() ) {
+                    // TODO should we clean up launched clusters?
+                    throw new FileNotFoundException( "No key file found with the key name: " +
+                            cluster.getInstanceSpec().getKeyName() + " and path: " + keyFile );
+                }
+
                 LaunchResult result = instanceManager.launchCluster(
                         coordinatedStack, cluster, 100000 );
 
                 for ( Instance instance : result.getInstances() ) {
                     cluster.add( instance );
                 }
-                sshCommands.addAll( getSSHCommands( cluster, runnerJar ) );
+
+                boolean success = executeSSHCommands( cluster, runnerJar, keyFile );
+                if( ! success ) {
+                    // TODO should we clean up launched clusters?
+                    throw new RuntimeException( "SSH commands have failed, will not continue" );
+                }
             }
 
             addStack( coordinatedStack );
@@ -126,20 +157,31 @@ public class Coordinator {
     }
 
 
-    private static Collection<InstanceValues> getSSHCommands( ICoordinatedCluster cluster, File runnerJar )
+    private static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile )
             throws MalformedURLException {
-        Collection<InstanceValues> commandList = new LinkedList<InstanceValues>();
+
+        InstanceValues sshCommand;
         StringBuilder sb;
         String command;
+        Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
 
         for( Object obj: cluster.getInstanceSpec().getScriptEnvironment().keySet() ) {
+
             String envVar = obj.toString();
             String value = cluster.getInstanceSpec().getScriptEnvironment().getProperty( envVar );
 
             sb = new StringBuilder();
             command = sb.append( "export " ).append( envVar ).append( "=" ).append( value ).toString();
 
-            commandList.add( new InstanceValues( command, " " ) ); // TODO ssh key file ?
+            sshCommand = new InstanceValues( command, keyFile );
+
+            try {
+                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
+            }
+            catch ( InterruptedException e ) {
+                LOG.error( "Interrupted while trying to execute SSH command", e );
+                return false;
+            }
         }
 
         URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
@@ -151,28 +193,35 @@ public class Coordinator {
             File fileToSave = new File( runnerJar, file.getName() );
             UploadResource.writeToFile( classLoader.getResourceAsStream( file.getName() ), fileToSave.getPath() );
 
-            for( Instance instance: cluster.getInstances() ) {
+            try {
+                /** TODO don't know if we should chmod first **/
+
                 /** SCP the script to instance **/
                 sb = new StringBuilder();
-                command = sb.append( "scp " ) // TODO should we fig these parameters?
-                            .append( fileToSave.getPath() )
-                            .append( " ubuntu@" )
-                            .append( instance.getPublicIpAddress() )
-                            .append( ":/home/ubuntu/" )
-                            .toString();
+                sb.append( "/home/" )
+                  .append( SSHCommands.DEFAULT_USER )
+                  .append( "/" )
+                  .append( fileToSave.getName() );
 
-                commandList.add( new InstanceValues( command, " " ) ); // TODO ssh key file
+                String destFile = sb.toString();
+                sshCommand = new InstanceValues( fileToSave.getPath(), destFile, keyFile );
+                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
 
                 /** Run the script command */
                 sb = new StringBuilder();
-                command = sb.append( "sudo ./home/ubuntu/" )
-                            .append( fileToSave.getName() )
-                            .toString();
+                sb.append( "sudo . " ) // TODO should we sudo, and if we do, do we need to give the password ?
+                  .append( destFile );
 
-                commandList.add( new InstanceValues( command, " " ) ); // TODO ssh key file
+                sshCommand = new InstanceValues( sb.toString(), keyFile );
+                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
             }
+            catch ( InterruptedException e ) {
+                LOG.error( "Interrupted while trying to execute SSH command", e );
+                return false;
+            }
+
         }
 
-        return commandList;
+        return AsyncSsh.extractFailures( executed ).size() == 0;
     }
 }

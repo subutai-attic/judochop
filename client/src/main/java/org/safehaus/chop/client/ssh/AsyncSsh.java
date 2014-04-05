@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.safehaus.chop.api.SshValues;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -17,11 +16,16 @@ import org.slf4j.LoggerFactory;
  * for Maven Plugin.
  */
 public class AsyncSsh<A> implements Callable<ResponseInfo> {
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger( AsyncSsh.class );
 
-    private final String sshKeyFile;
+    private String sshKeyFile;
 
-    private final String server;
+    private String server;
+
+    private String srcFile;
+
+    private String destFile;
+
+    private boolean isScpCommand;
 
     protected ResponseInfo response;
 
@@ -31,28 +35,36 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
 
     public AsyncSsh( String command, String sshKeyFile, String server ) {
-        setCommand( command );
+        this.command = command;
         this.sshKeyFile = sshKeyFile;
         this.server = server;
+        this.isScpCommand = false;
+    }
+
+
+    public AsyncSsh( String srcFile, String destFile, String sshKeyFile, String server ) {
+        this.srcFile = srcFile;
+        this.destFile = destFile;
+        this.sshKeyFile = sshKeyFile;
+        this.server = server;
+        this.isScpCommand = true;
     }
 
 
     @Override
     public ResponseInfo call() throws Exception {
-        response = SSHCommands.sendCommandToInstance( getCommand(), getSshKeyFile(), getServer() );
-        LOG.info( "Successfully executed command {}", getCommand() );
-        return getResponse();
+        if( isScpCommand ) {
+            response = SSHCommands.scpFileToInstance( srcFile, destFile, sshKeyFile, server );
+        }
+        else {
+            response = SSHCommands.sendCommandToInstance( command, sshKeyFile, server );
+        }
+        return response;
     }
 
 
     public String getCommand() {
         return command;
-    }
-
-
-    public AsyncSsh<A> setCommand( String command ) {
-        this.command = command;
-        return this;
     }
 
 
@@ -63,6 +75,21 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
     public String getServer() {
         return server;
+    }
+
+
+    public String getSrcFile() {
+        return srcFile;
+    }
+
+
+    public String getDestFile() {
+        return destFile;
+    }
+
+
+    public boolean isScpCommand() {
+        return isScpCommand;
     }
 
 
@@ -102,9 +129,24 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "ssh -i " ).append( sshKeyFile )
-          .append( " ubuntu@" ).append( server )
-          .append( " " ).append( command );
+        if( isScpCommand ) {
+            sb.append( "scp -i " )
+              .append( sshKeyFile )
+              .append( " " )
+              .append( srcFile )
+              .append( " ubuntu@" )
+              .append( server )
+              .append( ":" )
+              .append( destFile );
+        }
+        else {
+            sb.append( "ssh -i " )
+              .append( sshKeyFile )
+              .append( " ubuntu@" )
+              .append( server )
+              .append( " " )
+              .append( command );
+        }
         return sb.toString();
     }
 
@@ -124,10 +166,17 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
 
     public static <A> Collection<AsyncSsh<A>> getCommands( Collection<A> associates, SshValues<A> values ) {
         Collection<AsyncSsh<A>> commands = new HashSet<AsyncSsh<A>>( associates.size() );
+        AsyncSsh<A> command;
 
         for ( A associate : associates ) {
-            AsyncSsh<A> command = new AsyncSsh<A>( values.getCommand( associate ),
-                    values.getSshKeyFile( associate ), values.getHostname( associate ) );
+            if( values.isScpCommand( associate ) ) {
+                command = new AsyncSsh<A>( values.getSourceFile( associate ), values.getDestinationFile( associate ),
+                        values.getSshKeyFile( associate ), values.getHostname( associate ) );
+            }
+            else {
+                command = new AsyncSsh<A>( values.getCommand( associate ), values.getSshKeyFile( associate ), values
+                                .getHostname( associate ) );
+            }
             commands.add( command );
         }
 
@@ -135,12 +184,13 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
     }
 
 
-    public static <A> boolean execute( Collection<A> associates, SshValues<A> values ) throws InterruptedException {
+    public static <A> Collection<AsyncSsh<A>> execute( Collection<A> associates, SshValues<A> values )
+            throws InterruptedException {
         Collection<AsyncSsh<A>> commands = getCommands( associates, values );
         ExecutorService service = Executors.newFixedThreadPool( associates.size() + 1 );
         service.invokeAll( commands );
         service.shutdown();
 
-        return extractFailures( commands ).isEmpty();
+        return commands;
     }
 }

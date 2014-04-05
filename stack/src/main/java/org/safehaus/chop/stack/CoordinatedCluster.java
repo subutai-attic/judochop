@@ -1,6 +1,7 @@
 package org.safehaus.chop.stack;
 
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class CoordinatedCluster implements ICoordinatedCluster {
     }
 
 
-    public Iterable<Instance> getInstances() {
+    public Collection<Instance> getInstances() {
         return instances;
     }
 
