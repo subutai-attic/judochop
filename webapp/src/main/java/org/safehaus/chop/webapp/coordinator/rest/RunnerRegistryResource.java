@@ -162,7 +162,6 @@ public class RunnerRegistryResource extends TestableResource {
 
         LOG.info( "Calling /runners/register with commitId = {} and runner = {}", commitId, runner );
 
-        // TODO: get user and moduleId
         if ( runnerDao.save( runner, user, commitId, moduleId ) ) {
             LOG.info( "registered runner {} for commit {}", runner.getHostname(), commitId );
             return Response.ok( true ).build();

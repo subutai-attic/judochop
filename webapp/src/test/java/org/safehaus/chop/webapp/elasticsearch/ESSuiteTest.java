@@ -66,9 +66,9 @@ public class ESSuiteTest {
     public static final String TEST_NAME = "org.safehaus.chop.example.DigitalWatchTest";
     public static final String USER_1 = "testuser";
     public static final String USER_2 = "user-2";
-    public static final String RUNNER_IPV4_1 = "54.227.39.116";
-    public static final String RUNNER_IPV4_2 = "23.20.162.161";
-    public static final String RUNNER_HOSTNAME_3 = "ec2-84-197-213-159.compute-1.amazonaws.com";
+    public static final String RUNNER_IPV4_1 = "54.227.39.111";
+    public static final String RUNNER_IPV4_2 = "23.20.162.112";
+    public static final String RUNNER_HOSTNAME_3 = "ec2-84-197-213-113.compute-1.amazonaws.com";
 
 
     @ClassRule
@@ -253,27 +253,27 @@ public class ESSuiteTest {
         runnerDao = injector.getInstance( RunnerDao.class );
         BasicRunner runner = new BasicRunner(
                 RUNNER_IPV4_1, // ipv4Address
-                "ec2-54-227-39-116.compute-1.amazonaws.com", // hostname
+                "ec2-54-227-39-111.compute-1.amazonaws.com", // hostname
                 24981,// serverPort
-                "https://ec2-54-227-39-116.compute-1.amazonaws.com:24981", // url
+                "https://ec2-54-227-39-111.compute-1.amazonaws.com:24981", // url
                 "/tmp" // tempDir
         );
         runnerDao.save( runner, USER_1, COMMIT_ID_1, MODULE_ID_1 );
 
         runner = new BasicRunner(
                 RUNNER_IPV4_2, // ipv4Address
-                "ec2-23-20-162-161.compute-1.amazonaws.com", // hostname
+                "ec2-23-20-162-112.compute-1.amazonaws.com", // hostname
                 8443, // serverPort
-                "https://ec2-23-20-162-161.compute-1.amazonaws.com:8443", // url
+                "https://ec2-23-20-162-112.compute-1.amazonaws.com:8443", // url
                 "/tmp" // tempDir
         );
         runnerDao.save( runner, USER_1, COMMIT_ID_1, MODULE_ID_1 );
 
         runner = new BasicRunner(
-                "84.197.213.159", // ipv4Address
+                "84.197.213.113", // ipv4Address
                 RUNNER_HOSTNAME_3, // hostname
                 24981,// serverPort
-                "https://ec2-84-197-213-159.compute-1.amazonaws.com:24981", // url
+                "https://ec2-84-197-213-113.compute-1.amazonaws.com:24981", // url
                 "/tmp" // tempDir
         );
         runnerDao.save( runner, USER_2, COMMIT_ID_1, MODULE_ID_1 );

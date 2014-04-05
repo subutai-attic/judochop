@@ -1,8 +1,11 @@
 package org.safehaus.chop.stack;
 
 
+import java.util.Collection;
+
+
 public interface ICoordinatedCluster extends Cluster {
-    Iterable<Instance> getInstances();
+    Collection<Instance> getInstances();
 
     boolean add( Instance instance );
 }

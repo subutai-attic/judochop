@@ -42,7 +42,8 @@ public class RunnerDao extends Dao {
     public boolean save( Runner runner, String user, String commitId, String moduleId ) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex(DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname())
+//                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getHostname() )
+                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runner.getUrl() )
                 .setRefresh(true)
                 .setSource(
                         jsonBuilder()
@@ -69,7 +70,7 @@ public class RunnerDao extends Dao {
                 .execute()
                 .actionGet();
 
-        ArrayList<Runner> runners = new ArrayList<Runner> ();
+        ArrayList<Runner> runners = new ArrayList<Runner>();
 
         for ( SearchHit hit : response.getHits().hits() ) {
             runners.add( toRunner( hit ) );
@@ -79,10 +80,10 @@ public class RunnerDao extends Dao {
     }
 
 
-    public boolean delete( String hostname ) {
+    public boolean delete( String runnerUrl ) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, hostname )
+                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, runnerUrl )
                 .setRefresh( true )
                 .execute()
                 .actionGet();

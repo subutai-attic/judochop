@@ -2,8 +2,8 @@ package org.safehaus.chop.api.store.amazon;
 
 
 import org.safehaus.chop.api.SshValues;
+import org.safehaus.chop.stack.Instance;
 
-import com.amazonaws.services.ec2.model.Instance;
 import com.google.common.base.Preconditions;
 
 
@@ -11,8 +11,12 @@ import com.google.common.base.Preconditions;
  * A simple values holder for Amazon Instance based associations.
  */
 public class InstanceValues implements SshValues<Instance> {
-    private final String command;
-    private final String sshKeyFile;
+
+    private boolean scpCommand;
+    private String command;
+    private String sshKeyFile;
+    private String srcFilePath;
+    private String dstFilePath;
 
 
     public InstanceValues( final String command, final String sshKeyFile ) {
@@ -21,6 +25,21 @@ public class InstanceValues implements SshValues<Instance> {
 
         this.command = command;
         this.sshKeyFile = sshKeyFile;
+
+        scpCommand = false;
+    }
+
+
+    public InstanceValues( final String srcFilePath, final String dstFilePath, final String sshKeyFile ) {
+        Preconditions.checkNotNull( srcFilePath, "The 'srcFilePath' parameter cannot be null." );
+        Preconditions.checkNotNull( dstFilePath, "The 'dstFilePath' parameter cannot be null." );
+        Preconditions.checkNotNull( sshKeyFile, "The 'sshKeyFile' parameter cannot be null." );
+
+        this.srcFilePath = srcFilePath;
+        this.dstFilePath = dstFilePath;
+        this.sshKeyFile = sshKeyFile;
+
+        scpCommand = true;
     }
 
 
@@ -40,4 +59,23 @@ public class InstanceValues implements SshValues<Instance> {
     public String getSshKeyFile( final Instance associate ) {
         return sshKeyFile;
     }
+
+
+    @Override
+    public String getSourceFile( final Instance associate ) {
+        return srcFilePath;
+    }
+
+
+    @Override
+    public String getDestinationFile( final Instance associate ) {
+        return dstFilePath;
+    }
+
+
+    @Override
+    public boolean isScpCommand( final Instance associate ) {
+        return scpCommand;
+    }
 }
+
