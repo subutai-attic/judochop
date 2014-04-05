@@ -1,4 +1,4 @@
-package org.safehaus.chop.runner;
+package org.safehaus.chop.api;
 
 
 import org.safehaus.guicyfig.Default;
@@ -89,14 +89,14 @@ public interface CoordinatorFig extends GuicyFig {
 
 
     String USERNAME = "coordinator.username";
-    String USERNAME_DEFAULT = "testuser";
+    String USERNAME_DEFAULT = "user";
     @Key( USERNAME )
     @Default( USERNAME_DEFAULT )
     String getUsername();
 
 
     String PASSWORD = "coordinator.password";
-    String PASSWORD_DEFAULT = "changeit";
+    String PASSWORD_DEFAULT = "pass";
     @Key( PASSWORD )
     @Default( PASSWORD_DEFAULT )
     String getPassword();

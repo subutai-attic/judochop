@@ -53,7 +53,7 @@ import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.stack.BasicStack;
 import org.safehaus.chop.stack.Stack;
 import org.safehaus.chop.webapp.ChopUiFig;
-import org.safehaus.chop.webapp.coordinator.Coordinator;
+import org.safehaus.chop.webapp.coordinator.StackCoordinator;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
@@ -87,7 +87,7 @@ public class UploadResource extends TestableResource implements RestParams {
 
 
     @Inject
-    private Coordinator coordinator;
+    private StackCoordinator stackCoordinator;
 
     @Inject
     private ChopUiFig chopUiFig;

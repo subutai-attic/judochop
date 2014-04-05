@@ -42,7 +42,7 @@ import com.google.inject.Singleton;
  * Coordinates all chop runs in the server.
  */
 @Singleton
-public class Coordinator {
+public class StackCoordinator {
 
     private static final Logger LOG = LoggerFactory.getLogger( Coordinator.class );
 

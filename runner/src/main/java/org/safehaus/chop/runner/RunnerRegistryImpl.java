@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.safehaus.chop.api.CoordinatorFig;
 import org.safehaus.chop.api.Project;
 import org.safehaus.chop.api.RestParams;
 import org.safehaus.chop.api.Runner;

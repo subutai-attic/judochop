@@ -32,9 +32,8 @@ import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
 import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.webapp.coordinator.Coordinator;
+import org.safehaus.chop.webapp.coordinator.StackCoordinator;
 import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.dao.RunnerDao;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public class RunManagerResource extends TestableResource {
 
 
     @Inject
-    private Coordinator coordinator;
+    private StackCoordinator stackCoordinator;
 
     @Inject
     private RunDao runDao;
