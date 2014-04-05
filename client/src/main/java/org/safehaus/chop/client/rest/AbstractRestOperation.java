@@ -49,6 +49,7 @@ public abstract class AbstractRestOperation<R> implements RestOperation<R> {
 
 
     public AbstractRestOperation( HttpOp op, WebResource resource, CoordinatorFig coordinator, Project project, Runner runner ) {
+        Preconditions.checkNotNull( op, "The 'op' MUST NOT be null." );
         Preconditions.checkNotNull( resource, "The 'resource' MUST NOT be null." );
         Preconditions.checkNotNull( coordinator, "The 'coordinator' MUST NOT be null." );
         Preconditions.checkNotNull( runner, "The 'runner' MUST NOT be null." );

@@ -36,6 +36,16 @@ public class ChopUiIT {
     private final static Map<String,String> queryParams = new HashMap<String, String>();
     private final static String[] args = new String[] { "-e" };
 
+    static {
+        queryParams.put( RestParams.PASSWORD, "pass" );
+        queryParams.put( RestParams.USERNAME, "user" );
+        queryParams.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
+        queryParams.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
+        queryParams.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
+        queryParams.put( RestParams.MODULE_GROUPID, "org.safehaus.chop" );
+        queryParams.put( RestParams.TEST_PACKAGE, "org.safehaus.chop.example" );
+    }
+
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
@@ -47,16 +57,6 @@ public class ChopUiIT {
     )
     @ClassRule
     public static JettyResource jetty = new JettyIntegResource( args );
-
-    static {
-        queryParams.put( RestParams.PASSWORD, "pass" );
-        queryParams.put( RestParams.USERNAME, "user" );
-        queryParams.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
-        queryParams.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
-        queryParams.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
-        queryParams.put( RestParams.MODULE_GROUPID, "org.safehaus.chop" );
-        queryParams.put( RestParams.TEST_PACKAGE, "org.safehaus.chop.example" );
-    }
 
     @Test
     public void testGet() {
