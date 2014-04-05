@@ -4,12 +4,9 @@ package org.safehaus.chop.runner;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.BaseResult;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.runner.rest.ResetResource;
-import org.safehaus.chop.runner.rest.StartResource;
 import org.safehaus.chop.runner.rest.StatsResource;
-import org.safehaus.chop.runner.rest.StatusResource;
-import org.safehaus.chop.runner.rest.StopResource;
 import org.safehaus.jettyjam.utils.TestParams;
 
 import static junit.framework.TestCase.assertNotNull;
@@ -23,34 +20,34 @@ public class RunnerTestUtils {
 
     public static void testStart( TestParams testParams ) {
         BaseResult result = testParams
-                .setEndpoint( StartResource.ENDPOINT )
+                .setEndpoint( Runner.START_POST )
                 .newWebResource()
                 .accept( MediaType.APPLICATION_JSON )
                 .post( BaseResult.class );
 
-        assertEquals( result.getEndpoint(), StartResource.ENDPOINT );
+        assertEquals( result.getEndpoint(), Runner.START_POST );
     }
 
 
     public static void testReset( TestParams testParams ) {
         BaseResult result = testParams
-                .setEndpoint( ResetResource.ENDPOINT )
+                .setEndpoint( Runner.RESET_POST )
                 .newWebResource()
                 .accept( MediaType.APPLICATION_JSON )
                 .post( BaseResult.class );
 
-        assertEquals( result.getEndpoint(), ResetResource.ENDPOINT );
+        assertEquals( result.getEndpoint(), Runner.RESET_POST );
     }
 
 
     public static void testStop( TestParams testParams ) {
         BaseResult result = testParams
-                .setEndpoint( StopResource.ENDPOINT )
+                .setEndpoint( Runner.STOP_POST )
                 .newWebResource()
                 .accept( MediaType.APPLICATION_JSON )
                 .post( BaseResult.class );
 
-        assertEquals( result.getEndpoint(), StopResource.ENDPOINT );
+        assertEquals( result.getEndpoint(), Runner.STOP_POST );
     }
 
 
@@ -67,11 +64,11 @@ public class RunnerTestUtils {
 
     public static void testStatus( final TestParams testParams ) {
         BaseResult result = testParams
-                .setEndpoint( StatusResource.ENDPOINT )
+                .setEndpoint( Runner.STATUS_GET )
                 .newWebResource()
                 .accept( MediaType.APPLICATION_JSON )
                 .get( BaseResult.class );
 
-        assertEquals( result.getEndpoint(), StatusResource.ENDPOINT );
+        assertEquals( result.getEndpoint(), Runner.STATUS_GET );
     }
 }

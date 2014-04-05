@@ -31,7 +31,6 @@ import org.safehaus.chop.webapp.elasticsearch.EsEmbedded;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.shiro.CustomShiroWebModule;
-import org.safehaus.chop.webapp.service.util.TimeUtil;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.runner.IController;
 
@@ -39,14 +40,11 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( ResetResource.ENDPOINT )
+@Path( Runner.RESET_POST )
 public class ResetResource extends SignalResource {
-    public final static String ENDPOINT = "/reset";
-
-
     @Inject
     public ResetResource( IController controller, Project project ) {
-        super( controller, project, ENDPOINT, Signal.RESET );
+        super( controller, project, Runner.RESET_POST, Signal.RESET );
     }
 
 

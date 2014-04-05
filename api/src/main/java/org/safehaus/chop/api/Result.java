@@ -2,9 +2,11 @@ package org.safehaus.chop.api;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 
 /** Result interface from operations against runner API. */
+@JsonDeserialize( as = BaseResult.class )
 public interface Result {
 
     /**

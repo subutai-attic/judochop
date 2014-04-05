@@ -3,35 +3,33 @@ package org.safehaus.chop.client.rest;
 
 import java.util.concurrent.Callable;
 
-import org.safehaus.chop.api.Result;
-
 
 /**
  * An asynchronous request.
  */
-public class AsyncRequest<T,R extends RestOperation> implements Callable<Result> {
-    private final R operation;
-    private T associate;
+public class AsyncRequest<A,R, O extends RestOperation<R>> implements Callable<R> {
+    private final O operation;
+    private A associate;
     private Exception exception;
 
 
-    public AsyncRequest( T associate, R operation ) {
+    public AsyncRequest( A associate, O operation ) {
         this.operation = operation;
         this.associate = associate;
     }
 
 
-    public AsyncRequest( R operation ) {
+    public AsyncRequest( O operation ) {
         this.operation = operation;
     }
 
 
-    public T getAssociate() {
+    public A getAssociate() {
         return associate;
     }
 
 
-    public R getRestOperation() {
+    public O getRestOperation() {
         return operation;
     }
 
@@ -47,7 +45,7 @@ public class AsyncRequest<T,R extends RestOperation> implements Callable<Result>
 
 
     @Override
-    public Result call() throws Exception {
+    public R call() throws Exception {
         try {
             return operation.execute();
         }

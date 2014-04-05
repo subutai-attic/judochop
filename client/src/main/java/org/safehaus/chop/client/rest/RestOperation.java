@@ -1,22 +1,18 @@
 package org.safehaus.chop.client.rest;
 
 
-import java.util.Map;
-
-import org.safehaus.chop.api.Result;
+import com.sun.jersey.api.client.WebResource;
 
 
 /**
  * A simple request interface.
  */
-public interface RestOperation {
-    Result getResult();
+public interface RestOperation<R> {
+    R getResult();
 
-    String getResource();
-
-    Map<String,String> getParameters();
+    WebResource getResource();
 
     String getPath();
 
-    Result execute();
+    R execute();
 }

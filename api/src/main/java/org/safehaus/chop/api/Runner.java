@@ -16,6 +16,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize( using = RunnerSerializer.class )
 @JsonDeserialize( using = RunnerDeserializer.class )
 public interface Runner extends GuicyFig {
+    String RESET_POST = "/reset";
+    String START_POST = "/start";
+    String STOP_POST  = "/stop";
+    String STATUS_GET = "/status";
 
 
     // ~~~~~~~~~~~~~~~~~~~~~ Runner Related Configuration ~~~~~~~~~~~~~~~~~~~~

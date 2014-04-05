@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.Signal;
 import org.safehaus.chop.runner.IController;
 
@@ -39,14 +40,11 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StartResource.ENDPOINT )
+@Path( Runner.START_POST )
 public class StartResource extends SignalResource {
-    public static final String ENDPOINT = "/start";
-
-
     @Inject
     public StartResource( IController controller, Project project ) {
-        super( controller, project, ENDPOINT, Signal.START );
+        super( controller, project, Runner.START_POST, Signal.START );
     }
 
 

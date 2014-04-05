@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.safehaus.chop.api.Project;
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.chop.api.BaseResult;
 import org.safehaus.chop.api.Result;
@@ -37,10 +38,8 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StatusResource.ENDPOINT )
+@Path( Runner.STATUS_GET )
 public class StatusResource {
-    public final static String ENDPOINT = "/status";
-
     private final IController controller;
     private final Project project;
 
@@ -54,6 +53,6 @@ public class StatusResource {
 
     @GET
     public Result status() {
-        return new BaseResult( ENDPOINT, true, "status request", controller.getState(), project );
+        return new BaseResult( Runner.STATUS_GET, true, "status request", controller.getState(), project );
     }
 }
