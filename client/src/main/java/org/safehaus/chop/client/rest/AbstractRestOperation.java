@@ -6,7 +6,6 @@ import javax.ws.rs.core.MediaType;
 import org.safehaus.chop.api.Runner;
 
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 
 
@@ -63,20 +62,21 @@ public abstract class AbstractRestOperation<R> implements RestOperation<R> {
 
 
     @Override
-    public R execute() {
+    public R execute( Class<? extends R> clazz ) {
         switch ( op ) {
+
             case GET:
                 return setResult( getResource().accept(
-                        MediaType.APPLICATION_JSON_TYPE ).get( new GenericType<R>() {} ) );
+                        MediaType.APPLICATION_JSON_TYPE ).get( clazz ) );
             case POST:
                 return setResult( getResource().accept(
-                        MediaType.APPLICATION_JSON_TYPE ).post( new GenericType<R>() {} ) );
+                        MediaType.APPLICATION_JSON_TYPE ).post( clazz ) );
             case PUT:
                 return setResult( getResource().accept(
-                        MediaType.APPLICATION_JSON_TYPE ).put( new GenericType<R>() {} ) );
+                        MediaType.APPLICATION_JSON_TYPE ).put( clazz ) );
             case DELETE:
                 return setResult( getResource().accept(
-                        MediaType.APPLICATION_JSON_TYPE ).delete( new GenericType<R>() {} ) );
+                        MediaType.APPLICATION_JSON_TYPE ).delete( clazz ) );
             default:
                 throw new IllegalStateException( "Unknown HTTP operation type " + op );
         }

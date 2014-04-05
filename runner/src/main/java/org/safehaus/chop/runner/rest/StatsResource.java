@@ -30,6 +30,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.safehaus.chop.api.Runner;
 import org.safehaus.chop.api.StatsSnapshot;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.jettyjam.utils.TestMode;
@@ -41,15 +42,14 @@ import com.google.inject.Singleton;
 /** ... */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( StatsResource.ENDPOINT )
+@Path( Runner.STATS_GET )
 public class StatsResource extends TestableResource {
-    public static final String ENDPOINT = "/stats";
     private final IController controller;
 
 
     @Inject
     public StatsResource( IController controller ) {
-        super( ENDPOINT );
+        super( Runner.STATS_GET );
         this.controller = controller;
     }
 

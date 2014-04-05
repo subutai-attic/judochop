@@ -6,6 +6,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.safehaus.chop.api.ChopUtils;
 import org.safehaus.chop.api.Result;
 import org.safehaus.chop.api.Runner;
+import org.safehaus.chop.api.StatsSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +101,17 @@ public class RestRequests {
     }
 
 
+    public static AbstractRestOperation<StatsSnapshot> newStatsOp( WebResource resource ) {
+        resource.path( Runner.STATS_GET );
+        return new AbstractRestOperation<StatsSnapshot>( HttpOp.GET, resource ) {};
+    }
+
+
+    public static AbstractRestOperation<StatsSnapshot> newStatsOp( Runner runner ) {
+        return new AbstractRestOperation<StatsSnapshot>( HttpOp.GET, Runner.STATS_GET, runner ) {};
+    }
+
+
     /**
      * Performs a POST HTTP operation against the /start endpoint with a propagate query parameter.
      *
@@ -108,7 +120,7 @@ public class RestRequests {
      */
     public static Result start( Runner runner ) {
         preparations( runner );
-        return newStartOp( runner ).execute();
+        return newStartOp( runner ).execute( Result.class );
     }
 
 
@@ -120,7 +132,7 @@ public class RestRequests {
      */
     public static Result reset( Runner runner ) {
         preparations( runner );
-        return newResetOp( runner ).execute();
+        return newResetOp( runner ).execute( Result.class );
     }
 
 
@@ -132,7 +144,7 @@ public class RestRequests {
      */
     public static Result stop( Runner runner ) {
         preparations( runner );
-        return newStopOp( runner ).execute();
+        return newStopOp( runner ).execute( Result.class );
     }
 
 
@@ -147,7 +159,7 @@ public class RestRequests {
         preparations( runner );
 
         try {
-            return newStatusOp( runner ).execute();
+            return newStatusOp( runner ).execute( Result.class );
         }
         catch ( ClientHandlerException e ) {
             if ( e.getCause() instanceof SSLHandshakeException &&
@@ -160,10 +172,16 @@ public class RestRequests {
                  * on the failure.
                  */
 
-                return newStatusOp( runner ).execute();
+                return newStatusOp( runner ).execute( Result.class );
             }
         }
 
         throw new RuntimeException( "If we got here then the retry also failed." );
+    }
+
+
+    public static StatsSnapshot stats( Runner runner ) {
+        preparations( runner );
+        return newStatsOp( runner ).execute( StatsSnapshot.class );
     }
 }

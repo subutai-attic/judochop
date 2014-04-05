@@ -20,6 +20,7 @@ public interface Runner extends GuicyFig {
     String START_POST = "/start";
     String STOP_POST  = "/stop";
     String STATUS_GET = "/status";
+    String STATS_GET = "/stats";
 
 
     // ~~~~~~~~~~~~~~~~~~~~~ Runner Related Configuration ~~~~~~~~~~~~~~~~~~~~

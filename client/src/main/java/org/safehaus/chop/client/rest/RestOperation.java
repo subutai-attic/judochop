@@ -14,5 +14,5 @@ public interface RestOperation<R> {
 
     String getPath();
 
-    R execute();
+    R execute( Class<? extends R> rClass );
 }
