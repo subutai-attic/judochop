@@ -61,11 +61,6 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <excludes>
-            <!--<exclude>**/ChopUiIT.java</exclude>-->
-          </excludes>
-        </configuration>
       </plugin>
 
       <plugin>
