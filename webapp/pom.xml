@@ -16,10 +16,6 @@
     archive performance tests.
   </description>
 
-    <properties>
-        <!--<jetty.plugin.version>9.1.2.v20140210</jetty.plugin.version>-->
-        <vaadin.version>7.0.0</vaadin.version>
-    </properties>
   <build>
     <finalName>${project.artifactId}</finalName>
 

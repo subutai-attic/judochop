@@ -17,27 +17,13 @@
     from arising.
   </description>
 
-    <properties>
-        <vaadin.version>7.0.0</vaadin.version>
-    </properties>
   <build>
-    <finalName>${project.artifactId}</finalName>
-
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
         <includes>
           <include>**/*.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*.cer</include>
-          <include>**/*.jks</include>
-          <include>**/*.js</include>
         </includes>
       </resource>
     </resources>
@@ -53,7 +39,6 @@
     </testResources>
 
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -80,11 +65,6 @@
             <classes.base>${project.build.outputDirectory}</classes.base>
             <archaius.deployment.environment>UNIT</archaius.deployment.environment>
           </systemPropertyVariables>
-
-          <!--
-          An TestRule needs to be written for elastic search to run a local
-          embedded ES instance for these tests to not block and pass.
-          -->
 
           <excludes>
             <exclude>**/NoteDaoTest.java</exclude>
