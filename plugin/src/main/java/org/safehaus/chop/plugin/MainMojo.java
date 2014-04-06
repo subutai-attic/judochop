@@ -91,6 +91,10 @@ public class MainMojo extends AbstractMojo implements Constants {
     @Parameter( property = "certStorePassphrase" )
     protected String certStorePassphrase;
 
+
+    @Parameter( property = "finalName", defaultValue = "${project.artifactId}-${project.version}-chop" )
+    protected String finalName;
+
     protected static ExecutorService executor;
 
 
@@ -143,7 +147,7 @@ public class MainMojo extends AbstractMojo implements Constants {
 
     /** @return Returns the full path of created runner.war file */
     public File getRunnerFile() {
-        return new File( project.getBuild().getDirectory(), RUNNER_JAR );
+        return new File( project.getBuild().getDirectory(), finalName + ".jar" );
     }
 
 

@@ -12,13 +12,18 @@ import org.codehaus.plexus.util.FileUtils;
 import org.safehaus.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProjectHelper;
 
 
 @Mojo( name = "runner", requiresDependencyResolution = ResolutionScope.TEST,
         requiresDependencyCollection = ResolutionScope.TEST )
 public class RunnerMojo extends MainMojo {
+
+    @Component
+    private MavenProjectHelper projectHelper;
 
     @SuppressWarnings( "UnusedDeclaration" )
     public RunnerMojo() {
@@ -130,6 +135,9 @@ public class RunnerMojo extends MainMojo {
             String finalPath = getRunnerFile().getAbsolutePath();
             File finalFile = new File( finalPath );
             Utils.archiveWar( finalFile, extractedRunnerPath );
+
+            // Attempt to attach the runner file with the chop classifier
+            projectHelper.attachArtifact( project, finalFile, "chop" );
         }
         catch ( MojoExecutionException e ) {
             throw e;
