@@ -61,7 +61,15 @@ public class Controller implements IController, Runnable {
              * the runNumber is also incremented every time start is called. So
              * we need to decrement this value by 1 in order not to skip run numbers.
              */
-            runNumber = runManager.getNextRunNumber( project ) - 1;
+
+            try {
+                runNumber = runManager.getNextRunNumber( project ) - 1;
+            }
+            catch ( Exception e ) {
+                LOG.warn( "Failed to get a run number from the runManager, defaulting to 1" );
+                runNumber = 1;
+            }
+
             otherRunners = registry.getRunners( me );
         }
     }

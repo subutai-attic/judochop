@@ -5,11 +5,6 @@ import java.util.Properties;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.jettyjam.utils.ContextListener;
-import org.safehaus.jettyjam.utils.FilterMapping;
-import org.safehaus.jettyjam.utils.HttpsConnector;
-import org.safehaus.jettyjam.utils.JettyConnectors;
-import org.safehaus.jettyjam.utils.JettyContext;
 
 import org.safehaus.jettyjam.utils.JettyIntegResource;
 import org.safehaus.jettyjam.utils.JettyResource;
@@ -17,8 +12,6 @@ import org.safehaus.jettyjam.utils.JettyResource;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.inject.servlet.GuiceFilter;
 
 
 /**
@@ -32,15 +25,6 @@ public class RunnerAppIT {
         systemProperties.setProperty( TestMode.TEST_MODE_PROPERTY, TestMode.INTEG.toString() );
     }
 
-    @JettyContext(
-        enableSession = true,
-        contextListeners = { @ContextListener( listener = RunnerConfig.class ) },
-        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*") }
-    )
-    @JettyConnectors(
-        defaultId = "https",
-        httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
-    )
     @ClassRule
     public static JettyResource jetty = new JettyIntegResource( systemProperties );
 
