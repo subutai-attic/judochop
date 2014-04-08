@@ -161,7 +161,7 @@ public class StackCoordinator {
             throws MalformedURLException {
 
         InstanceValues sshCommand;
-        StringBuilder sb;
+        StringBuilder sb = new StringBuilder();
         String command;
         Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
 
@@ -170,19 +170,13 @@ public class StackCoordinator {
             String envVar = obj.toString();
             String value = cluster.getInstanceSpec().getScriptEnvironment().getProperty( envVar );
 
-            sb = new StringBuilder();
-            command = sb.append( "export " ).append( envVar ).append( "=" ).append( value ).toString();
-
-            sshCommand = new InstanceValues( command, keyFile );
-
-            try {
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
-            }
-            catch ( InterruptedException e ) {
-                LOG.error( "Interrupted while trying to execute SSH command", e );
-                return false;
-            }
+            sb.append( "export " )
+              .append( envVar )
+              .append( "=" )
+              .append( value )
+              .append( ";" );
         }
+        String exportVars = sb.toString();
 
         URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
                 Thread.currentThread().getContextClassLoader() );
@@ -194,8 +188,6 @@ public class StackCoordinator {
             UploadResource.writeToFile( classLoader.getResourceAsStream( file.getName() ), fileToSave.getPath() );
 
             try {
-                /** TODO don't know if we should chmod first **/
-
                 /** SCP the script to instance **/
                 sb = new StringBuilder();
                 sb.append( "/home/" )
@@ -207,9 +199,17 @@ public class StackCoordinator {
                 sshCommand = new InstanceValues( fileToSave.getPath(), destFile, keyFile );
                 executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
 
+                /** calling chmod first just in case **/
+                sb = new StringBuilder();
+                sb.append( "chmod 0755 " )
+                  .append( fileToSave.getPath() );
+                sshCommand = new InstanceValues( sb.toString(), keyFile );
+                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
+
                 /** Run the script command */
                 sb = new StringBuilder();
-                sb.append( "sudo . " ) // TODO should we sudo, and if we do, do we need to give the password ?
+                sb.append( exportVars )
+                  .append( "sudo -E " )
                   .append( destFile );
 
                 sshCommand = new InstanceValues( sb.toString(), keyFile );
