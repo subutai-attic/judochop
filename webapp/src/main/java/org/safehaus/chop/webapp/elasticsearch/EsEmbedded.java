@@ -24,6 +24,7 @@ import static org.safehaus.chop.webapp.elasticsearch.EmbeddedUtils.newInstance;
 public class EsEmbedded {
     private final ElasticSearchFig config;
     private InternalNode inode;
+    private boolean started;
 
 
     public EsEmbedded() {
@@ -44,16 +45,23 @@ public class EsEmbedded {
         Client client = inode.client();
         client.admin().cluster().prepareHealth().setWaitForGreenStatus().setTimeout(
                 TimeValue.timeValueSeconds( 5 ) ).execute().actionGet();
+        started = true;
     }
 
 
     public void stop() {
         inode.close();
+        started = false;
     }
 
 
     public ElasticSearchFig getConfig() {
         return config;
+    }
+
+
+    public boolean isStarted() {
+        return started;
     }
 }
 

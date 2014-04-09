@@ -7,7 +7,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.jettyjam.utils.JettyIntegResource;
 import org.safehaus.jettyjam.utils.JettyResource;
-import org.safehaus.jettyjam.utils.JettyResources;
+import org.safehaus.jettyjam.utils.StartResources;
 import org.safehaus.jettyjam.utils.TestMode;
 
 import static junit.framework.TestCase.assertTrue;
@@ -34,7 +34,7 @@ public class RunnerCoordinatorIT {
     private static JettyResource runner2 = new JettyIntegResource( systemProperties );
 
     @ClassRule
-    public static JettyResources resources = new JettyResources( 1000, webapp, runner1, runner2 );
+    public static StartResources resources = new StartResources( 1000, webapp, runner1, runner2 );
 
     @Test
     public void testBasic() {

@@ -3,6 +3,7 @@ package org.safehaus.chop.runner;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -66,11 +67,19 @@ public class Controller implements IController, Runnable {
                 runNumber = runManager.getNextRunNumber( project ) - 1;
             }
             catch ( Exception e ) {
-                LOG.warn( "Failed to get a run number from the runManager, defaulting to 1" );
+                LOG.warn( "Failed to get a run number from the runManager, defaulting to 1. Error message: {}",
+                        e.getMessage() );
                 runNumber = 1;
             }
 
-            otherRunners = registry.getRunners( me );
+            try {
+                otherRunners = registry.getRunners( me );
+            }
+            catch ( Exception e ) {
+                LOG.warn( "Failed to get the list of other runners participating in chop tests. Error message: {}",
+                        e.getMessage() );
+                otherRunners = Collections.emptyList();
+            }
         }
     }
 

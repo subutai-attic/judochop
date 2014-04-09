@@ -20,6 +20,7 @@
 package org.safehaus.chop.webapp;
 
 
+import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -120,7 +121,13 @@ public class ChopUiConfig extends GuiceServletContextListener {
             LOG.info( "Operating in UNIT environment" );
         }
 
-        ConfigurationManager.install( ccc );
+//        ConfigurationManager.install( ccc );
+        try {
+            ConfigurationManager.loadCascadedPropertiesFromResources( "chop-ui" );
+        }
+        catch ( IOException e ) {
+            LOG.warn( "Failed to cascade load configuration properties: ", e );
+        }
 
         /*
          * --------------------------------------------------------------------

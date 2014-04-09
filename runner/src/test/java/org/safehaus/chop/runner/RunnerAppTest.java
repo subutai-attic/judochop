@@ -32,7 +32,7 @@ public class RunnerAppTest {
         httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyUnitResource();
+    public static JettyResource jetty = new JettyUnitResource( RunnerAppTest.class );
 
 
     @Test

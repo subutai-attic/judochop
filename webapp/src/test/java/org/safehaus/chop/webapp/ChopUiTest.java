@@ -46,7 +46,7 @@ public class ChopUiTest {
         httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
     )
     @ClassRule
-    public static JettyResource jetty = new JettyUnitResource();
+    public static JettyResource jetty = new JettyUnitResource( ChopUiTest.class );
 
     @ClassRule
     public static ElasticSearchResource es = new ElasticSearchResource();
