@@ -4,7 +4,6 @@ package org.safehaus.chop.webapp.elasticsearch;
 import java.io.File;
 
 import org.elasticsearch.common.io.FileSystemUtils;
-import org.junit.rules.ExternalResource;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.safehaus.jettyjam.utils.StartableResource;

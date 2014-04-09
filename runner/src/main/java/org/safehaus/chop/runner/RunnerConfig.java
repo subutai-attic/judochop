@@ -178,7 +178,7 @@ public class RunnerConfig extends GuiceServletContextListener {
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
             final RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
 
-            if ( env == Env.CHOP ) {
+            if ( env != Env.TEST ) {
                 registry.register( runner );
                 Runtime.getRuntime().addShutdownHook( new Thread( new Runnable() {
                     @Override

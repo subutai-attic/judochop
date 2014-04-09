@@ -63,23 +63,8 @@ public class Controller implements IController, Runnable {
              * we need to decrement this value by 1 in order not to skip run numbers.
              */
 
-            try {
-                runNumber = runManager.getNextRunNumber( project ) - 1;
-            }
-            catch ( Exception e ) {
-                LOG.warn( "Failed to get a run number from the runManager, defaulting to 1. Error message: {}",
-                        e.getMessage() );
-                runNumber = 1;
-            }
-
-            try {
-                otherRunners = registry.getRunners( me );
-            }
-            catch ( Exception e ) {
-                LOG.warn( "Failed to get the list of other runners participating in chop tests. Error message: {}",
-                        e.getMessage() );
-                otherRunners = Collections.emptyList();
-            }
+            runNumber = runManager.getNextRunNumber( project ) - 1;
+            otherRunners = registry.getRunners( me );
         }
     }
 

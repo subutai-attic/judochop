@@ -1,12 +1,9 @@
 package org.safehaus.chop.integ;
 
 
-import java.util.Properties;
-
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.safehaus.chop.runner.RunnerConfig;
-import org.safehaus.chop.runner.rest.StartResource;
 import org.safehaus.chop.webapp.ChopUiConfig;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
@@ -17,9 +14,8 @@ import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
 import org.safehaus.jettyjam.utils.JettyUnitResource;
 import org.safehaus.jettyjam.utils.StartResources;
-import org.safehaus.jettyjam.utils.TestMode;
 
-import com.google.inject.servlet.GuiceFilter;
+import com.google.inject.servlet.MultiAppGuiceFilter;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
@@ -33,12 +29,6 @@ import static junit.framework.TestCase.assertTrue;
  * using chop:runner.
  */
 public class RunnerCoordinatorTest {
-    private final static Properties systemProperties = new Properties();
-
-    static {
-        systemProperties.setProperty( TestMode.TEST_MODE_PROPERTY, TestMode.UNIT.toString() );
-        systemProperties.setProperty( "archaius.deployment.environment", "UNIT" );
-    }
 
 
     @ClassRule
@@ -48,7 +38,7 @@ public class RunnerCoordinatorTest {
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
-        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*") }
+        filterMappings = { @FilterMapping( filter = MultiAppGuiceFilter.class, spec = "/*") }
     )
     @JettyConnectors(
         defaultId = "https",
@@ -59,7 +49,7 @@ public class RunnerCoordinatorTest {
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = RunnerConfig.class ) },
-        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*") }
+        filterMappings = { @FilterMapping( filter = MultiAppGuiceFilter.class, spec = "/*") }
     )
     @JettyConnectors(
         defaultId = "https",
@@ -70,7 +60,7 @@ public class RunnerCoordinatorTest {
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = RunnerConfig.class ) },
-        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*") }
+        filterMappings = { @FilterMapping( filter = MultiAppGuiceFilter.class, spec = "/*") }
     )
     @JettyConnectors(
         defaultId = "https",
