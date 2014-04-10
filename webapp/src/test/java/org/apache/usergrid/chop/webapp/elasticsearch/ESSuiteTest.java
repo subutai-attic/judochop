@@ -46,8 +46,8 @@ public class ESSuiteTest {
 
     private static Logger LOG = LoggerFactory.getLogger( ESSuiteTest.class );
 
-    public static final String MODULE_ID_1 = "778087981";
-    public static final String MODULE_ID_2 = "2067867";
+    public static final String MODULE_ID_1 = "436966979";
+    public static final String MODULE_ID_2 = "1414303914";
     public static final String MODULE_GROUPID = "org.apache.usergrid.chop";
     public static final String COMMIT_ID_1 = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
     public static final String COMMIT_ID_2 = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
@@ -169,7 +169,7 @@ public class ESSuiteTest {
 
         Module module = new BasicModule( // ID is 778087981
                 MODULE_GROUPID, // groupId
-                "chop-maven-plugin", // artifactId
+                "chop-runner", // artifactId
                 "1.0-SNAPSHOT", // version
                 "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
                 MODULE_GROUPID // testPackageBase
