@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>chop-parent</artifactId>
-  <groupId>org.safehaus.chop</groupId>
+  <groupId>org.apache.usergrid.chop</groupId>
   <version>2.0.0-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
   <name>Chop Parent</name>
