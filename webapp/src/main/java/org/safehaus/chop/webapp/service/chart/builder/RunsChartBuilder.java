@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.service.chart.builder;
 
 import com.google.inject.Inject;
-import org.safehaus.chop.api.Run;
+import org.apache.usergrid.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.chart.Chart;
 import org.safehaus.chop.webapp.service.chart.Params;

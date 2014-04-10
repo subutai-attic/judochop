@@ -1,13 +1,10 @@
 package org.safehaus.chop.runner;
 
 
-import javax.ws.rs.core.MediaType;
-
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StatsSnapshot;
-import org.safehaus.chop.client.rest.RestRequests;
+import org.apache.usergrid.chop.api.Result;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.StatsSnapshot;
+import org.usergrid.chop.client.rest.RestRequests;
 import org.safehaus.jettyjam.utils.TestParams;
 
 import static junit.framework.TestCase.assertNotNull;

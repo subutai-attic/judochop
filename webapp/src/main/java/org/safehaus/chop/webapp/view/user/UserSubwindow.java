@@ -5,7 +5,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
-import org.safehaus.chop.api.ProviderParams;
+import org.apache.usergrid.chop.api.ProviderParams;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
 import org.safehaus.chop.webapp.dao.UserDao;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;

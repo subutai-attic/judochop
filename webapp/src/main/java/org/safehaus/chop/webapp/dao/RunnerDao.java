@@ -6,7 +6,7 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.model.BasicRunner;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;

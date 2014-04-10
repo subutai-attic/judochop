@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.service.chart.group;
 
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Run;
+import org.apache.usergrid.chop.api.Commit;
+import org.apache.usergrid.chop.api.Run;
 
 import java.util.*;
 

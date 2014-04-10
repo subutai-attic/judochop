@@ -28,8 +28,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Signal;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Signal;
 import org.safehaus.chop.runner.IController;
 
 import com.google.inject.Inject;

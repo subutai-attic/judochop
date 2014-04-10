@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Commit;
+import org.apache.usergrid.chop.api.Module;
+import org.apache.usergrid.chop.api.Runner;
 
 
 /**

@@ -29,10 +29,10 @@ import java.util.TimeZone;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.chop.spi.RunnerRegistry;
-import org.safehaus.chop.api.store.amazon.Ec2Metadata;
+import org.apache.usergrid.chop.api.store.amazon.Ec2Metadata;
 import org.safehaus.guicyfig.Env;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;

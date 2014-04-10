@@ -27,8 +27,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Project;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.Project;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

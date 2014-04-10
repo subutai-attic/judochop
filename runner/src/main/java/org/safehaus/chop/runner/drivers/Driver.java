@@ -6,8 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.StatsSnapshot;
+import org.apache.usergrid.chop.api.Signal;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

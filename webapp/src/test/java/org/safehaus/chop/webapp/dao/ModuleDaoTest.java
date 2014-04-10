@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
 import org.junit.Test;
-import org.safehaus.chop.api.Module;
+import org.apache.usergrid.chop.api.Module;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

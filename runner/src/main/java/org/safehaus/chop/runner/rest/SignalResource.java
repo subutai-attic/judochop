@@ -3,10 +3,10 @@ package org.safehaus.chop.runner.rest;
 
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.State;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Signal;
+import org.apache.usergrid.chop.api.State;
 import org.safehaus.chop.runner.IController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

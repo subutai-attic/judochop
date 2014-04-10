@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.safehaus.chop.api.Project;
+import org.apache.usergrid.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;

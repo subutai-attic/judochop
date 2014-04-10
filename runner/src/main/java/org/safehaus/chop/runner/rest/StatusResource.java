@@ -25,11 +25,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.chop.runner.IController;
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.Result;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

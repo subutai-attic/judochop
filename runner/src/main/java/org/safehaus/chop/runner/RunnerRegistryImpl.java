@@ -7,10 +7,10 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.chop.api.CoordinatorFig;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.CoordinatorFig;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.jettyjam.utils.CertUtils;
 import org.slf4j.Logger;

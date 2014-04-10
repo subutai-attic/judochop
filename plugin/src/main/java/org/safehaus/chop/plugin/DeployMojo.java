@@ -10,8 +10,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.RestParams;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

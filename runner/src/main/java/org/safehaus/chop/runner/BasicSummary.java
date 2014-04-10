@@ -1,7 +1,7 @@
 package org.safehaus.chop.runner;
 
 
-import org.safehaus.chop.api.Summary;
+import org.apache.usergrid.chop.api.Summary;
 import org.safehaus.chop.runner.drivers.IterationTracker;
 import org.safehaus.chop.runner.drivers.TimeTracker;
 import org.safehaus.chop.runner.drivers.Tracker;

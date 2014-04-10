@@ -1,8 +1,8 @@
 package org.safehaus.chop.webapp.service.chart.builder;
 
 import com.google.inject.Inject;
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Run;
+import org.apache.usergrid.chop.api.Commit;
+import org.apache.usergrid.chop.api.Run;
 import org.safehaus.chop.webapp.dao.CommitDao;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.chart.Chart;
@@ -16,8 +16,6 @@ import org.safehaus.chop.webapp.service.chart.series.Series;
 import org.safehaus.chop.webapp.service.chart.series.SeriesBuilder;
 import org.safehaus.chop.webapp.service.chart.value.Value;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 

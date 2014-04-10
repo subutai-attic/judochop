@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.Commit;
+import org.apache.usergrid.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;

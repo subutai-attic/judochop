@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.dao;
 
 import org.junit.Test;
-import org.safehaus.chop.api.Commit;
+import org.apache.usergrid.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 import org.safehaus.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;

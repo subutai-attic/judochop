@@ -4,7 +4,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.TreeTable;
 import org.apache.commons.lang.StringUtils;
-import org.safehaus.chop.api.Module;
+import org.apache.usergrid.chop.api.Module;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 

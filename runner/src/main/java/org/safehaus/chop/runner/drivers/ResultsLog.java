@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.runner.Result;
-import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.IterationChop;
-import org.safehaus.chop.api.TimeChop;
+import org.apache.usergrid.chop.api.Constants;
+import org.apache.usergrid.chop.api.IterationChop;
+import org.apache.usergrid.chop.api.TimeChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

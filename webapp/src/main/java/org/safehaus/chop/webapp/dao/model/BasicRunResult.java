@@ -3,7 +3,7 @@ package org.safehaus.chop.webapp.dao.model;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.safehaus.chop.api.RunResult;
+import org.apache.usergrid.chop.api.RunResult;
 
 import java.util.UUID;
 

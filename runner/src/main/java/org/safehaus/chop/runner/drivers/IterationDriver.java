@@ -4,8 +4,8 @@ package org.safehaus.chop.runner.drivers;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.IterationChop;
+import org.apache.usergrid.chop.api.Signal;
+import org.apache.usergrid.chop.api.IterationChop;
 
 
 /**

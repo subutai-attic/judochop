@@ -10,8 +10,7 @@ import java.net.URL;
 
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.chop.api.*;
-import org.safehaus.chop.api.Summary;
+import org.apache.usergrid.chop.api.*;
 import org.safehaus.chop.spi.RunManager;
 import org.safehaus.jettyjam.utils.CertUtils;
 import org.slf4j.Logger;

@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.store.amazon.AmazonModule;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.store.amazon.AmazonModule;
 import org.safehaus.chop.webapp.coordinator.rest.RunManagerResource;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.coordinator.rest.UploadResource;

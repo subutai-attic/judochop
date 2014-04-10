@@ -3,23 +3,22 @@ package org.safehaus.chop.runner;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.StatsSnapshot;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.Signal;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.safehaus.chop.spi.RunManager;
 import org.safehaus.chop.spi.RunnerRegistry;
 import org.safehaus.chop.runner.drivers.Driver;
 import org.safehaus.chop.runner.drivers.IterationDriver;
 import org.safehaus.chop.runner.drivers.TimeDriver;
-import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.IterationChop;
-import org.safehaus.chop.api.TimeChop;
+import org.apache.usergrid.chop.api.State;
+import org.apache.usergrid.chop.api.IterationChop;
+import org.apache.usergrid.chop.api.TimeChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

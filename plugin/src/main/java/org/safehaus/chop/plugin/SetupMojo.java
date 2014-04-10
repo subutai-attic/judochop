@@ -1,7 +1,7 @@
 package org.safehaus.chop.plugin;
 
 
-import org.safehaus.chop.api.ChopUtils;
+import org.apache.usergrid.chop.api.ChopUtils;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;

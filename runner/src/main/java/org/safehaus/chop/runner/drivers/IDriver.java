@@ -3,7 +3,7 @@ package org.safehaus.chop.runner.drivers;
 
 import java.io.File;
 
-import org.safehaus.chop.api.StatsSnapshot;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 
 
 /**

@@ -25,9 +25,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.State;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.Result;
+import org.apache.usergrid.chop.api.State;
 import org.safehaus.chop.stack.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

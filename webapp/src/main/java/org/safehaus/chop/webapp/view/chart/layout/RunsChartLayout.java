@@ -6,7 +6,7 @@ import com.vaadin.ui.Notification;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.safehaus.chop.api.Run;
+import org.apache.usergrid.chop.api.Run;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;

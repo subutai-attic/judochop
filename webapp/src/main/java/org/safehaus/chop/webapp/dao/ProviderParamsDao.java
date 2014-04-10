@@ -11,7 +11,7 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.safehaus.chop.api.ProviderParams;
+import org.apache.usergrid.chop.api.ProviderParams;
 import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
 import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.chop.webapp.elasticsearch.Util;

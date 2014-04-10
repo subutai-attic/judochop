@@ -6,9 +6,9 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
-import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.ProjectBuilder;
+import org.apache.usergrid.chop.api.Constants;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.ProjectBuilder;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;

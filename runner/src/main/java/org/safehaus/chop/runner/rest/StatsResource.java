@@ -30,8 +30,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.StatsSnapshot;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.safehaus.chop.runner.IController;
 import org.safehaus.jettyjam.utils.TestMode;
 

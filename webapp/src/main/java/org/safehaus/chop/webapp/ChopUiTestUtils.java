@@ -11,10 +11,10 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.RunnerBuilder;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.RunnerBuilder;
 import org.safehaus.chop.webapp.coordinator.rest.ResetResource;
 import org.safehaus.chop.webapp.coordinator.rest.RunManagerResource;
 import org.safehaus.chop.webapp.coordinator.rest.RunnerRegistryResource;

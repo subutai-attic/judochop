@@ -1,6 +1,6 @@
 package org.safehaus.chop.webapp.upload;
 
-import org.safehaus.chop.api.Commit;
+import org.apache.usergrid.chop.api.Commit;
 import org.safehaus.chop.webapp.dao.model.BasicCommit;
 
 import java.text.SimpleDateFormat;

@@ -5,7 +5,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
-import org.safehaus.chop.api.Module;
+import org.apache.usergrid.chop.api.Module;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.service.InjectorFactory;
 import org.safehaus.chop.webapp.view.util.UIUtil;

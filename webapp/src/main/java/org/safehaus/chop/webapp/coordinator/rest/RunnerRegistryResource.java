@@ -34,9 +34,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Module;
+import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.chop.webapp.dao.ModuleDao;
 import org.safehaus.chop.webapp.dao.RunnerDao;
 import org.safehaus.chop.webapp.dao.model.BasicModule;

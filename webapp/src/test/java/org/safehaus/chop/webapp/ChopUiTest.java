@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.chop.api.RestParams;
+import org.apache.usergrid.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
 import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;

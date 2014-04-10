@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.safehaus.chop.api.Signal;
+import org.apache.usergrid.chop.api.Signal;
 
 
 /** The driver States and its possible state transitions: hence its state machine. */

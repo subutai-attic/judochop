@@ -1,6 +1,6 @@
 package org.safehaus.chop.webapp.service.chart.group;
 
-import org.safehaus.chop.api.Run;
+import org.apache.usergrid.chop.api.Run;
 import org.safehaus.chop.webapp.service.chart.value.*;
 import org.safehaus.chop.webapp.service.chart.Params.Metric;
 

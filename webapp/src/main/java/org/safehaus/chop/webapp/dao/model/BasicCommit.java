@@ -2,8 +2,7 @@ package org.safehaus.chop.webapp.dao.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Module;
+import org.apache.usergrid.chop.api.Commit;
 
 import java.util.Date;
 

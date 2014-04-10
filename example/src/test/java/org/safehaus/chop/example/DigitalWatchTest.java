@@ -5,7 +5,7 @@ import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.safehaus.chop.api.IterationChop;
+import org.apache.usergrid.chop.api.IterationChop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.service;
 
 import com.google.inject.Inject;
-import org.safehaus.chop.api.ProviderParams;
+import org.apache.usergrid.chop.api.ProviderParams;
 import org.safehaus.chop.webapp.dao.ProviderParamsDao;
 import org.safehaus.chop.webapp.service.util.FileUtil;
 import org.slf4j.Logger;

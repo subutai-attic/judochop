@@ -1,7 +1,7 @@
 package org.safehaus.chop.runner.drivers;
 
 
-import org.safehaus.chop.api.TimeChop;
+import org.apache.usergrid.chop.api.TimeChop;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

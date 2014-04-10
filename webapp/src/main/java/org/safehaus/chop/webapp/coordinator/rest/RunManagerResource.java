@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
-import org.safehaus.chop.api.RestParams;
+import org.apache.usergrid.chop.api.RestParams;
 import org.safehaus.chop.webapp.coordinator.StackCoordinator;
 import org.safehaus.chop.webapp.dao.RunDao;
 import org.safehaus.jettyjam.utils.TestMode;

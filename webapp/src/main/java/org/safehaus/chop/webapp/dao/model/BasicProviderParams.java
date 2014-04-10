@@ -1,7 +1,7 @@
 package org.safehaus.chop.webapp.dao.model;
 
 
-import org.safehaus.chop.api.ProviderParams;
+import org.apache.usergrid.chop.api.ProviderParams;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;

@@ -2,7 +2,7 @@ package org.safehaus.chop.webapp.dao.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.safehaus.chop.api.Runner;
+import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.guicyfig.Bypass;
 import org.safehaus.guicyfig.OptionState;
 import org.safehaus.guicyfig.Overrides;
