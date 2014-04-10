@@ -2,8 +2,7 @@ package org.apache.usergrid.chop.api.store.amazon;
 
 
 import org.apache.usergrid.chop.api.SshValues;
-import org.safehaus.chop.stack.Instance;
-
+import org.apache.usergrid.chop.stack.Instance;
 import com.google.common.base.Preconditions;
 
 

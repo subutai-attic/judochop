@@ -1,9 +1,9 @@
 package org.apache.usergrid.chop.api.store.amazon;
 
 
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.stack.InstanceState;
-import org.safehaus.chop.stack.InstanceSpec;
+import org.apache.usergrid.chop.stack.Instance;
+import org.apache.usergrid.chop.stack.InstanceState;
+import org.apache.usergrid.chop.stack.InstanceSpec;
 
 
 public class AmazonInstance implements Instance {
