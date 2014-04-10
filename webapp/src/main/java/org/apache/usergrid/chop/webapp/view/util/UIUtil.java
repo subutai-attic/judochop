@@ -1,0 +1,96 @@
+package org.apache.usergrid.chop.webapp.view.util;
+
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+
+public class UIUtil {
+
+    public static ComboBox addCombo(AbsoluteLayout layout, String caption, String position, String width, Object values[]) {
+
+        ComboBox combo = new ComboBox(caption);
+        combo.setTextInputAllowed(false);
+        combo.setNullSelectionAllowed(false);
+        combo.setWidth(width);
+
+        layout.addComponent(combo, position);
+        populateCombo(combo, values);
+
+        return combo;
+    }
+
+    public static void populateCombo(ComboBox combo, Object values[]) {
+
+        if (values == null || values.length == 0) {
+            return;
+        }
+
+        for (Object value : values) {
+            combo.addItem(value);
+        }
+
+        combo.select(values[0]);
+    }
+
+    public static void select(ComboBox combo, Object value) {
+        if (value != null) {
+            combo.select(value);
+        }
+    }
+
+    public static Button addButton(AbsoluteLayout layout, String caption, String position, String width) {
+
+        Button button = new Button(caption);
+        button.setWidth(width);
+        layout.addComponent(button, position);
+
+        return button;
+    }
+
+    public static AbsoluteLayout addLayout(AbsoluteLayout parent, String id, String position, String width, String height) {
+
+        AbsoluteLayout layout = new AbsoluteLayout();
+        layout.setId(id);
+        layout.setWidth(width);
+        layout.setHeight(height);
+
+        parent.addComponent(layout, position);
+
+        return layout;
+    }
+
+    public static Label addLabel(AbsoluteLayout parent, String text, String position, String width) {
+
+        Label label = new Label(text, ContentMode.HTML);
+        label.setWidth(width);
+
+        parent.addComponent(label, position);
+
+        return label;
+    }
+
+    public static ListSelect addListSelect(AbsoluteLayout parent, String caption, String position, String width) {
+
+        ListSelect list = new ListSelect(caption);
+        list.setWidth(width);
+        list.setNullSelectionAllowed(false);
+        list.setImmediate(true);
+
+        parent.addComponent(list, position);
+
+        return list;
+    }
+
+    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height) {
+
+        TextArea textArea = new TextArea(caption);
+        textArea.setWidth(width);
+        textArea.setHeight(height);
+        textArea.setWordwrap(false);
+        textArea.setReadOnly(true);
+
+        parent.addComponent(textArea, position);
+
+        return textArea;
+    }
+
+}

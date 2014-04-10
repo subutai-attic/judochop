@@ -3,9 +3,9 @@ package org.safehaus.chop.api.store.amazon;
 
 import java.util.Collection;
 
-import org.safehaus.chop.spi.LaunchResult;
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.stack.InstanceSpec;
+import org.apache.usergrid.chop.spi.LaunchResult;
+import org.apache.usergrid.chop.stack.Instance;
+import org.apache.usergrid.chop.stack.InstanceSpec;
 
 
 public class EC2LaunchResult implements LaunchResult {

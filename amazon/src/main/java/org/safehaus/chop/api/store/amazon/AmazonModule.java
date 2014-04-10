@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.safehaus.chop.api.Constants;
 import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.spi.InstanceManager;
-import org.safehaus.chop.spi.IpRuleManager;
+import org.apache.usergrid.chop.spi.InstanceManager;
+import org.apache.usergrid.chop.spi.IpRuleManager;
 import org.safehaus.guicyfig.GuicyFig;
 import org.safehaus.guicyfig.GuicyFigModule;
 

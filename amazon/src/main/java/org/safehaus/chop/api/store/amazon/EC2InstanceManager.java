@@ -8,14 +8,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.safehaus.chop.stack.ICoordinatedCluster;
-import org.safehaus.chop.stack.ICoordinatedStack;
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.spi.InstanceManager;
-import org.safehaus.chop.stack.InstanceState;
-import org.safehaus.chop.spi.LaunchResult;
-import org.safehaus.chop.stack.BasicInstanceSpec;
-import org.safehaus.chop.stack.InstanceSpec;
+import org.apache.usergrid.chop.stack.ICoordinatedCluster;
+import org.apache.usergrid.chop.stack.ICoordinatedStack;
+import org.apache.usergrid.chop.stack.Instance;
+import org.apache.usergrid.chop.spi.InstanceManager;
+import org.apache.usergrid.chop.stack.InstanceState;
+import org.apache.usergrid.chop.spi.LaunchResult;
+import org.apache.usergrid.chop.stack.BasicInstanceSpec;
+import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

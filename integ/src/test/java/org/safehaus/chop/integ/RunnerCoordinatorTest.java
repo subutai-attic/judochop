@@ -3,9 +3,9 @@ package org.safehaus.chop.integ;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.safehaus.chop.runner.RunnerConfig;
-import org.safehaus.chop.webapp.ChopUiConfig;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchResource;
+import org.apache.usergrid.chop.runner.RunnerConfig;
+import org.apache.usergrid.chop.webapp.ChopUiConfig;
+import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;

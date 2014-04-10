@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.safehaus.chop.stack.BasicIpRule;
-import org.safehaus.chop.spi.IpRuleManager;
-import org.safehaus.chop.stack.BasicIpRuleSet;
-import org.safehaus.chop.stack.IpRule;
-import org.safehaus.chop.stack.IpRuleSet;
+import org.apache.usergrid.chop.stack.BasicIpRule;
+import org.apache.usergrid.chop.spi.IpRuleManager;
+import org.apache.usergrid.chop.stack.BasicIpRuleSet;
+import org.apache.usergrid.chop.stack.IpRule;
+import org.apache.usergrid.chop.stack.IpRuleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
