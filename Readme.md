@@ -85,7 +85,7 @@ First add the Judo Chop maven plugin to your project like so:
 ~~~~~~
 
       <plugin>
-        <groupId>org.safehaus.chop</groupId>
+        <groupId>org.apache.usergrid.chop</groupId>
         <artifactId>chop-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
@@ -94,7 +94,7 @@ First add the Judo Chop maven plugin to your project like so:
           <bucketName>${aws.s3.bucket}</bucketName>
           <managerAppUsername>admin</managerAppUsername>
           <managerAppPassword>${manager.app.password}</managerAppPassword>
-          <testPackageBase>org.safehaus.chop.example</testPackageBase>
+          <testPackageBase>org.apache.usergrid.chop.example</testPackageBase>
           <runnerSSHKeyFile>${controller.ssh.key.file}</runnerSSHKeyFile>
           <failIfCommitNecessary>false</failIfCommitNecessary>
           <amiID>${ami.id}</amiID>

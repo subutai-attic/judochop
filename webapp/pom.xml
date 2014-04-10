@@ -134,7 +134,7 @@
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <artifactSet>
                 <includes>
-                  <include>org.safehaus.chop:chop-webapp</include>
+                  <include>org.apache.usergrid.chop:chop-webapp</include>
                   <include>org.safehaus.jettyjam:jettyjam-utils</include>
                 </includes>
               </artifactSet>

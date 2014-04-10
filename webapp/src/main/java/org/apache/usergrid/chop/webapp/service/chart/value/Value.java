@@ -3,15 +3,9 @@ package org.apache.usergrid.chop.webapp.service.chart.value;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.json.JSONObject;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/service/chart/value/Value.java
 import org.apache.usergrid.chop.api.Run;
 import org.apache.usergrid.chop.api.RunResult;
-import org.safehaus.chop.webapp.service.util.JsonUtil;
-=======
-import org.safehaus.chop.api.Run;
-import org.safehaus.chop.api.RunResult;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/service/chart/value/Value.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -11,6 +11,6 @@ public class ChopUiJarLauncher {
 
     public static void main( String[] args ) throws Throwable {
         JarJarClassLoader cl = new JarJarClassLoader();
-        cl.invokeMain( "org.safehaus.chop.webapp.ChopUiJettyRunner", args );
+        cl.invokeMain( "org.apache.usergrid.chop.webapp.ChopUiJettyRunner", args );
     }
 }

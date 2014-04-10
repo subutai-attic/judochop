@@ -11,29 +11,16 @@ import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/ChopUiTestUtils.java
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.RunnerBuilder;
-import org.safehaus.chop.webapp.coordinator.rest.ResetResource;
-import org.safehaus.chop.webapp.coordinator.rest.RunManagerResource;
-import org.safehaus.chop.webapp.coordinator.rest.RunnerRegistryResource;
-import org.safehaus.chop.webapp.coordinator.rest.StartResource;
-import org.safehaus.chop.webapp.coordinator.rest.StopResource;
-import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
-=======
 import org.apache.usergrid.chop.webapp.coordinator.rest.ResetResource;
 import org.apache.usergrid.chop.webapp.coordinator.rest.RunnerRegistryResource;
 import org.apache.usergrid.chop.webapp.coordinator.rest.StopResource;
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.RunnerBuilder;
 import org.apache.usergrid.chop.webapp.coordinator.rest.RunManagerResource;
 import org.apache.usergrid.chop.webapp.coordinator.rest.StartResource;
 import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/ChopUiTestUtils.java
 import org.safehaus.jettyjam.utils.TestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,7 +242,7 @@ public class ChopUiTestUtils {
 
         bodyPart = new MimeBodyPart();
         bodyPart.setContentID( RestParams.MODULE_GROUPID );
-        bodyPart.setText( "org.safehaus.chop" );
+        bodyPart.setText( "org.apache.usergrid.chop" );
         multipart.addBodyPart( bodyPart );
 
         bodyPart = new MimeBodyPart();
@@ -280,7 +267,7 @@ public class ChopUiTestUtils {
 
         bodyPart = new MimeBodyPart();
         bodyPart.setContentID( RestParams.TEST_PACKAGE );
-        bodyPart.setText( "org.safehaus.chop.example" );
+        bodyPart.setText( "org.apache.usergrid.safehaus.chop.example" );
         multipart.addBodyPart( bodyPart );
 
         bodyPart = new MimeBodyPart();

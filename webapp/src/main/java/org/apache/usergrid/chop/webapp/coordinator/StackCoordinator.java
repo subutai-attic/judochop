@@ -13,33 +13,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/StackCoordinator.java
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Constants;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.ProviderParams;
 import org.apache.usergrid.chop.api.store.amazon.InstanceValues;
-import org.usergrid.chop.client.ssh.AsyncSsh;
-import org.usergrid.chop.client.ssh.SSHCommands;
-import org.safehaus.chop.spi.IpRuleManager;
-import org.safehaus.chop.stack.CoordinatedStack;
-import org.safehaus.chop.stack.ICoordinatedCluster;
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.spi.InstanceManager;
-import org.safehaus.chop.spi.LaunchResult;
-import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.stack.User;
-import org.safehaus.chop.webapp.ChopUiFig;
-import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
-import org.safehaus.chop.webapp.dao.ProviderParamsDao;
-=======
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Constants;
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.ProviderParams;
-import org.safehaus.chop.api.store.amazon.InstanceValues;
-import org.safehaus.chop.client.ssh.AsyncSsh;
-import org.safehaus.chop.client.ssh.SSHCommands;
+import org.apache.usergrid.chop.client.ssh.AsyncSsh;
+import org.apache.usergrid.chop.client.ssh.SSHCommands;
 import org.apache.usergrid.chop.spi.IpRuleManager;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
 import org.apache.usergrid.chop.stack.ICoordinatedCluster;
@@ -51,7 +31,6 @@ import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
 import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/StackCoordinator.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

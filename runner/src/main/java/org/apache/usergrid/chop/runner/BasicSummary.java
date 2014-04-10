@@ -1,17 +1,10 @@
 package org.apache.usergrid.chop.runner;
 
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/BasicSummary.java
 import org.apache.usergrid.chop.api.Summary;
-import org.safehaus.chop.runner.drivers.IterationTracker;
-import org.safehaus.chop.runner.drivers.TimeTracker;
-import org.safehaus.chop.runner.drivers.Tracker;
-=======
 import org.apache.usergrid.chop.runner.drivers.TimeTracker;
 import org.apache.usergrid.chop.runner.drivers.Tracker;
-import org.safehaus.chop.api.Summary;
 import org.apache.usergrid.chop.runner.drivers.IterationTracker;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/BasicSummary.java
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;

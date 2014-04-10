@@ -9,13 +9,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-<<<<<<< HEAD:webapp/src/test/java/org/safehaus/chop/webapp/ChopUiIT.java
 import org.apache.usergrid.chop.api.RestParams;
-import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
-=======
-import org.safehaus.chop.api.RestParams;
 import org.apache.usergrid.chop.webapp.coordinator.rest.TestGetResource;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/test/java/org/apache/usergrid/chop/webapp/ChopUiIT.java
 import org.safehaus.jettyjam.utils.CertUtils;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
@@ -47,8 +42,8 @@ public class ChopUiIT {
         queryParams.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
         queryParams.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
         queryParams.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
-        queryParams.put( RestParams.MODULE_GROUPID, "org.safehaus.chop" );
-        queryParams.put( RestParams.TEST_PACKAGE, "org.safehaus.chop.example" );
+        queryParams.put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
+        queryParams.put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
     }
 
     @JettyContext(

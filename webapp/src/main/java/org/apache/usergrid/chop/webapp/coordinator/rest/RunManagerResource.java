@@ -33,13 +33,7 @@ import javax.ws.rs.core.Response;
 import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
 import org.apache.usergrid.chop.webapp.dao.RunDao;
 import org.elasticsearch.indices.IndexMissingException;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/rest/RunManagerResource.java
 import org.apache.usergrid.chop.api.RestParams;
-import org.safehaus.chop.webapp.coordinator.StackCoordinator;
-import org.safehaus.chop.webapp.dao.RunDao;
-=======
-import org.safehaus.chop.api.RestParams;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/rest/RunManagerResource.java
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -5,17 +5,10 @@ import com.google.inject.Inject;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/dao/ModuleDao.java
 import org.apache.usergrid.chop.api.Module;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.safehaus.chop.webapp.elasticsearch.Util;
-=======
-import org.safehaus.chop.api.Module;
 import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
 import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.apache.usergrid.chop.webapp.elasticsearch.Util;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/dao/ModuleDao.java
 
 import java.util.*;
 

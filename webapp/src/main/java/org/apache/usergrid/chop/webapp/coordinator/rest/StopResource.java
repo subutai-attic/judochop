@@ -25,17 +25,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/rest/StopResource.java
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.Result;
 import org.apache.usergrid.chop.api.State;
-import org.safehaus.chop.stack.Stack;
-=======
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
-import org.safehaus.chop.api.State;
 import org.apache.usergrid.chop.stack.Stack;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/rest/StopResource.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

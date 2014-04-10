@@ -11,6 +11,6 @@ public class RunnerAppJarLauncher {
 
     public static void main( String[] args ) throws Throwable {
         JarJarClassLoader cl = new JarJarClassLoader();
-        cl.invokeMain( "org.safehaus.chop.runner.RunnerAppJettyRunner", args );
+        cl.invokeMain( "org.apache.usergrid.chop.runner.RunnerAppJettyRunner", args );
     }
 }

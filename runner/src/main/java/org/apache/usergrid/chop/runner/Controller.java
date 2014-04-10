@@ -9,31 +9,16 @@ import java.util.Set;
 import org.apache.usergrid.chop.runner.drivers.Driver;
 import org.apache.usergrid.chop.runner.drivers.TimeDriver;
 import org.reflections.Reflections;
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/Controller.java
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.Signal;
 import org.apache.usergrid.chop.api.StatsSnapshot;
-import org.safehaus.chop.spi.RunManager;
-import org.safehaus.chop.spi.RunnerRegistry;
-import org.safehaus.chop.runner.drivers.Driver;
-import org.safehaus.chop.runner.drivers.IterationDriver;
-import org.safehaus.chop.runner.drivers.TimeDriver;
 import org.apache.usergrid.chop.api.State;
 import org.apache.usergrid.chop.api.IterationChop;
 import org.apache.usergrid.chop.api.TimeChop;
-=======
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.StatsSnapshot;
 import org.apache.usergrid.chop.spi.RunManager;
 import org.apache.usergrid.chop.spi.RunnerRegistry;
 import org.apache.usergrid.chop.runner.drivers.IterationDriver;
-import org.safehaus.chop.api.State;
-import org.safehaus.chop.api.IterationChop;
-import org.safehaus.chop.api.TimeChop;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/Controller.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

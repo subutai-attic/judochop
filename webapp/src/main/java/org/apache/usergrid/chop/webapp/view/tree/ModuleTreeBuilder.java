@@ -6,13 +6,7 @@ import com.vaadin.ui.TreeTable;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.commons.lang.StringUtils;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/view/tree/ModuleTreeBuilder.java
 import org.apache.usergrid.chop.api.Module;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.service.InjectorFactory;
-=======
-import org.safehaus.chop.api.Module;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/view/tree/ModuleTreeBuilder.java
 
 import java.util.List;
 

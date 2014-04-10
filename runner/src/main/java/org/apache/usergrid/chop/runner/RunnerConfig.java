@@ -29,17 +29,10 @@ import java.util.TimeZone;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/RunnerConfig.java
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.Runner;
-import org.safehaus.chop.spi.RunnerRegistry;
 import org.apache.usergrid.chop.api.store.amazon.Ec2Metadata;
-=======
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
 import org.apache.usergrid.chop.spi.RunnerRegistry;
-import org.safehaus.chop.api.store.amazon.Ec2Metadata;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/RunnerConfig.java
 import org.safehaus.guicyfig.Env;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
@@ -169,7 +162,7 @@ public class RunnerConfig extends GuiceServletContextListener {
              runner.bypass( Runner.IPV4_KEY, "127.0.0.1" );
              project.bypass( Project.LOAD_KEY, "bogus-load-key" );
              project.bypass( Project.ARTIFACT_ID_KEY, "bogus-artifact-id" );
-             project.bypass( Project.GROUP_ID_KEY, "org.safehaus.chop" );
+             project.bypass( Project.GROUP_ID_KEY, "org.apache.usergrid.chop" );
              project.bypass( Project.CHOP_VERSION_KEY, "bogus-chop-version" );
 
              SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy.MM.dd.HH.mm.ss" );

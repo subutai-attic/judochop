@@ -34,21 +34,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.elasticsearch.indices.IndexMissingException;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/rest/RunnerRegistryResource.java
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.api.Runner;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.dao.RunnerDao;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-=======
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.RestParams;
-import org.safehaus.chop.api.Runner;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
 import org.apache.usergrid.chop.webapp.dao.RunnerDao;
 import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/rest/RunnerRegistryResource.java
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

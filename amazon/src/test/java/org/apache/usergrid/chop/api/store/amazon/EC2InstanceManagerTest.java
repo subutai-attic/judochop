@@ -10,20 +10,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-<<<<<<< HEAD:amazon/src/test/java/org/apache/usergrid/chop/api/store/amazon/EC2InstanceManagerTest.java
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Module;
-import org.safehaus.chop.spi.LaunchResult;
-import org.safehaus.chop.stack.CoordinatedStack;
-import org.safehaus.chop.stack.ICoordinatedCluster;
-import org.safehaus.chop.stack.Instance;
-import org.safehaus.chop.stack.InstanceSpec;
-import org.safehaus.chop.stack.InstanceState;
-import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.stack.User;
-=======
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Module;
+
 import org.apache.usergrid.chop.spi.LaunchResult;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
 import org.apache.usergrid.chop.stack.ICoordinatedCluster;
@@ -32,7 +21,6 @@ import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.apache.usergrid.chop.stack.InstanceState;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:amazon/src/test/java/org/safehaus/chop/api/store/amazon/EC2InstanceManagerTest.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,11 +88,11 @@ public class EC2InstanceManagerTest {
                 when( commit.getId() ).thenReturn( "cc471b502aca2791c3a068f93d15b79ff6b7b827" );
 
                 /** Module mock object get method values */
-                when( module.getGroupId() ).thenReturn( "org.safehaus.chop" );
+                when( module.getGroupId() ).thenReturn( "org.apache.usergrid.chop" );
                 when( module.getArtifactId() ).thenReturn( "chop-maven-plugin" );
                 when( module.getVersion() ).thenReturn( "1.0-SNAPSHOT" );
                 when( module.getVcsRepoUrl() ).thenReturn( "https://stash.safehaus.org/scm/chop/main.git" );
-                when( module.getTestPackageBase() ).thenReturn( "org.safehaus.chop" );
+                when( module.getTestPackageBase() ).thenReturn( "org.apache.usergrid.chop" );
                 when( module.getId() ).thenReturn( "778087981" );
 
                 stack = new CoordinatedStack( basicStack, new User( "user", "pass" ), commit, module );

@@ -4,7 +4,7 @@ package org.apache.usergrid.chop.runner;
 import org.apache.usergrid.chop.api.Result;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.StatsSnapshot;
-import org.usergrid.chop.client.rest.RestRequests;
+import org.apache.usergrid.chop.client.rest.RestRequests;
 import org.safehaus.jettyjam.utils.TestParams;
 
 import static junit.framework.TestCase.assertNotNull;

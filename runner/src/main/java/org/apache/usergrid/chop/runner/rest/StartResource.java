@@ -28,18 +28,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/rest/StartResource.java
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.Signal;
-import org.safehaus.chop.runner.IController;
-=======
 import org.apache.usergrid.chop.runner.IController;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Signal;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/rest/StartResource.java
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 

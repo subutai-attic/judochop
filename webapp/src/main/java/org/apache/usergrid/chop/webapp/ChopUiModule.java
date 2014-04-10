@@ -15,26 +15,13 @@ import org.apache.usergrid.chop.webapp.coordinator.rest.TestGetResource;
 import org.apache.usergrid.chop.webapp.view.util.VaadinServlet;
 import org.apache.shiro.guice.web.GuiceShiroFilter;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/ChopUiModule.java
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.store.amazon.AmazonModule;
-import org.safehaus.chop.webapp.coordinator.rest.RunManagerResource;
-import org.safehaus.chop.webapp.coordinator.rest.TestGetResource;
-import org.safehaus.chop.webapp.coordinator.rest.UploadResource;
-import org.safehaus.chop.webapp.coordinator.rest.RestFig;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchFig;
-import org.safehaus.chop.webapp.elasticsearch.ElasticSearchClient;
-import org.safehaus.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.safehaus.chop.webapp.view.util.VaadinServlet;
-=======
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.store.amazon.AmazonModule;
 import org.apache.usergrid.chop.webapp.coordinator.rest.RunManagerResource;
 import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchClient;
 import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/ChopUiModule.java
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;

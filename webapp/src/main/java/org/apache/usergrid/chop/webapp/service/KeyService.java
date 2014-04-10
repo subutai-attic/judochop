@@ -1,15 +1,9 @@
 package org.apache.usergrid.chop.webapp.service;
 
 import com.google.inject.Inject;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/service/KeyService.java
 import org.apache.usergrid.chop.api.ProviderParams;
-import org.safehaus.chop.webapp.dao.ProviderParamsDao;
-import org.safehaus.chop.webapp.service.util.FileUtil;
-=======
-import org.safehaus.chop.api.ProviderParams;
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
 import org.apache.usergrid.chop.webapp.service.util.FileUtil;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/service/KeyService.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

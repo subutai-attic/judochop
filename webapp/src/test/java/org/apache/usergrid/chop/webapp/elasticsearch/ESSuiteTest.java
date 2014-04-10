@@ -9,39 +9,9 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-<<<<<<< HEAD:webapp/src/test/java/org/safehaus/chop/webapp/elasticsearch/ESSuiteTest.java
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.ProviderParams;
-import org.safehaus.chop.webapp.ChopUiModule;
-import org.safehaus.chop.webapp.dao.CommitDao;
-import org.safehaus.chop.webapp.dao.CommitDaoTest;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.dao.ModuleDaoTest;
-import org.safehaus.chop.webapp.dao.NoteDao;
-import org.safehaus.chop.webapp.dao.NoteDaoTest;
-import org.safehaus.chop.webapp.dao.ProviderParamsDao;
-import org.safehaus.chop.webapp.dao.ProviderParamsDaoTest;
-import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.dao.RunDaoTest;
-import org.safehaus.chop.webapp.dao.RunResultDao;
-import org.safehaus.chop.webapp.dao.RunResultDaoTest;
-import org.safehaus.chop.webapp.dao.RunnerDao;
-import org.safehaus.chop.webapp.dao.RunnerDaoTest;
-import org.safehaus.chop.webapp.dao.UserDao;
-import org.safehaus.chop.webapp.dao.UserDaoTest;
-import org.safehaus.chop.webapp.dao.model.BasicCommit;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.dao.model.BasicRunResult;
-import org.safehaus.chop.webapp.dao.model.BasicRunner;
-import org.safehaus.chop.webapp.dao.model.Note;
-import org.safehaus.chop.stack.User;
-=======
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.ProviderParams;
 import org.apache.usergrid.chop.webapp.ChopUiModule;
 import org.apache.usergrid.chop.webapp.dao.CommitDaoTest;
 import org.apache.usergrid.chop.webapp.dao.ModuleDaoTest;
@@ -59,7 +29,6 @@ import org.apache.usergrid.chop.webapp.dao.model.BasicRunResult;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRunner;
 import org.apache.usergrid.chop.webapp.dao.model.Note;
 import org.apache.usergrid.chop.stack.User;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/test/java/org/apache/usergrid/chop/webapp/elasticsearch/ESSuiteTest.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +48,7 @@ public class ESSuiteTest {
 
     public static final String MODULE_ID_1 = "778087981";
     public static final String MODULE_ID_2 = "2067867";
-    public static final String MODULE_GROUPID = "org.safehaus.chop";
+    public static final String MODULE_GROUPID = "org.apache.usergrid.chop";
     public static final String COMMIT_ID_1 = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
     public static final String COMMIT_ID_2 = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
     public static final String COMMIT_ID_3 = "e29074efad5e0e1c7c2b63128ff9284f9b47ceb3";
@@ -87,7 +56,7 @@ public class ESSuiteTest {
     public static final String IMAGE_ID = "ami-213213214";
     public static final String RUNNER_ID_1 = "35231";
     public static final String RUNNER_ID_2 = "23412";
-    public static final String TEST_NAME = "org.safehaus.chop.example.DigitalWatchTest";
+    public static final String TEST_NAME = "org.apache.usergrid.chop.example.DigitalWatchTest";
     public static final String USER_1 = "testuser";
     public static final String USER_2 = "user-2";
     public static final String RUNNER_IPV4_1 = "54.227.39.111";

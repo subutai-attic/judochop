@@ -10,27 +10,16 @@ package org.apache.usergrid.chop.runner;
 import java.util.HashMap;
 import java.util.Map;
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/Module.java
 import org.apache.usergrid.chop.api.CoordinatorFig;
-import org.usergrid.chop.client.ChopClientModule;
-import org.safehaus.chop.runner.rest.ResetResource;
-import org.safehaus.chop.runner.rest.StartResource;
-import org.safehaus.chop.runner.rest.StatsResource;
-import org.safehaus.chop.runner.rest.StatusResource;
-import org.safehaus.chop.runner.rest.StopResource;
-import org.safehaus.chop.spi.RunManager;
-import org.safehaus.chop.spi.RunnerRegistry;
-=======
+import org.apache.usergrid.chop.client.ChopClientModule;
+
 import org.apache.usergrid.chop.runner.rest.StatusResource;
 import org.apache.usergrid.chop.runner.rest.ResetResource;
 import org.apache.usergrid.chop.runner.rest.StatsResource;
 import org.apache.usergrid.chop.runner.rest.StopResource;
-import org.safehaus.chop.api.CoordinatorFig;
-import org.safehaus.chop.client.ChopClientModule;
 import org.apache.usergrid.chop.runner.rest.StartResource;
 import org.apache.usergrid.chop.spi.RunManager;
 import org.apache.usergrid.chop.spi.RunnerRegistry;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/Module.java
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;

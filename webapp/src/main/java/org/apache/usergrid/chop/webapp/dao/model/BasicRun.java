@@ -3,13 +3,8 @@ package org.apache.usergrid.chop.webapp.dao.model;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/dao/model/BasicRun.java
 import org.apache.usergrid.chop.api.Run;
-import org.safehaus.chop.webapp.elasticsearch.Util;
-=======
-import org.safehaus.chop.api.Run;
 import org.apache.usergrid.chop.webapp.elasticsearch.Util;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/dao/model/BasicRun.java
 
 import java.util.Map;
 

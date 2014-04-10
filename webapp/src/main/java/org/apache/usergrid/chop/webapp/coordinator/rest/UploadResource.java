@@ -52,31 +52,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/rest/UploadResource.java
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.ProviderParams;
 import org.apache.usergrid.chop.api.RestParams;
-import org.safehaus.chop.stack.BasicStack;
-import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.webapp.ChopUiFig;
-import org.safehaus.chop.webapp.coordinator.StackCoordinator;
-import org.safehaus.chop.webapp.dao.CommitDao;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.dao.ProviderParamsDao;
-import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.dao.RunResultDao;
-import org.safehaus.chop.webapp.dao.UserDao;
-import org.safehaus.chop.webapp.dao.model.BasicCommit;
-import org.safehaus.chop.webapp.dao.model.BasicModule;
-import org.safehaus.chop.webapp.dao.model.BasicRun;
-import org.safehaus.chop.webapp.dao.model.BasicRunResult;
-import org.safehaus.chop.webapp.elasticsearch.Util;
-=======
-import org.safehaus.chop.api.Commit;
-import org.safehaus.chop.api.Module;
-import org.safehaus.chop.api.ProviderParams;
-import org.safehaus.chop.api.RestParams;
 import org.apache.usergrid.chop.stack.BasicStack;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.webapp.dao.CommitDao;
@@ -86,7 +65,6 @@ import org.apache.usergrid.chop.webapp.dao.RunDao;
 import org.apache.usergrid.chop.webapp.dao.RunResultDao;
 import org.apache.usergrid.chop.webapp.dao.UserDao;
 import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/rest/UploadResource.java
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

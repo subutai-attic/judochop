@@ -3,19 +3,11 @@ package org.apache.usergrid.chop.runner.rest;
 
 import javax.ws.rs.core.Response;
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/rest/SignalResource.java
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.Signal;
 import org.apache.usergrid.chop.api.State;
-import org.safehaus.chop.runner.IController;
-=======
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Signal;
-import org.safehaus.chop.api.State;
 import org.apache.usergrid.chop.runner.IController;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/rest/SignalResource.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

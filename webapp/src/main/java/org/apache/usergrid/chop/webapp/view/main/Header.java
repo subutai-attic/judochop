@@ -5,19 +5,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.Reindeer;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/view/main/Header.java
 import org.apache.usergrid.chop.api.Module;
-import org.safehaus.chop.webapp.dao.ModuleDao;
-import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.view.util.UIUtil;
-import org.safehaus.chop.webapp.view.user.UserSubwindow;
-=======
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.api.Module;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
 import org.apache.usergrid.chop.webapp.view.user.UserSubwindow;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/view/main/Header.java
 
 public class Header extends AbsoluteLayout {
 

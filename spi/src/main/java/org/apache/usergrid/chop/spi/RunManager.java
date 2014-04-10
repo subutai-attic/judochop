@@ -5,10 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.Summary;
-
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.Summary;
 
 /**
  * Manages run information.

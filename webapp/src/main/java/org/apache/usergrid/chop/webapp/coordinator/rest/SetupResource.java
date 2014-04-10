@@ -28,15 +28,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/coordinator/rest/SetupResource.java
 import org.apache.usergrid.chop.api.RestParams;
-import org.safehaus.chop.stack.Stack;
-import org.safehaus.chop.webapp.dao.UserDao;
-=======
 import org.apache.usergrid.chop.webapp.dao.UserDao;
-import org.safehaus.chop.api.RestParams;
 import org.apache.usergrid.chop.stack.Stack;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/coordinator/rest/SetupResource.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

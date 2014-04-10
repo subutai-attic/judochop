@@ -35,6 +35,7 @@ import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.util.TimeUtil;
 import org.safehaus.guicyfig.Env;
 import org.slf4j.Logger;
+import static org.apache.usergrid.chop.webapp.ChopUiFig.*;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.cli.CommandLine;

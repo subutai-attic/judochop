@@ -31,7 +31,7 @@ public class SetupDao {
         String key;
         CreateIndexResponse ciResp;
 
-        Reflections reflections = new Reflections( "org.safehaus.chop.webapp.dao" );
+        Reflections reflections = new Reflections( "org.apache.usergrid.chop.webapp.dao" );
         Set<Class<? extends Dao>> daoClasses = reflections.getSubTypesOf( Dao.class );
 
         IndicesAdminClient client = elasticSearchClient.getClient().admin().indices();

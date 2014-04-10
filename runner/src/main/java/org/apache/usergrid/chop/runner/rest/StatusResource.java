@@ -25,19 +25,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-<<<<<<< HEAD:runner/src/main/java/org/safehaus/chop/runner/rest/StatusResource.java
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.Runner;
-import org.safehaus.chop.runner.IController;
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.Result;
-=======
 import org.apache.usergrid.chop.runner.IController;
-import org.safehaus.chop.api.Project;
-import org.safehaus.chop.api.Runner;
-import org.safehaus.chop.api.BaseResult;
-import org.safehaus.chop.api.Result;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:runner/src/main/java/org/apache/usergrid/chop/runner/rest/StatusResource.java
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

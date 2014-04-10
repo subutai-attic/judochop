@@ -54,7 +54,7 @@
       </plugin>
 
       <plugin>
-        <groupId>org.safehaus.chop</groupId>
+        <groupId>org.apache.usergrid.chop</groupId>
         <artifactId>chop-maven-plugin</artifactId>
         <version>${project.version}</version>
         <executions>
@@ -68,7 +68,7 @@
               <username>user</username>
               <password>pass</password>
               <endpoint>https://localhost:8443/</endpoint>
-              <testPackageBase>org.safehaus.chop.example</testPackageBase>
+              <testPackageBase>org.apache.usergrid.chop.example</testPackageBase>
               <failIfCommitNecessary>false</failIfCommitNecessary>
               <runnerCount>3</runnerCount>
             </configuration>

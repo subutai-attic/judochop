@@ -1,12 +1,7 @@
 package org.apache.usergrid.chop.webapp.service.chart.value;
 
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/service/chart/value/AvgValue.java
 import org.apache.usergrid.chop.api.Run;
-import org.safehaus.chop.webapp.service.util.JsonUtil;
-=======
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
-import org.safehaus.chop.api.Run;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/service/chart/value/AvgValue.java
 
 public class AvgValue extends Value {
 

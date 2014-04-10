@@ -5,21 +5,12 @@ import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.*;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/view/user/UserSubwindow.java
 import org.apache.usergrid.chop.api.ProviderParams;
-import org.safehaus.chop.webapp.dao.ProviderParamsDao;
-import org.safehaus.chop.webapp.dao.UserDao;
-import org.safehaus.chop.webapp.dao.model.BasicProviderParams;
-import org.safehaus.chop.stack.User;
-import org.safehaus.chop.webapp.service.InjectorFactory;
-=======
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
 import org.apache.usergrid.chop.webapp.dao.UserDao;
 import org.apache.usergrid.chop.webapp.dao.model.BasicProviderParams;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.api.ProviderParams;
 import org.apache.usergrid.chop.stack.User;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/view/user/UserSubwindow.java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

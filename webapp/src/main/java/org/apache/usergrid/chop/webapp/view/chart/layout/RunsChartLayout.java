@@ -9,20 +9,10 @@ import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-<<<<<<< HEAD:webapp/src/main/java/org/safehaus/chop/webapp/view/chart/layout/RunsChartLayout.java
 import org.apache.usergrid.chop.api.Run;
-import org.safehaus.chop.webapp.dao.RunDao;
-import org.safehaus.chop.webapp.service.InjectorFactory;
-import org.safehaus.chop.webapp.service.chart.builder.ChartBuilder;
-import org.safehaus.chop.webapp.view.chart.format.PointRadius;
-import org.safehaus.chop.webapp.view.main.Breadcrumb;
-import org.safehaus.chop.webapp.view.util.UIUtil;
-=======
-import org.safehaus.chop.api.Run;
 import org.apache.usergrid.chop.webapp.dao.RunDao;
 import org.apache.usergrid.chop.webapp.service.chart.builder.ChartBuilder;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
->>>>>>> dacd615ebeaae3a0dac592cb7f0367c81e8f4b22:webapp/src/main/java/org/apache/usergrid/chop/webapp/view/chart/layout/RunsChartLayout.java
 
 import java.util.HashMap;
 import java.util.List;

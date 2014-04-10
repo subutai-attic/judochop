@@ -4,7 +4,7 @@ package org.apache.usergrid.chop.spi;
 import java.io.IOException;
 import java.util.Set;
 
-import org.safehaus.chop.api.Project;
+import org.apache.usergrid.chop.api.Project;
 
 
 /**
