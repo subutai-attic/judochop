@@ -138,14 +138,14 @@ public class Utils {
     public static String getGitConfigFolder( String projectPath ) throws MojoExecutionException {
         projectPath = forceNoSlashOnDir( projectPath );
 
-        while ( !FileUtils.fileExists( projectPath + "/.git" ) ) {
-            int lastSlashIndex = projectPath.lastIndexOf( "/" );
+        while ( !FileUtils.fileExists( projectPath + File.separator + ".git" ) ) {
+            int lastSlashIndex = projectPath.lastIndexOf( File.separator );
             if ( lastSlashIndex < 1 ) {
                 throw new MojoExecutionException( "There are no local git repository associated with this project" );
             }
             projectPath = projectPath.substring( 0, lastSlashIndex );
         }
-        return projectPath + "/.git";
+        return projectPath + File.separator + ".git";
     }
 
 
@@ -257,7 +257,7 @@ public class Utils {
      * @return
      */
     public static String forceSlashOnDir( String directory ) {
-        return directory.endsWith( "/" ) ? directory : directory + "/";
+        return directory.endsWith( File.separator ) ? directory : directory + File.separator;
     }
 
 
@@ -266,6 +266,6 @@ public class Utils {
      * @return
      */
     public static String forceNoSlashOnDir( String directory ) {
-        return directory.endsWith( "/" ) ? directory.substring( 0, directory.length() - 1 ) : directory;
+        return directory.endsWith( File.separator ) ? directory.substring( 0, directory.length() - 1 ) : directory;
     }
 }
