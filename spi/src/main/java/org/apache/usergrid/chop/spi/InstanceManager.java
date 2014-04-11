@@ -13,7 +13,7 @@ import org.apache.usergrid.chop.stack.InstanceSpec;
  * Manages instances.
  */
 public interface InstanceManager {
-    int getDefaultTimeout();
+    long getDefaultTimeout();
 
     void terminateInstances( Collection<String> instancesIds );
 

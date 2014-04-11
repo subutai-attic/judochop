@@ -2,6 +2,8 @@ package org.apache.usergrid.chop.stack;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +29,7 @@ public class CoordinatedStack implements ICoordinatedStack {
 
     private StackState state = StackState.INACTIVE;
     private Set<Runner> runners;
+    private Collection<Instance> runnerInstances = new LinkedList<Instance>();
 
 
     public CoordinatedStack( Stack delegate, User user, Commit commit, Module module ) {
@@ -87,7 +90,7 @@ public class CoordinatedStack implements ICoordinatedStack {
 
 
     @Override
-    public Iterable<Runner> getRunners() {
+    public Collection<Runner> getRunners() {
         return runners;
     }
 
@@ -95,6 +98,12 @@ public class CoordinatedStack implements ICoordinatedStack {
     @Override
     public IpRuleSet getIpRuleSet() {
         return ruleSet;
+    }
+
+
+    @Override
+    public Collection<Instance> getRunnerInstances() {
+        return runnerInstances;
     }
 
 
@@ -113,6 +122,11 @@ public class CoordinatedStack implements ICoordinatedStack {
     public CoordinatedStack addOutboundRule( IpRule rule ) {
         ruleSet.getOutboundRules().add( rule );
         return this;
+    }
+
+
+    public void addRunnerInstance( Instance instance ) {
+        runnerInstances.add( instance );
     }
 
     @Override

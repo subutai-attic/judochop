@@ -75,4 +75,17 @@ public interface ChopUiFig extends GuicyFig {
     @Default( ChopUiFig.DEFAULT_MANAGER_ENDPOINT )
     @Key( ChopUiFig.MANAGER_ENDPOINT_KEY )
     String getManagerEndpoint();
+
+
+    String LAUNCH_CLUSTER_TIMEOUT_KEY = "launch.cluster.timeout";
+    String DEFAULT_LAUNCH_CLUSTER_TIMEOUT = "100000";
+
+    /**
+     * Gets the timeout value for launching both clusters and runner instances
+     *
+     * @return The maximum time in milliseconds to wait for clusters to come up
+     */
+    @Default( ChopUiFig.DEFAULT_LAUNCH_CLUSTER_TIMEOUT )
+    @Key( ChopUiFig.LAUNCH_CLUSTER_TIMEOUT_KEY )
+    int getLaunchClusterTimeout();
 }

@@ -7,27 +7,10 @@
       "imageId" : "ami-c56152ac",
       "type" : "m1.large",
       "keyName" : "TestKeyPair",
-      "dataCenter" : "us-east-1c",
       "setupScripts" : [ "file://./install_es.sh", "file://./setup_cassandra.sh" ],
       "scriptEnvironment" : {
         "ES_PATH" : "/var/lib/elastic_search",
         "JAVA_HOME" : "/user/lib/jvm/default"
-      },
-      "ipRuleSet" : {
-        "name" : "UG-Chop-Rules",
-        "id" : "d637a8ce-1a4b-46ad-904b-b44aafbfac80",
-        "inboundRules" : [ {
-          "ipProtocol" : "tcp",
-          "toPort" : 8080,
-          "fromPort" : 80,
-          "ipRanges" : [ "0.0.0.0/32" ]
-        }, {
-          "ipProtocol" : "tcp",
-          "toPort" : 8443,
-          "fromPort" : 443,
-          "ipRanges" : [ "0.0.0.0/32" ]
-        } ],
-        "outboundRules" : [ ]
       }
     },
     "size" : 6
@@ -37,29 +20,29 @@
       "imageId" : "ami-c56152ac",
       "type" : "m1.xlarge",
       "keyName" : "TestKeyPair",
-      "dataCenter" : "us-east-1c",
       "setupScripts" : [ "file://./install_cassandra.sh", "file://./setup_cassandra.sh" ],
       "scriptEnvironment" : {
         "CASSANDRA_PATH" : "/var/lib/cassandra",
         "JAVA_HOME" : "/user/lib/jvm/default"
-      },
-      "ipRuleSet" : {
-        "name" : "UG-Chop-Rules",
-        "id" : "761f33ea-0e5a-4502-86e4-b72750cbfcae",
-        "inboundRules" : [ {
-          "ipProtocol" : "tcp",
-          "toPort" : 8080,
-          "fromPort" : 80,
-          "ipRanges" : [ "0.0.0.0/32" ]
-        }, {
-          "ipProtocol" : "tcp",
-          "toPort" : 8443,
-          "fromPort" : 443,
-          "ipRanges" : [ "0.0.0.0/32" ]
-        } ],
-        "outboundRules" : [ ]
       }
     },
     "size" : 6
-  } ]
+  } ],
+  "dataCenter" : "us-east-1c",
+  "ipRuleSet" : {
+    "name" : "UG-Chop-Rules",
+    "id" : "d637a8ce-1a4b-46ad-904b-b44aafbfac80",
+    "inboundRules" : [ {
+      "ipProtocol" : "tcp",
+      "toPort" : 8080,
+      "fromPort" : 80,
+      "ipRanges" : [ "0.0.0.0/32" ]
+    }, {
+      "ipProtocol" : "tcp",
+      "toPort" : 8443,
+      "fromPort" : 443,
+      "ipRanges" : [ "0.0.0.0/32" ]
+    } ],
+    "outboundRules" : [ ]
+  }
 }

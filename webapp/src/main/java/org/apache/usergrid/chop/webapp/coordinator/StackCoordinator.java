@@ -21,11 +21,13 @@ import org.apache.usergrid.chop.api.store.amazon.InstanceValues;
 import org.apache.usergrid.chop.client.ssh.AsyncSsh;
 import org.apache.usergrid.chop.client.ssh.SSHCommands;
 import org.apache.usergrid.chop.spi.IpRuleManager;
+import org.apache.usergrid.chop.stack.BasicInstanceSpec;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
 import org.apache.usergrid.chop.stack.ICoordinatedCluster;
 import org.apache.usergrid.chop.stack.Instance;
 import org.apache.usergrid.chop.spi.InstanceManager;
 import org.apache.usergrid.chop.spi.LaunchResult;
+import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
@@ -63,7 +65,9 @@ public class StackCoordinator {
     private ProviderParamsDao providerParamsDao;
 
 
-    public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module ) throws Exception {
+    public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount )
+            throws Exception {
+
         CoordinatedStack coordinatedStack;
 
         synchronized ( lock ) {
@@ -103,7 +107,7 @@ public class StackCoordinator {
                 }
 
                 LaunchResult result = instanceManager.launchCluster(
-                        coordinatedStack, cluster, 100000 );
+                        coordinatedStack, cluster, chopUiFig.getLaunchClusterTimeout() );
 
                 for ( Instance instance : result.getInstances() ) {
                     cluster.add( instance );
@@ -114,6 +118,18 @@ public class StackCoordinator {
                     // TODO should we clean up launched clusters?
                     throw new RuntimeException( "SSH commands have failed, will not continue" );
                 }
+            }
+
+            BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
+            runnerSpec.setImageId( providerParams.getImageId() );
+            runnerSpec.setType( providerParams.getInstanceType() );
+            runnerSpec.setKeyName( "" ); // TODO key name for runners?
+
+            LaunchResult result = instanceManager.launchRunners(
+                    coordinatedStack, runnerSpec, runnerCount, chopUiFig.getLaunchClusterTimeout() );
+
+            for( Instance instance: result.getInstances() ) {
+                coordinatedStack.addRunnerInstance( instance );
             }
 
             addStack( coordinatedStack );

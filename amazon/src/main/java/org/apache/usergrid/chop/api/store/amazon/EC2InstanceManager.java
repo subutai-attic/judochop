@@ -54,8 +54,8 @@ public class EC2InstanceManager implements InstanceManager {
 
 
     @Override
-    public int getDefaultTimeout() {
-        return 0;
+    public long getDefaultTimeout() {
+        return SLEEP_LENGTH;
     }
 
 
