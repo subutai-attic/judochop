@@ -237,12 +237,9 @@ public class RunDao extends Dao {
         SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
                 .setQuery( termQuery( "commitId", commitId ) )
                 .setSize( 0 )
-                .addFacet( statisticalFacet( "stat" ).field( "runNumber" ) )
                 .execute()
                 .actionGet();
 
-        StatisticalFacet facet = ( StatisticalFacet ) response.getFacets().facets().get( 0 );
-
-        return facet.getCount() > 0 ? ( int ) facet.getMax() + 1 : 1;
+        return (int) response.getHits().totalHits() + 1;
     }
 }
