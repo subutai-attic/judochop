@@ -21,7 +21,6 @@ import static junit.framework.TestCase.assertTrue;
  * and then proceeds to start up two runners generated from the example project
  * using chop:runner.
  */
-@Ignore( "Still bombing out - odd that the same is not happening to the RunnerCoordinatorTest" )
 public class RunnerCoordinatorIT {
     private static final String[] webappArgs = new String[] { "-e" };
 
