@@ -6,6 +6,9 @@ public interface Constants {
     /** the project HTTP parameter */
     String PARAM_PROJECT = "project";
 
+    /** Stack definition json file name */
+    String STACK_JSON = "stack.json";
+
     /** the default name to use for the runner's jar file */
     String RUNNER_JAR = "runner.jar";
 

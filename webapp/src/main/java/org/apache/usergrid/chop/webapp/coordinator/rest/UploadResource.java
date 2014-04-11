@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,10 +52,7 @@ import org.json.simple.parser.JSONParser;
 
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Module;
-import org.apache.usergrid.chop.api.ProviderParams;
 import org.apache.usergrid.chop.api.RestParams;
-import org.apache.usergrid.chop.stack.BasicStack;
-import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.webapp.dao.CommitDao;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
@@ -69,7 +64,6 @@ import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -90,15 +84,6 @@ public class UploadResource extends TestableResource implements RestParams {
 
     @Inject
     private ChopUiFig chopUiFig;
-
-    @Inject
-    private RestFig restFig;
-
-    @Inject
-    private UserDao userDao;
-
-    @Inject
-    private ProviderParamsDao providerParamsDao;
 
     @Inject
     private ModuleDao moduleDao;
@@ -191,7 +176,6 @@ public class UploadResource extends TestableResource implements RestParams {
         String md5 = multipart.getBodyPart( RestParams.MD5 ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.MD5, md5 );
 
-        ProviderParams providerParams = providerParamsDao.getByUser( username );
         InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
 
         if( inTestMode( testMode ) ) {
@@ -258,12 +242,6 @@ public class UploadResource extends TestableResource implements RestParams {
             commit = new BasicCommit( commitId, module.getId(), md5, new Date(), runnerFile.getAbsolutePath() );
             commitDao.save( commit );
         }
-
-        // Access the jar file resources after adding it to a new ClassLoader
-        URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerFile.toURL() },
-                Thread.currentThread().getContextClassLoader() );
-        ObjectMapper mapper = new ObjectMapper();
-        Stack stack = mapper.readValue( classLoader.getResourceAsStream( "stack.json" ), BasicStack.class );
 
         return Response.status( Response.Status.CREATED ).entity( runnerFile.getAbsolutePath() ).build();
     }

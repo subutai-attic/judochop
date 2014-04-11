@@ -20,6 +20,10 @@
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -29,14 +33,25 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.usergrid.chop.api.Commit;
+import org.apache.usergrid.chop.api.Constants;
+import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.stack.BasicStack;
+import org.apache.usergrid.chop.stack.User;
+import org.apache.usergrid.chop.webapp.ChopUiFig;
+import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
+import org.apache.usergrid.chop.webapp.dao.CommitDao;
+import org.apache.usergrid.chop.webapp.dao.ModuleDao;
 import org.apache.usergrid.chop.webapp.dao.UserDao;
 import org.apache.usergrid.chop.stack.Stack;
+import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
 
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -53,7 +68,23 @@ public class SetupResource extends TestableResource implements RestParams {
 
 
     @Inject
+    private StackCoordinator stackCoordinator;
+
+
+    @Inject
+    private ChopUiFig chopUiFig;
+
+
+    @Inject
     private UserDao userDao;
+
+
+    @Inject
+    private CommitDao commitDao;
+
+
+    @Inject
+    private ModuleDao moduleDao;
 
 
     public SetupResource() {
@@ -78,10 +109,80 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/stack in test mode ..." );
         }
         else {
-            LOG.warn( "Calling /setup/stack" );
+            LOG.info( "Calling /setup/stack" );
+        }
+        String message;
+
+        User chopUser = userDao.get( user );
+        if( chopUser == null ) {
+            message = "User " + user + " not found";
+            LOG.warn( message );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+                           .entity( message )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
         }
 
+        File runnerJar = new File( chopUiFig.getContextPath() );
+        runnerJar = new File( runnerJar, user );
+        runnerJar = new File( runnerJar, groupId );
+        runnerJar = new File( runnerJar, artifactId );
+        runnerJar = new File( runnerJar, version );
+        runnerJar = new File( runnerJar, commitId );
+        runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
+        if( ! runnerJar.exists() ) {
+            message = "No runner jars have been found by these parameters, deploy first";
+            LOG.warn( message );
+            return Response.status( Response.Status.BAD_REQUEST )
+                           .entity( message )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
+        }
 
+        Stack stack;
+        try {
+            // Access the jar file resources after adding it to a new ClassLoader
+            URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
+                    Thread.currentThread().getContextClassLoader() );
+            ObjectMapper mapper = new ObjectMapper();
+            stack = mapper.readValue( classLoader.getResourceAsStream( Constants.STACK_JSON ), BasicStack.class );
+        }
+        catch ( Exception e ) {
+            message = "Error while reading stack.json from runner.jar resources";
+            LOG.warn( message, e );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+                           .entity( message )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
+        }
+
+        Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
+        if( module == null ) {
+            message = "No registered modules found by " + groupId + ":" + artifactId + ":" + version;
+            LOG.warn( message );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+                           .entity( message )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
+        }
+
+        Commit commit = null;
+        for( Commit c: commitDao.getByModule( module.getId() ) ) {
+            if( commitId.equals( c.getId() ) ) {
+                commit = c;
+                break;
+            }
+        }
+        if( commit == null ) {
+            message = "Commit with id " + commitId + " is not found";
+            LOG.warn( message );
+            return Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+                           .entity( message )
+                           .type( MediaType.TEXT_PLAIN )
+                           .build();
+        }
+
+        // TODO start setting up stack using StackCoordinator
 
         return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
     }
