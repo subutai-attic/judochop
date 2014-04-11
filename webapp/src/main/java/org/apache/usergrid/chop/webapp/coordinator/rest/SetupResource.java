@@ -20,6 +20,7 @@
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
+import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,6 +32,8 @@ import javax.ws.rs.core.Response;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.webapp.dao.UserDao;
 import org.apache.usergrid.chop.stack.Stack;
+
+import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,15 +46,19 @@ import com.google.inject.Singleton;
  */
 @Singleton
 @Produces( MediaType.APPLICATION_JSON )
-@Path( SetupResource.ENDPOINT_URL )
-public class SetupResource {
-    public final static String ENDPOINT_URL = "/setup";
+@Path( SetupResource.ENDPOINT)
+public class SetupResource extends TestableResource implements RestParams {
+    public final static String ENDPOINT = "/setup";
     private static final Logger LOG = LoggerFactory.getLogger( SetupResource.class );
 
 
     @Inject
     private UserDao userDao;
 
+
+    public SetupResource() {
+        super( ENDPOINT );
+    }
 
     @POST
     @Consumes( MediaType.APPLICATION_JSON )
@@ -63,9 +70,19 @@ public class SetupResource {
             @QueryParam( RestParams.MODULE_GROUPID ) String groupId,
             @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam( RestParams.USERNAME ) String user,
-            Stack stack )
+            @QueryParam( RestParams.RUNNER_COUNT ) int runnerCount ,
+            @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
+                         )
     {
-        LOG.warn( "Calling /stack/setup" );
+        if( inTestMode( testMode ) ) {
+            LOG.info( "Calling /setup/stack in test mode ..." );
+        }
+        else {
+            LOG.warn( "Calling /setup/stack" );
+        }
+
+
+
         return Response.status( Response.Status.CREATED ).entity( "TRUE" ).build();
     }
 }

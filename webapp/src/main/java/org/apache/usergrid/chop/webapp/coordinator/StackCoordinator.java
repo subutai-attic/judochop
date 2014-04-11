@@ -17,6 +17,7 @@ import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Constants;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.ProviderParams;
+import org.apache.usergrid.chop.api.store.amazon.AmazonFig;
 import org.apache.usergrid.chop.api.store.amazon.InstanceValues;
 import org.apache.usergrid.chop.client.ssh.AsyncSsh;
 import org.apache.usergrid.chop.client.ssh.SSHCommands;
@@ -31,12 +32,15 @@ import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
+import org.apache.usergrid.chop.webapp.ChopUiModule;
 import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 
@@ -56,12 +60,6 @@ public class StackCoordinator {
     private ChopUiFig chopUiFig;
 
     @Inject
-    private InstanceManager instanceManager;
-
-    @Inject
-    private IpRuleManager ipRuleManager;
-
-    @Inject
     private ProviderParamsDao providerParamsDao;
 
 
@@ -71,6 +69,18 @@ public class StackCoordinator {
         CoordinatedStack coordinatedStack;
 
         synchronized ( lock ) {
+
+            ProviderParams providerParams = providerParamsDao.getByUser( user.getUsername() );
+
+            /** TODO is this all right? */
+            Injector injector = Guice.createInjector( new ChopUiModule() );
+            AmazonFig amazonFig = injector.getInstance( AmazonFig.class );
+            amazonFig.bypass( AmazonFig.AWS_ACCESS_KEY, providerParams.getAccessKey() );
+            amazonFig.bypass( AmazonFig.AWS_SECRET_KEY, providerParams.getSecretKey() );
+
+            InstanceManager instanceManager = injector.getInstance( InstanceManager.class );
+            IpRuleManager ipRuleManager = injector.getInstance( IpRuleManager.class );
+
             coordinatedStack = getMatching( user, commit, module );
 
             if ( coordinatedStack != null ) {
@@ -94,8 +104,6 @@ public class StackCoordinator {
 
             ipRuleManager.setDataCenter( stack.getDataCenter() );
             ipRuleManager.applyIpRuleSet( stack.getIpRuleSet() );
-
-            ProviderParams providerParams = providerParamsDao.getByUser( user.getUsername() );
 
             for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
 

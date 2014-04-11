@@ -23,4 +23,5 @@ public interface RestParams {
     String VCS_REPO_URL = "vcsRepoUrl";
     String TEST_PACKAGE = "testPackageBase";
     String MD5 = "md5";
+    String RUNNER_COUNT = "runnerCount";
 }

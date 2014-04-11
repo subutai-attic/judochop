@@ -113,7 +113,9 @@ public class UploadResource extends TestableResource implements RestParams {
     private CommitDao commitDao;
 
 
-    public UploadResource() { super( ENDPOINT ); }
+    public UploadResource() {
+        super( ENDPOINT );
+    }
 
 
     /**
