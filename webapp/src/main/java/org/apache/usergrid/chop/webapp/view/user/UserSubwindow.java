@@ -27,13 +27,10 @@ public class UserSubwindow extends Window {
     private static final String ACCESS_KEY = "Access Key";
     private static final String SECRET_KEY = "Secret Key";
     private static final String IMAGE_ID = "Image Id";
-    private static final String SECURITY_GROUP = "Security Group";
     private static final String KEY_PAIR_NAME = "Key Pair Name";
-    private static final String RUNNER_NAME = "Runner Name";
-    private static final String AVAILABILITY_ZONE = "Availability Zone";
 
     private static final String[] FIELD_NAMES = new String[]{
-            USERNAME, PASSWORD, INSTANCE_TYPE, ACCESS_KEY, SECRET_KEY, IMAGE_ID, SECURITY_GROUP, KEY_PAIR_NAME, RUNNER_NAME, AVAILABILITY_ZONE
+            USERNAME, PASSWORD, INSTANCE_TYPE, ACCESS_KEY, SECRET_KEY, IMAGE_ID, KEY_PAIR_NAME
     };
 
     private final UserDao userDao = InjectorFactory.getInstance(UserDao.class);
@@ -86,22 +83,15 @@ public class UserSubwindow extends Window {
 
             if (params != null) {
                 ic.getContainerProperty(id, ACCESS_KEY).setValue( params.getAccessKey() );
-                ic.getContainerProperty(id, AVAILABILITY_ZONE).setValue( params.getAvailabilityZone() );
                 ic.getContainerProperty(id, IMAGE_ID).setValue( params.getImageId() );
                 ic.getContainerProperty(id, INSTANCE_TYPE).setValue( params.getInstanceType() );
-//                ic.getContainerProperty(id, KEY_PAIR_NAME).setValue( params.getKeyPairName() );
-                ic.getContainerProperty(id, RUNNER_NAME).setValue( params.getRunnerName() );
                 ic.getContainerProperty(id, SECRET_KEY).setValue( params.getSecretKey() );
-                ic.getContainerProperty(id, SECURITY_GROUP).setValue( params.getSecurityGroup() );
             } else {
                 ic.getContainerProperty(id, ACCESS_KEY).setValue("");
-                ic.getContainerProperty(id, AVAILABILITY_ZONE).setValue("");
                 ic.getContainerProperty(id, IMAGE_ID).setValue("");
                 ic.getContainerProperty(id, INSTANCE_TYPE).setValue("");
                 ic.getContainerProperty(id, KEY_PAIR_NAME).setValue("");
-                ic.getContainerProperty(id, RUNNER_NAME).setValue("");
                 ic.getContainerProperty(id, SECRET_KEY).setValue("");
-                ic.getContainerProperty(id, SECURITY_GROUP).setValue("");
             }
         }
 
@@ -222,15 +212,12 @@ public class UserSubwindow extends Window {
                     String accessKey = (String) userList.getItem(itemId).getItemProperty(ACCESS_KEY).getValue();
                     String secretKey = (String) userList.getItem(itemId).getItemProperty(SECRET_KEY).getValue();
                     String imageId = (String) userList.getItem(itemId).getItemProperty(IMAGE_ID).getValue();
-                    String securityGroup = (String) userList.getItem(itemId).getItemProperty(SECURITY_GROUP).getValue();
                     String keyPairName = (String) userList.getItem(itemId).getItemProperty(KEY_PAIR_NAME).getValue();
-                    String runnerName = (String) userList.getItem(itemId).getItemProperty(RUNNER_NAME).getValue();
-                    String availabilityZone = (String) userList.getItem(itemId).getItemProperty(AVAILABILITY_ZONE).getValue();
 
                     try {
                         userDao.save( new User(username, password) );
                         providerParamsDao.save(
-                                new BasicProviderParams(username, instanceType, availabilityZone, accessKey, secretKey, imageId, securityGroup, runnerName)
+                                new BasicProviderParams(username, instanceType, accessKey, secretKey, imageId )
                         );
                     } catch (Exception e) {
                         LOG.error("Error while saving a user: ", e);

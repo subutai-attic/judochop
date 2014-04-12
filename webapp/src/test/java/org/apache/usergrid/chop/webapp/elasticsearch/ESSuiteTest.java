@@ -135,24 +135,18 @@ public class ESSuiteTest {
         ProviderParams pp = new BasicProviderParams(
                 USER_1,
                 "m1.large",
-                "es-east",
                 "1230d4353459da23ec21a259a",
                 "ad911213ab21ef23ab4e0e",
-                IMAGE_ID,
-                "chop-security",
-                "chop-runner"
+                IMAGE_ID
         );
         ppDao.save( pp );
 
         pp = new BasicProviderParams(
                 "testuser2",
                 "t1.micro",
-                "es-west",
                 "1230d4353459da23ec21a259a",
                 "ad911213ab21ef23ab4e0e",
-                "ami-2143224",
-                "chop-security-2",
-                "chop-runner"
+                "ami-2143224"
         );
         ppDao.save( pp );
     }

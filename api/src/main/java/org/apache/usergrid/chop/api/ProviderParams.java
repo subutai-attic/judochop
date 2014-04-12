@@ -17,17 +17,11 @@ public interface ProviderParams {
 
     String getInstanceType();
 
-    String getAvailabilityZone();
-
     String getAccessKey();
 
     String getSecretKey();
 
     String getImageId();
-
-    String getSecurityGroup();
-
-    String getRunnerName();
 
     /**
      * Path to key files identified by key-pair-names.

@@ -45,12 +45,9 @@ public class ProviderParamsDao extends Dao {
                         .startObject()
                         .field( "username", pp.getUsername() )
                         .field( "instanceType", pp.getInstanceType() )
-                        .field( "availabilityZone", pp.getAvailabilityZone() )
                         .field( "accessKey", pp.getAccessKey() )
                         .field( "secretKey", pp.getSecretKey() )
                         .field( "imageId", pp.getImageId() )
-                        .field( "securityGroup", pp.getSecurityGroup() )
-                        .field( "runnerName", pp.getRunnerName() )
                         .field( "keys", pp.getKeys().toString() )
                 )
                 .execute()
@@ -83,12 +80,9 @@ public class ProviderParamsDao extends Dao {
         BasicProviderParams params = new BasicProviderParams(
                 Util.getString( json, "username" ),
                 Util.getString( json, "instanceType" ),
-                Util.getString( json, "availabilityZone" ),
                 Util.getString( json, "accessKey" ),
                 Util.getString( json, "secretKey" ),
-                Util.getString( json, "imageId" ),
-                Util.getString( json, "securityGroup" ),
-                Util.getString( json, "runnerName" )
+                Util.getString( json, "imageId" )
         );
 
         params.setKeys( Util.getMap( json, "keys" ) );

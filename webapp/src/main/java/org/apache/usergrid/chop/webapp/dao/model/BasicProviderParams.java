@@ -14,29 +14,22 @@ public class BasicProviderParams implements ProviderParams {
 
     private String username;
     private String instanceType;
-    private String availabilityZone;
     private String accessKey;
     private String secretKey;
     private String imageId;
-    private String securityGroup;
-    private String runnerName;
     private Map<String, String> keys = new HashMap<String, String>();
 
     public BasicProviderParams ( String username ) {
-        this(username, "", "", "", "", "", "", "");
+        this(username, "", "", "", "" );
     }
 
-    public BasicProviderParams ( String username, String instanceType, String availabilityZone, String accessKey,
-                                 String secretKey, String imageId, String securityGroup, String runnerName ) {
+    public BasicProviderParams ( String username, String instanceType, String accessKey, String secretKey, String imageId ) {
 
         this.username = username;
         this.instanceType = instanceType;
-        this.availabilityZone = availabilityZone;
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.imageId = imageId;
-        this.securityGroup = securityGroup;
-        this.runnerName = runnerName;
     }
 
     @Override
@@ -48,12 +41,6 @@ public class BasicProviderParams implements ProviderParams {
     @Override
     public String getInstanceType() {
         return instanceType;
-    }
-
-
-    @Override
-    public String getAvailabilityZone() {
-        return availabilityZone;
     }
 
 
@@ -76,16 +63,6 @@ public class BasicProviderParams implements ProviderParams {
 
 
     @Override
-    public String getSecurityGroup() {
-        return securityGroup;
-    }
-
-    @Override
-    public String getRunnerName() {
-        return runnerName;
-    }
-
-    @Override
     public Map<String, String> getKeys() {
         return keys;
     }
@@ -99,12 +76,9 @@ public class BasicProviderParams implements ProviderParams {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("user", username)
                 .append( "instanceType", instanceType )
-                .append( "availabilityZone", availabilityZone )
                 .append( "accessKey", accessKey )
                 .append( "secretKey", secretKey )
                 .append( "imageId", imageId )
-                .append( "securityGroup", securityGroup )
-                .append( "runnerName", runnerName )
                 .append( "keys", keys )
                 .toString();
     }
