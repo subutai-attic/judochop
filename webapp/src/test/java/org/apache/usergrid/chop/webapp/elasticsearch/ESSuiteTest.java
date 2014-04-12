@@ -131,6 +131,7 @@ public class ESSuiteTest {
     }
 
     private static void setupProviderParams(Injector injector) throws Exception {
+
         ppDao = injector.getInstance( ProviderParamsDao.class );
         ProviderParams pp = new BasicProviderParams(
                 USER_1,

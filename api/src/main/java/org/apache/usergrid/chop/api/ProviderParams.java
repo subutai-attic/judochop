@@ -28,4 +28,5 @@ public interface ProviderParams {
      */
     Map<String, String> getKeys();
 
+    String getKeyName();
 }

@@ -17,6 +17,7 @@ public class BasicProviderParams implements ProviderParams {
     private String accessKey;
     private String secretKey;
     private String imageId;
+    private String keyName;
     private Map<String, String> keys = new HashMap<String, String>();
 
     public BasicProviderParams ( String username ) {
@@ -61,6 +62,16 @@ public class BasicProviderParams implements ProviderParams {
         return imageId;
     }
 
+    @Override
+    public String getKeyName() {
+        return keyName;
+    }
+
+
+    public void setKeyName(String keyName) {
+        this.keyName = keyName;
+    }
+
 
     @Override
     public Map<String, String> getKeys() {
@@ -71,6 +82,8 @@ public class BasicProviderParams implements ProviderParams {
         this.keys = keys;
     }
 
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -79,6 +92,7 @@ public class BasicProviderParams implements ProviderParams {
                 .append( "accessKey", accessKey )
                 .append( "secretKey", secretKey )
                 .append( "imageId", imageId )
+                .append( "keyName", keyName )
                 .append( "keys", keys )
                 .toString();
     }

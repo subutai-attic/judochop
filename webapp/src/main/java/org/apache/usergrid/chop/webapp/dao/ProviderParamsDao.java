@@ -48,6 +48,7 @@ public class ProviderParamsDao extends Dao {
                         .field( "accessKey", pp.getAccessKey() )
                         .field( "secretKey", pp.getSecretKey() )
                         .field( "imageId", pp.getImageId() )
+                        .field( "keyName", pp.getKeyName() )
                         .field( "keys", pp.getKeys().toString() )
                 )
                 .execute()
@@ -86,6 +87,7 @@ public class ProviderParamsDao extends Dao {
         );
 
         params.setKeys( Util.getMap( json, "keys" ) );
+        params.setKeyName( Util.getString( json, "keyName" ) );
 
         return params;
     }
