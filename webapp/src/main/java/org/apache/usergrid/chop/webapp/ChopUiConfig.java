@@ -19,14 +19,12 @@
  */
 package org.apache.usergrid.chop.webapp;
 
-
 import java.io.IOException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.apache.usergrid.chop.webapp.service.shiro.CustomShiroWebModule;
 import org.apache.usergrid.chop.webapp.dao.SetupDao;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
 import org.apache.usergrid.chop.webapp.elasticsearch.EsEmbedded;
@@ -45,87 +43,79 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
+import org.apache.shiro.guice.aop.ShiroAopModule;
+import org.apache.usergrid.chop.webapp.service.shiro.CustomShiroWebModule;
 
-
-/** ... */
-@SuppressWarnings( "UnusedDeclaration" )
+/**
+ * ...
+ */
+@SuppressWarnings("UnusedDeclaration")
 public class ChopUiConfig extends GuiceServletContextListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger( ChopUiConfig.class );
+    private final static Logger LOG = LoggerFactory.getLogger(ChopUiConfig.class);
 
     private EsEmbedded esEmbedded;
     private Injector injector;
     private ServletContext context;
 
-
     @Override
     protected Injector getInjector() {
 
-        if ( injector != null ) {
+        if (injector != null) {
             return injector;
         }
 
-        injector = Guice.createInjector( new CustomShiroWebModule( context ), new ChopUiModule() );
-        InjectorFactory.setInjector( injector );
+        injector = Guice.createInjector(new CustomShiroWebModule(context), new ShiroAopModule(), new ChopUiModule());
+        InjectorFactory.setInjector(injector);
 
         return injector;
     }
 
-
     @Override
-    public void contextInitialized( ServletContextEvent servletContextEvent ) {
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
         context = servletContextEvent.getServletContext();
-        context.setAttribute( Injector.class.getName(), getInjector() );
+        context.setAttribute(Injector.class.getName(), getInjector());
 
         Injector injector = getInjector();
-        ElasticSearchFig elasticSearchFig = injector.getInstance( ElasticSearchFig.class );
-        ChopUiFig chopUiFig = injector.getInstance( ChopUiFig.class );
-
-
+        ElasticSearchFig elasticSearchFig = injector.getInstance(ElasticSearchFig.class);
+        ChopUiFig chopUiFig = injector.getInstance(ChopUiFig.class);
 
         /*
          * --------------------------------------------------------------------
          * Archaius Configuration Settings
          * --------------------------------------------------------------------
          */
-
         ConcurrentCompositeConfiguration ccc = new ConcurrentCompositeConfiguration();
         Env env = Env.getEnvironment();
         boolean embedded = false;
 
-        if ( env == Env.ALL ) {
-            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment( "PROD" );
-            LOG.info( "Setting environment to: PROD" );
-
-
+        if (env == Env.ALL) {
+            ConfigurationManager.getDeploymentContext().setDeploymentEnvironment("PROD");
+            LOG.info("Setting environment to: PROD");
 
             /*
              * --------------------------------------------------------------------
              * Extract Configuration Settings from CommandLine
              * --------------------------------------------------------------------
              */
-
-            if ( ChopUiJettyRunner.getCommandLine() != null ) {
+            if (ChopUiJettyRunner.getCommandLine() != null) {
                 CommandLine cl = ChopUiJettyRunner.getCommandLine();
 
-                if ( cl.hasOption( 'e' ) ) {
-                    startEmbeddedES( elasticSearchFig );
+                if (cl.hasOption('e')) {
+                    startEmbeddedES(elasticSearchFig);
                 }
+            } else {
+                LOG.warn("ChopUi not started via Launcher - no command line argument processing will take place.");
             }
-            else {
-                LOG.warn( "ChopUi not started via Launcher - no command line argument processing will take place." );
-            }
-        }
-        else if ( env == Env.UNIT ) {
-            LOG.info( "Operating in UNIT environment" );
+        } else if (env == Env.UNIT) {
+            LOG.info("Operating in UNIT environment");
         }
 
 //        ConfigurationManager.install( ccc );
         try {
-            ConfigurationManager.loadCascadedPropertiesFromResources( "chop-ui" );
-        }
-        catch ( IOException e ) {
-            LOG.warn( "Failed to cascade load configuration properties: ", e );
+            ConfigurationManager.loadCascadedPropertiesFromResources("chop-ui");
+        } catch (IOException e) {
+            LOG.warn("Failed to cascade load configuration properties: ", e);
         }
 
         /*
@@ -133,39 +123,37 @@ public class ChopUiConfig extends GuiceServletContextListener {
          * Environment Based Configuration Property Adjustments
          * --------------------------------------------------------------------
          */
-
-        if ( LOG.isDebugEnabled() ) {
+        if (LOG.isDebugEnabled()) {
             Enumeration<String> names = context.getAttributeNames();
-            LOG.debug( "Dumping attribute names: " );
-            while ( names.hasMoreElements() ) {
+            LOG.debug("Dumping attribute names: ");
+            while (names.hasMoreElements()) {
                 String name = names.nextElement();
-                LOG.debug( "attribute {} = {}", name, context.getAttribute( name ) );
+                LOG.debug("attribute {} = {}", name, context.getAttribute(name));
             }
         }
 
         // Checking if a temp directory is defined - usually null
-        String contextTempDir = ( String ) context.getAttribute( CONTEXT_TEMPDIR_KEY );
-        LOG.info( "From servlet context: {} = {}", CONTEXT_TEMPDIR_KEY, contextTempDir );
+        String contextTempDir = (String) context.getAttribute(CONTEXT_TEMPDIR_KEY);
+        LOG.info("From servlet context: {} = {}", CONTEXT_TEMPDIR_KEY, contextTempDir);
 
-        if ( contextTempDir == null ) {
-            LOG.info( "From ChopUiFig {} = {}", CONTEXT_TEMPDIR_KEY, chopUiFig.getContextTempDir() );
+        if (contextTempDir == null) {
+            LOG.info("From ChopUiFig {} = {}", CONTEXT_TEMPDIR_KEY, chopUiFig.getContextTempDir());
         }
 
         setupStorage();
     }
 
-
-    private static EsEmbedded startEmbeddedES( ElasticSearchFig elasticSearchFig ) {
-        LOG.info( "The -e option has been provided: launching embedded elasticsearch instance." );
+    private static EsEmbedded startEmbeddedES(ElasticSearchFig elasticSearchFig) {
+        LOG.info("The -e option has been provided: launching embedded elasticsearch instance.");
 
         // This will set the parameters needed in the fig to attach to the embedded instance
-        EsEmbedded es = new EsEmbedded( elasticSearchFig );
+        EsEmbedded es = new EsEmbedded(elasticSearchFig);
         es.start();
 
         long pause = 5000;
         LOG.info("Pausing for {} ms so embedded elasticsearch can complete initialization.", pause);
 
-        TimeUtil.sleep( 5000 );
+        TimeUtil.sleep(5000);
 
         return es;
     }
@@ -173,27 +161,25 @@ public class ChopUiConfig extends GuiceServletContextListener {
     private void setupStorage() {
         LOG.info("Setting up the storage...");
 
-        IElasticSearchClient esClient = getInjector().getInstance( IElasticSearchClient.class );
-        SetupDao setupDao = getInjector().getInstance( SetupDao.class );
+        IElasticSearchClient esClient = getInjector().getInstance(IElasticSearchClient.class);
+        SetupDao setupDao = getInjector().getInstance(SetupDao.class);
 
-        LOG.info( "esClient: {}", esClient );
-        LOG.info( "setupDao: {}", setupDao );
+        LOG.info("esClient: {}", esClient);
+        LOG.info("setupDao: {}", setupDao);
 
         try {
             setupDao.setup();
-        }
-        catch ( Exception e ) {
-            LOG.error( "Failed to setup the storage!", e );
+        } catch (Exception e) {
+            LOG.error("Failed to setup the storage!", e);
         }
     }
 
     @Override
-    public void contextDestroyed( final ServletContextEvent servletContextEvent ) {
-        super.contextDestroyed( servletContextEvent );
+    public void contextDestroyed(final ServletContextEvent servletContextEvent) {
+        super.contextDestroyed(servletContextEvent);
 
-        if ( esEmbedded != null ) {
+        if (esEmbedded != null) {
             esEmbedded.stop();
         }
     }
 }
-

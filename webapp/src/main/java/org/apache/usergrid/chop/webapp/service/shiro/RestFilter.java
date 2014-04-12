@@ -15,63 +15,43 @@
  */
 package org.apache.usergrid.chop.webapp.service.shiro;
 
+import java.io.IOException;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 
 /**
  *
  * @author dilshat
  */
-public class RestFilter extends AccessControlFilter {
+public class RestFilter extends AuthorizationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request,
             ServletResponse response, Object mappedValue) {
 
-        if (SecurityUtils.getSubject().isAuthenticated()) {
-            return true;
-        }
         String username = (request.getParameter("user"));
         String password = (request.getParameter("pwd"));
-        if (ShiroRealm.authUser(username, password)) {
-            SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password));
-            return true;
-        }
-//        Subject subject = getSubject(request, response);
-//        boolean isAuthenticated = subject.isAuthenticated();
-//        return isAuthenticated;
-        return false;
+
+        return ShiroRealm.authenticateUser(username, password);
+
     }
 
-    /**
-     * Takes responsibility for returning an appropriate response when access is
-     * not allowed.
-     */
     @Override
-    protected boolean onAccessDenied(ServletRequest request,
-            ServletResponse response) throws Exception {
-        accessDeniedResponse(request, response);
-        return false;
-    }
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
 
-    /**
-     * Provides a 401 Not Authorized HTTP status code to the client with a
-     * custom challenge scheme that the client understands and can respond to.
-     *
-     * @param request
-     * @param response
-     * @throws Exception
-     */
-    private void accessDeniedResponse(ServletRequest request,
-            ServletResponse response) throws Exception {
-        HttpServletResponse httpResponse = WebUtils.toHttp(response);
-        httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        // If subject is known but not authorized, return 401 UNAUTHORIZED status code
+        // If subject is not known, return 404 NOT_FOUND status code
+        if (SecurityUtils.getSubject().isAuthenticated()) {
+            WebUtils.toHttp(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            WebUtils.toHttp(response).sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+        return false;
     }
 
 }
