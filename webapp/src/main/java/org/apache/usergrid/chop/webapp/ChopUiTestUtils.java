@@ -21,7 +21,9 @@ package org.apache.usergrid.chop.webapp;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.mail.internet.MimeBodyPart;
@@ -58,8 +60,20 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class ChopUiTestUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger( ChopUiTestUtils.class );
+    public static Map<String, String> getQueryParams() {
 
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put( RestParams.USERNAME, "user" );
+        params.put( RestParams.PASSWORD, "pass" );
+        params.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
+        params.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
+        params.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
+        params.put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
+        params.put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
+
+        return params;
+    }
 
     public static void testRunManagerNext( TestParams testParams ) {
         Integer next = testParams

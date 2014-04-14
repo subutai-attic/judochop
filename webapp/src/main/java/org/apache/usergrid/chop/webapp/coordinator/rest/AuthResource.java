@@ -41,6 +41,8 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @Path(AuthResource.ENDPOINT_URL)
 public class AuthResource {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthResource.class);
+
     public final static String GET_MESSAGE = "/auth GET called with right credentials";
     public final static String POST_MESSAGE = "/auth POST called with right credentials";
     public final static String POST_WITH_ALLOWED_ROLE_MESSAGE = "/auth POST with allowed role called";
@@ -50,22 +52,18 @@ public class AuthResource {
     public final static String ENDPOINT_URL = "/auth";
     public final static String ALLOWED_ROLE_PATH = "/allowed";
     public final static String UNALLOWED_ROLE_PATH = "/unallowed";
-    private static final Logger LOG = LoggerFactory.getLogger(AuthResource.class);
 
-    @Inject
-    public AuthResource() {
-    }
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
-    public String testget() {
+    public String testGet() {
         LOG.info("Calling auth via GET");
         return GET_MESSAGE;
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    public String testpost() {
+    public String testPost() {
         LOG.info("Calling auth via POST");
         return POST_MESSAGE;
     }
@@ -74,7 +72,7 @@ public class AuthResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Path(ALLOWED_ROLE_PATH)
     @RequiresRoles("role1")
-    public String testpostwithrole() {
+    public String testPostWithRole() {
         LOG.info("Calling auth via POST with ALLOWED role");
         return POST_WITH_ALLOWED_ROLE_MESSAGE;
     }
@@ -83,7 +81,7 @@ public class AuthResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Path(UNALLOWED_ROLE_PATH)
     @RequiresRoles("role2")
-    public String testpostwithunallowedrole() {
+    public String testPostWithUnallowedRole() {
         LOG.info("Calling auth via POST with unallowed role");
         return POST_WITH_UNALLOWED_ROLE_MESSAGE;
     }
@@ -105,4 +103,5 @@ public class AuthResource {
         LOG.info("Calling auth via GET with unallowed role");
         return GET_WITH_UNALLOWED_ROLE_MESSAGE;
     }
+
 }
