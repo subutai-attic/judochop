@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.usergrid.chop.webapp.dao;
 
 
@@ -45,12 +63,10 @@ public class ProviderParamsDao extends Dao {
                         .startObject()
                         .field( "username", pp.getUsername() )
                         .field( "instanceType", pp.getInstanceType() )
-                        .field( "availabilityZone", pp.getAvailabilityZone() )
                         .field( "accessKey", pp.getAccessKey() )
                         .field( "secretKey", pp.getSecretKey() )
                         .field( "imageId", pp.getImageId() )
-                        .field( "securityGroup", pp.getSecurityGroup() )
-                        .field( "runnerName", pp.getRunnerName() )
+                        .field( "keyName", pp.getKeyName() )
                         .field( "keys", pp.getKeys().toString() )
                 )
                 .execute()
@@ -83,15 +99,13 @@ public class ProviderParamsDao extends Dao {
         BasicProviderParams params = new BasicProviderParams(
                 Util.getString( json, "username" ),
                 Util.getString( json, "instanceType" ),
-                Util.getString( json, "availabilityZone" ),
                 Util.getString( json, "accessKey" ),
                 Util.getString( json, "secretKey" ),
-                Util.getString( json, "imageId" ),
-                Util.getString( json, "securityGroup" ),
-                Util.getString( json, "runnerName" )
+                Util.getString( json, "imageId" )
         );
 
         params.setKeys( Util.getMap( json, "keys" ) );
+        params.setKeyName( Util.getString( json, "keyName" ) );
 
         return params;
     }
