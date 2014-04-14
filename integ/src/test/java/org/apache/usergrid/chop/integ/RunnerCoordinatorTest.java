@@ -1,10 +1,18 @@
 package org.apache.usergrid.chop.integ;
 
 
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
 import org.junit.ClassRule;
 import org.junit.Test;
+
+import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.runner.RunnerConfig;
 import org.apache.usergrid.chop.webapp.ChopUiConfig;
+import org.apache.usergrid.chop.webapp.coordinator.rest.RunnerRegistryResource;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
@@ -14,8 +22,11 @@ import org.safehaus.jettyjam.utils.JettyContext;
 import org.safehaus.jettyjam.utils.JettyResource;
 import org.safehaus.jettyjam.utils.JettyUnitResource;
 import org.safehaus.jettyjam.utils.StartResources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.MultiAppGuiceFilter;
+import com.sun.jersey.api.client.GenericType;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
@@ -29,6 +40,7 @@ import static junit.framework.TestCase.assertTrue;
  * using chop:runner.
  */
 public class RunnerCoordinatorTest {
+    private static final Logger LOG = LoggerFactory.getLogger( RunnerCoordinatorTest.class );
 
 
     @ClassRule
@@ -79,5 +91,25 @@ public class RunnerCoordinatorTest {
         assertTrue( webapp.isStarted() );
         assertTrue( runner1.isStarted() );
         assertTrue( runner2.isStarted() );
+    }
+
+
+    @Test
+    public void testRegistered() {
+//        List<Runner> runnerList = webapp.newTestParams()
+//                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+//                .newWebResource( null )
+//                .queryParam( RestParams.COMMIT_ID, commitId )
+//                .path( "/list" )
+//                .type( MediaType.APPLICATION_JSON_TYPE )
+//                .accept( MediaType.APPLICATION_JSON_TYPE )
+//                .get( new GenericType<List<Runner>>() {} );
+//
+//        assertNotNull( runnerList );
+//
+//        LOG.info( "Got {} runners.", runnerList.size() );
+//        for ( Runner runner : runnerList ) {
+//            LOG.info( "", runner );
+//        }
     }
 }
