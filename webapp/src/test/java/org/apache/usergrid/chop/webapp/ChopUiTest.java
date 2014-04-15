@@ -19,15 +19,12 @@
 package org.apache.usergrid.chop.webapp;
 
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.ws.rs.core.MediaType;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.webapp.coordinator.rest.TestGetResource;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
