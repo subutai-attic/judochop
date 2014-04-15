@@ -44,7 +44,7 @@ public class RunnerAppIT {
     }
 
     @ClassRule
-    public static JettyResource jetty = new JettyIntegResource( systemProperties );
+    public static JettyResource jetty = new JettyIntegResource( RunnerAppIT.class, systemProperties );
 
 
     @Test

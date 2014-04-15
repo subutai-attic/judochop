@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 
 
@@ -50,6 +49,25 @@ import com.netflix.config.ConfigurationManager;
 public class RunnerConfig extends GuiceServletContextListener {
     private final static Logger LOG = LoggerFactory.getLogger( RunnerConfig.class );
     private Injector injector;
+    private Project project;
+    private Runner runner;
+    private ServletFig servletFig;
+    private boolean registered = false;
+
+
+    public Project getProject() {
+        return project;
+    }
+
+
+    public Runner getRunner() {
+        return runner;
+    }
+
+
+    public ServletFig getServletFig() {
+        return servletFig;
+    }
 
 
     @Override
@@ -73,7 +91,6 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        ConcurrentCompositeConfiguration ccc = new ConcurrentCompositeConfiguration();
         Env env = Env.getEnvironment();
 
         if ( env == Env.ALL ) {
@@ -84,7 +101,6 @@ public class RunnerConfig extends GuiceServletContextListener {
             LOG.info( "Operating in UNIT environment" );
         }
 
-        ConfigurationManager.install( ccc );
         try {
             ConfigurationManager.loadCascadedPropertiesFromResources( "project" );
         }
@@ -99,9 +115,9 @@ public class RunnerConfig extends GuiceServletContextListener {
          * --------------------------------------------------------------------
          */
 
-        final ServletFig servletFig = injector.getInstance( ServletFig.class );
-        final Runner runner = injector.getInstance( Runner.class );
-        final Project project = injector.getInstance( Project.class );
+        servletFig = injector.getInstance( ServletFig.class );
+        runner = injector.getInstance( Runner.class );
+        project = injector.getInstance( Project.class );
         ServletContext context = servletContextEvent.getServletContext();
 
         /*
@@ -178,14 +194,18 @@ public class RunnerConfig extends GuiceServletContextListener {
         if ( runner.getHostname() != null && project.getLoadKey() != null ) {
             final RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
 
-            if ( env != Env.TEST ) {
+            if ( env != Env.TEST && env != Env.UNIT ) {
                 registry.register( runner );
+                registered = true;
                 Runtime.getRuntime().addShutdownHook( new Thread( new Runnable() {
                     @Override
                     public void run() {
-                        System.err.println( "Premature shutdown, attempting to unregister this runner." );
-                        registry.unregister( runner );
-                        LOG.info( "Unregistering runner on shutdownx: {}", runner.getHostname() );
+                        if ( registered ) {
+                            System.err.println( "Premature shutdown, attempting to unregister this runner." );
+                            registry.unregister( runner );
+                            LOG.info( "Unregistering runner on shutdownx: {}", runner.getHostname() );
+                            registered = false;
+                        }
                     }
                 } ) );
                 LOG.info( "Registered runner information in coordinator registry." );
@@ -226,8 +246,9 @@ public class RunnerConfig extends GuiceServletContextListener {
         Env env = Env.getEnvironment();
         RunnerRegistry registry = getInjector().getInstance( RunnerRegistry.class );
 
-        if ( env == Env.CHOP ) {
+        if ( env == Env.CHOP || registered ) {
             registry.unregister( injector.getInstance( Runner.class ) );
+            registered = false;
             LOG.info( "Unregistered runner information in coordinator registry." );
         }
         else {

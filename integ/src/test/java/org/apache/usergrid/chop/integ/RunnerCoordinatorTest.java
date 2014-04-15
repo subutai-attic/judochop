@@ -26,10 +26,13 @@ import javax.ws.rs.core.MediaType;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import org.apache.usergrid.chop.api.CoordinatorFig;
+import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.runner.RunnerConfig;
 import org.apache.usergrid.chop.webapp.ChopUiConfig;
+import org.apache.usergrid.chop.webapp.coordinator.rest.RestFig;
 import org.apache.usergrid.chop.webapp.coordinator.rest.RunnerRegistryResource;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
@@ -37,7 +40,6 @@ import org.safehaus.jettyjam.utils.FilterMapping;
 import org.safehaus.jettyjam.utils.HttpsConnector;
 import org.safehaus.jettyjam.utils.JettyConnectors;
 import org.safehaus.jettyjam.utils.JettyContext;
-import org.safehaus.jettyjam.utils.JettyResource;
 import org.safehaus.jettyjam.utils.JettyUnitResource;
 import org.safehaus.jettyjam.utils.StartResources;
 import org.slf4j.Logger;
@@ -74,7 +76,8 @@ public class RunnerCoordinatorTest {
         defaultId = "https",
         httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
     )
-    public static JettyResource webapp = new JettyUnitResource( RunnerCoordinatorTest.class );
+    public static JettyUnitResource<ChopUiConfig> webapp =
+            new JettyUnitResource<ChopUiConfig>( RunnerCoordinatorTest.class, "webapp" );
 
     @JettyContext(
         enableSession = true,
@@ -85,7 +88,8 @@ public class RunnerCoordinatorTest {
         defaultId = "https",
         httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
     )
-    public static JettyResource runner1 = new JettyUnitResource( RunnerCoordinatorTest.class );
+    public static JettyUnitResource<RunnerConfig> runner1 =
+            new JettyUnitResource<RunnerConfig>( RunnerCoordinatorTest.class, "runner1" );
 
     @JettyContext(
         enableSession = true,
@@ -96,7 +100,8 @@ public class RunnerCoordinatorTest {
         defaultId = "https",
         httpsConnectors = { @HttpsConnector( id = "https", port = 0 ) }
     )
-    public static JettyResource runner2 = new JettyUnitResource( RunnerCoordinatorTest.class );
+    public static JettyUnitResource<RunnerConfig> runner2 =
+            new JettyUnitResource<RunnerConfig>( RunnerCoordinatorTest.class, "runner2" );
 
 
     @ClassRule
@@ -114,20 +119,32 @@ public class RunnerCoordinatorTest {
 
     @Test
     public void testRegistered() {
-//        List<Runner> runnerList = webapp.newTestParams()
-//                .setEndpoint( RunnerRegistryResource.ENDPOINT )
-//                .newWebResource( null )
-//                .queryParam( RestParams.COMMIT_ID, commitId )
-//                .path( "/list" )
-//                .type( MediaType.APPLICATION_JSON_TYPE )
-//                .accept( MediaType.APPLICATION_JSON_TYPE )
-//                .get( new GenericType<List<Runner>>() {} );
-//
-//        assertNotNull( runnerList );
-//
-//        LOG.info( "Got {} runners.", runnerList.size() );
-//        for ( Runner runner : runnerList ) {
-//            LOG.info( "", runner );
-//        }
+        Project project = runner1.getFirstContextListener().getProject();
+
+        LOG.info( "runner1 project commit id = {}", project.getVcsVersion() );
+        LOG.info( "runner1 project module artifact id = {}", project.getArtifactId());
+        LOG.info( "runner1 project module group id = {}", project.getGroupId() );
+        LOG.info( "runner1 project module version = {}", project.getVersion() );
+
+        List<Runner> runnerList = webapp.newTestParams()
+                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+                .newWebResource( null )
+                .queryParam( RestParams.COMMIT_ID, project.getVcsVersion() )
+                .queryParam( RestParams.MODULE_ARTIFACTID, project.getArtifactId() )
+                .queryParam( RestParams.MODULE_GROUPID, project.getGroupId() )
+                .queryParam( RestParams.MODULE_VERSION, project.getVersion() )
+                .queryParam( RestParams.USERNAME, CoordinatorFig.USERNAME_DEFAULT )
+                .queryParam( RestParams.PASSWORD, CoordinatorFig.PASSWORD_DEFAULT )
+                .path( "/list" )
+                .type( MediaType.APPLICATION_JSON_TYPE )
+                .accept( MediaType.APPLICATION_JSON_TYPE )
+                .get( new GenericType<List<Runner>>() {} );
+
+        assertNotNull( runnerList );
+
+        LOG.info( "Got {} runners.", runnerList.size() );
+        for ( Runner runner : runnerList ) {
+            LOG.info( "runner = {}", runner );
+        }
     }
 }

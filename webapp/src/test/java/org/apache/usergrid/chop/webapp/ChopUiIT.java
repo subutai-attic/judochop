@@ -82,7 +82,7 @@ public class ChopUiIT {
                 @HttpsConnector(id = "https", port = 8443)}
     )
     @ClassRule
-    public static JettyResource jetty = new JettyIntegResource(args);
+    public static JettyResource jetty = new JettyIntegResource( ChopUiIT.class, args );
     private ByteArrayOutputStream outContent;
 
     @Before
