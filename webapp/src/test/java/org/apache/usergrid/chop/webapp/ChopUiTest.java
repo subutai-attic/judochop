@@ -51,7 +51,7 @@ import static junit.framework.TestCase.assertEquals;
  */
 public class ChopUiTest {
     private static final Logger LOG = LoggerFactory.getLogger( ChopUiTest.class );
-    private static final Map<String,String> queryParams = new HashMap<String, String>();
+    private static final Map<String,String> queryParams = ChopUiTestUtils.getQueryParams();
 
 
     @JettyContext(
@@ -69,15 +69,6 @@ public class ChopUiTest {
     @ClassRule
     public static ElasticSearchResource es = new ElasticSearchResource();
 
-    static {
-        queryParams.put( RestParams.PASSWORD, "pass" );
-        queryParams.put( RestParams.USERNAME, "user" );
-        queryParams.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
-        queryParams.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
-        queryParams.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
-        queryParams.put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
-        queryParams.put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
-    }
 
     @Test
     public void testGet() {
@@ -87,13 +78,14 @@ public class ChopUiTest {
                 .newWebResource()
                 .accept( MediaType.TEXT_PLAIN )
                 .get( String.class );
+
         assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
 
 
     @Test
     public void testRunManagerNext() {
-        ChopUiTestUtils.testRunManagerNext(jetty.newTestParams(queryParams).setLogger(LOG));
+        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams( queryParams ).setLogger(LOG) );
     }
 
 
