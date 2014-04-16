@@ -19,6 +19,20 @@
 package org.apache.usergrid.chop.webapp;
 
 
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.usergrid.chop.api.BaseResult;
+import org.apache.usergrid.chop.api.RestParams;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.RunnerBuilder;
+import org.apache.usergrid.chop.webapp.coordinator.rest.*;
+import org.safehaus.jettyjam.utils.TestParams;
+
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -26,57 +40,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.usergrid.chop.api.BaseResult;
-import org.apache.usergrid.chop.api.RestParams;
-import org.apache.usergrid.chop.api.Runner;
-import org.apache.usergrid.chop.api.RunnerBuilder;
-import org.apache.usergrid.chop.webapp.coordinator.rest.ResetResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.RunnerRegistryResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.StopResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.RunManagerResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.StartResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
-import org.safehaus.jettyjam.utils.TestParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.client.ClientResponse;
-import org.apache.commons.lang.RandomStringUtils;
-import com.sun.jersey.api.client.GenericType;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.*;
 
 
 /**
  * Common tests run in unit and test mode.
  */
-public class ChopUiTestUtils {
+class ChopUiTestUtils {
 
-    public static Map<String, String> getQueryParams() {
+    private final static Map<String, String> WRONG_USER_PARAMS = new HashMap<String, String>() {
+        {
+            put("user", "user");
+            put("pwd", "foo");
+        }
+    };
 
-        Map<String, String> params = new HashMap<String, String>();
+    private final static Map<String, String> QUERY_PARAMS = new HashMap<String, String>() {
+        {
+            put( RestParams.USERNAME, "user" );
+            put( RestParams.PASSWORD, "pass" );
+            put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
+            put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
+            put( RestParams.MODULE_ARTIFACTID, "chop-example" );
+            put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
+            put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
+        }
+    };
 
-        params.put( RestParams.USERNAME, "user" );
-        params.put( RestParams.PASSWORD, "pass" );
-        params.put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
-        params.put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
-        params.put( RestParams.MODULE_ARTIFACTID, "chop-example" );
-        params.put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
-        params.put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
 
-        return params;
-    }
-
-    public static void testRunManagerNext( TestParams testParams ) {
-        Integer next = testParams
+    static void testRunManagerNext( TestParams testParams ) {
+        Integer next = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( RunManagerResource.ENDPOINT )
                 .newWebResource()
                 .path( "/next" )
@@ -88,8 +82,8 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testRunnerRegistryList( TestParams testParams ) {
-        List<Runner> runnerList = testParams
+    static void testRunnerRegistryList( TestParams testParams ) {
+        List<Runner> runnerList = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( RunnerRegistryResource.ENDPOINT )
                 .newWebResource()
                 .path( "/list" )
@@ -102,8 +96,8 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testRunnerRegistryUnregister( TestParams testParams ) {
-        Boolean result = testParams
+    static void testRunnerRegistryUnregister( TestParams testParams ) {
+        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( RunnerRegistryResource.ENDPOINT )
                 .newWebResource()
                 .path( "/unregister" )
@@ -114,7 +108,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testRunnerRegistryRegister( TestParams testParams ) {
+    static void testRunnerRegistryRegister( TestParams testParams ) {
         /*
          * Even though in test mode the runner is not used, a runner must
          * be sent over because the method is expecting the Runner as JSON.
@@ -126,7 +120,7 @@ public class ChopUiTestUtils {
                 .setHostname( "foobar" )
                 .setIpv4Address( "127.0.0.1" );
 
-        Boolean result = testParams
+        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( RunnerRegistryResource.ENDPOINT )
                 .newWebResource()
                 .path( "/register" )
@@ -138,7 +132,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testRunnerRegistrySequence( TestParams testParams ) {
+    static void testRunnerRegistrySequence( TestParams testParams ) {
         /*
          * ------------------------------------------------------------
          * Let's register a runner first before we query for it
@@ -155,7 +149,7 @@ public class ChopUiTestUtils {
                 .setHostname( hostname )
                 .setIpv4Address( "127.0.0.1" );
 
-        Boolean result = testParams
+        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( RunnerRegistryResource.ENDPOINT )
                 .newWebResource( null )
                 .queryParam( RestParams.COMMIT_ID, commitId )
@@ -225,7 +219,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testStart( TestParams testParams ) {
+    static void testStart( TestParams testParams ) {
         BaseResult result = testParams
                 .setEndpoint( StartResource.ENDPOINT )
                 .newWebResource()
@@ -236,7 +230,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testReset( TestParams testParams ) {
+    static void testReset( TestParams testParams ) {
         BaseResult result = testParams
                 .setEndpoint( ResetResource.ENDPOINT )
                 .newWebResource()
@@ -247,7 +241,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testStop( TestParams testParams ) {
+    static void testStop( TestParams testParams ) {
         BaseResult result = testParams
                 .setEndpoint( StopResource.ENDPOINT )
                 .newWebResource()
@@ -258,7 +252,7 @@ public class ChopUiTestUtils {
     }
 
 
-    public static void testUpload( TestParams testParams ) throws Exception {
+    static void testUpload( TestParams testParams ) throws Exception {
 
         MimeMultipart multipart = new MimeMultipart();
 
@@ -312,7 +306,7 @@ public class ChopUiTestUtils {
         bodyPart.setContentID( RestParams.CONTENT );
         multipart.addBodyPart( bodyPart );
 
-        ClientResponse response = testParams
+        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
                             .setEndpoint( UploadResource.ENDPOINT )
                             .newWebResource()
                             .path( "/runner" )
@@ -326,4 +320,93 @@ public class ChopUiTestUtils {
 
         tmpFile.delete();
     }
+
+    static void testGet( TestParams testParams ) {
+        String result = testParams
+                .setEndpoint( TestGetResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.TEXT_PLAIN )
+                .get( String.class );
+
+        assertEquals( TestGetResource.TEST_MESSAGE, result );
+    }
+
+    static void testAuthGet( TestParams testParams ) {
+        String result = testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .get( String.class );
+
+        assertEquals(AuthResource.GET_MESSAGE, result);
+    }
+
+    static void testAuthPost( TestParams testParams ) {
+        String result = testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .post( String.class );
+
+        assertEquals( AuthResource.POST_MESSAGE, result);
+    }
+
+
+    static void testAuthGetWithWrongCredentials( TestParams testParams ) {
+        testParams.addQueryParameters( WRONG_USER_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .get(String.class);
+    }
+
+
+    static void testAuthPostWithAllowedRole( TestParams testParams ) {
+        String result = testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .post( String.class );
+
+        assertEquals( AuthResource.POST_WITH_ALLOWED_ROLE_MESSAGE, result);
+    }
+
+
+    static void testAuthPostWithWrongCredentials( TestParams testParams ) {
+        testParams.addQueryParameters( WRONG_USER_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .post(String.class);
+    }
+
+
+    static void testAuthPostWithUnallowedRole( TestParams testParams ) {
+        testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .post(String.class);
+    }
+
+
+    static void testAuthGetWithAllowedRole( TestParams testParams ) {
+        String result = testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .get( String.class );
+
+        assertEquals( AuthResource.GET_WITH_ALLOWED_ROLE_MESSAGE, result);
+    }
+
+
+    static void testAuthGetWithUnallowedRole( TestParams testParams ) {
+        testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH )
+                .newWebResource()
+                .accept( MediaType.APPLICATION_JSON )
+                .get(String.class);
+    }
+
 }

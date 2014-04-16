@@ -19,13 +19,9 @@
 package org.apache.usergrid.chop.webapp;
 
 
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-
+import com.sun.jersey.api.client.UniformInterfaceException;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.apache.usergrid.chop.webapp.coordinator.rest.TestGetResource;
 import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchResource;
 import org.safehaus.jettyjam.utils.ContextListener;
 import org.safehaus.jettyjam.utils.FilterMapping;
@@ -40,26 +36,25 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
 
-import static junit.framework.TestCase.assertEquals;
-
 
 /**
  * Tests the ChopUi.
  */
 public class ChopUiTest {
-    private static final Logger LOG = LoggerFactory.getLogger( ChopUiTest.class );
-    private static final Map<String,String> queryParams = ChopUiTestUtils.getQueryParams();
 
+    private static final Logger LOG = LoggerFactory.getLogger( ChopUiTest.class );
 
     @JettyContext(
         enableSession = true,
         contextListeners = { @ContextListener( listener = ChopUiConfig.class ) },
-        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*") }
+        filterMappings = { @FilterMapping( filter = GuiceFilter.class, spec = "/*" ) }
     )
+
     @JettyConnectors(
         defaultId = "https",
         httpsConnectors = { @HttpsConnector( id = "https", port = 8443 ) }
     )
+
     @ClassRule
     public static JettyResource jetty = new JettyUnitResource( ChopUiTest.class );
 
@@ -68,50 +63,86 @@ public class ChopUiTest {
 
 
     @Test
-    public void testGet() {
-        String result = jetty.newTestParams()
-                .setLogger( LOG )
-                .setEndpoint( TestGetResource.ENDPOINT_URL )
-                .newWebResource()
-                .accept( MediaType.TEXT_PLAIN )
-                .get( String.class );
-
-        assertEquals( TestGetResource.TEST_MESSAGE, result );
-    }
-
-
-    @Test
     public void testRunManagerNext() {
-        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams( queryParams ).setLogger(LOG) );
+        ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryList() {
-        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams().setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryRegister() {
-        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
     }
 
 
     @Test
     public void testUploadRunner() throws Exception {
-        ChopUiTestUtils.testUpload( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+        ChopUiTestUtils.testUpload( jetty.newTestParams().setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistryUnregister() {
-        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
     }
 
 
     @Test
     public void testRunnerRegistrySequence() {
-        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams( queryParams ).setLogger( LOG ) );
+        ChopUiTestUtils.testRunnerRegistrySequence( jetty.newTestParams().setLogger( LOG ) );
     }
+
+
+    @Test
+    public void testGet() {
+        ChopUiTestUtils.testGet( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testAuthGet() {
+        ChopUiTestUtils.testAuthGet( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testAuthPost() {
+        ChopUiTestUtils.testAuthPost( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
+    public void testAuthPostWithAllowedRole() {
+        ChopUiTestUtils.testAuthPostWithAllowedRole( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test(expected=UniformInterfaceException.class)
+    public void testAuthPostWithWrongCredentials() {
+        ChopUiTestUtils.testAuthPostWithWrongCredentials( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test(expected=UniformInterfaceException.class)
+    public void testAuthPostWithUnallowedRole() {
+        ChopUiTestUtils.testAuthPostWithUnallowedRole( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test(expected=UniformInterfaceException.class)
+    public void testAuthGetWithUnallowedRole() {
+        ChopUiTestUtils.testAuthGetWithUnallowedRole( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test(expected=UniformInterfaceException.class)
+    public void testAuthGetWithWrongCredentials() {
+        ChopUiTestUtils.testAuthGetWithWrongCredentials( jetty.newTestParams().setLogger( LOG ) );
+    }
+
 }
