@@ -87,14 +87,13 @@ public class StackCoordinator {
      * @param commit Commit to be chop tested
      * @param module Module to be chop tested
      * @param runnerCount Number of runner instances that will run the tests
-     * @return
+     * @return Returns the CoordinatedStack object if setup succeeds
      * @throws Exception
      */
     public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount )
             throws Exception {
 
         CoordinatedStack coordinatedStack;
-        String keyFile;
 
         synchronized ( lock ) {
 
@@ -115,6 +114,9 @@ public class StackCoordinator {
                 return coordinatedStack;
             }
 
+            String keyFile;
+            String message;
+            LinkedList<String> launchedInstances = new LinkedList<String>();
             coordinatedStack = new CoordinatedStack( stack, user, commit, module );
 
             /*
@@ -136,36 +138,49 @@ public class StackCoordinator {
             for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
 
                 keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
-                if( keyFile == null || ! ( new File( keyFile ) ).exists() ) {
-                    // TODO should we clean up launched clusters?
-                    throw new FileNotFoundException( "No key file found with the key name: " +
-                            cluster.getInstanceSpec().getKeyName() + " and path: " + keyFile );
+                if( keyFile == null ) {
+                    message = "No key found with name " + cluster.getInstanceSpec().getKeyName() + " for cluster " +
+                            cluster.getName();
+                    LOG.warn( message + ", aborting and terminating launched instances..." );
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new RuntimeException( message );
+                }
+                if( ! ( new File( keyFile ) ).exists()  ) {
+                    message = "Key file " + keyFile + " for cluster " + cluster.getName() + " not found";
+                    LOG.warn( message + ", aborting and terminating launched instances..." );
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new FileNotFoundException( message );
                 }
 
                 LaunchResult result = instanceManager.launchCluster(
                         coordinatedStack, cluster, chopUiFig.getLaunchClusterTimeout() );
 
                 for ( Instance instance : result.getInstances() ) {
+                    launchedInstances.add( instance.getId() );
                     cluster.add( instance );
                 }
 
                 boolean success = executeSSHCommands( cluster, runnerJar, keyFile );
                 if( ! success ) {
-                    // TODO should we clean up launched clusters?
-                    throw new RuntimeException( "SSH commands have failed, will not continue" );
+                    message = "SSH commands have failed, will not continue";
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new RuntimeException( message );
                 }
             }
 
             /** Setup runners */
             keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
             if( keyFile == null ) {
-                // TODO clean up launched clusters
-                throw new RuntimeException( "No key file found with key name " + providerParams.getKeyName() );
+                message = "No key found with name " + providerParams.getKeyName() + " for runners";
+                LOG.warn( message + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                throw new RuntimeException( message );
             }
             if( ! ( new File( keyFile ) ).exists() ) {
-                // TODO should we clean up launched clusters?
-                throw new FileNotFoundException( "No key file found with the key name: " +
-                        providerParams.getKeyName() + " and path: " + keyFile );
+                message = "Key file " + keyFile + " for runners not found";
+                LOG.warn( message + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                throw new FileNotFoundException( message );
             }
 
             BasicInstanceSpec runnerSpec = new BasicInstanceSpec();

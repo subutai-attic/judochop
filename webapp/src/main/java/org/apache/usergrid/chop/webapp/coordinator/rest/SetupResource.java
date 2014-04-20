@@ -119,8 +119,8 @@ public class SetupResource extends TestableResource implements RestParams {
             @QueryParam( RestParams.USERNAME ) String user,
             @QueryParam( RestParams.RUNNER_COUNT ) int runnerCount,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
-                         )
-    {
+                         ) {
+
         if( inTestMode( testMode ) ) {
             LOG.info( "Calling /setup/stack in test mode ..." );
         }
@@ -172,8 +172,8 @@ public class SetupResource extends TestableResource implements RestParams {
             @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam( RestParams.USERNAME ) String user,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
-                         )
-    {
+                         ) {
+
         if( inTestMode( testMode ) ) {
             LOG.info( "Calling /setup/status in test mode ..." );
         }
