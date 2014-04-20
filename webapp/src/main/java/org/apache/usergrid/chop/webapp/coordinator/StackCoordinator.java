@@ -46,7 +46,6 @@ import org.apache.usergrid.chop.stack.ICoordinatedCluster;
 import org.apache.usergrid.chop.stack.Instance;
 import org.apache.usergrid.chop.spi.InstanceManager;
 import org.apache.usergrid.chop.spi.LaunchResult;
-import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
@@ -81,10 +80,21 @@ public class StackCoordinator {
     private ProviderParamsDao providerParamsDao;
 
 
+    /**
+     * Sets up all clusters and runner instances defined by given parameters
+     * @param stack Stack object to be set up
+     * @param user User who is doing the operation
+     * @param commit Commit to be chop tested
+     * @param module Module to be chop tested
+     * @param runnerCount Number of runner instances that will run the tests
+     * @return
+     * @throws Exception
+     */
     public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount )
             throws Exception {
 
         CoordinatedStack coordinatedStack;
+        String keyFile;
 
         synchronized ( lock ) {
 
@@ -125,7 +135,7 @@ public class StackCoordinator {
 
             for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
 
-                String keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
+                keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
                 if( keyFile == null || ! ( new File( keyFile ) ).exists() ) {
                     // TODO should we clean up launched clusters?
                     throw new FileNotFoundException( "No key file found with the key name: " +
@@ -146,10 +156,22 @@ public class StackCoordinator {
                 }
             }
 
+            /** Setup runners */
+            keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
+            if( keyFile == null ) {
+                // TODO clean up launched clusters
+                throw new RuntimeException( "No key file found with key name " + providerParams.getKeyName() );
+            }
+            if( ! ( new File( keyFile ) ).exists() ) {
+                // TODO should we clean up launched clusters?
+                throw new FileNotFoundException( "No key file found with the key name: " +
+                        providerParams.getKeyName() + " and path: " + keyFile );
+            }
+
             BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
             runnerSpec.setImageId( providerParams.getImageId() );
             runnerSpec.setType( providerParams.getInstanceType() );
-            runnerSpec.setKeyName( "" ); // TODO key name for runners?
+            runnerSpec.setKeyName( keyFile );
 
             LaunchResult result = instanceManager.launchRunners(
                     coordinatedStack, runnerSpec, runnerCount, chopUiFig.getLaunchClusterTimeout() );
@@ -199,12 +221,19 @@ public class StackCoordinator {
     }
 
 
+    /**
+     * Extracts all scripts from given runner.jar, uploads them to the instances, and executes them asynchronously
+     * @param cluster Cluster object that the scripts will be executed on
+     * @param runnerJar runner.jar file's path that contains all script files
+     * @param keyFile SSH key file path to be used on ssh operations to instances
+     * @return returns true if operation fully succeeds
+     * @throws MalformedURLException
+     */
     private static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile )
             throws MalformedURLException {
 
         InstanceValues sshCommand;
         StringBuilder sb = new StringBuilder();
-        String command;
         Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
 
         for( Object obj: cluster.getInstanceSpec().getScriptEnvironment().keySet() ) {
@@ -261,7 +290,6 @@ public class StackCoordinator {
                 LOG.error( "Interrupted while trying to execute SSH command", e );
                 return false;
             }
-
         }
 
         return AsyncSsh.extractFailures( executed ).size() == 0;
