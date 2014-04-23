@@ -10,7 +10,8 @@ Finally, by combining the upload and download capabilities, it can merge a Maven
 
 First of all, you may need to run the following command to get the necessary libraries
 for wagon plugin : "mvn wagon:update-maven-3"
-Then, you need to add a property to settings.xml (e.g. /etc/maven/settings.xml) file of maven which may seem as follows:
+Then, you need to set the following properties inside settings.xml (e.g. /etc/maven/settings.xml) file
+which may look like as follows:
 
 ~~~~~~
 
@@ -20,14 +21,21 @@ Then, you need to add a property to settings.xml (e.g. /etc/maven/settings.xml) 
         <privateKey>/path/to/key-file.pem</privateKey>
     </server>
 
+    <profile>
+        <id>deploy-chop-webapp</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+            <chop.coordinator.url>ec2-xxx.amazonaws.com</chop.coordinator.url>
+        </properties
+    </profile>
+
 ~~~~~~
 
-After that, you should specify the machine url field declared inside the wagon-maven-plugin configuration field
-[this file](https://stash.safehaus.org/projects/CHOP/repos/main/browse/webapp/pom.xml).
-
-Then, you may run the following goals for the following operations:
-wagon:upload-single -> Uploads the required jar file for webapp to the specified machine.
-wagon:sshexec       -> Runs the necessary commands for the newly uploaded webapp to take effect.
+Then, you may run the following goals for the following operations inside webapp module:
+*wagon:upload-single -> Uploads the required jar file for webapp to the specified machine.
+*wagon:sshexec       -> Runs the necessary commands for the newly uploaded webapp to take effect.
 
 That's it. Ready to go. You just started the web application with the new one!
 

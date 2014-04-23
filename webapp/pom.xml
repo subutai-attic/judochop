@@ -15,6 +15,15 @@
         A REST based web application that services requests to load, run, and
         archive performance tests.
     </description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <wagon.version>2.6</wagon.version>
+        <wagon.plugin.version>1.0-beta-5</wagon.plugin.version>
+        <wagon.webapp.copy.file>${project.build.directory}/${project.artifactId}-${project.version}-shaded.${project.packaging}</wagon.webapp.copy.file>
+        <wagon.temp.directory>/tmp</wagon.temp.directory>
+        <chop.home.directory>/opt/chop</chop.home.directory>
+        <chop.webapp.directory>${chop.home.directory}/webapp</chop.webapp.directory>
+    </properties>
 
     <build>
         <resources>
@@ -50,19 +59,20 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>2.4</version>
+                <version>${wagon.version}</version>
             </extension>
         </extensions>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0-beta-5</version>
+                <version>${wagon.plugin.version}</version>
                 <configuration>
                     <serverId>ec2-coordinator-instance</serverId>
-                    <fromFile>${project.build.directory}/chop-webapp-${project.version}-shaded.jar</fromFile>
-                    <url>scp://ec2-XXX.amazonaws.com/opt/chop/webapp</url>
+                    <fromFile>${wagon.webapp.copy.file}</fromFile>
+                    <url>scp://${chop.coordinator.url}${wagon.temp.directory}</url>
                     <commands>
+                        <command>sudo mv ${wagon.temp.directory}/${wagon.webapp.copy.file} ${chop.webapp.directory}</command>
                         <command>sudo service chop-webapp restart</command>
                     </commands>
                 </configuration>
