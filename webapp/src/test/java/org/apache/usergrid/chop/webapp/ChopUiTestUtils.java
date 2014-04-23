@@ -219,6 +219,22 @@ class ChopUiTestUtils {
     }
 
 
+    static void testSetup( TestParams testParams ) {
+        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
+                            .setEndpoint( SetupResource.ENDPOINT )
+                            .newWebResource()
+                            .queryParam( RestParams.RUNNER_COUNT, "5" )
+                            .path( "/stack" )
+                            .type( MediaType.APPLICATION_JSON )
+                            .accept( MediaType.APPLICATION_JSON )
+                            .post( ClientResponse.class );
+
+        assertEquals( Response.Status.CREATED.getStatusCode(), response.getStatus() );
+
+        assertEquals( "\"NotFound\"", response.getEntity( String.class ) );
+    }
+
+
     static void testStart( TestParams testParams ) {
         BaseResult result = testParams
                 .setEndpoint( StartResource.ENDPOINT )
@@ -321,6 +337,7 @@ class ChopUiTestUtils {
         tmpFile.delete();
     }
 
+
     static void testGet( TestParams testParams ) {
         String result = testParams
                 .setEndpoint( TestGetResource.ENDPOINT_URL )
@@ -331,6 +348,7 @@ class ChopUiTestUtils {
         assertEquals( TestGetResource.TEST_MESSAGE, result );
     }
 
+
     static void testAuthGet( TestParams testParams ) {
         String result = testParams.addQueryParameters( QUERY_PARAMS )
                 .setEndpoint( AuthResource.ENDPOINT_URL )
@@ -340,6 +358,7 @@ class ChopUiTestUtils {
 
         assertEquals(AuthResource.GET_MESSAGE, result);
     }
+
 
     static void testAuthPost( TestParams testParams ) {
         String result = testParams.addQueryParameters( QUERY_PARAMS )

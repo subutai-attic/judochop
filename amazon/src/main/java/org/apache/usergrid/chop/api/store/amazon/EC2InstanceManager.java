@@ -78,11 +78,9 @@ public class EC2InstanceManager implements InstanceManager {
 
 
     @Override
-    public void terminateInstances( final Collection<String> instancesIds ) {
-        TerminateInstancesRequest request = ( new TerminateInstancesRequest() ).withInstanceIds( instancesIds );
+    public void terminateInstances( final Collection<String> instanceIds ) {
+        TerminateInstancesRequest request = ( new TerminateInstancesRequest() ).withInstanceIds( instanceIds );
         client.terminateInstances( request );
-
-        // TODO should we wait until all terminated?
     }
 
 

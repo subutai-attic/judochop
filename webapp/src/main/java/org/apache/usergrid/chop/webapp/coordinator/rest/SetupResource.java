@@ -29,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
@@ -110,8 +109,8 @@ public class SetupResource extends TestableResource implements RestParams {
 
     @POST
     @Consumes( MediaType.APPLICATION_JSON )
+    @Produces( MediaType.APPLICATION_JSON )
     @Path( "/stack" )
-    @Produces( MediaType.TEXT_PLAIN )
     public Response stack(
             @QueryParam( RestParams.COMMIT_ID ) String commitId,
             @QueryParam( RestParams.MODULE_ARTIFACTID ) String artifactId,
@@ -120,10 +119,16 @@ public class SetupResource extends TestableResource implements RestParams {
             @QueryParam( RestParams.USERNAME ) String user,
             @QueryParam( RestParams.RUNNER_COUNT ) int runnerCount,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
-                         )
-    {
+                         ) {
+
         if( inTestMode( testMode ) ) {
             LOG.info( "Calling /setup/stack in test mode ..." );
+            LOG.info( "  Commit Id: {}", commitId );
+            LOG.info( "  Group Id: {}", groupId );
+            LOG.info( "  Artifact Id: {}", artifactId );
+            LOG.info( "  Version: {}", version );
+            LOG.info( "  User: {}", user );
+            LOG.info( "  Runner Count: {}", runnerCount );
         }
         else {
             LOG.info( "Calling /setup/stack" );
@@ -132,22 +137,29 @@ public class SetupResource extends TestableResource implements RestParams {
         SetupStackThread setupStack = getSetupStackThread( commitId, artifactId, groupId, version, user, runnerCount );
         SetupStackStatus status = stackStatus( setupStack );
 
+        if( inTestMode( testMode ) ) {
+            return Response.status( Response.Status.CREATED )
+                           .entity( status )
+                           .type( MediaType.APPLICATION_JSON )
+                           .build();
+        }
+
         if( status.equals( SetupStackStatus.NotFound ) ) {
             return Response.status( Response.Status.BAD_REQUEST )
                            .entity( setupStack.getErrorMessage() )
-                           .type( MediaType.TEXT_PLAIN )
+                           .type( MediaType.APPLICATION_JSON )
                            .build();
         }
         if( status.equals( SetupStackStatus.SettingUp ) ) {
             return Response.status( Response.Status.OK )
                            .entity( "Setting up" )
-                           .type( MediaType.TEXT_PLAIN )
+                           .type( MediaType.APPLICATION_JSON )
                            .build();
         }
         if( status.equals( SetupStackStatus.SetUp ) ) {
             return Response.status( Response.Status.OK )
                            .entity( "Already set up" )
-                           .type( MediaType.TEXT_PLAIN )
+                           .type( MediaType.APPLICATION_JSON )
                            .build();
         }
 
@@ -157,7 +169,7 @@ public class SetupResource extends TestableResource implements RestParams {
 
         return Response.status( Response.Status.CREATED )
                        .entity( "Started setting up the stack" )
-                       .type( MediaType.TEXT_PLAIN )
+                       .type( MediaType.APPLICATION_JSON )
                        .build();
     }
 
@@ -173,8 +185,8 @@ public class SetupResource extends TestableResource implements RestParams {
             @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam( RestParams.USERNAME ) String user,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
-                         )
-    {
+                         ) {
+
         if( inTestMode( testMode ) ) {
             LOG.info( "Calling /setup/status in test mode ..." );
         }
@@ -223,7 +235,7 @@ public class SetupResource extends TestableResource implements RestParams {
             return new SetupStackThread( "User " + user + " not found" );
         }
 
-        File runnerJar = new File( chopUiFig.getContextPath() );
+        File runnerJar = new File( chopUiFig.getContextTempDir() );
         runnerJar = new File( runnerJar, user );
         runnerJar = new File( runnerJar, groupId );
         runnerJar = new File( runnerJar, artifactId );

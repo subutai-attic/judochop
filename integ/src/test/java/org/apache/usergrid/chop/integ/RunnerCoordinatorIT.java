@@ -49,9 +49,9 @@ public class RunnerCoordinatorIT {
         systemProperties.setProperty( "archaius.deployment.environment", "INTEG" );
     }
 
-    private static JettyResource webapp = new JettyIntegResource( "jettyjam-webapp.properties", webappArgs );
-    private static JettyResource runner1 = new JettyIntegResource( systemProperties );
-    private static JettyResource runner2 = new JettyIntegResource( systemProperties );
+    private static JettyResource webapp = new JettyIntegResource( RunnerCoordinatorIT.class, "jettyjam-webapp.properties", webappArgs );
+    private static JettyResource runner1 = new JettyIntegResource( RunnerCoordinatorIT.class, systemProperties );
+    private static JettyResource runner2 = new JettyIntegResource( RunnerCoordinatorIT.class, systemProperties );
 
     @ClassRule
     public static StartResources resources = new StartResources( 1000, webapp, runner1, runner2 );

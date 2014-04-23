@@ -46,7 +46,6 @@ import org.apache.usergrid.chop.stack.ICoordinatedCluster;
 import org.apache.usergrid.chop.stack.Instance;
 import org.apache.usergrid.chop.spi.InstanceManager;
 import org.apache.usergrid.chop.spi.LaunchResult;
-import org.apache.usergrid.chop.stack.InstanceSpec;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
@@ -81,6 +80,16 @@ public class StackCoordinator {
     private ProviderParamsDao providerParamsDao;
 
 
+    /**
+     * Sets up all clusters and runner instances defined by given parameters
+     * @param stack Stack object to be set up
+     * @param user User who is doing the operation
+     * @param commit Commit to be chop tested
+     * @param module Module to be chop tested
+     * @param runnerCount Number of runner instances that will run the tests
+     * @return Returns the CoordinatedStack object if setup succeeds
+     * @throws Exception
+     */
     public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount )
             throws Exception {
 
@@ -105,6 +114,9 @@ public class StackCoordinator {
                 return coordinatedStack;
             }
 
+            String keyFile;
+            String message;
+            LinkedList<String> launchedInstances = new LinkedList<String>();
             coordinatedStack = new CoordinatedStack( stack, user, commit, module );
 
             /*
@@ -112,7 +124,7 @@ public class StackCoordinator {
              *
              * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
              */
-            File runnerJar = new File( chopUiFig.getContextPath() );
+            File runnerJar = new File( chopUiFig.getContextTempDir() );
             runnerJar = new File( runnerJar, user.getUsername() );
             runnerJar = new File( runnerJar, module.getGroupId() );
             runnerJar = new File( runnerJar, module.getArtifactId() );
@@ -125,31 +137,56 @@ public class StackCoordinator {
 
             for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
 
-                String keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
-                if( keyFile == null || ! ( new File( keyFile ) ).exists() ) {
-                    // TODO should we clean up launched clusters?
-                    throw new FileNotFoundException( "No key file found with the key name: " +
-                            cluster.getInstanceSpec().getKeyName() + " and path: " + keyFile );
+                keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
+                if( keyFile == null ) {
+                    message = "No key found with name " + cluster.getInstanceSpec().getKeyName() + " for cluster " +
+                            cluster.getName();
+                    LOG.warn( message + ", aborting and terminating launched instances..." );
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new RuntimeException( message );
+                }
+                if( ! ( new File( keyFile ) ).exists()  ) {
+                    message = "Key file " + keyFile + " for cluster " + cluster.getName() + " not found";
+                    LOG.warn( message + ", aborting and terminating launched instances..." );
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new FileNotFoundException( message );
                 }
 
                 LaunchResult result = instanceManager.launchCluster(
                         coordinatedStack, cluster, chopUiFig.getLaunchClusterTimeout() );
 
                 for ( Instance instance : result.getInstances() ) {
+                    launchedInstances.add( instance.getId() );
                     cluster.add( instance );
                 }
 
                 boolean success = executeSSHCommands( cluster, runnerJar, keyFile );
                 if( ! success ) {
-                    // TODO should we clean up launched clusters?
-                    throw new RuntimeException( "SSH commands have failed, will not continue" );
+                    message = "SSH commands have failed, will not continue";
+                    instanceManager.terminateInstances( launchedInstances );
+                    throw new RuntimeException( message );
                 }
+            }
+
+            /** Setup runners */
+            keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
+            if( keyFile == null ) {
+                message = "No key found with name " + providerParams.getKeyName() + " for runners";
+                LOG.warn( message + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                throw new RuntimeException( message );
+            }
+            if( ! ( new File( keyFile ) ).exists() ) {
+                message = "Key file " + keyFile + " for runners not found";
+                LOG.warn( message + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                throw new FileNotFoundException( message );
             }
 
             BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
             runnerSpec.setImageId( providerParams.getImageId() );
             runnerSpec.setType( providerParams.getInstanceType() );
-            runnerSpec.setKeyName( "" ); // TODO key name for runners?
+            runnerSpec.setKeyName( keyFile );
 
             LaunchResult result = instanceManager.launchRunners(
                     coordinatedStack, runnerSpec, runnerCount, chopUiFig.getLaunchClusterTimeout() );
@@ -199,12 +236,19 @@ public class StackCoordinator {
     }
 
 
+    /**
+     * Extracts all scripts from given runner.jar, uploads them to the instances, and executes them asynchronously
+     * @param cluster Cluster object that the scripts will be executed on
+     * @param runnerJar runner.jar file's path that contains all script files
+     * @param keyFile SSH key file path to be used on ssh operations to instances
+     * @return returns true if operation fully succeeds
+     * @throws MalformedURLException
+     */
     private static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile )
             throws MalformedURLException {
 
         InstanceValues sshCommand;
         StringBuilder sb = new StringBuilder();
-        String command;
         Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
 
         for( Object obj: cluster.getInstanceSpec().getScriptEnvironment().keySet() ) {
@@ -261,7 +305,6 @@ public class StackCoordinator {
                 LOG.error( "Interrupted while trying to execute SSH command", e );
                 return false;
             }
-
         }
 
         return AsyncSsh.extractFailures( executed ).size() == 0;

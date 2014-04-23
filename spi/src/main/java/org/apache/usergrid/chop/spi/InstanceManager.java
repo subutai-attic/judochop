@@ -33,7 +33,7 @@ import org.apache.usergrid.chop.stack.InstanceSpec;
 public interface InstanceManager {
     long getDefaultTimeout();
 
-    void terminateInstances( Collection<String> instancesIds );
+    void terminateInstances( Collection<String> instanceIds );
 
     LaunchResult launchCluster( ICoordinatedStack stack, ICoordinatedCluster cluster, int timeout );
 

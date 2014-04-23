@@ -55,33 +55,44 @@ public class ChopUiIT {
     )
 
     @ClassRule
-//    public static JettyResource jetty = new JettyIntegResource( new String[]{ "-e" } );
     public static JettyResource jetty = new JettyIntegResource( ChopUiIT.class, new String[]{ "-e" } );
+
 
     @Test
     public void testRunManagerNext() {
         ChopUiTestUtils.testRunManagerNext( jetty.newTestParams().setLogger( LOG ) );
     }
 
+
     @Test
     public void testRunnerRegistryList() {
         ChopUiTestUtils.testRunnerRegistryList( jetty.newTestParams().setLogger( LOG ) );
     }
+
 
     @Test
     public void testRunnerRegistryRegister() {
         ChopUiTestUtils.testRunnerRegistryRegister( jetty.newTestParams().setLogger( LOG ) );
     }
 
+
     @Test
     public void testUploadRunner() throws Exception {
         ChopUiTestUtils.testUpload( jetty.newTestParams().setLogger( LOG ) );
     }
 
+
+    @Test
+    public void testSetupStack() {
+        ChopUiTestUtils.testSetup( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
     @Test
     public void testRunnerRegistryUnregister() {
         ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
     }
+
 
     @Test
     public void testRunnerRegistrySequence() {
