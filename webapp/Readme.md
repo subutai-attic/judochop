@@ -11,13 +11,14 @@ Finally, by combining the upload and download capabilities, it can merge a Maven
 First of all, you may need to run the following command to get the necessary libraries
 for wagon plugin : "mvn wagon:update-maven-3"
 Then, you need to add a property to settings.xml (e.g. /etc/maven/settings.xml) file of maven which may seem as follows:
+
 ~~~~~~
 
-<server>
-    <id>ec2-coordinator-instance</id>
-    <username>ubuntu</username>
-    <privateKey>/path/to/key-file.pem</privateKey>
-</server>
+    <server>
+        <id>ec2-coordinator-instance</id>
+        <username>ubuntu</username>
+        <privateKey>/path/to/key-file.pem</privateKey>
+    </server>
 
 ~~~~~~
 
