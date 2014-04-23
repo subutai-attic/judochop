@@ -19,7 +19,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <wagon.version>2.6</wagon.version>
         <wagon.plugin.version>1.0-beta-5</wagon.plugin.version>
-        <wagon.webapp.copy.file>${project.build.directory}/${project.artifactId}-${project.version}-shaded.${project.packaging}</wagon.webapp.copy.file>
+        <webapp-shaded-jar>${project.artifactId}-${project.version}-shaded.${project.packaging}</webapp-shaded-jar>
+        <wagon.webapp.copy.file>${project.build.directory}/${webapp-shaded-jar}</wagon.webapp.copy.file>
         <wagon.temp.directory>/tmp</wagon.temp.directory>
         <chop.home.directory>/opt/chop</chop.home.directory>
         <chop.webapp.directory>${chop.home.directory}/webapp</chop.webapp.directory>
@@ -72,7 +73,7 @@
                     <fromFile>${wagon.webapp.copy.file}</fromFile>
                     <url>scp://${chop.coordinator.url}${wagon.temp.directory}</url>
                     <commands>
-                        <command>sudo mv ${wagon.temp.directory}/${wagon.webapp.copy.file} ${chop.webapp.directory}</command>
+                        <command>sudo mv ${wagon.temp.directory}/${webapp-shaded-jar} ${chop.webapp.directory}</command>
                         <command>sudo service chop-webapp restart</command>
                     </commands>
                 </configuration>

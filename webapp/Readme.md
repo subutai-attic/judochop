@@ -34,8 +34,8 @@ which may look like as follows:
 ~~~~~~
 
 Then, you may run the following goals for the following operations inside webapp module:
-*wagon:upload-single -> Uploads the required jar file for webapp to the specified machine.
-*wagon:sshexec       -> Runs the necessary commands for the newly uploaded webapp to take effect.
+* wagon:upload-single   -> Uploads the required jar file for webapp to the specified machine.
+* wagon:sshexec         -> Runs the necessary commands for the newly uploaded webapp to take effect.
 
 That's it. Ready to go. You just started the web application with the new one!
 
