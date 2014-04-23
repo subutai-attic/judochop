@@ -87,6 +87,12 @@ public class ChopUiTest {
 
 
     @Test
+    public void testSetup() {
+        ChopUiTestUtils.testSetup( jetty.newTestParams().setLogger( LOG ) );
+    }
+
+
+    @Test
     public void testRunnerRegistryUnregister() {
         ChopUiTestUtils.testRunnerRegistryUnregister( jetty.newTestParams().setLogger( LOG ) );
     }
