@@ -19,6 +19,8 @@
 package org.apache.usergrid.chop.plugin;
 
 
+import java.net.URI;
+
 import org.apache.usergrid.chop.api.ChopUtils;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -34,11 +36,12 @@ public class CertMojo extends MainMojo {
         try {
             ChopUtils.installRunnerKey( null, "tomcat" );
 
+            URI uri = URI.create( endpoint );
             if ( certStorePassphrase == null ) {
-                ChopUtils.installCert( endpoint, 443, null );
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), null );
             }
             else {
-                ChopUtils.installCert( endpoint, 443, certStorePassphrase.toCharArray() );
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), certStorePassphrase.toCharArray() );
             }
         }
         catch ( Exception e ) {

@@ -156,7 +156,8 @@ public class ESSuiteTest {
                 "m1.large",
                 "1230d4353459da23ec21a259a",
                 "ad911213ab21ef23ab4e0e",
-                IMAGE_ID
+                IMAGE_ID,
+                "testKey1"
         );
         ppDao.save( pp );
 
@@ -165,7 +166,8 @@ public class ESSuiteTest {
                 "t1.micro",
                 "1230d4353459da23ec21a259a",
                 "ad911213ab21ef23ab4e0e",
-                "ami-2143224"
+                "ami-2143224",
+                "testKey2"
         );
         ppDao.save( pp );
     }

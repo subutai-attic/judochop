@@ -103,11 +103,11 @@ public class ProviderParamsDao extends Dao {
                 Util.getString( json, "instanceType" ),
                 Util.getString( json, "accessKey" ),
                 Util.getString( json, "secretKey" ),
-                Util.getString( json, "imageId" )
+                Util.getString( json, "imageId" ),
+                Util.getString( json, "keyName" )
         );
 
         params.setKeys( Util.getMap( json, "keys" ) );
-        params.setKeyName( Util.getString( json, "keyName" ) );
 
         return params;
     }
