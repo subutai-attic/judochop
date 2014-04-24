@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.webapp.view.main;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
+import org.apache.usergrid.chop.webapp.service.DataService;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.chart.builder.RunsChartBuilder;
 import org.apache.usergrid.chop.webapp.view.chart.layout.ChartLayout;
@@ -89,7 +90,7 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
     private void loadScripts() {
         JavaScriptUtil.loadFile("js/jquery.min.js");
-        JavaScriptUtil.loadFile("js/highcharts.js");
+        JavaScriptUtil.loadFile("js/jquery.flot.min.js");
     }
 
     @Override

@@ -21,7 +21,9 @@ package org.apache.usergrid.chop.webapp.service.chart.series;
 import org.apache.usergrid.chop.webapp.service.chart.Point;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Series {
@@ -34,6 +36,10 @@ public class Series {
         this.points = points;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public Series(List<Point> points) {
         this("", points);
     }
@@ -42,8 +48,26 @@ public class Series {
         return points;
     }
 
-    public String getName() {
-        return name;
+    public List<Double[]> getDoubleArray() {
+
+        ArrayList<Double[]> list = new ArrayList<Double[]>();
+
+        for (Point p : points) {
+            list.add( new Double[] { p.getX(), p.getY() } );
+        }
+
+        return list;
+    }
+
+    public JSONArray getJsonArray() {
+
+        JSONArray arr = new JSONArray();
+
+        for ( Point p : getPoints() ) {
+            arr.put( p.toJson() );
+        }
+
+        return arr;
     }
 
     @Override

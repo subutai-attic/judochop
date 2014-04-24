@@ -25,7 +25,6 @@ import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.chart.Params;
 import org.apache.usergrid.chop.webapp.service.chart.builder.ChartBuilder;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
-import org.apache.usergrid.chop.webapp.view.chart.format.PointRadius;
 import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +37,9 @@ public class IterationsChartLayout extends ChartLayout {
 
     private RunResultDao runResultDao = InjectorFactory.getInstance(RunResultDao.class);
 
-    protected Button failuresButton;
     private String runResultId;
+
+    protected Button failuresButton;
 
     public IterationsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
         super( new Config(
@@ -47,9 +47,7 @@ public class IterationsChartLayout extends ChartLayout {
                 chartBuilder,
                 nextLayout,
                 "iterationsChart",
-                "iterationsChartCallback",
                 "js/iterations-chart.js",
-                new PointRadius(20, 15, 10, 10, 5, 7),
                 breadcrumb
         ) );
     }
@@ -59,6 +57,11 @@ public class IterationsChartLayout extends ChartLayout {
         addMainControls();
         addSubControls(410);
         super.addSubControls(430);
+        addRunnersCheckboxes();
+    }
+
+    private void addRunnersCheckboxes() {
+        UIUtil.addLayout(this, "runnersCheckboxes", "left: 10px; top: 620px;", "720px", "200px");
     }
 
     @Override

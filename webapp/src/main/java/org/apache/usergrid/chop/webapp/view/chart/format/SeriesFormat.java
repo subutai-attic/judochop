@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SeriesFormat {
 
-    @SuppressWarnings("unchecked")
+/*
     public static String format(List<Series> series, PointRadius pointRadius) {
 
         JSONArray arr = new JSONArray();
@@ -39,7 +39,6 @@ public class SeriesFormat {
         return arr.toString();
     }
 
-    @SuppressWarnings("unchecked")
     private static JSONObject format(Series series, PointRadius pointRadius) {
 
         JSONObject json = new JSONObject();
@@ -95,5 +94,6 @@ public class SeriesFormat {
         }
 
         return color;
-    }
+    }*/
+
 }
