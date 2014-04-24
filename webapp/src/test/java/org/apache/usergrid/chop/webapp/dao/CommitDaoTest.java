@@ -21,16 +21,13 @@ package org.apache.usergrid.chop.webapp.dao;
 import org.junit.Test;
 import org.apache.usergrid.chop.api.Commit;
 
-import org.apache.usergrid.chop.webapp.dao.model.BasicCommit;
 import org.apache.usergrid.chop.webapp.elasticsearch.ESSuiteTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-
 
 public class CommitDaoTest {
 

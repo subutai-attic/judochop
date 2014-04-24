@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.webapp.elasticsearch;
 
 import java.util.Date;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.usergrid.chop.webapp.dao.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -204,12 +205,16 @@ public class ESSuiteTest {
     }
 
     private static void setupCommits(Injector injector) throws Exception {
+
+        // Commits shouldn't have the same createDate b/c of issues with sorting them
+        Date now = new Date();
+
         commitDao = injector.getInstance( CommitDao.class );
         Commit commit = new BasicCommit(
                 COMMIT_ID_1, // commitId
                 MODULE_ID_1, // moduleId
                 "742e2a76a6ba161f9efb87ce58a9187e", // warMD5
-                new Date(), // createDate
+                now, // createDate
                 "/some/dummy/path"
         );
         commitDao.save( commit );
@@ -218,7 +223,7 @@ public class ESSuiteTest {
                 COMMIT_ID_2, // commitId
                 MODULE_ID_2, // moduleId
                 "395cfdfc3b77242a6f957d6d92da8958", // warMD5
-                new Date(), // createDate
+                DateUtils.addMinutes(now, 1), // createDate
                 "/some/dummy/path"
         );
         commitDao.save( commit );
@@ -227,7 +232,7 @@ public class ESSuiteTest {
                 COMMIT_ID_3, // commitId
                 MODULE_ID_2, // moduleId
                 "b9860ffa5e39b6f7123ed8c72c4b7046", // warMD5
-                new Date(), // createDate
+                DateUtils.addMinutes(now, 2), // createDate
                 "/some/dummy/path"
         );
         commitDao.save( commit );
