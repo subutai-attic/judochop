@@ -8,32 +8,31 @@ Finally, by combining the upload and download capabilities, it can merge a Maven
 
 # How to use Wagon Plugin
 
-First of all, you may need to run the following command to get the necessary libraries
-for wagon plugin : "mvn wagon:update-maven-3"
-Then, you need to set the following properties inside settings.xml (e.g. /etc/maven/settings.xml) file
+First of all, you need to set the following properties inside settings.xml (e.g. /etc/maven/settings.xml) file
 which may look like as follows:
 
 ~~~~~~
 
     <server>
-        <id>ec2-coordinator-instance</id>
-        <username>ubuntu</username>
-        <privateKey>/path/to/key-file.pem</privateKey>
+      <id>ec2-coordinator-instance</id>   <!-- This field should remain the same! -->
+      <username>ubuntu</username>
+      <privateKey>/path/to/key-file.pem</privateKey>
     </server>
 
     <profile>
-        <id>deploy-chop-webapp</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-        <properties>
-            <chop.coordinator.url>ec2-xxx.amazonaws.com</chop.coordinator.url>
-        </properties
+      <id>deploy-chop-webapp</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <chop.coordinator.url>ec2-xxx.amazonaws.com</chop.coordinator.url>
+      </properties>
     </profile>
 
 ~~~~~~
 
 Then, you may run the following goals for the following operations inside webapp module:
+
 * wagon:upload-single   -> Uploads the required jar file for webapp to the specified machine.
 * wagon:sshexec         -> Runs the necessary commands for the newly uploaded webapp to take effect.
 
