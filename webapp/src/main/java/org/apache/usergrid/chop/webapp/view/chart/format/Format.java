@@ -19,11 +19,9 @@
 package org.apache.usergrid.chop.webapp.view.chart.format;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.usergrid.chop.webapp.service.chart.Point;
 import org.apache.usergrid.chop.webapp.service.chart.series.Series;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -76,9 +74,5 @@ public class Format {
 
         return arr.toString();
     }
-
-
-
-
 
 }
