@@ -34,7 +34,7 @@ import com.google.common.base.Preconditions;
 
 
 /**
- *
+ * Represents the state of an already setup cluster.
  */
 public enum  StackState {
     // inactive ==> (load signal) ==> ready
