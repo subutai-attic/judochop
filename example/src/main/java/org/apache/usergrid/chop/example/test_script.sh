@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -14,15 +15,5 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-log4j.rootLogger=INFO,stdout
-log4j.rootCategory=INFO
 
-log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss.S} %p %c{3}.%M(%L)<%t>- %m%n
-
-log4j.logger.org.apache.usergrid.chop=INFO
-log4j.logger.org.safehaus.guicyfig=OFF
-
-log4j.logger.org.elasticsearch=OFF
-log4j.logger.org.apache.usergrid.chop.webapp=INFO
+echo -e "Test script is run successfully, $TEST_PARAM" > /home/ubuntu/testScriptOut.log

@@ -20,6 +20,7 @@ package org.apache.usergrid.chop.webapp.view.chart.layout;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
+import org.apache.usergrid.chop.webapp.view.chart.format.Format;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +30,6 @@ import org.apache.usergrid.chop.webapp.service.chart.Chart;
 import org.apache.usergrid.chop.webapp.service.chart.Params;
 import org.apache.usergrid.chop.webapp.service.chart.Params.FailureType;
 import org.apache.usergrid.chop.webapp.service.chart.Params.Metric;
-import org.apache.usergrid.chop.webapp.view.chart.format.CategoriesFormat;
-import org.apache.usergrid.chop.webapp.view.chart.format.SeriesFormat;
 import org.apache.usergrid.chop.webapp.view.chart.layout.item.DetailsTable;
 import org.apache.usergrid.chop.webapp.view.chart.layout.item.NoteLayout;
 import org.apache.usergrid.chop.webapp.service.util.FileUtil;
@@ -52,7 +51,6 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
     protected Button nextChartButton;
     protected DetailsTable detailsTable;
     protected NoteLayout noteLayout;
-
     protected Params params;
 
     protected ChartLayout(Config config) {
@@ -152,22 +150,24 @@ public abstract class ChartLayout extends AbsoluteLayout implements JavaScriptFu
         handleBreadcrumb();
     }
 
-    public void loadChart() {
-
-        Chart chart = config.getChartBuilder().getChart( getParams() );
-
-        String chartContent = FileUtil.getContent( config.getChartFile() );
-        chartContent = chartContent.replace( "$categories", CategoriesFormat.format( chart.getCategories() ) );
-        chartContent = chartContent.replace( "$series", SeriesFormat.format( chart.getSeries(), config.getPointRadius() ) );
-
-        JavaScriptUtil.loadChart(chartContent, config.getJsCallbackName(), this);
-    }
-
     protected void pointClicked(JSONObject json) throws JSONException {
-        params.setCommitId( json.getString("commitId") );
+        params.setCommitId( json.optString("commitId") );
         params.setRunNumber( json.optInt("runNumber", 0) );
 
         detailsTable.setContent(json);
         noteLayout.load( params.getCommitId(), params.getRunNumber() );
+    }
+
+    public void loadChart() {
+
+        // BUG: If common.js is loaded separately its content is not visible later
+        String chartContent = FileUtil.getContent( "js/common.js" ) + FileUtil.getContent( config.getChartFile() );
+        Chart chart = config.getChartBuilder().getChart( getParams() );
+
+        chartContent = chartContent.replace( "$categories", Format.formatCategories( chart.getCategories() ) );
+        chartContent = chartContent.replace( "$points", Format.formatPoints( chart.getSeries() ) );
+        chartContent = chartContent.replace( "$data", Format.formatData( chart.getSeries() ) );
+
+        JavaScriptUtil.loadChart(chartContent, "chartCallback", this);
     }
 }

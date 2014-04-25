@@ -86,6 +86,8 @@ public class ProviderParamsDao extends Dao {
             .execute()
             .actionGet();
 
+        LOG.debug("response: {}", response);
+
         SearchHit hits[] = response.getHits().hits();
 
         return hits.length > 0 ? toProviderParams( hits[0] ) : null;
@@ -101,15 +103,18 @@ public class ProviderParamsDao extends Dao {
                 Util.getString( json, "instanceType" ),
                 Util.getString( json, "accessKey" ),
                 Util.getString( json, "secretKey" ),
-                Util.getString( json, "imageId" )
+                Util.getString( json, "imageId" ),
+                Util.getString( json, "keyName" )
         );
 
         params.setKeys( Util.getMap( json, "keys" ) );
-        params.setKeyName( Util.getString( json, "keyName" ) );
 
         return params;
     }
 
+    /**
+     * Gets all ProviderParams
+     */
     public List<ProviderParams> getAll() {
 
         SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
@@ -117,9 +122,12 @@ public class ProviderParamsDao extends Dao {
                 .execute()
                 .actionGet();
 
+        LOG.debug("response: {}", response);
+
+        SearchHit hits[] = response.getHits().hits();
         ArrayList<ProviderParams> list = new ArrayList<ProviderParams>();
 
-        for ( SearchHit hit : response.getHits().hits() ) {
+        for ( SearchHit hit : hits ) {
             list.add( toProviderParams( hit ) );
         }
 

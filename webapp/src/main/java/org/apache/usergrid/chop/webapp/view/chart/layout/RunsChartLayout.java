@@ -22,7 +22,6 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.apache.usergrid.chop.webapp.view.chart.format.PointRadius;
 import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
@@ -49,9 +48,7 @@ public class RunsChartLayout extends ChartLayout {
                 chartBuilder,
                 nextLayout,
                 "runsChart",
-                "runsChartCallback",
                 "js/runs-chart.js",
-                new PointRadius(),
                 breadcrumb
         ) );
 

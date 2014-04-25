@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import javax.mail.internet.MimeMultipart;
@@ -28,6 +29,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.usergrid.chop.api.ChopUtils;
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.RestParams;
 
@@ -67,6 +69,30 @@ public class DeployMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+
+        try {
+            final URI uri = URI.create( endpoint );
+            getLog().info( "Installing cert for Host: " + uri.getHost() + " at port: " + uri.getPort() );
+
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+                new javax.net.ssl.HostnameVerifier() {
+
+                    public boolean verify( String hostname, javax.net.ssl.SSLSession sslSession) {
+                        return hostname.equals( uri.getHost() );
+                    }
+                }
+            );
+
+            if ( certStorePassphrase == null ) {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), null );
+            }
+            else {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), certStorePassphrase.toCharArray() );
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
 
         File source = getRunnerFile();
         if ( source.exists() ) {
@@ -142,7 +168,7 @@ public class DeployMojo extends MainMojo {
 
             bodyPart = new MimeBodyPart();
             bodyPart.setContentID( RestParams.TEST_PACKAGE );
-            bodyPart.setText( props.getProperty( Project.TEST_PACKAGE_BASE ) );
+            bodyPart.setText( props.getProperty( Project.TEST_PACKAGE_BASE ) ); // TODO replace with plugin parameter
             multipart.addBodyPart( bodyPart );
 
             bodyPart = new MimeBodyPart();
@@ -160,14 +186,22 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( e.getMessage() );
         }
 
+        getLog().info( "Before upload..." );
+        getLog().info( "Endpoint is: " + endpoint );
+
         /** Upload */
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( endpoint ).path( "/upload" );
 
+        getLog().info( "Before rest post..." );
+
         ClientResponse resp = resource.path( "/runner" )
-                                .accept( MediaType.TEXT_PLAIN )
-                                .post( ClientResponse.class, multipart );
+                                      .type( MediaType.MULTIPART_FORM_DATA )
+                                      .accept( MediaType.TEXT_PLAIN )
+                                      .post( ClientResponse.class, multipart );
+
+        getLog().info( "After rest post..." );
 
         if( resp.getStatus() == Response.Status.CREATED.getStatusCode() ) {
             getLog().info( "Runner Jar uploaded to the coordinator successfully on path: " +

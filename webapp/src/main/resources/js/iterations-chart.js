@@ -16,55 +16,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-function pointClicked() {
-    iterationsChartCallback(this.properties);
+
+POINTS = $points;
+var DATA = $data;
+var CHECKBOXES = $("#runnersCheckboxes");
+
+OPTIONS.legend = {
+    position: "nw"
+};
+
+function addCheckboxes() {
+
+    CHECKBOXES.empty();
+
+    $.each(DATA, function(i, series) {
+        CHECKBOXES.append("<input type='checkbox' name='" + series.label
+            + "' checked='checked' id='id" + series.label + "'></input>"
+            + "<label for='id" + series.label + "'>"
+            + series.label + "</label>");
+    });
+
+    CHECKBOXES.find("input").click(plot);
 }
 
-$('#iterationsChart').highcharts({
-    chart: {
-        type: 'spline'
-    },
-    title: {
-        text: "Iterations"
-    },
-    xAxis: {
-        title: {
-            text: 'Iterations'
+function getPlotData() {
+    var data = [];
+
+    CHECKBOXES.find("input").each(function (i, checkbox) {
+        if (checkbox.checked) {
+            data.push( DATA[i] );
         }
-    },
-    yAxis: {
-        title: {
-            text: 'Time'
-        },
-        labels: {
-            formatter: function() {
-                return this.value + ' ms'
-            }
-        }
-    },
-    legend: {
-        enabled: true
-    },
-    tooltip: {
-        enabled: false
-    },
-    plotOptions: {
-        series: {
-            cursor: 'pointer',
-            marker: {
-                enabled: true,
-                symbol: 'circle',
-                radius: 4,
-                lineColor: '#666666',
-                lineWidth: 1,
-                fillColor: 'white'
-            },
-            point: {
-                events: {
-                    click: pointClicked
-                }
-            }
-        }
-    },
-    series: $series
-});
+    });
+
+    return data;
+}
+
+function plot() {
+    showChart( "#iterationsChart", getPlotData() );
+}
+
+addCheckboxes();
+plot();
+

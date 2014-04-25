@@ -51,6 +51,7 @@ public class KeyService {
     }
 
     public File addFile(String username, String keyPairName, String fileName) throws FileNotFoundException {
+        LOG.debug("Adding file: username={}, keyPairName={}, fileName={}", new String[]{ username, keyPairName, fileName} );
 
         String dir = getKeyFilesDir() + "/" + username;
         String filePath = dir + "/" + fileName;
@@ -78,17 +79,21 @@ public class KeyService {
     }
 
     public Map<String, String> getKeys(String username) {
+
         ProviderParams params = providerParamsDao.getByUser(username);
+
+        LOG.debug( "Getting keys: username={}, keys={}", username, params.getKeys() );
+
         return params.getKeys();
     }
 
     public void removeKey(String username, String keyName) {
+        LOG.debug("Removing key: username={}, keyName={}", username, keyName);
 
         ProviderParams params = providerParamsDao.getByUser(username);
-
         String filePath = params.getKeys().get(keyName);
-        new File(filePath).delete();
 
+        new File(filePath).delete();
         params.getKeys().remove(keyName);
 
         save(params);

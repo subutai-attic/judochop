@@ -19,7 +19,6 @@
 package org.apache.usergrid.chop.webapp.view.chart.layout;
 
 import org.apache.usergrid.chop.webapp.service.chart.builder.ChartBuilder;
-import org.apache.usergrid.chop.webapp.view.chart.format.PointRadius;
 import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
@@ -33,9 +32,7 @@ public class OverviewChartLayout extends ChartLayout {
                 chartBuilder,
                 nextLayout,
                 "overviewChart",
-                "overviewChartCallback",
                 "js/overview-chart.js",
-                new PointRadius(),
                 breadcrumb
         ) );
 
