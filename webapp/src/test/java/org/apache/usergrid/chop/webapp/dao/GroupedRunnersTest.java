@@ -26,6 +26,7 @@ import org.apache.usergrid.chop.webapp.dao.model.RunnerGroup;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(JukitoRunner.class)
 @UseModules(ChopUiModule.class)
+@Ignore( "Askhat this is really bad news man - please fix this and don't hard-code like this into master" )
 public class GroupedRunnersTest {
 
     private static Logger LOG = LoggerFactory.getLogger(GroupedRunnersTest.class);
