@@ -52,7 +52,7 @@ public class BasicRunResult implements RunResult {
     private static String createId(String runId) {
         return "" + new HashCodeBuilder()
                 .append(runId)
-                .append( UUID.randomUUID() )
+                .append(UUID.randomUUID())
                 .toHashCode();
     }
 

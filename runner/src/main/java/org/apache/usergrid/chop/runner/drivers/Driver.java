@@ -76,8 +76,7 @@ public abstract class Driver<T extends Tracker> implements IDriver<T> {
                 tracker.getMinTime(),
                 tracker.getMeanTime(),
                 isRunning(),
-                tracker.getStartTime(),
-                tracker.getPercentageComplete()
+                tracker.getStartTime()
         );
     }
 

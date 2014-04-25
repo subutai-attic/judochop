@@ -31,7 +31,7 @@ public abstract class TestableResource {
     private final String endpoint;
 
 
-    protected TestableResource( String endpoint ) {
+    protected TestableResource(String endpoint) {
         this.endpoint = endpoint;
     }
 
@@ -41,8 +41,8 @@ public abstract class TestableResource {
     }
 
 
-    public boolean inTestMode( String testMode ) {
+    public boolean inTestMode(String testMode) {
         return testMode != null &&
-                ( testMode.equals( TestMode.INTEG.toString() ) || testMode.equals( TestMode.UNIT.toString() ) );
+                (testMode.equals(TestMode.INTEG.toString()) || testMode.equals(TestMode.UNIT.toString()));
     }
 }

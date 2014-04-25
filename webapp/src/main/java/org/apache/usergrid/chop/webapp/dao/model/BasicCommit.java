@@ -33,7 +33,7 @@ public class BasicCommit implements Commit {
     private String runnerWarPath;
 
 
-    public BasicCommit( String id, String moduleId, String md5, Date createTime, String runnerWarPath ) {
+    public BasicCommit(String id, String moduleId, String md5, Date createTime, String runnerWarPath) {
         this.id = id;
         this.moduleId = moduleId;
         this.md5 = md5;
@@ -68,7 +68,7 @@ public class BasicCommit implements Commit {
     }
 
 
-    public void setRunnerPath( String runnerWarPath ) {
+    public void setRunnerPath(String runnerWarPath) {
         this.runnerWarPath = runnerWarPath;
     }
 
@@ -87,7 +87,7 @@ public class BasicCommit implements Commit {
     public boolean equals(Object other) {
         return other != null
                 && other instanceof BasicCommit
-                && ( (BasicCommit) other ).getId().equals(id);
+                && ((BasicCommit) other).getId().equals(id);
     }
 
     @Override

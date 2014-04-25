@@ -20,9 +20,9 @@ package org.apache.usergrid.chop.webapp.service.chart;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
 import org.json.JSONObject;
-import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 
 public class Point {
 
@@ -65,8 +65,8 @@ public class Point {
         JSONObject json = new JSONObject();
 
         JsonUtil.put(json, "failures", failures);
-        JsonUtil.put(json, "ignores", ignores );
-        JsonUtil.put(json, "properties", properties );
+        JsonUtil.put(json, "ignores", ignores);
+        JsonUtil.put(json, "properties", properties);
 
         return json;
     }

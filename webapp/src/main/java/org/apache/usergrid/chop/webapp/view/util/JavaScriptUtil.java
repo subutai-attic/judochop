@@ -33,7 +33,7 @@ public class JavaScriptUtil {
     }
 
     public static void loadFile(String fileName) {
-        execute( FileUtil.getContent(fileName) );
+        execute(FileUtil.getContent(fileName));
     }
 
     public static void loadChart(String chart, String jsCallbackName, JavaScriptFunction jsCallback) {

@@ -24,6 +24,8 @@ import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.apache.usergrid.chop.client.rest.RestRequests;
 import org.safehaus.jettyjam.utils.TestParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertEquals;

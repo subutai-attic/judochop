@@ -20,11 +20,8 @@
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.Result;
 import org.apache.usergrid.chop.api.State;
@@ -32,19 +29,21 @@ import org.apache.usergrid.chop.stack.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 
 /**
  * REST operation to setup the Stack under test.
  */
 @Singleton
-@Produces( MediaType.APPLICATION_JSON )
-@Path( LoadResource.ENDPOINT_URL )
+@Produces(MediaType.APPLICATION_JSON)
+@Path(LoadResource.ENDPOINT_URL)
 public class LoadResource {
     public final static String ENDPOINT_URL = "/load";
-    private static final Logger LOG = LoggerFactory.getLogger( LoadResource.class );
+    private static final Logger LOG = LoggerFactory.getLogger(LoadResource.class);
 
 
     @Inject
@@ -53,8 +52,8 @@ public class LoadResource {
 
 
     @POST
-    public Result setup( Stack stack ) {
-        LOG.warn( "Calling setup" );
-        return new BaseResult( ENDPOINT_URL, true, "Setup called", State.READY );
+    public Result setup(Stack stack) {
+        LOG.warn("Calling setup");
+        return new BaseResult(ENDPOINT_URL, true, "Setup called", State.READY);
     }
 }

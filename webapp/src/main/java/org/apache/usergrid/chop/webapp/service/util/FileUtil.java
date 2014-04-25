@@ -40,7 +40,7 @@ public class FileUtil {
         String content = FileUtil.getContent(filePath);
 
         try {
-            props.load( new StringReader(content) );
+            props.load(new StringReader(content));
         } catch (IOException e) {
             LOG.error("Error to read properties file: ", e);
         }
@@ -77,7 +77,7 @@ public class FileUtil {
 
         // Needed an instance to get URL b/c the static way doesn't work - FileUtil.class.getClass().
         URL url = new FileUtil().getClass().getProtectionDomain().getCodeSource().getLocation();
-        classLoader = new URLClassLoader(new URL[]{ url }, Thread.currentThread().getContextClassLoader());
+        classLoader = new URLClassLoader(new URL[]{url}, Thread.currentThread().getContextClassLoader());
 
         return classLoader;
     }

@@ -21,17 +21,17 @@ package org.apache.usergrid.chop.webapp.view.chart.layout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.Reindeer;
+import org.apache.commons.lang.StringUtils;
+import org.apache.usergrid.chop.webapp.dao.RunResultDao;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.chart.Params;
 import org.apache.usergrid.chop.webapp.service.chart.builder.ChartBuilder;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
 import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.usergrid.chop.webapp.dao.RunResultDao;
 
 public class IterationsChartLayout extends ChartLayout {
 
@@ -42,14 +42,14 @@ public class IterationsChartLayout extends ChartLayout {
     protected Button failuresButton;
 
     public IterationsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
-        super( new Config(
+        super(new Config(
                 layoutContext,
                 chartBuilder,
                 nextLayout,
                 "iterationsChart",
                 "js/iterations-chart.js",
                 breadcrumb
-        ) );
+        ));
     }
 
     @Override
@@ -92,7 +92,7 @@ public class IterationsChartLayout extends ChartLayout {
 
     public void show(Params params) {
         doShow(params);
-        noteLayout.load( params.getCommitId(), params.getRunNumber() );
+        noteLayout.load(params.getCommitId(), params.getRunNumber());
         failuresButton.setVisible(false);
     }
 
@@ -128,8 +128,8 @@ public class IterationsChartLayout extends ChartLayout {
         for (int i = 0; i < len; i++) {
             JSONObject json = JsonUtil.get(arr, i);
 
-            s += "* " + StringUtils.abbreviate(json.optString("message"),  200) + "\n"
-                    + StringUtils.abbreviate(json.optString("trace"),  500) + "\n\n";
+            s += "* " + StringUtils.abbreviate(json.optString("message"), 200) + "\n"
+                    + StringUtils.abbreviate(json.optString("trace"), 500) + "\n\n";
         }
 
         return s;

@@ -32,26 +32,29 @@ import org.safehaus.guicyfig.Key;
 public interface ChopUiFig extends GuicyFig {
     String CONTEXT_PATH = "context.path";
 
-    @Key( ChopUiFig.CONTEXT_PATH )
+    @Key(ChopUiFig.CONTEXT_PATH)
     String getContextPath();
 
 
     String SERVER_INFO_KEY = "server.info";
 
-    @Key( ChopUiFig.SERVER_INFO_KEY )
+    @Key(ChopUiFig.SERVER_INFO_KEY)
     String getServerInfo();
-
 
 
     String CONTEXT_TEMPDIR_KEY = "javax.servlet.context.tempdir";
 
-    @Key( ChopUiFig.CONTEXT_TEMPDIR_KEY )
+    @Key(ChopUiFig.CONTEXT_TEMPDIR_KEY)
     String getContextTempDir();
 
 
-    /** prop key for number of times to retry recovery operations */
+    /**
+     * prop key for number of times to retry recovery operations
+     */
     String RECOVERY_RETRY_COUNT_KEY = "recovery.retry.count";
-    /** default for number of times to retry recovery operations */
+    /**
+     * default for number of times to retry recovery operations
+     */
     String DEFAULT_RECOVERY_RETRY_COUNT = "3";
 
     /**
@@ -60,14 +63,18 @@ public interface ChopUiFig extends GuicyFig {
      *
      * @return the number of retries for recovery
      */
-    @Default( ChopUiFig.DEFAULT_RECOVERY_RETRY_COUNT )
-    @Key( ChopUiFig.RECOVERY_RETRY_COUNT_KEY )
+    @Default(ChopUiFig.DEFAULT_RECOVERY_RETRY_COUNT)
+    @Key(ChopUiFig.RECOVERY_RETRY_COUNT_KEY)
     int getRecoveryRetryCount();
 
 
-    /** prop key for the time to wait between retry recovery operations */
+    /**
+     * prop key for the time to wait between retry recovery operations
+     */
     String DELAY_RETRY_KEY = "recovery.retry.delay";
-    /** default for the time to wait in milliseconds between retry recovery operations */
+    /**
+     * default for the time to wait in milliseconds between retry recovery operations
+     */
     String DEFAULT_DELAY_RETRY = "10000";
 
     /**
@@ -76,11 +83,28 @@ public interface ChopUiFig extends GuicyFig {
      *
      * @return the time in milliseconds to delay between retry operations
      */
-    @Default( ChopUiFig.DEFAULT_DELAY_RETRY )
-    @Key( ChopUiFig.DELAY_RETRY_KEY )
+    @Default(ChopUiFig.DEFAULT_DELAY_RETRY)
+    @Key(ChopUiFig.DELAY_RETRY_KEY)
     long getRetryDelay();
 
 
+<<<<<<< HEAD
+=======
+    String MANAGER_ENDPOINT_KEY = "manager.endpoint";
+    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:24981/manager/text";
+
+    /**
+     * Gets the Tomcat servlet manager endpoint. Uses {@link ChopUiFig#MANAGER_ENDPOINT_KEY}
+     * to access the servlet manager endpoint.
+     *
+     * @return the Tomcat servlet manager endpoint
+     */
+    @Default(ChopUiFig.DEFAULT_MANAGER_ENDPOINT)
+    @Key(ChopUiFig.MANAGER_ENDPOINT_KEY)
+    String getManagerEndpoint();
+
+
+>>>>>>> c4dd696589de5881f3272c69c79f25f4c2662f36
     String LAUNCH_CLUSTER_TIMEOUT_KEY = "launch.cluster.timeout";
     String DEFAULT_LAUNCH_CLUSTER_TIMEOUT = "100000";
 
@@ -89,7 +113,7 @@ public interface ChopUiFig extends GuicyFig {
      *
      * @return The maximum time in milliseconds to wait for clusters to come up
      */
-    @Default( ChopUiFig.DEFAULT_LAUNCH_CLUSTER_TIMEOUT )
-    @Key( ChopUiFig.LAUNCH_CLUSTER_TIMEOUT_KEY )
+    @Default(ChopUiFig.DEFAULT_LAUNCH_CLUSTER_TIMEOUT)
+    @Key(ChopUiFig.LAUNCH_CLUSTER_TIMEOUT_KEY)
     int getLaunchClusterTimeout();
 }

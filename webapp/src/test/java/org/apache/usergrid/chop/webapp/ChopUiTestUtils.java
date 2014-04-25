@@ -58,81 +58,82 @@ class ChopUiTestUtils {
 
     private final static Map<String, String> QUERY_PARAMS = new HashMap<String, String>() {
         {
-            put( RestParams.USERNAME, "user" );
-            put( RestParams.PASSWORD, "pass" );
-            put( RestParams.COMMIT_ID, UUID.randomUUID().toString() );
-            put( RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT" );
-            put( RestParams.MODULE_ARTIFACTID, "chop-example" );
-            put( RestParams.MODULE_GROUPID, "org.apache.usergrid.chop" );
-            put( RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example" );
+            put(RestParams.USERNAME, "user");
+            put(RestParams.PASSWORD, "pass");
+            put(RestParams.COMMIT_ID, UUID.randomUUID().toString());
+            put(RestParams.MODULE_VERSION, "2.0.0-SNAPSHOT");
+            put(RestParams.MODULE_ARTIFACTID, "chop-example");
+            put(RestParams.MODULE_GROUPID, "org.apache.usergrid.chop");
+            put(RestParams.TEST_PACKAGE, "org.apache.usergrid.chop.example");
         }
     };
 
 
-    static void testRunManagerNext( TestParams testParams ) {
-        Integer next = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( RunManagerResource.ENDPOINT )
+    static void testRunManagerNext(TestParams testParams) {
+        Integer next = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(RunManagerResource.ENDPOINT)
                 .newWebResource()
-                .path( "/next" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON )
-                .get( Integer.class );
+                .path("/next")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON)
+                .get(Integer.class);
 
-        assertEquals( 0, next.intValue() );
+        assertEquals(0, next.intValue());
     }
 
 
-    static void testRunnerRegistryList( TestParams testParams ) {
-        List<Runner> runnerList = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+    static void testRunnerRegistryList(TestParams testParams) {
+        List<Runner> runnerList = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
                 .newWebResource()
-                .path( "/list" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .get( new GenericType<List<Runner>>() {} );
+                .path("/list")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .get(new GenericType<List<Runner>>() {
+                });
 
-        assertNotNull( runnerList );
-        assertEquals( 0, runnerList.size() );
+        assertNotNull(runnerList);
+        assertEquals(0, runnerList.size());
     }
 
 
-    static void testRunnerRegistryUnregister( TestParams testParams ) {
-        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+    static void testRunnerRegistryUnregister(TestParams testParams) {
+        Boolean result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
                 .newWebResource()
-                .path( "/unregister" )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .post( Boolean.class );
+                .path("/unregister")
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Boolean.class);
 
-        assertFalse( result );
+        assertFalse(result);
     }
 
 
-    static void testRunnerRegistryRegister( TestParams testParams ) {
+    static void testRunnerRegistryRegister(TestParams testParams) {
         /*
          * Even though in test mode the runner is not used, a runner must
          * be sent over because the method is expecting the Runner as JSON.
          */
         RunnerBuilder builder = new RunnerBuilder();
-        builder.setTempDir( "." )
-                .setServerPort( 19023 )
-                .setUrl( "https://localhost:19023" )
-                .setHostname( "foobar" )
-                .setIpv4Address( "127.0.0.1" );
+        builder.setTempDir(".")
+                .setServerPort(19023)
+                .setUrl("https://localhost:19023")
+                .setHostname("foobar")
+                .setIpv4Address("127.0.0.1");
 
-        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
+        Boolean result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
                 .newWebResource()
-                .path( "/register" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .post( Boolean.class, builder.getRunner() );
+                .path("/register")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Boolean.class, builder.getRunner());
 
-        assertFalse( result );
+        assertFalse(result);
     }
 
 
-    static void testRunnerRegistrySequence( TestParams testParams ) {
+    static void testRunnerRegistrySequence(TestParams testParams) {
         /*
          * ------------------------------------------------------------
          * Let's register a runner first before we query for it
@@ -140,25 +141,25 @@ class ChopUiTestUtils {
          */
 
         String commitId = UUID.randomUUID().toString();
-        String hostname = RandomStringUtils.randomAlphabetic( 8 );
+        String hostname = RandomStringUtils.randomAlphabetic(8);
 
         RunnerBuilder builder = new RunnerBuilder();
-        builder.setTempDir( "." )
-                .setServerPort( 19023 )
-                .setUrl( "https://localhost:19023" )
-                .setHostname( hostname )
-                .setIpv4Address( "127.0.0.1" );
+        builder.setTempDir(".")
+                .setServerPort(19023)
+                .setUrl("https://localhost:19023")
+                .setHostname(hostname)
+                .setIpv4Address("127.0.0.1");
 
-        Boolean result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
-                .newWebResource( null )
-                .queryParam( RestParams.COMMIT_ID, commitId )
-                .path( "/register" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .post( Boolean.class, builder.getRunner() );
+        Boolean result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
+                .newWebResource(null)
+                .queryParam(RestParams.COMMIT_ID, commitId)
+                .path("/register")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Boolean.class, builder.getRunner());
 
-        assertTrue( result );
+        assertTrue(result);
 
         /*
          * ------------------------------------------------------------
@@ -166,23 +167,24 @@ class ChopUiTestUtils {
          * ------------------------------------------------------------
          */
         List<Runner> runnerList = testParams
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
-                .newWebResource( null )
-                .queryParam( RestParams.COMMIT_ID, commitId )
-                .path( "/list" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .get( new GenericType<List<Runner>>() {} );
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
+                .newWebResource(null)
+                .queryParam(RestParams.COMMIT_ID, commitId)
+                .path("/list")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .get(new GenericType<List<Runner>>() {
+                });
 
-        assertNotNull( runnerList );
-        assertEquals( 1, runnerList.size() );
+        assertNotNull(runnerList);
+        assertEquals(1, runnerList.size());
 
-        Runner runner = runnerList.get( 0 );
-        assertEquals( 19023, runner.getServerPort() );
-        assertEquals( "https://localhost:19023", runner.getUrl() );
-        assertEquals( hostname, runner.getHostname() );
-        assertEquals( "127.0.0.1", runner.getIpv4Address() );
-        assertEquals( ".", runner.getTempDir() );
+        Runner runner = runnerList.get(0);
+        assertEquals(19023, runner.getServerPort());
+        assertEquals("https://localhost:19023", runner.getUrl());
+        assertEquals(hostname, runner.getHostname());
+        assertEquals("127.0.0.1", runner.getIpv4Address());
+        assertEquals(".", runner.getTempDir());
 
         /*
          * ------------------------------------------------------------
@@ -190,14 +192,14 @@ class ChopUiTestUtils {
          * ------------------------------------------------------------
          */
         result = testParams
-                .newWebResource( null )
-                .queryParam( RestParams.RUNNER_URL, runner.getUrl() )
-                .path( "/unregister" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .post( Boolean.class );
+                .newWebResource(null)
+                .queryParam(RestParams.RUNNER_URL, runner.getUrl())
+                .path("/unregister")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Boolean.class);
 
-        assertTrue( result );
+        assertTrue(result);
 
         /*
          * ------------------------------------------------------------
@@ -206,240 +208,226 @@ class ChopUiTestUtils {
          */
         runnerList.clear();
         runnerList = testParams
-                .setEndpoint( RunnerRegistryResource.ENDPOINT )
-                .newWebResource( null )
-                .queryParam( RestParams.COMMIT_ID, commitId )
-                .path( "/list" )
-                .type( MediaType.APPLICATION_JSON_TYPE )
-                .accept( MediaType.APPLICATION_JSON_TYPE )
-                .get( new GenericType<List<Runner>>() {} );
+                .setEndpoint(RunnerRegistryResource.ENDPOINT)
+                .newWebResource(null)
+                .queryParam(RestParams.COMMIT_ID, commitId)
+                .path("/list")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .get(new GenericType<List<Runner>>() {
+                });
 
-        assertNotNull( runnerList );
-        assertEquals( 0, runnerList.size() );
+        assertNotNull(runnerList);
+        assertEquals(0, runnerList.size());
     }
 
 
-    static void testSetup( TestParams testParams ) {
-        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
-                            .setEndpoint( SetupResource.ENDPOINT )
-                            .newWebResource()
-                            .queryParam( RestParams.RUNNER_COUNT, "5" )
-                            .path( "/stack" )
-                            .type( MediaType.APPLICATION_JSON )
-                            .accept( MediaType.APPLICATION_JSON )
-                            .post( ClientResponse.class );
-
-        assertEquals( Response.Status.CREATED.getStatusCode(), response.getStatus() );
-
-        assertEquals( "\"NotFound\"", response.getEntity( String.class ) );
-    }
-
-
-    static void testSetupStatus( TestParams testParams ) {
-        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
-                            .setEndpoint( SetupResource.ENDPOINT )
-                            .newWebResource()
-                            .path( "/status" )
-                            .type( MediaType.APPLICATION_JSON )
-                            .accept( MediaType.APPLICATION_JSON )
-                            .post( ClientResponse.class );
-
-        assertEquals( Response.Status.OK.getStatusCode(), response.getStatus() );
-
-        assertEquals( "\"NotFound\"", response.getEntity( String.class ) );
-    }
-
-
-    static void testStart( TestParams testParams ) {
-        BaseResult result = testParams
-                .setEndpoint( StartResource.ENDPOINT )
+    static void testSetup(TestParams testParams) {
+        ClientResponse response = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(SetupResource.ENDPOINT)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .post( BaseResult.class );
+                .queryParam(RestParams.RUNNER_COUNT, "5")
+                .path("/stack")
+                .type(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .post(ClientResponse.class);
 
-        assertEquals( result.getEndpoint(), StartResource.ENDPOINT );
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        assertEquals("\"NotFound\"", response.getEntity(String.class));
     }
 
 
-    static void testReset( TestParams testParams ) {
+    static void testStart(TestParams testParams) {
         BaseResult result = testParams
-                .setEndpoint( ResetResource.ENDPOINT )
+                .setEndpoint(StartResource.ENDPOINT)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .post( BaseResult.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .post(BaseResult.class);
 
-        assertEquals( result.getEndpoint(), ResetResource.ENDPOINT );
+        assertEquals(result.getEndpoint(), StartResource.ENDPOINT);
     }
 
 
-    static void testStop( TestParams testParams ) {
+    static void testReset(TestParams testParams) {
         BaseResult result = testParams
-                .setEndpoint( StopResource.ENDPOINT )
+                .setEndpoint(ResetResource.ENDPOINT)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .post( BaseResult.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .post(BaseResult.class);
 
-        assertEquals( result.getEndpoint(), StopResource.ENDPOINT );
+        assertEquals(result.getEndpoint(), ResetResource.ENDPOINT);
     }
 
 
-    static void testUpload( TestParams testParams ) throws Exception {
+    static void testStop(TestParams testParams) {
+        BaseResult result = testParams
+                .setEndpoint(StopResource.ENDPOINT)
+                .newWebResource()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(BaseResult.class);
+
+        assertEquals(result.getEndpoint(), StopResource.ENDPOINT);
+    }
+
+
+    static void testUpload(TestParams testParams) throws Exception {
 
         MimeMultipart multipart = new MimeMultipart();
 
         MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.COMMIT_ID );
-        bodyPart.setText( "a0967e74d95c0df8527098ec4755a898ddba6fea" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.COMMIT_ID);
+        bodyPart.setText("a0967e74d95c0df8527098ec4755a898ddba6fea");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.MODULE_ARTIFACTID );
-        bodyPart.setText( "chop-example" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.MODULE_ARTIFACTID);
+        bodyPart.setText("chop-example");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.MODULE_GROUPID );
-        bodyPart.setText( "org.apache.usergrid.chop" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.MODULE_GROUPID);
+        bodyPart.setText("org.apache.usergrid.chop");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.MODULE_VERSION );
-        bodyPart.setText( "2.0.0-SNAPSHOT" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.MODULE_VERSION);
+        bodyPart.setText("2.0.0-SNAPSHOT");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.USERNAME );
-        bodyPart.setText( "test-user" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.USERNAME);
+        bodyPart.setText("test-user");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.FILENAME );
-        bodyPart.setText( "runner.jar" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.FILENAME);
+        bodyPart.setText("runner.jar");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.VCS_REPO_URL );
-        bodyPart.setText( "ssh://git@stash.safehaus.org:7999/chop/main.git" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.VCS_REPO_URL);
+        bodyPart.setText("ssh://git@stash.safehaus.org:7999/chop/main.git");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.TEST_PACKAGE );
-        bodyPart.setText( "org.apache.usergrid.safehaus.chop.example" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.TEST_PACKAGE);
+        bodyPart.setText("org.apache.usergrid.safehaus.chop.example");
+        multipart.addBodyPart(bodyPart);
 
         bodyPart = new MimeBodyPart();
-        bodyPart.setContentID( RestParams.MD5 );
-        bodyPart.setText( "3010c538d1b582ee2d26c9aae7a73186" );
-        multipart.addBodyPart( bodyPart );
+        bodyPart.setContentID(RestParams.MD5);
+        bodyPart.setText("3010c538d1b582ee2d26c9aae7a73186");
+        multipart.addBodyPart(bodyPart);
 
-        File tmpFile = File.createTempFile( "runner", "jar" );
-        bodyPart = new MimeBodyPart( new FileInputStream( tmpFile ) );
-        bodyPart.setContentID( RestParams.CONTENT );
-        multipart.addBodyPart( bodyPart );
+        File tmpFile = File.createTempFile("runner", "jar");
+        bodyPart = new MimeBodyPart(new FileInputStream(tmpFile));
+        bodyPart.setContentID(RestParams.CONTENT);
+        multipart.addBodyPart(bodyPart);
 
-        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
-                            .setEndpoint( UploadResource.ENDPOINT )
-                            .newWebResource()
-                            .path( "/runner" )
-                            .type( MediaType.MULTIPART_FORM_DATA )
-                            .accept( MediaType.TEXT_PLAIN )
-                            .post( ClientResponse.class, multipart );
+        ClientResponse response = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(UploadResource.ENDPOINT)
+                .newWebResource()
+                .path("/runner")
+                .type(MediaType.MULTIPART_FORM_DATA)
+                .accept(MediaType.TEXT_PLAIN)
+                .post(ClientResponse.class, multipart);
 
-        assertEquals( Response.Status.CREATED.getStatusCode(), response.getStatus() );
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        assertEquals( "Test parameters are OK", response.getEntity( String.class ) );
+        assertEquals("Test parameters are OK", response.getEntity(String.class));
 
         tmpFile.delete();
     }
 
 
-    static void testGet( TestParams testParams ) {
+    static void testGet(TestParams testParams) {
         String result = testParams
-                .setEndpoint( TestGetResource.ENDPOINT_URL )
+                .setEndpoint(TestGetResource.ENDPOINT_URL)
                 .newWebResource()
-                .accept( MediaType.TEXT_PLAIN )
-                .get( String.class );
+                .accept(MediaType.TEXT_PLAIN)
+                .get(String.class);
 
-        assertEquals( TestGetResource.TEST_MESSAGE, result );
+        assertEquals(TestGetResource.TEST_MESSAGE, result);
     }
 
 
-    static void testAuthGet( TestParams testParams ) {
-        String result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL )
+    static void testAuthGet(TestParams testParams) {
+        String result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .get( String.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .get(String.class);
 
         assertEquals(AuthResource.GET_MESSAGE, result);
     }
 
 
-    static void testAuthPost( TestParams testParams ) {
-        String result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL )
+    static void testAuthPost(TestParams testParams) {
+        String result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .post( String.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .post(String.class);
 
-        assertEquals( AuthResource.POST_MESSAGE, result);
+        assertEquals(AuthResource.POST_MESSAGE, result);
     }
 
 
-    static void testAuthGetWithWrongCredentials( TestParams testParams ) {
-        testParams.addQueryParameters( WRONG_USER_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL )
+    static void testAuthGetWithWrongCredentials(TestParams testParams) {
+        testParams.addQueryParameters(WRONG_USER_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
+                .accept(MediaType.APPLICATION_JSON)
                 .get(String.class);
     }
 
 
-    static void testAuthPostWithAllowedRole( TestParams testParams ) {
-        String result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH )
+    static void testAuthPostWithAllowedRole(TestParams testParams) {
+        String result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .post( String.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .post(String.class);
 
-        assertEquals( AuthResource.POST_WITH_ALLOWED_ROLE_MESSAGE, result);
+        assertEquals(AuthResource.POST_WITH_ALLOWED_ROLE_MESSAGE, result);
     }
 
 
-    static void testAuthPostWithWrongCredentials( TestParams testParams ) {
-        testParams.addQueryParameters( WRONG_USER_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL )
+    static void testAuthPostWithWrongCredentials(TestParams testParams) {
+        testParams.addQueryParameters(WRONG_USER_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
+                .accept(MediaType.APPLICATION_JSON)
                 .post(String.class);
     }
 
 
-    static void testAuthPostWithUnallowedRole( TestParams testParams ) {
-        testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH )
+    static void testAuthPostWithUnallowedRole(TestParams testParams) {
+        testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
+                .accept(MediaType.APPLICATION_JSON)
                 .post(String.class);
     }
 
 
-    static void testAuthGetWithAllowedRole( TestParams testParams ) {
-        String result = testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH )
+    static void testAuthGetWithAllowedRole(TestParams testParams) {
+        String result = testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL + AuthResource.ALLOWED_ROLE_PATH)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
-                .get( String.class );
+                .accept(MediaType.APPLICATION_JSON)
+                .get(String.class);
 
-        assertEquals( AuthResource.GET_WITH_ALLOWED_ROLE_MESSAGE, result);
+        assertEquals(AuthResource.GET_WITH_ALLOWED_ROLE_MESSAGE, result);
     }
 
 
-    static void testAuthGetWithUnallowedRole( TestParams testParams ) {
-        testParams.addQueryParameters( QUERY_PARAMS )
-                .setEndpoint( AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH )
+    static void testAuthGetWithUnallowedRole(TestParams testParams) {
+        testParams.addQueryParameters(QUERY_PARAMS)
+                .setEndpoint(AuthResource.ENDPOINT_URL + AuthResource.UNALLOWED_ROLE_PATH)
                 .newWebResource()
-                .accept( MediaType.APPLICATION_JSON )
+                .accept(MediaType.APPLICATION_JSON)
                 .get(String.class);
     }
 

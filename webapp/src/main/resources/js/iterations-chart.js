@@ -29,7 +29,7 @@ function addCheckboxes() {
 
     CHECKBOXES.empty();
 
-    $.each(DATA, function(i, series) {
+    $.each(DATA, function (i, series) {
         CHECKBOXES.append("<input type='checkbox' name='" + series.label
             + "' checked='checked' id='id" + series.label + "'></input>"
             + "<label for='id" + series.label + "'>"
@@ -44,7 +44,7 @@ function getPlotData() {
 
     CHECKBOXES.find("input").each(function (i, checkbox) {
         if (checkbox.checked) {
-            data.push( DATA[i] );
+            data.push(DATA[i]);
         }
     });
 
@@ -52,7 +52,7 @@ function getPlotData() {
 }
 
 function plot() {
-    showChart( "#iterationsChart", getPlotData() );
+    showChart("#iterationsChart", getPlotData());
 }
 
 addCheckboxes();

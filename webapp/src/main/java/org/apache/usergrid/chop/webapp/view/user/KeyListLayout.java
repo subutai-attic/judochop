@@ -124,8 +124,8 @@ public class KeyListLayout extends AbsoluteLayout implements Upload.Receiver, Up
         Map<String, String> keys = keyService.getKeys(username);
         int top = START_TOP;
 
-        for (Map.Entry<String, String> e : keys.entrySet() ) {
-            keyNames.add( e.getKey() );
+        for (Map.Entry<String, String> e : keys.entrySet()) {
+            keyNames.add(e.getKey());
             addKeyLabel(e.getKey(), e.getValue(), top);
             addKeyRemoveButton(e.getKey(), top);
             top += 20;

@@ -21,7 +21,10 @@ package org.apache.usergrid.chop.webapp.service.chart.filter;
 import org.apache.usergrid.chop.webapp.service.chart.Params;
 import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class FailureFilter {
 
@@ -29,8 +32,8 @@ public class FailureFilter {
 
         Map<String, Collection<Value>> resultMap = new LinkedHashMap<String, Collection<Value>>();
 
-        for (String key : map.keySet() ) {
-            resultMap.put(key, filter(map.get(key), failureType) );
+        for (String key : map.keySet()) {
+            resultMap.put(key, filter(map.get(key), failureType));
         }
 
         return resultMap;

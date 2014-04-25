@@ -214,8 +214,4 @@ public abstract class Tracker {
     public long getTotalRunTime() {
         return totalRunTime.get();
     }
-
-
-    @JsonProperty
-    public abstract int getPercentageComplete();
 }

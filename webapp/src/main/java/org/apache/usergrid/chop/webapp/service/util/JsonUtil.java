@@ -56,7 +56,7 @@ public class JsonUtil {
         try {
             while (iter.hasNext()) {
                 String key = (String) iter.next();
-                put(dest, key, src.get(key) );
+                put(dest, key, src.get(key));
             }
         } catch (JSONException e) {
             LOG.error("Exception while copying json: ", e);
@@ -76,8 +76,8 @@ public class JsonUtil {
         ArrayList<String> keys = new ArrayList<String>();
         Iterator iter = json.keys();
 
-        while ( iter.hasNext() ) {
-            keys.add( (String) iter.next() );
+        while (iter.hasNext()) {
+            keys.add((String) iter.next());
         }
 
         return keys;
@@ -87,7 +87,7 @@ public class JsonUtil {
 
         JSONArray arr = new JSONArray();
 
-        if ( StringUtils.isEmpty(s) ) {
+        if (StringUtils.isEmpty(s)) {
             return arr;
         }
 

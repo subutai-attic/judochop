@@ -18,16 +18,14 @@
  */
 package org.apache.usergrid.chop.webapp.view.main;
 
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 import org.apache.usergrid.chop.api.Module;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
-import org.apache.usergrid.chop.webapp.view.util.UIUtil;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
+import org.apache.usergrid.chop.webapp.view.runner.RunnersWindow;
 import org.apache.usergrid.chop.webapp.view.user.UserSubwindow;
+import org.apache.usergrid.chop.webapp.view.util.UIUtil;
 
 public class Header extends AbsoluteLayout {
 
@@ -36,7 +34,20 @@ public class Header extends AbsoluteLayout {
     private Label moduleLabel = UIUtil.addLabel(this, "", "left: 10px; top: 10px;", "500px");
 
     public Header() {
+        addRunnersButton();
         addManageButton();
+    }
+
+    private void addRunnersButton() {
+
+        Button button = UIUtil.addButton(this, "Runners", "left: 840px; top: 10px;", "80px");
+        button.setStyleName(Reindeer.BUTTON_LINK);
+
+        button.addClickListener(new Button.ClickListener() {
+            public void buttonClick(Button.ClickEvent event) {
+                showWindow(new RunnersWindow());
+            }
+        });
     }
 
     private void addManageButton() {
@@ -46,13 +57,13 @@ public class Header extends AbsoluteLayout {
 
         button.addClickListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                manageButtonClicked();
+                showWindow(new UserSubwindow());
             }
         });
     }
 
-    private void manageButtonClicked() {
-        UI.getCurrent().addWindow( new UserSubwindow() );
+    private static void showWindow(Window window) {
+        UI.getCurrent().addWindow(window);
     }
 
     void showModule(String moduleId) {

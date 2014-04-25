@@ -22,9 +22,9 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.Reindeer;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.dao.NoteDao;
 import org.apache.usergrid.chop.webapp.dao.model.Note;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class NoteLayout extends AbsoluteLayout {
     public NoteLayout() {
         init();
         addButtons();
-        textArea = UIUtil.addTextArea(this, "", "left: 0px; top: 35px;", "250px", "100px");
+        textArea = UIUtil.addTextArea(this, "", "left: 0px; top: 35px;", "250px", "100px", true);
     }
 
     private void init() {
@@ -113,10 +113,10 @@ public class NoteLayout extends AbsoluteLayout {
 
     private void save() {
 
-        Note note = new Note(commitId, runNumber, textArea.getValue() );
+        Note note = new Note(commitId, runNumber, textArea.getValue());
 
         try {
-            noteDao.save( note );
+            noteDao.save(note);
         } catch (IOException e) {
             LOG.error("Exception while saving a note: ", e);
         }

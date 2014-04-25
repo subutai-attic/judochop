@@ -61,8 +61,8 @@ function drawHook(plot, ctx) {
 
         for (var j = 0; j < series.data.length; j++) {
             var d = ( series.data[j] );
-            var x = offset.left + axes.xaxis.p2c( d[0] );
-            var y = offset.top + axes.yaxis.p2c( d[1] );
+            var x = offset.left + axes.xaxis.p2c(d[0]);
+            var y = offset.top + axes.yaxis.p2c(d[1]);
             var r = getPointRadius(i, j);
             var color = getColor(i, j);
 
@@ -95,14 +95,14 @@ var OPTIONS = {
     },
     series: {
         lines: { show: true },
-        points:{ show: true }
+        points: { show: true }
     },
     xaxis: {
         minTickSize: 1,
         tickDecimals: 0,
         tickFormatter: tickFormatter
     },
-    hooks: { draw  : [ drawHook ] }
+    hooks: { draw: [ drawHook ] }
 };
 
 function showChart(chartId, data) {

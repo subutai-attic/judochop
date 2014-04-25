@@ -32,7 +32,7 @@ public class AvgValue extends Value {
 
     @Override
     protected void calcValue(Run run) {
-        doCalc( run.getAvgTime() );
+        doCalc(run.getAvgTime());
     }
 
     @Override
@@ -41,8 +41,8 @@ public class AvgValue extends Value {
             return;
         }
 
-        doCalc(other.getValue() );
-        inc(other.getFailures(), other.getIgnores() );
+        doCalc(other.getValue());
+        inc(other.getFailures(), other.getIgnores());
         copyProperties(other);
     }
 

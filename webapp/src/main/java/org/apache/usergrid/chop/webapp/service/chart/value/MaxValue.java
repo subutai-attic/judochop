@@ -24,7 +24,7 @@ class MaxValue extends Value {
 
     @Override
     protected void calcValue(Run run) {
-        value = Math.max( value, run.getMaxTime() );
+        value = Math.max(value, run.getMaxTime());
     }
 
 }

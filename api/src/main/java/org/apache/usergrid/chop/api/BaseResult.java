@@ -20,6 +20,8 @@ package org.apache.usergrid.chop.api;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 
 /** ... */
@@ -113,5 +115,17 @@ public class BaseResult implements Result {
 
     public void setProject( final Project project ) {
         this.project = project;
+    }
+
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("endpoint", endpoint)
+                .append("status", status)
+                .append("message", message)
+                .append("state", state)
+                .append("project", project)
+                .toString();
     }
 }

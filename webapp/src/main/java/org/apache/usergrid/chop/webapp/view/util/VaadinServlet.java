@@ -24,7 +24,8 @@ import org.apache.usergrid.chop.webapp.view.main.MainView;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 @Singleton
 public class VaadinServlet extends com.vaadin.server.VaadinServlet {
@@ -43,7 +44,7 @@ public class VaadinServlet extends com.vaadin.server.VaadinServlet {
     private static Hashtable<String, String> getInitParams() {
 
         Hashtable<String, String> ht = new Hashtable<String, String>();
-        ht.put( "UI", MainView.class.getName() );
+        ht.put("UI", MainView.class.getName());
 
         return ht;
     }
