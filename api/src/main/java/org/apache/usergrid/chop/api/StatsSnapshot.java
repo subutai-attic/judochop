@@ -30,6 +30,7 @@ public class StatsSnapshot {
     private long meanTime;
     private boolean running;
     private long startTime;
+    private int percentageComplete;
 
 
     @SuppressWarnings( "UnusedDeclaration" )
@@ -37,13 +38,27 @@ public class StatsSnapshot {
     }
 
 
-    public StatsSnapshot( long testClassRuns, long maxTime, long minTime, long meanTime, boolean running, long startTime ) {
+    public StatsSnapshot( long testClassRuns, long maxTime, long minTime, long meanTime,
+                          boolean running, long startTime, int percentageComplete ) {
         this.testClassRuns = testClassRuns;
         this.maxTime = maxTime;
         this.minTime = minTime;
         this.meanTime = meanTime;
         this.running = running;
         this.startTime = startTime;
+        this.percentageComplete = percentageComplete;
+    }
+
+
+    @JsonProperty
+    public int getPercentageComplete() {
+        return percentageComplete;
+    }
+
+
+    @SuppressWarnings( "UnusedDeclaration" )
+    public void setPercentageComplete( int percentageComplete ) {
+        this.percentageComplete = percentageComplete;
     }
 
 
