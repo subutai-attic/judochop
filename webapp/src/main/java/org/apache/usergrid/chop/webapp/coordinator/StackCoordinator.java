@@ -124,7 +124,7 @@ public class StackCoordinator {
              *
              * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
              */
-            File runnerJar = new File( chopUiFig.getContextTempDir() );
+            File runnerJar = new File( chopUiFig.getContextPath() );
             runnerJar = new File( runnerJar, user.getUsername() );
             runnerJar = new File( runnerJar, module.getGroupId() );
             runnerJar = new File( runnerJar, module.getArtifactId() );

@@ -235,7 +235,7 @@ public class SetupResource extends TestableResource implements RestParams {
             return new SetupStackThread( "User " + user + " not found" );
         }
 
-        File runnerJar = new File( chopUiFig.getContextTempDir() );
+        File runnerJar = new File( chopUiFig.getContextPath() );
         runnerJar = new File( runnerJar, user );
         runnerJar = new File( runnerJar, groupId );
         runnerJar = new File( runnerJar, artifactId );

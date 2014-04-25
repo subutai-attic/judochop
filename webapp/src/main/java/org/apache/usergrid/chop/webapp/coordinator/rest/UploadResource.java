@@ -191,7 +191,7 @@ public class UploadResource extends TestableResource implements RestParams {
          * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
          */
 
-        File parentDir = new File( chopUiFig.getContextTempDir() );
+        File parentDir = new File( chopUiFig.getContextPath() );
         parentDir = new File( parentDir, username );
         parentDir = new File( parentDir, groupId );
         parentDir = new File( parentDir, artifactId );

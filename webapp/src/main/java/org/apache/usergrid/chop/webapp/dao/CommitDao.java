@@ -18,6 +18,12 @@
  */
 package org.apache.usergrid.chop.webapp.dao;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.google.inject.Inject;
 import org.apache.usergrid.chop.webapp.dao.model.BasicCommit;
 import org.elasticsearch.action.index.IndexResponse;
@@ -27,11 +33,8 @@ import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.apache.usergrid.chop.webapp.elasticsearch.Util;
 
-import java.util.*;
-
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
 
 public class CommitDao extends Dao {
 
@@ -68,11 +71,11 @@ public class CommitDao extends Dao {
 
 
     public List<Commit> getByModule( String moduleId ) {
-        LOG.debug("moduleId: {}", moduleId);
+        LOG.debug( "moduleId: {}", moduleId );
 
-        SearchResponse response = getRequest(DAO_INDEX_KEY, DAO_TYPE_KEY)
-                .setQuery(termQuery("moduleId", moduleId))
-                .setSize(MAX_RESULT_SIZE)
+        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
+                .setQuery( termQuery( "moduleId", moduleId ) )
+                .setSize( MAX_RESULT_SIZE )
                 .execute().actionGet();
 
         TreeMap<Date, Commit> commitMap = new TreeMap<Date, Commit>();
@@ -88,11 +91,11 @@ public class CommitDao extends Dao {
                     Util.getString( json, "runnerPath" )
             );
 
-            commitMap.put(commit.getCreateTime(), commit);
+            commitMap.put( commit.getCreateTime(), commit );
         }
 
         ArrayList<Commit> commitList = new ArrayList<Commit>( commitMap.values() );
-        LOG.debug("commits: {}", commitList.size());
+        LOG.debug( "commits: {}", commitList.size() );
 
         return commitList;
     }
