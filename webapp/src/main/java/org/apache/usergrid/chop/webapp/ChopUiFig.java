@@ -81,20 +81,6 @@ public interface ChopUiFig extends GuicyFig {
     long getRetryDelay();
 
 
-    String MANAGER_ENDPOINT_KEY = "manager.endpoint";
-    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:24981/manager/text";
-
-    /**
-     * Gets the Tomcat servlet manager endpoint. Uses {@link ChopUiFig#MANAGER_ENDPOINT_KEY}
-     * to access the servlet manager endpoint.
-     *
-     * @return the Tomcat servlet manager endpoint
-     */
-    @Default( ChopUiFig.DEFAULT_MANAGER_ENDPOINT )
-    @Key( ChopUiFig.MANAGER_ENDPOINT_KEY )
-    String getManagerEndpoint();
-
-
     String LAUNCH_CLUSTER_TIMEOUT_KEY = "launch.cluster.timeout";
     String DEFAULT_LAUNCH_CLUSTER_TIMEOUT = "100000";
 
