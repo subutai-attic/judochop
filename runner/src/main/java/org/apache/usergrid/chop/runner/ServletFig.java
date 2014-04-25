@@ -79,18 +79,4 @@ public interface ServletFig extends GuicyFig {
     @Default( ServletFig.DEFAULT_DELAY_RETRY )
     @Key( ServletFig.DELAY_RETRY_KEY )
     long getRetryDelay();
-
-
-    String MANAGER_ENDPOINT_KEY = "manager.endpoint";
-    String DEFAULT_MANAGER_ENDPOINT = "http://localhost:24981/manager/text";
-
-    /**
-     * Gets the Tomcat servlet manager endpoint. Uses {@link ServletFig#MANAGER_ENDPOINT_KEY}
-     * to access the servlet manager endpoint.
-     *
-     * @return the Tomcat servlet manager endpoint
-     */
-    @Default( ServletFig.DEFAULT_MANAGER_ENDPOINT )
-    @Key( ServletFig.MANAGER_ENDPOINT_KEY )
-    String getManagerEndpoint();
 }
