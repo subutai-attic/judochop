@@ -21,7 +21,10 @@ package org.apache.usergrid.chop.webapp.service.chart.group;
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Run;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GroupByCommit {
 
@@ -35,7 +38,7 @@ public class GroupByCommit {
 
     private void putCommits(List<Commit> commits) {
         for (Commit commit : commits) {
-            commitRuns.put(commit.getId(), new ArrayList<Run>() );
+            commitRuns.put(commit.getId(), new ArrayList<Run>());
         }
     }
 
@@ -46,7 +49,7 @@ public class GroupByCommit {
     }
 
     private void putRun(Run run) {
-        List<Run> runs = commitRuns.get( run.getCommitId() );
+        List<Run> runs = commitRuns.get(run.getCommitId());
 
         if (runs != null) {
             runs.add(run);

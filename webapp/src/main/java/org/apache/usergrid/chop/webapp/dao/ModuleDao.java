@@ -19,19 +19,20 @@
 package org.apache.usergrid.chop.webapp.dao;
 
 import com.google.inject.Inject;
-
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.SearchHit;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
 import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.apache.usergrid.chop.webapp.elasticsearch.Util;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-import static org.elasticsearch.common.xcontent.XContentFactory.*;
 
 public class ModuleDao extends Dao {
 
@@ -42,24 +43,24 @@ public class ModuleDao extends Dao {
 
 
     @Inject
-    public ModuleDao( IElasticSearchClient elasticSearchClient ) {
-        super( elasticSearchClient );
+    public ModuleDao(IElasticSearchClient elasticSearchClient) {
+        super(elasticSearchClient);
     }
 
 
-    public boolean save( Module module ) throws Exception {
+    public boolean save(Module module) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, module.getId() )
-                .setRefresh( true )
+                .prepareIndex(DAO_INDEX_KEY, DAO_TYPE_KEY, module.getId())
+                .setRefresh(true)
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field( "groupId", module.getGroupId() )
-                                .field( "artifactId", module.getArtifactId() )
-                                .field( "version", module.getVersion() )
-                                .field( "vcsRepoUrl", module.getVcsRepoUrl() )
-                                .field( "testPackageBase", module.getTestPackageBase() )
+                                .field("groupId", module.getGroupId())
+                                .field("artifactId", module.getArtifactId())
+                                .field("version", module.getVersion())
+                                .field("vcsRepoUrl", module.getVcsRepoUrl())
+                                .field("testPackageBase", module.getTestPackageBase())
                                 .endObject()
                 )
                 .execute()
@@ -69,46 +70,46 @@ public class ModuleDao extends Dao {
     }
 
 
-    public Module get( String id ) {
+    public Module get(String id) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
-                .setQuery( termQuery( "_id", id ) )
+                .prepareSearch(DAO_INDEX_KEY)
+                .setTypes(DAO_TYPE_KEY)
+                .setQuery(termQuery("_id", id))
                 .execute()
                 .actionGet();
 
         SearchHit hits[] = response.getHits().hits();
 
-        return hits.length > 0 ? toModule( hits[0] ) : null;
+        return hits.length > 0 ? toModule(hits[0]) : null;
     }
 
 
-    private static Module toModule( SearchHit hit ) {
+    private static Module toModule(SearchHit hit) {
         Map<String, Object> json = hit.getSource();
 
         return new BasicModule(
-                Util.getString( json, "groupId" ),
-                Util.getString( json, "artifactId" ),
-                Util.getString( json, "version" ),
-                Util.getString( json, "vcsRepoUrl" ),
-                Util.getString( json, "testPackageBase" )
+                Util.getString(json, "groupId"),
+                Util.getString(json, "artifactId"),
+                Util.getString(json, "version"),
+                Util.getString(json, "vcsRepoUrl"),
+                Util.getString(json, "testPackageBase")
         );
     }
 
     public List<Module> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
-                .setSize( MAX_RESULT_SIZE )
+                .prepareSearch(DAO_INDEX_KEY)
+                .setTypes(DAO_TYPE_KEY)
+                .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
 
         ArrayList<Module> modules = new ArrayList<Module>();
 
-        for ( SearchHit hit : response.getHits().hits() ) {
-            modules.add( toModule( hit ) );
+        for (SearchHit hit : response.getHits().hits()) {
+            modules.add(toModule(hit));
         }
 
         return modules;

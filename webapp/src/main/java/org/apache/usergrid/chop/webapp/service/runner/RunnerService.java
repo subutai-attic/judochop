@@ -16,15 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.usergrid.chop.webapp.service.chart.value;
+package org.apache.usergrid.chop.webapp.service.runner;
 
-import org.apache.usergrid.chop.api.Run;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.State;
 
-class MaxValue extends Value {
+/**
+ * Returns status and stats data of a runner.
+ */
+public interface RunnerService {
 
-    @Override
-    protected void calcValue(Run run) {
-        value = Math.max(value, run.getMaxTime());
-    }
+    /**
+     * Returns a state of a given runner.
+     *
+     * @return {@link org.apache.usergrid.chop.api.State}
+     */
+    public State getState(Runner runner);
 
 }

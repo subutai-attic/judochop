@@ -34,8 +34,8 @@ public class SeriesBuilder {
         int x = startX;
 
         for (Value value : values) {
-            if ( value != null && !Double.isNaN( value.getValue() ) ) {
-                points.add( new Point(x, value) );
+            if (value != null && !Double.isNaN(value.getValue())) {
+                points.add(new Point(x, value));
             }
             x++;
         }
@@ -49,7 +49,7 @@ public class SeriesBuilder {
 
         for (Value value : values) {
             if (value != null) {
-                points.add( new Point(x, value) );
+                points.add(new Point(x, value));
             }
         }
 
@@ -60,9 +60,9 @@ public class SeriesBuilder {
 
         ArrayList<Series> seriesList = new ArrayList<Series>();
 
-        for (String key : map.keySet() ) {
+        for (String key : map.keySet()) {
             Collection<Value> values = map.get(key);
-            seriesList.add(new Series(key, SeriesBuilder.toPoints(values, 1) ) );
+            seriesList.add(new Series(key, SeriesBuilder.toPoints(values, 1)));
         }
 
         return seriesList;
@@ -73,9 +73,9 @@ public class SeriesBuilder {
         ArrayList<Series> seriesList = new ArrayList<Series>();
         int x = 0;
 
-        for (String key : map.keySet() ) {
+        for (String key : map.keySet()) {
             Collection<Value> values = map.get(key);
-            seriesList.add( new Series( SeriesBuilder.toPointsStaticX(values, x) ) );
+            seriesList.add(new Series(SeriesBuilder.toPointsStaticX(values, x)));
             x++;
         }
 

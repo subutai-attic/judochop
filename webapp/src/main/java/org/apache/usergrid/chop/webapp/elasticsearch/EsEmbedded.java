@@ -19,18 +19,17 @@
 package org.apache.usergrid.chop.webapp.elasticsearch;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Module;
+import com.google.inject.Singleton;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.node.internal.InternalNode;
 import org.safehaus.guicyfig.GuicyFigModule;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Module;
-import com.google.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -44,14 +43,14 @@ public class EsEmbedded {
 
 
     public EsEmbedded() {
-        List<Module> modules = new ArrayList<Module>( 1 );
-        modules.add( new GuicyFigModule( ElasticSearchFig.class ) );
-        config = Guice.createInjector( modules ).getInstance( ElasticSearchFig.class );
+        List<Module> modules = new ArrayList<Module>(1);
+        modules.add(new GuicyFigModule(ElasticSearchFig.class));
+        config = Guice.createInjector(modules).getInstance(ElasticSearchFig.class);
     }
 
 
     @Inject
-    public EsEmbedded( ElasticSearchFig config ) {
+    public EsEmbedded(ElasticSearchFig config) {
         this.config = config;
     }
 
@@ -60,7 +59,7 @@ public class EsEmbedded {
         inode = EmbeddedUtils.newInstance(config);
         Client client = inode.client();
         client.admin().cluster().prepareHealth().setWaitForGreenStatus().setTimeout(
-                TimeValue.timeValueSeconds( 5 ) ).execute().actionGet();
+                TimeValue.timeValueSeconds(5)).execute().actionGet();
         started = true;
     }
 

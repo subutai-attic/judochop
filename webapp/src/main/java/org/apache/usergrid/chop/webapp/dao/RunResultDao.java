@@ -19,18 +19,21 @@
 package org.apache.usergrid.chop.webapp.dao;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.StringUtils;
+import org.apache.usergrid.chop.api.Run;
+import org.apache.usergrid.chop.api.RunResult;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRunResult;
 import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.apache.usergrid.chop.webapp.elasticsearch.Util;
-import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.apache.usergrid.chop.api.Run;
-import org.apache.usergrid.chop.api.RunResult;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
@@ -46,26 +49,26 @@ public class RunResultDao extends Dao {
 
 
     @Inject
-    public RunResultDao( IElasticSearchClient elasticSearchClient ) {
-        super( elasticSearchClient );
+    public RunResultDao(IElasticSearchClient elasticSearchClient) {
+        super(elasticSearchClient);
     }
 
 
-    public boolean save( RunResult runResult ) throws Exception {
+    public boolean save(RunResult runResult) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( DAO_INDEX_KEY, DAO_TYPE_KEY, runResult.getId() )
-                .setRefresh( true )
+                .prepareIndex(DAO_INDEX_KEY, DAO_TYPE_KEY, runResult.getId())
+                .setRefresh(true)
                 .setSource(
                         jsonBuilder()
                                 .startObject()
-                                .field( "runId", runResult.getRunId() )
-                                .field( "runCount", runResult.getRunCount() )
-                                .field( "runTime", runResult.getRunTime() )
-                                .field( "ignoreCount", runResult.getIgnoreCount() )
-                                .field( "failureCount", runResult.getFailureCount() )
-                                .field( "createTime", System.nanoTime() )
-                                .field( "failures", runResult.getFailures() )
+                                .field("runId", runResult.getRunId())
+                                .field("runCount", runResult.getRunCount())
+                                .field("runTime", runResult.getRunTime())
+                                .field("ignoreCount", runResult.getIgnoreCount())
+                                .field("failureCount", runResult.getFailureCount())
+                                .field("createTime", System.nanoTime())
+                                .field("failures", runResult.getFailures())
                                 .endObject()
                 )
                 .execute()
@@ -74,11 +77,11 @@ public class RunResultDao extends Dao {
         return response.isCreated();
     }
 
-    public boolean delete( String id ) {
+    public boolean delete(String id) {
 
         DeleteResponse response = elasticSearchClient.getClient()
-                .prepareDelete( DAO_INDEX_KEY, DAO_TYPE_KEY, id )
-                .setRefresh( true )
+                .prepareDelete(DAO_INDEX_KEY, DAO_TYPE_KEY, id)
+                .setRefresh(true)
                 .execute()
                 .actionGet();
 
@@ -88,39 +91,39 @@ public class RunResultDao extends Dao {
     public List<RunResult> getAll() {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
-                .addSort( fieldSort( "createTime" ) )
-                .setSize( MAX_RESULT_SIZE )
+                .prepareSearch(DAO_INDEX_KEY)
+                .setTypes(DAO_TYPE_KEY)
+                .addSort(fieldSort("createTime"))
+                .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
 
-        return toList( response );
+        return toList(response);
     }
 
 
-    private static List<RunResult> toList( SearchResponse response ) {
+    private static List<RunResult> toList(SearchResponse response) {
         ArrayList<RunResult> list = new ArrayList<RunResult>();
 
-        for ( SearchHit hit : response.getHits().hits() ) {
-            list.add( toRunResult( hit ) );
+        for (SearchHit hit : response.getHits().hits()) {
+            list.add(toRunResult(hit));
         }
 
         return list;
     }
 
 
-    private static RunResult toRunResult( SearchHit hit ) {
+    private static RunResult toRunResult(SearchHit hit) {
 
         Map<String, Object> json = hit.getSource();
 
         return new BasicRunResult(
                 hit.getId(),
                 Util.getString(json, "runId"),
-                Util.getInt( json, "runCount" ),
-                Util.getInt( json, "runTime" ),
-                Util.getInt( json, "ignoreCount" ),
-                Util.getInt( json, "failureCount" ),
+                Util.getInt(json, "runCount"),
+                Util.getInt(json, "runTime"),
+                Util.getInt(json, "ignoreCount"),
+                Util.getInt(json, "failureCount"),
                 ""
         );
     }
@@ -131,40 +134,40 @@ public class RunResultDao extends Dao {
         String runIds = StringUtils.join(runs.keySet(), ' ');
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY )
-                .setQuery( multiMatchQuery( runIds, "runId" ) )
-                .addSort( fieldSort( "createTime" ) )
-                .setSize( MAX_RESULT_SIZE )
+                .prepareSearch(DAO_INDEX_KEY)
+                .setTypes(DAO_TYPE_KEY)
+                .setQuery(multiMatchQuery(runIds, "runId"))
+                .addSort(fieldSort("createTime"))
+                .setSize(MAX_RESULT_SIZE)
                 .execute()
                 .actionGet();
 
         HashMap<Run, List<RunResult>> runResults = new HashMap<Run, List<RunResult>>();
 
-        for ( SearchHit hit : response.getHits().hits() ) {
+        for (SearchHit hit : response.getHits().hits()) {
 
             RunResult runResult = toRunResult(hit);
-            Run run = runs.get( runResult.getRunId() );
+            Run run = runs.get(runResult.getRunId());
             List<RunResult> list = runResults.get(run);
 
-            if ( list == null ) {
+            if (list == null) {
                 list = new ArrayList<RunResult>();
-                runResults.put( run, list );
+                runResults.put(run, list);
             }
 
-            list.add( runResult );
+            list.add(runResult);
         }
 
         return runResults;
     }
 
 
-    public String getFailures( String runResultId ) {
+    public String getFailures(String runResultId) {
 
         SearchResponse response = elasticSearchClient.getClient()
-                .prepareSearch( DAO_INDEX_KEY )
-                .setTypes( DAO_TYPE_KEY)
-                .setQuery( termQuery( "_id", runResultId ) )
+                .prepareSearch(DAO_INDEX_KEY)
+                .setTypes(DAO_TYPE_KEY)
+                .setQuery(termQuery("_id", runResultId))
                 .execute()
                 .actionGet();
 

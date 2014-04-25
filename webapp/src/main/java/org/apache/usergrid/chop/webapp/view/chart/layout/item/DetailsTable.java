@@ -31,8 +31,8 @@ public class DetailsTable extends Table {
     public DetailsTable() {
         setWidth("250px");
         setHeight("250px");
-        addContainerProperty("Details", String.class,  null);
-        addContainerProperty("Value",  String.class,  null);
+        addContainerProperty("Details", String.class, null);
+        addContainerProperty("Value", String.class, null);
     }
 
     public void setContent(JSONObject json) {
@@ -41,9 +41,9 @@ public class DetailsTable extends Table {
     }
 
     private void addValues(JSONObject json) {
-        for ( String key : JsonUtil.getKeys(json) ) {
-            if ( !"id".equals(key) ) {
-                addItem(new Object[]{ key, getValue(json, key) }, key);
+        for (String key : JsonUtil.getKeys(json)) {
+            if (!"id".equals(key)) {
+                addItem(new Object[]{key, getValue(json, key)}, key);
             }
         }
     }
@@ -53,8 +53,8 @@ public class DetailsTable extends Table {
         Object value = json.opt(key);
 
         return value instanceof Double
-            ? DECIMAL_FORMAT.format(value)
-            : json.optString(key);
+                ? DECIMAL_FORMAT.format(value)
+                : json.optString(key);
     }
 
 }

@@ -19,19 +19,13 @@
  */
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
-import com.google.inject.Inject;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
+import com.google.inject.Singleton;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 /**
  * REST operation for authentication

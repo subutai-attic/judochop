@@ -38,7 +38,7 @@ public class Format {
                 s += ", ";
             }
 
-            s += String.format( "'%s'", StringUtils.abbreviate(category, 10) );
+            s += String.format("'%s'", StringUtils.abbreviate(category, 10));
         }
 
         return String.format("[%s]", s);
@@ -52,8 +52,8 @@ public class Format {
             Series s = seriesList.get(i);
 
             JSONObject json = new JSONObject();
-            JsonUtil.put( json, "data", s.getDoubleArray() );
-            JsonUtil.put( json, "label", s.getName() );
+            JsonUtil.put(json, "data", s.getDoubleArray());
+            JsonUtil.put(json, "label", s.getName());
 
             // Hard-code color indices to prevent them from shifting as the series are turned on/off.
             JsonUtil.put(json, "color", i);
@@ -68,8 +68,8 @@ public class Format {
 
         JSONArray arr = new JSONArray();
 
-        for ( Series s : seriesList ) {
-            arr.put( s.getJsonArray() );
+        for (Series s : seriesList) {
+            arr.put(s.getJsonArray());
         }
 
         return arr.toString();

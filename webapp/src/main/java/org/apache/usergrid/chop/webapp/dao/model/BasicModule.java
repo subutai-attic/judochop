@@ -46,7 +46,7 @@ public class BasicModule implements Module {
         return id;
     }
 
-    public static String createId( String groupId, String artifactId, String version ) {
+    public static String createId(String groupId, String artifactId, String version) {
         return "" + new HashCodeBuilder()
                 .append(groupId)
                 .append(artifactId)

@@ -16,15 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.usergrid.chop.webapp.service.chart.value;
+package org.apache.usergrid.chop.webapp.service.runner;
 
-import org.apache.usergrid.chop.api.Run;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class MaxValue extends Value {
+/**
+ * A mock implementation of RunnerService for testing.
+ */
+public class RunnerServiceMock implements RunnerService {
 
-    @Override
-    protected void calcValue(Run run) {
-        value = Math.max(value, run.getMaxTime());
+    private static final Logger LOG = LoggerFactory.getLogger(RunnerServiceMock.class);
+
+    /**
+     * {@inheritDoc}
+     */
+    public State getState(Runner runner) {
+        return State.INACTIVE;
     }
 
 }

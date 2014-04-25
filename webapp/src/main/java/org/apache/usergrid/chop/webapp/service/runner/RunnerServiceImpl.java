@@ -16,28 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.usergrid.chop.webapp.dao;
+package org.apache.usergrid.chop.webapp.service.runner;
 
-import org.apache.usergrid.chop.webapp.dao.model.Note;
-import org.apache.usergrid.chop.webapp.elasticsearch.ESSuiteTest;
-import org.junit.Test;
+import org.apache.usergrid.chop.api.Result;
+import org.apache.usergrid.chop.api.Runner;
+import org.apache.usergrid.chop.api.State;
+import org.apache.usergrid.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
+/**
+ * A basic implementation of RunnerService
+ */
+public class RunnerServiceImpl implements RunnerService {
 
-public class NoteDaoTest {
+    private static final Logger LOG = LoggerFactory.getLogger(RunnerServiceImpl.class);
 
-    private static Logger LOG = LoggerFactory.getLogger(NoteDaoTest.class);
+    /**
+     * {@inheritDoc}
+     */
+    public State getState(Runner runner) {
+        State state = null;
 
+        try {
+            Result result = RestRequests.status(runner);
+            state = result.getState();
+        } catch (Exception e) {
+            LOG.error("Error to get a runner status: ", e);
+        }
 
-    @Test
-    public void testGet() {
-
-        LOG.info("\n===NoteDaoTest.testGet===\n");
-
-        Note note = ESSuiteTest.noteDao.get(ESSuiteTest.COMMIT_ID_1, 1);
-
-        assertEquals(ESSuiteTest.NOTE, note.getText());
+        return state;
     }
+
 }

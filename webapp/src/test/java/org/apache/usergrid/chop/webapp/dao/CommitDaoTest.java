@@ -18,10 +18,9 @@
  */
 package org.apache.usergrid.chop.webapp.dao;
 
-import org.junit.Test;
 import org.apache.usergrid.chop.api.Commit;
-
 import org.apache.usergrid.chop.webapp.elasticsearch.ESSuiteTest;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,32 +30,32 @@ import static org.junit.Assert.assertEquals;
 
 public class CommitDaoTest {
 
-    private static Logger LOG = LoggerFactory.getLogger( CommitDaoTest.class );
+    private static Logger LOG = LoggerFactory.getLogger(CommitDaoTest.class);
 
     @Test
     public void testGetByModule() {
 
-        LOG.info( "\n===CommitDaoTest.testGetByModule===\n" );
+        LOG.info("\n===CommitDaoTest.testGetByModule===\n");
 
-        List<Commit> list = ESSuiteTest.commitDao.getByModule( ESSuiteTest.MODULE_ID_2 );
+        List<Commit> list = ESSuiteTest.commitDao.getByModule(ESSuiteTest.MODULE_ID_2);
 
         for (Commit commit : list) {
-            LOG.info( commit.toString() );
+            LOG.info(commit.toString());
         }
 
-        assertEquals( 2, list.size() );
+        assertEquals(2, list.size());
     }
 
 
     @Test
     public void testGet() {
 
-        LOG.info( "\n===CommitDaoTest.testGet===\n" );
+        LOG.info("\n===CommitDaoTest.testGet===\n");
 
-        Commit commit = ESSuiteTest.commitDao.getByModule( ESSuiteTest.MODULE_ID_1 ).get( 0 );
+        Commit commit = ESSuiteTest.commitDao.getByModule(ESSuiteTest.MODULE_ID_1).get(0);
 
-        LOG.info( commit.toString() );
+        LOG.info(commit.toString());
 
-        assertEquals( ESSuiteTest.COMMIT_ID_1, commit.getId() );
+        assertEquals(ESSuiteTest.COMMIT_ID_1, commit.getId());
     }
 }

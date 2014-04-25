@@ -32,8 +32,8 @@ public interface RestFig extends GuicyFig {
     /**
      * Gets the base upload path to upload war files.
      */
-    @Key( "war.upload.path" )
-    @Default( "." )
+    @Key("war.upload.path")
+    @Default(".")
     String getWarUploadPath();
 
 

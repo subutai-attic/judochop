@@ -19,10 +19,9 @@
 package org.apache.usergrid.chop.webapp.dao.model;
 
 
-import org.apache.usergrid.chop.api.ProviderParams;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.usergrid.chop.api.ProviderParams;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,13 +38,13 @@ public class BasicProviderParams implements ProviderParams {
     private Map<String, String> keys = new HashMap<String, String>();
 
 
-    public BasicProviderParams ( String username ) {
-        this(username, "", "", "", "", "" );
+    public BasicProviderParams(String username) {
+        this(username, "", "", "", "", "");
     }
 
 
-    public BasicProviderParams ( String username, String instanceType, String accessKey, String secretKey,
-                                 String imageId, String keyName ) {
+    public BasicProviderParams(String username, String instanceType, String accessKey, String secretKey,
+                               String imageId, String keyName) {
 
         this.username = username;
         this.instanceType = instanceType;
@@ -112,12 +111,12 @@ public class BasicProviderParams implements ProviderParams {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("user", username)
-                .append( "instanceType", instanceType )
-                .append( "accessKey", accessKey )
-                .append( "secretKey", secretKey )
-                .append( "imageId", imageId )
-                .append( "keyName", keyName )
-                .append( "keys", keys )
+                .append("instanceType", instanceType)
+                .append("accessKey", accessKey)
+                .append("secretKey", secretKey)
+                .append("imageId", imageId)
+                .append("keyName", keyName)
+                .append("keys", keys)
                 .toString();
     }
 }

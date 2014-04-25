@@ -19,32 +19,30 @@
  */
 package org.apache.usergrid.chop.webapp;
 
-import java.io.IOException;
-import java.util.Enumeration;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-
-import org.apache.usergrid.chop.webapp.dao.SetupDao;
-import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
-import org.apache.usergrid.chop.webapp.elasticsearch.EsEmbedded;
-import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.apache.usergrid.chop.webapp.service.util.TimeUtil;
-import org.safehaus.guicyfig.Env;
-import org.slf4j.Logger;
-import static org.apache.usergrid.chop.webapp.ChopUiFig.*;
-import org.slf4j.LoggerFactory;
-
-import org.apache.commons.cli.CommandLine;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
+import org.apache.commons.cli.CommandLine;
 import org.apache.shiro.guice.aop.ShiroAopModule;
+import org.apache.usergrid.chop.webapp.dao.SetupDao;
+import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
+import org.apache.usergrid.chop.webapp.elasticsearch.EsEmbedded;
+import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.shiro.CustomShiroWebModule;
+import org.apache.usergrid.chop.webapp.service.util.TimeUtil;
+import org.safehaus.guicyfig.Env;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import java.io.IOException;
+import java.util.Enumeration;
+
+import static org.apache.usergrid.chop.webapp.ChopUiFig.CONTEXT_TEMPDIR_KEY;
 
 /**
  * ...
@@ -153,7 +151,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
         long pause = 5000;
         LOG.info("Pausing for {} ms so embedded elasticsearch can complete initialization.", pause);
 
-        TimeUtil.sleep( pause );
+        TimeUtil.sleep(pause);
 
         return es;
     }

@@ -20,34 +20,33 @@
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
+import com.google.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Singleton;
-
 
 /**
  * REST operation to setup the Stack under test.
  */
 @Singleton
-@Produces( MediaType.TEXT_PLAIN )
-@Path( TestGetResource.ENDPOINT_URL )
+@Produces(MediaType.TEXT_PLAIN)
+@Path(TestGetResource.ENDPOINT_URL)
 public class TestGetResource {
     public final static String TEST_MESSAGE = "/testget called";
     public final static String ENDPOINT_URL = "/testget";
-    private static final Logger LOG = LoggerFactory.getLogger( TestGetResource.class );
+    private static final Logger LOG = LoggerFactory.getLogger(TestGetResource.class);
 
 
     @GET
-    @Consumes( MediaType.TEXT_PLAIN )
+    @Consumes(MediaType.TEXT_PLAIN)
     public String testget() {
-        LOG.warn( "Calling testget" );
+        LOG.warn("Calling testget");
         return TEST_MESSAGE;
     }
 }

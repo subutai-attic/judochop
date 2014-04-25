@@ -20,10 +20,10 @@ package org.apache.usergrid.chop.webapp.service.chart.value;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.json.JSONObject;
 import org.apache.usergrid.chop.api.Run;
 import org.apache.usergrid.chop.api.RunResult;
 import org.apache.usergrid.chop.webapp.service.util.JsonUtil;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,18 +37,21 @@ public class Value {
 
     protected JSONObject properties = new JSONObject();
 
-    public Value() {}
+    public Value() {
+    }
 
     public Value(RunResult runResult) {
         this.value = runResult.getRunTime();
         this.failures = runResult.getFailureCount();
         this.ignores = runResult.getIgnoreCount();
-        JsonUtil.put(properties, "id", runResult.getId() );
+        JsonUtil.put(properties, "id", runResult.getId());
     }
 
-    public void merge(Value value) {}
+    public void merge(Value value) {
+    }
 
-    protected void calcValue(Run run) {}
+    protected void calcValue(Run run) {
+    }
 
     public void merge(Run run) {
         calcValue(run);
@@ -62,13 +65,13 @@ public class Value {
     }
 
     private void mergeProperties(Run run) {
-        JsonUtil.put(properties, "chopType", run.getChopType() );
-        JsonUtil.put(properties, "commitId", run.getCommitId() );
-        JsonUtil.put(properties, "runNumber", run.getRunNumber() );
+        JsonUtil.put(properties, "chopType", run.getChopType());
+        JsonUtil.put(properties, "commitId", run.getCommitId());
+        JsonUtil.put(properties, "runNumber", run.getRunNumber());
 
         JsonUtil.inc(properties, "runners", 1);
-        JsonUtil.inc(properties, "totalTestsRun", run.getTotalTestsRun() );
-        JsonUtil.inc(properties, "iterations", run.getThreads() * run.getIterations() );
+        JsonUtil.inc(properties, "totalTestsRun", run.getTotalTestsRun());
+        JsonUtil.inc(properties, "iterations", run.getThreads() * run.getIterations());
     }
 
     public double getValue() {
@@ -87,7 +90,7 @@ public class Value {
 
         JSONObject json = new JSONObject();
 
-        JsonUtil.put(json, "value", getValue() );
+        JsonUtil.put(json, "value", getValue());
         JsonUtil.put(json, "failures", failures);
         JsonUtil.put(json, "ignores", ignores);
         JsonUtil.copy(properties, json);
@@ -98,7 +101,7 @@ public class Value {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("value", getValue() )
+                .append("value", getValue())
                 .toString();
     }
 }
