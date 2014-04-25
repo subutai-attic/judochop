@@ -158,7 +158,7 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( e.getMessage() );
         }
 
-        /** Upload */
+        /** Upload TODO use chop-client module to talk to the coordinator */
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( endpoint ).path( "/upload" );

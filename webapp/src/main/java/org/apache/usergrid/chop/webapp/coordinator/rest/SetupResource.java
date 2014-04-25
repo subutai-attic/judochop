@@ -45,6 +45,7 @@ import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.stack.BasicStack;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
+import org.apache.usergrid.chop.stack.SetupStackState;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
 import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
@@ -75,10 +76,6 @@ public class SetupResource extends TestableResource implements RestParams {
     public final static String ENDPOINT = "/setup";
     private static final Logger LOG = LoggerFactory.getLogger( SetupResource.class );
 
-
-    public enum SetupStackStatus {
-        SetUp, SettingUp, NotSetUp, NotFound
-    }
 
     @Inject
     private StackCoordinator stackCoordinator;
@@ -135,7 +132,7 @@ public class SetupResource extends TestableResource implements RestParams {
         }
 
         SetupStackThread setupStack = getSetupStackThread( commitId, artifactId, groupId, version, user, runnerCount );
-        SetupStackStatus status = stackStatus( setupStack );
+        SetupStackState status = stackStatus( setupStack );
 
         if( inTestMode( testMode ) ) {
             return Response.status( Response.Status.CREATED )
@@ -144,19 +141,19 @@ public class SetupResource extends TestableResource implements RestParams {
                            .build();
         }
 
-        if( status.equals( SetupStackStatus.NotFound ) ) {
+        if( status.equals( SetupStackState.NotFound ) ) {
             return Response.status( Response.Status.BAD_REQUEST )
                            .entity( setupStack.getErrorMessage() )
                            .type( MediaType.APPLICATION_JSON )
                            .build();
         }
-        if( status.equals( SetupStackStatus.SettingUp ) ) {
+        if( status.equals( SetupStackState.SettingUp ) ) {
             return Response.status( Response.Status.OK )
                            .entity( "Setting up" )
                            .type( MediaType.APPLICATION_JSON )
                            .build();
         }
-        if( status.equals( SetupStackStatus.SetUp ) ) {
+        if( status.equals( SetupStackState.SetUp ) ) {
             return Response.status( Response.Status.OK )
                            .entity( "Already set up" )
                            .type( MediaType.APPLICATION_JSON )
@@ -177,7 +174,7 @@ public class SetupResource extends TestableResource implements RestParams {
     @POST
     @Consumes( MediaType.APPLICATION_JSON )
     @Path( "/status" )
-    @Produces( MediaType.TEXT_PLAIN )
+    @Produces( MediaType.APPLICATION_JSON )
     public Response status(
             @QueryParam( RestParams.COMMIT_ID ) String commitId,
             @QueryParam( RestParams.MODULE_ARTIFACTID ) String artifactId,
@@ -194,16 +191,16 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/status" );
         }
 
-        SetupStackStatus status = stackStatus( commitId, artifactId, groupId, version, user, 0 );
+        SetupStackState status = stackStatus( commitId, artifactId, groupId, version, user, 0 );
 
         return Response.status( Response.Status.OK )
                        .entity( status )
-                       .type( MediaType.TEXT_PLAIN )
+                       .type( MediaType.APPLICATION_JSON )
                        .build();
     }
 
 
-    private SetupStackStatus stackStatus( String commitId, String artifactId, String groupId, String version,
+    private SetupStackState stackStatus( String commitId, String artifactId, String groupId, String version,
                                           String user, int runnerCount ) {
 
         SetupStackThread setupStackThread = getSetupStackThread( commitId, artifactId, groupId, version, user,
@@ -213,17 +210,17 @@ public class SetupResource extends TestableResource implements RestParams {
     }
 
 
-    private SetupStackStatus stackStatus( SetupStackThread setupStackThread ) {
+    private SetupStackState stackStatus( SetupStackThread setupStackThread ) {
         if( setupStackThread.getErrorMessage() != null ) {
-            return SetupStackStatus.NotFound;
+            return SetupStackState.NotFound;
         }
         if( setUpStackThreads.contains( setupStackThread ) ) {
-            return SetupStackStatus.SetUp;
+            return SetupStackState.SetUp;
         }
         if( settingUpStackThreads.contains( setupStackThread ) ) {
-            return SetupStackStatus.SettingUp;
+            return SetupStackState.SettingUp;
         }
-        return SetupStackStatus.NotSetUp;
+        return SetupStackState.NotSetUp;
     }
 
 

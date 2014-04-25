@@ -235,6 +235,21 @@ class ChopUiTestUtils {
     }
 
 
+    static void testSetupStatus( TestParams testParams ) {
+        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
+                            .setEndpoint( SetupResource.ENDPOINT )
+                            .newWebResource()
+                            .path( "/status" )
+                            .type( MediaType.APPLICATION_JSON )
+                            .accept( MediaType.APPLICATION_JSON )
+                            .post( ClientResponse.class );
+
+        assertEquals( Response.Status.OK.getStatusCode(), response.getStatus() );
+
+        assertEquals( "\"NotFound\"", response.getEntity( String.class ) );
+    }
+
+
     static void testStart( TestParams testParams ) {
         BaseResult result = testParams
                 .setEndpoint( StartResource.ENDPOINT )
