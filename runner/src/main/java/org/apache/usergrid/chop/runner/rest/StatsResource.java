@@ -57,7 +57,7 @@ public class StatsResource extends TestableResource {
     @GET
     public Response getCallStatsSnapshot( @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode ) {
         if ( inTestMode( testMode ) ) {
-            return Response.ok( new StatsSnapshot( 5L, 333L, 111L, 222L, true, new Date().getTime() ) ).build();
+            return Response.ok( new StatsSnapshot( 5L, 333L, 111L, 222L, true, new Date().getTime(), 50 ) ).build();
         }
 
         return Response.ok( controller.getCurrentChopStats() ).build();

@@ -57,6 +57,13 @@ public class IterationTracker extends Tracker {
     }
 
 
+    @Override
+    public int getPercentCompleted() {
+        double percent = ( double ) getActualIterations() / ( double ) iterationChop.iterations();
+        return ( int ) Math.floor( percent );
+    }
+
+
     @JsonProperty
     public IterationChop getIterationChop() {
         return iterationChop;

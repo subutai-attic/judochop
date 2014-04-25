@@ -57,6 +57,13 @@ public class TimeTracker extends Tracker {
     }
 
 
+    @Override
+    public int getPercentCompleted() {
+        double percent = ( double ) getActualTime() / ( double ) timeChop.time();
+        return ( int ) Math.floor( percent );
+    }
+
+
     @JsonProperty
     public TimeChop getTimeChop() {
         return timeChop;

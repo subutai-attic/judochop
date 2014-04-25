@@ -65,6 +65,8 @@ public class ChopUiModule extends ServletModule {
         bind(RunManagerResource.class).asEagerSingleton();
         bind(TestGetResource.class).asEagerSingleton();
         bind(AuthResource.class).asEagerSingleton();
+        bind( PropertiesResource.class ).asEagerSingleton();
+
         //bind shiro
         ShiroWebModule.bindGuiceFilter(binder());
 
