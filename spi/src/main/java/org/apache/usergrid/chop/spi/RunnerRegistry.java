@@ -30,15 +30,14 @@ import org.apache.usergrid.chop.api.Runner;
  */
 public interface RunnerRegistry {
     /**
-     * Gets the runner instance information from the RunnerRegistry as a map of their keys to
-     * their Runner information.
+     * Gets the runner instance information from the RunnerRegistry as list of Runner instances.
      *
      * @return the keys mapped to Runner information
      */
     List<Runner> getRunners();
 
     /**
-     * Gets the runner instance information from the RunnerRegistry as a map of keys Runner instances.
+     * Gets the runner instance information from the RunnerRegistry as a list of Runner instances.
      *
      *
      * @param runner a runner to exclude from results (none if null)
