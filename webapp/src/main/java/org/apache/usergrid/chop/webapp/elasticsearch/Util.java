@@ -34,7 +34,7 @@ public class Util {
         Date date = null;
 
         try {
-            date = DATE_FORMAT.parse( dateStr.replaceAll("T", " ") );
+            date = DATE_FORMAT.parse(dateStr.replaceAll("T", " "));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -72,7 +72,7 @@ public class Util {
         if (StringUtils.isEmpty(str)
                 || !str.startsWith("{")
                 || !str.endsWith("}")
-                || str.equals("{}") ) {
+                || str.equals("{}")) {
             return map;
         }
 
@@ -80,8 +80,8 @@ public class Util {
 
         for (String s : values) {
             map.put(
-                StringUtils.substringBefore(s, "="),
-                StringUtils.substringAfter(s, "=")
+                    StringUtils.substringBefore(s, "="),
+                    StringUtils.substringAfter(s, "=")
             );
         }
 

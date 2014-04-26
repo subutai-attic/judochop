@@ -18,21 +18,21 @@
  */
 package org.apache.usergrid.chop.webapp.service.shiro;
 
-import java.io.IOException;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.shiro.web.filter.authz.AuthorizationFilter;
+import java.io.IOException;
 
 
 public class RestFilter extends AuthorizationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request,
-            ServletResponse response, Object mappedValue) {
+                                      ServletResponse response, Object mappedValue) {
 
         String username = (request.getParameter("user"));
         String password = (request.getParameter("pwd"));

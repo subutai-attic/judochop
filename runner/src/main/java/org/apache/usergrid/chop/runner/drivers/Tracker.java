@@ -217,5 +217,5 @@ public abstract class Tracker {
 
 
     @JsonProperty
-    public abstract int getPercentageComplete();
+    public abstract int getPercentCompleted();
 }

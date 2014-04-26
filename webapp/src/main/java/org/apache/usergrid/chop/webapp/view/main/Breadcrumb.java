@@ -18,7 +18,10 @@
  */
 package org.apache.usergrid.chop.webapp.view.main;
 
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.Reindeer;
 import org.apache.usergrid.chop.webapp.view.chart.layout.ChartLayout;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
@@ -77,7 +80,7 @@ public class Breadcrumb extends AbsoluteLayout {
 
     private void setCaption(String caption, int pos) {
         if (pos == 2) {
-            ( (Label) items[pos] ).setValue( String.format("<b>%s</b>", caption) );
+            ((Label) items[pos]).setValue(String.format("<b>%s</b>", caption));
         } else {
             items[pos].setCaption(caption);
         }

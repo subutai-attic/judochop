@@ -28,7 +28,7 @@ class MinValue extends Value {
 
     @Override
     protected void calcValue(Run run) {
-        value = Math.min( value, run.getMinTime() );
+        value = Math.min(value, run.getMinTime());
     }
 
 }

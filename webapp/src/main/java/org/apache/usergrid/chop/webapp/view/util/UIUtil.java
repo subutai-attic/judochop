@@ -98,17 +98,21 @@ public class UIUtil {
         return list;
     }
 
-    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height) {
+    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height, boolean readOnly) {
 
         TextArea textArea = new TextArea(caption);
         textArea.setWidth(width);
         textArea.setHeight(height);
         textArea.setWordwrap(false);
-        textArea.setReadOnly(true);
+        textArea.setReadOnly(readOnly);
 
         parent.addComponent(textArea, position);
 
         return textArea;
+    }
+
+    public static TextArea addTextArea(AbsoluteLayout parent, String caption, String position, String width, String height) {
+        return addTextArea(parent, caption, position, width, height, false);
     }
 
 }

@@ -233,11 +233,11 @@ public class BasicRun implements Run {
                 .append("runNumber", runNumber)
                 .append("commitId", commitId)
                 .append("actualTime", actualTime)
-                .append("minTime",minTime)
-                .append("maxTime",maxTime)
+                .append("minTime", minTime)
+                .append("maxTime", maxTime)
                 .append("avgTime", avgTime)
                 .append("failures", failures)
-                .append("ignores",ignores)
+                .append("ignores", ignores)
                 .append("runner", runner)
 //                .append("testName", testName)
 //                .append("chopType", chopType)
@@ -251,9 +251,6 @@ public class BasicRun implements Run {
 //                .append("saturate", saturate)
                 .toString();
     }
-
-
-
 
 
 }

@@ -18,10 +18,7 @@
  */
 package org.apache.usergrid.chop.webapp.service.shiro;
 
-import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
-import org.apache.usergrid.chop.webapp.dao.UserDao;
-import org.apache.usergrid.chop.webapp.dao.model.BasicProviderParams;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationException;
@@ -31,13 +28,16 @@ import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.usergrid.chop.stack.User;
+import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
+import org.apache.usergrid.chop.webapp.dao.UserDao;
+import org.apache.usergrid.chop.webapp.dao.model.BasicProviderParams;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.shiro.SecurityUtils;
 
 public class ShiroRealm extends AuthorizingRealm {
 

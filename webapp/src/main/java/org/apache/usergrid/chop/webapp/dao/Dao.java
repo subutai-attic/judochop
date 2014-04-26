@@ -26,29 +26,29 @@ import org.slf4j.LoggerFactory;
 
 public abstract class Dao {
 
-    protected final Logger LOG = LoggerFactory.getLogger( getClass() );
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
     protected IElasticSearchClient elasticSearchClient;
 
 
-    protected Dao( IElasticSearchClient elasticSearchClient ) {
+    protected Dao(IElasticSearchClient elasticSearchClient) {
         this.elasticSearchClient = elasticSearchClient;
     }
 
 
     protected SearchRequestBuilder getRequest(String index, String type) {
         return elasticSearchClient.getClient()
-                .prepareSearch( index )
-                .setTypes( type );
+                .prepareSearch(index)
+                .setTypes(type);
     }
 
     /**
-     * By default ElasticSearch searches with lower-case and ignores the dash. We need this fix to get correct result.
+     * By default ElasticSearch searches with lower-case and ignores the dash. We need to fix this to get correct result.
      */
     protected static String fixTermValue(String value) {
         return value != null
-            ? value.toLowerCase().replaceAll("-", "")
-            : null;
+                ? value.toLowerCase().replaceAll("-", "")
+                : null;
     }
 }
 

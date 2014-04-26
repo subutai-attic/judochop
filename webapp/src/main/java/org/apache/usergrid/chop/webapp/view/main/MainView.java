@@ -20,21 +20,18 @@ package org.apache.usergrid.chop.webapp.view.main;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.*;
-import org.apache.usergrid.chop.webapp.service.DataService;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.UI;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.apache.usergrid.chop.webapp.service.chart.builder.RunsChartBuilder;
-import org.apache.usergrid.chop.webapp.view.chart.layout.ChartLayout;
-import org.apache.usergrid.chop.webapp.view.tree.ModuleSelectListener;
-import org.apache.usergrid.chop.webapp.view.util.JavaScriptUtil;
 import org.apache.usergrid.chop.webapp.service.chart.Params;
 import org.apache.usergrid.chop.webapp.service.chart.builder.IterationsChartBuilder;
 import org.apache.usergrid.chop.webapp.service.chart.builder.OverviewChartBuilder;
-import org.apache.usergrid.chop.webapp.view.chart.layout.ChartLayoutContext;
-import org.apache.usergrid.chop.webapp.view.chart.layout.IterationsChartLayout;
-import org.apache.usergrid.chop.webapp.view.chart.layout.OverviewChartLayout;
-import org.apache.usergrid.chop.webapp.view.chart.layout.RunsChartLayout;
+import org.apache.usergrid.chop.webapp.service.chart.builder.RunsChartBuilder;
+import org.apache.usergrid.chop.webapp.view.chart.layout.*;
+import org.apache.usergrid.chop.webapp.view.tree.ModuleSelectListener;
 import org.apache.usergrid.chop.webapp.view.tree.ModuleTreeBuilder;
+import org.apache.usergrid.chop.webapp.view.util.JavaScriptUtil;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
 
 @Title("Judo Chop")
@@ -62,17 +59,15 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
 
         ChartLayout iterationsLayout = new IterationsChartLayout(layoutContext, iterationsChartBuilder, null, breadcrumb);
         ChartLayout runsLayout = new RunsChartLayout(layoutContext, runsChartBuilder, iterationsLayout, breadcrumb);
-        ChartLayout overviewLayout = new OverviewChartLayout(layoutContext, overviewChartBuilder, runsLayout, breadcrumb);
-
-        return overviewLayout;
+        return new OverviewChartLayout(layoutContext, overviewChartBuilder, runsLayout, breadcrumb);
     }
 
     private void initLayout() {
 
         splitPanel = new HorizontalSplitPanel();
         splitPanel.setSplitPosition(20);
-        splitPanel.setFirstComponent( ModuleTreeBuilder.getTree(this) );
-        splitPanel.setSecondComponent( initMainContainer() );
+        splitPanel.setFirstComponent(ModuleTreeBuilder.getTree(this));
+        splitPanel.setSecondComponent(initMainContainer());
 
         setContent(splitPanel);
     }
@@ -96,7 +91,7 @@ public class MainView extends UI implements ChartLayoutContext, ModuleSelectList
     @Override
     public void onModuleSelect(String moduleId) {
         header.showModule(moduleId);
-        show(overviewLayout, new Params(moduleId) );
+        show(overviewLayout, new Params(moduleId));
     }
 
     private void setChartLayout(ChartLayout chartLayout) {

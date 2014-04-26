@@ -253,7 +253,7 @@ class GroupSubwindow extends Window {
                 Object contactId = groupList.getValue();
 
 				/*
-				 * When a contact is selected from the list, we want to show
+                 * When a contact is selected from the list, we want to show
 				 * that in our editor on the right. This is nicely done by the
 				 * FieldGroup that binds all the fields to the corresponding
 				 * Properties in our contact at once.

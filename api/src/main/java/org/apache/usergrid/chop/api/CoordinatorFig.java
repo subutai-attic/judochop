@@ -118,4 +118,11 @@ public interface CoordinatorFig extends GuicyFig {
     @Key( PASSWORD )
     @Default( PASSWORD_DEFAULT )
     String getPassword();
+
+    String PROPERTIES_PATH = "coordinator.endpoint.properties";
+    String PROPERTIES_PATH_DEFAULT = "/properties";
+    @Key( PROPERTIES_PATH )
+    @Default( PROPERTIES_PATH_DEFAULT )
+    String getPropertiesPath();
+
 }

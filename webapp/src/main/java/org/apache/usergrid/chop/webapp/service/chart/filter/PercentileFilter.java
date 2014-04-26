@@ -18,28 +18,31 @@
  */
 package org.apache.usergrid.chop.webapp.service.chart.filter;
 
-import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class PercentileFilter {
 
     public static Map<String, Collection<Value>> filter(Map<String, Collection<Value>> map, int percent) {
 
-        double percentile = new DescriptiveStatistics(toArray(map) ).getPercentile(percent);
+        double percentile = new DescriptiveStatistics(toArray(map)).getPercentile(percent);
         Map<String, Collection<Value>> resultMap = new LinkedHashMap<String, Collection<Value>>();
 
-        for (String key : map.keySet() ) {
-            resultMap.put(key, doFilter(map.get(key), percentile) );
+        for (String key : map.keySet()) {
+            resultMap.put(key, doFilter(map.get(key), percentile));
         }
 
         return resultMap;
     }
 
     public static Collection<Value> filter(Collection<Value> values, double percent) {
-        double percentile = new DescriptiveStatistics(toArray(values) ).getPercentile(percent);
+        double percentile = new DescriptiveStatistics(toArray(values)).getPercentile(percent);
         return doFilter(values, percentile);
     }
 
@@ -60,8 +63,8 @@ public class PercentileFilter {
 
         double arr[] = {};
 
-        for (Collection<Value> valueList : map.values() ) {
-            arr = ArrayUtils.addAll(arr, toArray(valueList) );
+        for (Collection<Value> valueList : map.values()) {
+            arr = ArrayUtils.addAll(arr, toArray(valueList));
         }
 
         return arr;

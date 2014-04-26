@@ -24,6 +24,7 @@ import org.apache.usergrid.chop.api.Runner;
 import org.safehaus.guicyfig.Bypass;
 import org.safehaus.guicyfig.OptionState;
 import org.safehaus.guicyfig.Overrides;
+
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.Properties;
@@ -86,76 +87,76 @@ public class BasicRunner implements Runner {
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
-        
+
     }
 
     @Override
     public OptionState[] getOptions() {
-        return new OptionState[0];  
+        return new OptionState[0];
     }
 
     @Override
     public OptionState getOption(String s) {
-        return null;  
+        return null;
     }
 
     @Override
     public String getKeyByMethod(String s) {
-        return null;  
+        return null;
     }
 
     @Override
     public Object getValueByMethod(String s) {
-        return null;  
+        return null;
     }
 
     @Override
     public Properties filterOptions(Properties properties) {
-        return null;  
+        return null;
     }
 
     @Override
     public Map<String, Object> filterOptions(Map<String, Object> stringObjectMap) {
-        return null;  
+        return null;
     }
 
     @Override
     public void override(String s, String s2) {
-        
+
     }
 
     @Override
     public boolean setOverrides(Overrides overrides) {
-        return false;  
+        return false;
     }
 
     @Override
     public Overrides getOverrides() {
-        return null;  
+        return null;
     }
 
     @Override
     public void bypass(String s, String s2) {
-        
+
     }
 
     @Override
     public boolean setBypass(Bypass bypass) {
-        return false;  
+        return false;
     }
 
     @Override
     public Bypass getBypass() {
-        return null;  
+        return null;
     }
 
     @Override
     public Class getFigInterface() {
-        return null;  
+        return null;
     }
 
     @Override
     public boolean isSingleton() {
-        return false;  
+        return false;
     }
 }

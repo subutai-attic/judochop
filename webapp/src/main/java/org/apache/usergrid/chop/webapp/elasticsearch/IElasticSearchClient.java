@@ -19,10 +19,9 @@
 package org.apache.usergrid.chop.webapp.elasticsearch;
 
 
-import org.elasticsearch.client.Client;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.elasticsearch.client.Client;
 
 
 public interface IElasticSearchClient {

@@ -21,10 +21,10 @@ package org.apache.usergrid.chop.webapp.view.tree;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.TreeTable;
-import org.apache.usergrid.chop.webapp.dao.ModuleDao;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.usergrid.chop.api.Module;
+import org.apache.usergrid.chop.webapp.dao.ModuleDao;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class ModuleTreeBuilder {
         treeTable.addContainerProperty("Group", String.class, "");
         treeTable.addContainerProperty("Artifact", String.class, "");
         treeTable.setSizeFull();
-        treeTable.addItemClickListener( getItemClickListener(listener) );
+        treeTable.addItemClickListener(getItemClickListener(listener));
 
         addItems(treeTable);
 
@@ -76,9 +76,9 @@ public class ModuleTreeBuilder {
 
     private static void addItem(TreeTable treeTable, Module module) {
 
-        String parentId = String.format( PARENT_PREFIX + "%s-%s", module.getGroupId(), module.getArtifactId() );
-        treeTable.addItem( new Object[]{ module.getGroupId(), module.getArtifactId() }, parentId );
-        treeTable.addItem( new Object[]{ module.getVersion(), "" }, module.getId() );
+        String parentId = String.format(PARENT_PREFIX + "%s-%s", module.getGroupId(), module.getArtifactId());
+        treeTable.addItem(new Object[]{module.getGroupId(), module.getArtifactId()}, parentId);
+        treeTable.addItem(new Object[]{module.getVersion(), ""}, module.getId());
 
         treeTable.setParent(module.getId(), parentId);
     }

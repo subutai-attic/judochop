@@ -18,8 +18,8 @@
  */
 package org.apache.usergrid.chop.webapp.service.chart.builder.average;
 
-import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 import org.apache.usergrid.chop.webapp.service.chart.value.AvgValue;
+import org.apache.usergrid.chop.webapp.service.chart.value.Value;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +31,9 @@ public class OverviewAverage {
 
         ArrayList<Value> avgValues = new ArrayList<Value>();
 
-        for ( String commitId : commitRuns.keySet() ) {
+        for (String commitId : commitRuns.keySet()) {
             Collection<Value> values = commitRuns.get(commitId);
-            avgValues.add(getAvg(values) );
+            avgValues.add(getAvg(values));
         }
 
         return avgValues;

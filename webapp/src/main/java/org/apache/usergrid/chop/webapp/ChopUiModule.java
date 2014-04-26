@@ -18,32 +18,28 @@
  */
 package org.apache.usergrid.chop.webapp;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.usergrid.chop.webapp.coordinator.rest.RestFig;
-import org.apache.usergrid.chop.webapp.coordinator.rest.TestGetResource;
-import org.apache.usergrid.chop.webapp.view.util.VaadinServlet;
-
-import org.apache.usergrid.chop.api.Project;
-import org.apache.usergrid.chop.api.store.amazon.AmazonModule;
-import org.apache.usergrid.chop.webapp.coordinator.rest.RunManagerResource;
-import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
-import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
-import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchClient;
-import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.safehaus.guicyfig.GuicyFigModule;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import com.netflix.config.ConfigurationManager;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.apache.shiro.guice.web.ShiroWebModule;
-import org.apache.usergrid.chop.webapp.coordinator.rest.AuthResource;
+import org.apache.usergrid.chop.api.Project;
+import org.apache.usergrid.chop.api.store.amazon.AmazonModule;
+import org.apache.usergrid.chop.webapp.coordinator.rest.*;
+import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchClient;
+import org.apache.usergrid.chop.webapp.elasticsearch.ElasticSearchFig;
+import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
+import org.apache.usergrid.chop.webapp.view.util.VaadinServlet;
+import org.safehaus.guicyfig.GuicyFigModule;
 
-@SuppressWarnings("unchecked")
+import com.google.inject.Singleton;
+import org.apache.usergrid.chop.webapp.coordinator.rest.AuthResource;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+
+@SuppressWarnings( "unchecked" )
 @Singleton
 public class ChopUiModule extends ServletModule {
 
@@ -52,7 +48,8 @@ public class ChopUiModule extends ServletModule {
     static {
         try {
             ConfigurationManager.loadCascadedPropertiesFromResources( "chop-ui" );
-        } catch ( IOException e ) {
+        }
+        catch ( IOException e ) {
             throw new RuntimeException( "Could not load configuration file", e );
         }
     }
@@ -73,6 +70,8 @@ public class ChopUiModule extends ServletModule {
         bind( RunManagerResource.class ).asEagerSingleton();
         bind( TestGetResource.class ).asEagerSingleton();
         bind( AuthResource.class ).asEagerSingleton();
+        bind( PropertiesResource.class ).asEagerSingleton();
+
         //bind shiro
         ShiroWebModule.bindGuiceFilter( binder() );
 

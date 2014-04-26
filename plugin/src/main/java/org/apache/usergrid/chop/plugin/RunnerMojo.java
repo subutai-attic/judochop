@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.codehaus.plexus.util.FileUtils;
+
+import org.apache.usergrid.chop.api.CoordinatorFig;
 import org.apache.usergrid.chop.api.Project;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -136,6 +138,9 @@ public class RunnerMojo extends MainMojo {
             prop.setProperty( Project.PROJECT_VERSION_KEY, this.project.getVersion() );
             prop.setProperty( Project.TEST_PACKAGE_BASE, testPackageBase );
             prop.setProperty( Project.MD5_KEY, md5 );
+            prop.setProperty( CoordinatorFig.USERNAME, username );
+            prop.setProperty( CoordinatorFig.PASSWORD, password );
+            prop.setProperty( CoordinatorFig.ENDPOINT, endpoint );
 
             String uuid = commitId.substring( 0, CHARS_OF_UUID/2 ) +
                     commitId.substring( commitId.length() - CHARS_OF_UUID/2 );

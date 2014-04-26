@@ -18,20 +18,16 @@
  */
 package org.apache.usergrid.chop.webapp.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.google.inject.Inject;
+import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.webapp.dao.model.BasicCommit;
+import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
+import org.apache.usergrid.chop.webapp.elasticsearch.Util;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.apache.usergrid.chop.api.Commit;
-import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
-import org.apache.usergrid.chop.webapp.elasticsearch.Util;
+
+import java.util.*;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
@@ -45,16 +41,16 @@ public class CommitDao extends Dao {
 
 
     @Inject
-    public CommitDao( IElasticSearchClient elasticSearchClient ) {
-        super( elasticSearchClient );
+    public CommitDao(IElasticSearchClient elasticSearchClient) {
+        super(elasticSearchClient);
     }
 
 
-    public boolean save( Commit commit ) throws Exception {
+    public boolean save(Commit commit) throws Exception {
 
         IndexResponse response = elasticSearchClient.getClient()
-                .prepareIndex( "modules", "commit", commit.getId() )
-                .setRefresh( true )
+                .prepareIndex("modules", "commit", commit.getId())
+                .setRefresh(true)
                 .setSource(
                         jsonBuilder()
                                 .startObject()
@@ -70,32 +66,32 @@ public class CommitDao extends Dao {
     }
 
 
-    public List<Commit> getByModule( String moduleId ) {
-        LOG.debug( "moduleId: {}", moduleId );
+    public List<Commit> getByModule(String moduleId) {
+        LOG.debug("moduleId: {}", moduleId);
 
-        SearchResponse response = getRequest( DAO_INDEX_KEY, DAO_TYPE_KEY )
-                .setQuery( termQuery( "moduleId", moduleId ) )
-                .setSize( MAX_RESULT_SIZE )
+        SearchResponse response = getRequest(DAO_INDEX_KEY, DAO_TYPE_KEY)
+                .setQuery(termQuery("moduleId", moduleId))
+                .setSize(MAX_RESULT_SIZE)
                 .execute().actionGet();
 
         TreeMap<Date, Commit> commitMap = new TreeMap<Date, Commit>();
 
-        for ( SearchHit hit : response.getHits().hits() ) {
+        for (SearchHit hit : response.getHits().hits()) {
             Map<String, Object> json = hit.getSource();
 
             BasicCommit commit = new BasicCommit(
                     hit.getId(),
-                    Util.getString( json, "moduleId" ),
-                    Util.getString( json, "md5" ),
-                    Util.toDate( Util.getString( json, "createTime" ) ),
-                    Util.getString( json, "runnerPath" )
+                    Util.getString(json, "moduleId"),
+                    Util.getString(json, "md5"),
+                    Util.toDate(Util.getString(json, "createTime")),
+                    Util.getString(json, "runnerPath")
             );
 
-            commitMap.put( commit.getCreateTime(), commit );
+            commitMap.put(commit.getCreateTime(), commit);
         }
 
-        ArrayList<Commit> commitList = new ArrayList<Commit>( commitMap.values() );
-        LOG.debug( "commits: {}", commitList.size() );
+        ArrayList<Commit> commitList = new ArrayList<Commit>(commitMap.values());
+        LOG.debug("commits: {}", commitList.size());
 
         return commitList;
     }

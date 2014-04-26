@@ -21,15 +21,15 @@ package org.apache.usergrid.chop.webapp.view.chart.layout;
 import com.vaadin.data.Property;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
-import org.apache.usergrid.chop.webapp.service.InjectorFactory;
-import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.apache.usergrid.chop.api.Run;
 import org.apache.usergrid.chop.webapp.dao.RunDao;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 import org.apache.usergrid.chop.webapp.service.chart.builder.ChartBuilder;
+import org.apache.usergrid.chop.webapp.view.main.Breadcrumb;
 import org.apache.usergrid.chop.webapp.view.util.UIUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +43,14 @@ public class RunsChartLayout extends ChartLayout {
     private ListSelect runnersListSelect;
 
     public RunsChartLayout(ChartLayoutContext layoutContext, ChartBuilder chartBuilder, ChartLayout nextLayout, Breadcrumb breadcrumb) {
-        super( new Config(
+        super(new Config(
                 layoutContext,
                 chartBuilder,
                 nextLayout,
                 "runsChart",
                 "js/runs-chart.js",
                 breadcrumb
-        ) );
+        ));
 
         addNextChartButton();
     }
@@ -73,7 +73,7 @@ public class RunsChartLayout extends ChartLayout {
             public void valueChange(Property.ValueChangeEvent event) {
                 Object value = event.getProperty().getValue();
                 if (value != null) {
-                    showRunner( value.toString() );
+                    showRunner(value.toString());
                 }
             }
         });
@@ -103,7 +103,7 @@ public class RunsChartLayout extends ChartLayout {
     }
 
     private void handleRunNumber() {
-        nextChartButton.setCaption( "Run: " + params.getRunNumber() );
+        nextChartButton.setCaption("Run: " + params.getRunNumber());
         showRunners();
     }
 
@@ -112,7 +112,7 @@ public class RunsChartLayout extends ChartLayout {
         runnersListSelect.removeAllItems();
         runners.clear();
 
-        List<Run> runs = runDao.getList(params.getCommitId(), params.getRunNumber() );
+        List<Run> runs = runDao.getList(params.getCommitId(), params.getRunNumber());
 
         for (Run run : runs) {
             runnersListSelect.addItem(run.getRunner());

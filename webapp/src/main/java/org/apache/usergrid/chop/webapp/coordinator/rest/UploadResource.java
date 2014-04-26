@@ -21,11 +21,8 @@ package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +39,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.usergrid.chop.webapp.ChopUiFig;
 import org.apache.usergrid.chop.webapp.coordinator.CoordinatorUtils;
-import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
 import org.apache.usergrid.chop.webapp.dao.model.BasicCommit;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRun;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRunResult;
@@ -56,10 +52,8 @@ import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.RestParams;
 import org.apache.usergrid.chop.webapp.dao.CommitDao;
 import org.apache.usergrid.chop.webapp.dao.ModuleDao;
-import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
 import org.apache.usergrid.chop.webapp.dao.RunDao;
 import org.apache.usergrid.chop.webapp.dao.RunResultDao;
-import org.apache.usergrid.chop.webapp.dao.UserDao;
 import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;

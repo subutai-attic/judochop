@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.util.Properties;
 
 import javax.mail.internet.MimeMultipart;
@@ -28,6 +29,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.usergrid.chop.api.ChopUtils;
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.RestParams;
 
@@ -67,18 +69,41 @@ public class DeployMojo extends MainMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        initCertStore();
+
+        try {
+            final URI uri = URI.create( endpoint );
+            getLog().info( "Installing cert for Host: " + uri.getHost() + " at port: " + uri.getPort() );
+
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+                new javax.net.ssl.HostnameVerifier() {
+
+                    public boolean verify( String hostname, javax.net.ssl.SSLSession sslSession) {
+                        return hostname.equals( uri.getHost() );
+                    }
+                }
+            );
+
+            if ( certStorePassphrase == null ) {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), null );
+            }
+            else {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), certStorePassphrase.toCharArray() );
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
 
         File source = getRunnerFile();
         if ( source.exists() ) {
-            LOG.info( "{} exists!", source.getAbsolutePath() );
+            getLog().info( source.getAbsolutePath() + " exists!" );
         }
         else {
-            LOG.info( "{} does not exist.", source.getAbsolutePath() );
+            getLog().info( source.getAbsolutePath() + " does not exist." );
         }
 
         if ( ! isReadyToDeploy() ) {
-            LOG.info( "{} is NOT present to upload, calling chop:runner goal now...", RUNNER_JAR );
+            getLog().info( RUNNER_JAR + " is NOT present to upload, calling chop:runner goal now..." );
             RunnerMojo runnerMojo = new RunnerMojo( this );
             runnerMojo.execute();
         }
@@ -88,6 +113,7 @@ public class DeployMojo extends MainMojo {
         }
 
         /** Prepare the POST content for upload */
+
         Properties props = new Properties();
         try {
             File extractedConfigPropFile = new File( getExtractedRunnerPath(), PROJECT_FILE );
@@ -96,7 +122,8 @@ public class DeployMojo extends MainMojo {
             inputStream.close();
         }
         catch ( Exception e ) {
-            LOG.error( "Error while reading project.properties in runner.jar", e );
+            e.printStackTrace();
+            getLog().error( "Error while reading project.properties in runner.jar" );
             throw new MojoExecutionException( e.getMessage() );
         }
 
@@ -154,28 +181,63 @@ public class DeployMojo extends MainMojo {
             multipart.addBodyPart( bodyPart );
         }
         catch ( Exception e ) {
-            LOG.error( "Error while preparing upload data", e );
+            e.printStackTrace();
+            getLog().error( "Error while preparing upload data" );
             throw new MojoExecutionException( e.getMessage() );
         }
 
-        /** Upload TODO use chop-client module to talk to the coordinator */
+        getLog().info( "Before upload..." );
+        getLog().info( "Endpoint is: " + endpoint );
+
+        /** Upload */
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         Client client = Client.create( clientConfig );
         WebResource resource = client.resource( endpoint ).path( "/upload" );
+
+        getLog().info( "Before rest post..." );
 
         ClientResponse resp = resource.path( "/runner" )
                                       .type( MediaType.MULTIPART_FORM_DATA )
                                       .accept( MediaType.TEXT_PLAIN )
                                       .post( ClientResponse.class, multipart );
 
+        getLog().info( "After rest post..." );
+
         if( resp.getStatus() == Response.Status.CREATED.getStatusCode() ) {
-            LOG.info( "Runner Jar uploaded to coordinator successfully on path: {}", resp.getEntity( String.class ) );
+            getLog().info( "Runner Jar uploaded to the coordinator successfully on path: " +
+                    resp.getEntity( String.class ) );
         }
         else {
-            LOG.error( "Could not upload successfully, HTTP status: ", resp.getStatus() );
-            LOG.error( "Error Message: {}", resp.getEntity( String.class ) );
+            getLog().error( "Could not upload successfully, HTTP status: " + resp.getStatus() );
+            getLog().error( "Error Message: " + resp.getEntity( String.class ) );
 
             throw new MojoExecutionException( "Upload failed" );
         }
+    }
+
+
+    private boolean isReadyToDeploy() {
+        File source = getRunnerFile();
+        try {
+            if ( ! source.exists() ) {
+                return false;
+            }
+
+            File extractedConfigPropFile = new File( getExtractedRunnerPath(), PROJECT_FILE);
+            if ( extractedConfigPropFile.exists() ) {
+                Properties props = new Properties();
+                FileInputStream inputStream = new FileInputStream( extractedConfigPropFile );
+                props.load( inputStream );
+                inputStream.close();
+
+                String commitId = Utils.getLastCommitUuid( Utils.getGitConfigFolder( getProjectBaseDirectory() ) );
+
+                /** If failIfCommitNecessary set to false, no need to force rebuild with different commit id */
+                return ( ! failIfCommitNecessary ) || commitId.equals( props.getProperty( Project.GIT_UUID_KEY ) );
+            }
+        } catch ( Exception e ) {
+            getLog().warn( e );
+        }
+        return false;
     }
 }
