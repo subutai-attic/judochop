@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import org.apache.usergrid.chop.api.Commit;
 import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.Runner;
@@ -42,20 +44,23 @@ public class CoordinatedStack implements ICoordinatedStack {
     private final Commit commit;
     private final Module module;
     private final User user;
+    private final int runnerCount;
     private IpRuleSet ruleSet;
     private String dataCenter;
 
     private StackState state = StackState.INACTIVE;
+    private SetupStackState setupState = SetupStackState.NotFound;
     private Set<Runner> runners;
     private Collection<Instance> runnerInstances = new LinkedList<Instance>();
 
 
-    public CoordinatedStack( Stack delegate, User user, Commit commit, Module module ) {
+    public CoordinatedStack( Stack delegate, User user, Commit commit, Module module, int runnerCount ) {
         this.delegate = delegate;
         this.clusters = new ArrayList<CoordinatedCluster>( delegate.getClusters().size() );
         this.user = user;
         this.commit = commit;
         this.module = module;
+        this.runnerCount = runnerCount;
         this.dataCenter =  delegate.getDataCenter();
         this.ruleSet = delegate.getIpRuleSet();
 
@@ -102,8 +107,20 @@ public class CoordinatedStack implements ICoordinatedStack {
 
 
     @Override
+    public int getRunnerCount() {
+        return runnerCount;
+    }
+
+
+    @Override
     public StackState getState() {
         return state;
+    }
+
+
+    @Override
+    public SetupStackState getSetupState() {
+        return setupState;
     }
 
 
@@ -143,9 +160,15 @@ public class CoordinatedStack implements ICoordinatedStack {
     }
 
 
+    public void setSetupState( SetupStackState setupState ) {
+        this.setupState = setupState;
+    }
+
+
     public void addRunnerInstance( Instance instance ) {
         runnerInstances.add( instance );
     }
+
 
     @Override
     public String getDataCenter() {
@@ -156,5 +179,39 @@ public class CoordinatedStack implements ICoordinatedStack {
     public CoordinatedStack setDataCenter( final String dataCenter ) {
         this.dataCenter = dataCenter;
         return this;
+    }
+
+
+    public static int calcHashCode( Stack stack, User user, Commit commit, Module module ) {
+        return new HashCodeBuilder( 101, 167 )
+                .append( stack.getId().toString() )
+                .append( '#' )
+                .append( user.getUsername() )
+                .append( '#' )
+                .append( commit.getId() )
+                .append( '#' )
+                .append( module.getId() )
+                .toHashCode();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return calcHashCode( delegate, user, commit, module );
+    }
+
+
+    @Override
+    public boolean equals( final Object obj ) {
+        if( this == obj ) {
+            return true;
+        }
+        if( obj == null ) {
+            return false;
+        }
+        if ( ! ( obj instanceof CoordinatedStack ) ) {
+            return false;
+        }
+        return obj.hashCode() == this.hashCode();
     }
 }

@@ -32,6 +32,7 @@ public class BasicModule implements Module {
     private String vcsRepoUrl;
     private String testPackageBase;
 
+
     public BasicModule(String groupId, String artifactId, String version, String vcsRepoUrl, String testPackageBase) {
         id = createId(groupId, artifactId, version);
         this.groupId = groupId;
@@ -41,12 +42,14 @@ public class BasicModule implements Module {
         this.testPackageBase = testPackageBase;
     }
 
+
     @Override
     public String getId() {
         return id;
     }
 
-    public static String createId(String groupId, String artifactId, String version) {
+
+    public static String createId( String groupId, String artifactId, String version ) {
         return "" + new HashCodeBuilder()
                 .append(groupId)
                 .append(artifactId)
@@ -54,30 +57,36 @@ public class BasicModule implements Module {
                 .toHashCode();
     }
 
+
     @Override
     public String getGroupId() {
         return groupId;
     }
+
 
     @Override
     public String getArtifactId() {
         return artifactId;
     }
 
+
     @Override
     public String getVersion() {
         return version;
     }
+
 
     @Override
     public String getVcsRepoUrl() {
         return vcsRepoUrl;
     }
 
+
     @Override
     public String getTestPackageBase() {
         return testPackageBase;
     }
+
 
     @Override
     public String toString() {
@@ -89,5 +98,16 @@ public class BasicModule implements Module {
                 .append("vcsRepoUrl", vcsRepoUrl)
                 .append("testPackageBase", testPackageBase)
                 .toString();
+    }
+
+
+    @Override
+    public boolean equals( final Object obj ) {
+        if( this == obj ) {
+            return true;
+        }
+        return obj != null &&
+                obj instanceof BasicModule &&
+                this.id.equals( ( ( BasicModule ) obj ).id  );
     }
 }

@@ -37,7 +37,7 @@ public interface InstanceManager {
 
     LaunchResult launchCluster( ICoordinatedStack stack, ICoordinatedCluster cluster, int timeout );
 
-    LaunchResult launchRunners( ICoordinatedStack stack, InstanceSpec spec, int count, int timeout );
+    LaunchResult launchRunners( ICoordinatedStack stack, InstanceSpec spec, int timeout );
 
     /** Returns all cluster instances defined by stack and cluster */
     Collection<Instance> getClusterInstances( ICoordinatedStack stack, ICoordinatedCluster cluster );

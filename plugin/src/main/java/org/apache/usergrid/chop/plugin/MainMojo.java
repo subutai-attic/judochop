@@ -21,9 +21,14 @@ package org.apache.usergrid.chop.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URI;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.usergrid.chop.api.ChopUtils;
 import org.apache.usergrid.chop.api.Constants;
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.ProjectBuilder;
@@ -45,6 +50,9 @@ public class MainMojo extends AbstractMojo implements Constants {
     static {
         System.setProperty( "javax.net.ssl.trustStore", "jssecacerts" );
     }
+
+    protected final static Logger LOG = LoggerFactory.getLogger( MainMojo.class );
+
 
     @Parameter( defaultValue = "${project}", readonly = true )
     protected MavenProject project;
@@ -113,6 +121,7 @@ public class MainMojo extends AbstractMojo implements Constants {
     @Parameter( property = "finalName", defaultValue = "${project.artifactId}-${project.version}-chop" )
     protected String finalName;
 
+
     protected static ExecutorService executor;
 
 
@@ -132,6 +141,37 @@ public class MainMojo extends AbstractMojo implements Constants {
         this.plugin = mojo.plugin;
         this.project = mojo.project;
         this.runnerCount = mojo.runnerCount;
+    }
+
+
+    protected void initCertStore() {
+
+        try {
+            final URI uri = URI.create( endpoint );
+
+            /**
+             * This is because we are using self-signed uniform certificates for now,
+             * it should be removed if we switch to a CA signed dynamic certificate scheme!
+             * */
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+                new javax.net.ssl.HostnameVerifier() {
+
+                    public boolean verify( String hostname, javax.net.ssl.SSLSession sslSession) {
+                        return hostname.equals( uri.getHost() );
+                    }
+                }
+            );
+
+            if ( certStorePassphrase == null ) {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), null );
+            }
+            else {
+                ChopUtils.installCert( uri.getHost(), uri.getPort(), certStorePassphrase.toCharArray() );
+            }
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -163,7 +203,7 @@ public class MainMojo extends AbstractMojo implements Constants {
     }
 
 
-    /** @return Returns the full path of created runner.war file */
+    /** @return Returns the full path of created runner.jar file */
     public File getRunnerFile() {
         return new File( project.getBuild().getDirectory(), finalName + ".jar" );
     }
@@ -202,13 +242,13 @@ public class MainMojo extends AbstractMojo implements Constants {
     public Project loadProjectConfiguration() throws MojoExecutionException {
         File projectFile = new File( getProjectFileToUploadPath() );
         if ( ! projectFile.exists() ) {
-            getLog().warn( "It seems as though the project properties file " + projectFile
-                    + " does not exist. Creating it and the war now." );
+            LOG.warn( "It seems as though the project properties file {} does not exist. Creating it and the jar now.",
+                    projectFile );
             RunnerMojo runnerMojo = new RunnerMojo( this );
             runnerMojo.execute();
 
             if ( projectFile.exists() ) {
-                getLog().info( "War is generated and project file exists." );
+                LOG.info( "Jar is generated and project file exists." );
             }
             else {
                 throw new MojoExecutionException( "Failed to generate the project.properties." );
@@ -224,12 +264,38 @@ public class MainMojo extends AbstractMojo implements Constants {
             project = builder.getProject();
         }
         catch ( Exception e ) {
-            getLog().warn( "Error accessing project information from local filesystem: " + getProjectFileToUploadPath(),
-                    e );
+            LOG.error( "Error accessing project info from local filesystem: {}", getProjectFileToUploadPath(), e );
             throw new MojoExecutionException(
                     "Cannot access local file system based project information: " + getProjectFileToUploadPath(), e );
         }
 
         return project;
+    }
+
+
+    protected boolean isReadyToDeploy() {
+        File source = getRunnerFile();
+        try {
+            if ( ! source.exists() ) {
+                return false;
+            }
+
+            File extractedConfigPropFile = new File( getExtractedRunnerPath(), PROJECT_FILE);
+            if ( extractedConfigPropFile.exists() ) {
+                Properties props = new Properties();
+                FileInputStream inputStream = new FileInputStream( extractedConfigPropFile );
+                props.load( inputStream );
+                inputStream.close();
+
+                String commitId = Utils.getLastCommitUuid( Utils.getGitConfigFolder( getProjectBaseDirectory() ) );
+
+                /** If failIfCommitNecessary set to false, no need to force rebuild with different commit id */
+                return ( ! failIfCommitNecessary ) || commitId.equals( props.getProperty( Project.GIT_UUID_KEY ) );
+            }
+        }
+        catch ( Exception e ) {
+            LOG.error( "Error while trying to find out if runner file is ready to deploy", e );
+        }
+        return false;
     }
 }

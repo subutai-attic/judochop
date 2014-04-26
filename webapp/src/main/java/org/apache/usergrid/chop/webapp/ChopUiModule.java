@@ -32,49 +32,54 @@ import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.apache.usergrid.chop.webapp.view.util.VaadinServlet;
 import org.safehaus.guicyfig.GuicyFigModule;
 
+import com.google.inject.Singleton;
+import org.apache.usergrid.chop.webapp.coordinator.rest.AuthResource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
+
+@SuppressWarnings( "unchecked" )
+@Singleton
 public class ChopUiModule extends ServletModule {
 
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";
 
     static {
         try {
-            ConfigurationManager.loadCascadedPropertiesFromResources("chop-ui");
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load configuration file", e);
+            ConfigurationManager.loadCascadedPropertiesFromResources( "chop-ui" );
+        }
+        catch ( IOException e ) {
+            throw new RuntimeException( "Could not load configuration file", e );
         }
     }
 
     protected void configureServlets() {
-        install(new GuicyFigModule(ChopUiFig.class, Project.class, RestFig.class, ElasticSearchFig.class));
-        install(new AmazonModule());
+        install( new GuicyFigModule( ChopUiFig.class, Project.class, RestFig.class, ElasticSearchFig.class ) );
+        install( new AmazonModule() );
 
         // Hook Jersey into Guice Servlet
-        bind(GuiceContainer.class);
+        bind( GuiceContainer.class );
 
-        bind(IElasticSearchClient.class).to(ElasticSearchClient.class);
+        bind( IElasticSearchClient.class ).to( ElasticSearchClient.class );
 
         // Hook Jackson into Jersey as the POJO <-> JSON mapper
-        bind(JacksonJsonProvider.class).asEagerSingleton();
+        bind( JacksonJsonProvider.class ).asEagerSingleton();
 
-        bind(UploadResource.class).asEagerSingleton();
-        bind(RunManagerResource.class).asEagerSingleton();
-        bind(TestGetResource.class).asEagerSingleton();
-        bind(AuthResource.class).asEagerSingleton();
+        bind( UploadResource.class ).asEagerSingleton();
+        bind( RunManagerResource.class ).asEagerSingleton();
+        bind( TestGetResource.class ).asEagerSingleton();
+        bind( AuthResource.class ).asEagerSingleton();
         bind( PropertiesResource.class ).asEagerSingleton();
 
         //bind shiro
-        ShiroWebModule.bindGuiceFilter(binder());
+        ShiroWebModule.bindGuiceFilter( binder() );
 
         // This should be before "/*" otherwise the vaadin servlet will not work
-        serve("/VAADIN/*").with(VaadinServlet.class);
+        serve( "/VAADIN/*" ).with( VaadinServlet.class );
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put(PACKAGES_KEY, getClass().getPackage().toString());
-        serve("/*").with(GuiceContainer.class, params);
+        params.put( PACKAGES_KEY, getClass().getPackage().toString() );
+        serve( "/*" ).with( GuiceContainer.class, params );
     }
 }
