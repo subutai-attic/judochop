@@ -36,6 +36,7 @@ import org.apache.usergrid.chop.webapp.elasticsearch.IElasticSearchClient;
 import org.safehaus.guicyfig.GuicyFigModule;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import com.netflix.config.ConfigurationManager;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -43,6 +44,7 @@ import org.apache.shiro.guice.web.ShiroWebModule;
 import org.apache.usergrid.chop.webapp.coordinator.rest.AuthResource;
 
 @SuppressWarnings("unchecked")
+@Singleton
 public class ChopUiModule extends ServletModule {
 
     public static final String PACKAGES_KEY = "com.sun.jersey.config.property.packages";

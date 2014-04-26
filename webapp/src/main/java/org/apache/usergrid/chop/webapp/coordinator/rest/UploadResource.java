@@ -41,6 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.usergrid.chop.webapp.ChopUiFig;
+import org.apache.usergrid.chop.webapp.coordinator.CoordinatorUtils;
 import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
 import org.apache.usergrid.chop.webapp.dao.model.BasicCommit;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRun;
@@ -80,9 +81,6 @@ public class UploadResource extends TestableResource implements RestParams {
 
 
     @Inject
-    private StackCoordinator stackCoordinator;
-
-    @Inject
     private ChopUiFig chopUiFig;
 
     @Inject
@@ -117,7 +115,7 @@ public class UploadResource extends TestableResource implements RestParams {
             InputStream in = multipart.getBodyPart( 1 ).getInputStream();
             File tempDir = new File( chopUiFig.getContextTempDir() );
             String fileLocation = new File( tempDir, filename ).getAbsolutePath();
-            writeToFile( in, fileLocation );
+            CoordinatorUtils.writeToFile( in, fileLocation );
         }
         catch ( Exception ex )  {
             LOG.error( "upload", ex );
@@ -185,25 +183,15 @@ public class UploadResource extends TestableResource implements RestParams {
                            .build();
         }
 
-        /*
-         * File storage scheme:
-         *
-         * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
-         */
+        File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), username, groupId, artifactId,
+                version, commitId );
 
-        File parentDir = new File( chopUiFig.getContextPath() );
-        parentDir = new File( parentDir, username );
-        parentDir = new File( parentDir, groupId );
-        parentDir = new File( parentDir, artifactId );
-        parentDir = new File( parentDir, version );
-        parentDir = new File( parentDir, commitId );
-
-        if ( ! parentDir.exists() ) {
-            if ( parentDir.mkdirs() ) {
-                LOG.info( "Created parent directory {} for uploaded runner file", parentDir.getAbsolutePath() );
+        if ( ! runnerJar.exists() ) {
+            if ( runnerJar.mkdirs() ) {
+                LOG.info( "Created parent directory {} for uploaded runner file", runnerJar.getAbsolutePath() );
             }
             else {
-                String errorMessage = "Failed to create parent directory " + parentDir.getAbsolutePath()
+                String errorMessage = "Failed to create parent directory " + runnerJar.getAbsolutePath()
                         + " for uploaded runner file.";
                 LOG.error( errorMessage );
                 return Response.status( Response.Status.INTERNAL_SERVER_ERROR ).entity( errorMessage ).build();
@@ -211,8 +199,8 @@ public class UploadResource extends TestableResource implements RestParams {
         }
 
         // Download and write the file to the proper position on disk & reference
-        File runnerFile = new File( parentDir, filename );
-        writeToFile( in, runnerFile.getAbsolutePath() );
+        File runnerFile = new File( runnerJar, filename );
+        CoordinatorUtils.writeToFile( in, runnerFile.getAbsolutePath() );
 
         // - this is bad news because we will get commits of other users :(
         // - we also need to qualify the commit with username, groupId,
@@ -313,40 +301,5 @@ public class UploadResource extends TestableResource implements RestParams {
         }
 
         return Response.status( Response.Status.CREATED ).entity( run.getId() ).build();
-    }
-
-
-    public static void writeToFile( InputStream in, String fileLocation )
-    {
-        OutputStream out = null;
-
-        try
-        {
-            int read;
-            byte[] bytes = new byte[1024];
-
-            out = new FileOutputStream( fileLocation );
-
-            while ( ( read = in.read( bytes ) ) != -1 )
-            {
-                out.write( bytes, 0, read );
-            }
-            out.flush();
-        }
-        catch ( IOException e )
-        {
-            LOG.error( "Failed to write out file: " + fileLocation, e );
-        }
-        finally
-        {
-            if ( out != null ) {
-                try {
-                    out.close();
-                }
-                catch ( IOException e ) {
-                    LOG.error( "Failed while trying to close output stream for {}", fileLocation );
-                }
-            }
-        }
     }
 }

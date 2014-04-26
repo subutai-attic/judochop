@@ -51,4 +51,15 @@ public class User {
                 .append("username", username)
                 .toString();
     }
+
+
+    @Override
+    public boolean equals( final Object obj ) {
+        if( this == obj ) {
+            return true;
+        }
+        return obj != null &&
+                obj instanceof User &&
+                ( ( User ) obj ).username.equals( this.username );
+    }
 }

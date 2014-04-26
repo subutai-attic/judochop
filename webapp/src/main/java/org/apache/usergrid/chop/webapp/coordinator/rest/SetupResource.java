@@ -20,16 +20,6 @@
 package org.apache.usergrid.chop.webapp.coordinator.rest;
 
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import javax.annotation.Nullable;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -39,29 +29,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.usergrid.chop.api.Commit;
-import org.apache.usergrid.chop.api.Constants;
-import org.apache.usergrid.chop.api.Module;
 import org.apache.usergrid.chop.api.RestParams;
-import org.apache.usergrid.chop.stack.BasicStack;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
 import org.apache.usergrid.chop.stack.SetupStackState;
-import org.apache.usergrid.chop.stack.User;
-import org.apache.usergrid.chop.webapp.ChopUiFig;
+import org.apache.usergrid.chop.webapp.coordinator.SetupStackThread;
 import org.apache.usergrid.chop.webapp.coordinator.StackCoordinator;
-import org.apache.usergrid.chop.webapp.dao.CommitDao;
-import org.apache.usergrid.chop.webapp.dao.ModuleDao;
-import org.apache.usergrid.chop.webapp.dao.UserDao;
-import org.apache.usergrid.chop.stack.Stack;
-import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
 
 import org.safehaus.jettyjam.utils.TestMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -80,29 +57,11 @@ public class SetupResource extends TestableResource implements RestParams {
     @Inject
     private StackCoordinator stackCoordinator;
 
-    @Inject
-    private ChopUiFig chopUiFig;
-
-    @Inject
-    private UserDao userDao;
-
-    @Inject
-    private CommitDao commitDao;
-
-    @Inject
-    private ModuleDao moduleDao;
-
-    private Set<SetupStackThread> setUpStackThreads = Collections.newSetFromMap( new ConcurrentHashMap
-            <SetupStackThread, Boolean>() );
-
-
-    private Set<SetupStackThread> settingUpStackThreads = Collections.newSetFromMap( new ConcurrentHashMap
-                <SetupStackThread, Boolean>() );
-
 
     public SetupResource() {
         super( ENDPOINT );
     }
+
 
     @POST
     @Consumes( MediaType.APPLICATION_JSON )
@@ -131,8 +90,8 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/stack" );
         }
 
-        SetupStackThread setupStack = getSetupStackThread( commitId, artifactId, groupId, version, user, runnerCount );
-        SetupStackState status = stackStatus( setupStack );
+        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user,
+                runnerCount );
 
         if( inTestMode( testMode ) ) {
             return Response.status( Response.Status.CREATED )
@@ -143,13 +102,29 @@ public class SetupResource extends TestableResource implements RestParams {
 
         if( status.equals( SetupStackState.NotFound ) ) {
             return Response.status( Response.Status.BAD_REQUEST )
-                           .entity( setupStack.getErrorMessage() )
+                           .entity( "No runner jars found with given parameters, deploy first" )
+                           .type( MediaType.APPLICATION_JSON )
+                           .build();
+        }
+        if( status.equals( SetupStackState.SetupFailed ) ) {
+            String message = "";
+            CoordinatedStack stack = stackCoordinator.findCoordinatedStack( commitId, artifactId, groupId, version,
+                    user, runnerCount );
+            SetupStackThread setupStackThread = stackCoordinator.getSetupStackThread( stack );
+            if( setupStackThread != null ) {
+                message = setupStackThread.getErrorMessage();
+            }
+            message = "Stack was registered, however its setup failed. Call setup again to restart. Error message: " +
+                    message;
+            stackCoordinator.removeFailedStack( stack );
+            return Response.status( Response.Status.OK )
+                           .entity( message )
                            .type( MediaType.APPLICATION_JSON )
                            .build();
         }
         if( status.equals( SetupStackState.SettingUp ) ) {
             return Response.status( Response.Status.OK )
-                           .entity( "Setting up" )
+                           .entity( "Already being set up" )
                            .type( MediaType.APPLICATION_JSON )
                            .build();
         }
@@ -160,9 +135,8 @@ public class SetupResource extends TestableResource implements RestParams {
                            .build();
         }
 
-        settingUpStackThreads.add( setupStack );
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        service.submit( setupStack );
+        /** SetupStackState.NotSetUp */
+        stackCoordinator.setupStack( commitId, artifactId, groupId, version, user, runnerCount );
 
         return Response.status( Response.Status.CREATED )
                        .entity( "Started setting up the stack" )
@@ -173,14 +147,15 @@ public class SetupResource extends TestableResource implements RestParams {
 
     @POST
     @Consumes( MediaType.APPLICATION_JSON )
-    @Path( "/status" )
     @Produces( MediaType.APPLICATION_JSON )
+    @Path( "/status" )
     public Response status(
             @QueryParam( RestParams.COMMIT_ID ) String commitId,
             @QueryParam( RestParams.MODULE_ARTIFACTID ) String artifactId,
             @QueryParam( RestParams.MODULE_GROUPID ) String groupId,
             @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam( RestParams.USERNAME ) String user,
+            @QueryParam( RestParams.RUNNER_COUNT ) int runnerCount,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
                          ) {
 
@@ -191,183 +166,12 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/status" );
         }
 
-        SetupStackState status = stackStatus( commitId, artifactId, groupId, version, user, 0 );
+        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user,
+                runnerCount );
 
         return Response.status( Response.Status.OK )
                        .entity( status )
                        .type( MediaType.APPLICATION_JSON )
                        .build();
-    }
-
-
-    private SetupStackState stackStatus( String commitId, String artifactId, String groupId, String version,
-                                          String user, int runnerCount ) {
-
-        SetupStackThread setupStackThread = getSetupStackThread( commitId, artifactId, groupId, version, user,
-                runnerCount );
-
-        return stackStatus( setupStackThread );
-    }
-
-
-    private SetupStackState stackStatus( SetupStackThread setupStackThread ) {
-        if( setupStackThread.getErrorMessage() != null ) {
-            return SetupStackState.NotFound;
-        }
-        if( setUpStackThreads.contains( setupStackThread ) ) {
-            return SetupStackState.SetUp;
-        }
-        if( settingUpStackThreads.contains( setupStackThread ) ) {
-            return SetupStackState.SettingUp;
-        }
-        return SetupStackState.NotSetUp;
-    }
-
-
-    private SetupStackThread getSetupStackThread( String commitId, String artifactId, String groupId, String version,
-                                                  String user, int runnerCount ) {
-
-        User chopUser = userDao.get( user );
-        if( chopUser == null ) {
-            return new SetupStackThread( "User " + user + " not found" );
-        }
-
-        File runnerJar = new File( chopUiFig.getContextPath() );
-        runnerJar = new File( runnerJar, user );
-        runnerJar = new File( runnerJar, groupId );
-        runnerJar = new File( runnerJar, artifactId );
-        runnerJar = new File( runnerJar, version );
-        runnerJar = new File( runnerJar, commitId );
-        runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
-        if( ! runnerJar.exists() ) {
-            return new SetupStackThread( "No runner jars have been found by these parameters, deploy first" );
-        }
-
-        Stack stack;
-        try {
-            // Access the jar file resources after adding it to a new ClassLoader
-            URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
-                    Thread.currentThread().getContextClassLoader() );
-            ObjectMapper mapper = new ObjectMapper();
-            stack = mapper.readValue( classLoader.getResourceAsStream( Constants.STACK_JSON ), BasicStack.class );
-        }
-        catch ( Exception e ) {
-            return new SetupStackThread( "Error while reading stack.json from runner.jar resources" );
-        }
-
-        Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
-        if( module == null ) {
-            return new SetupStackThread( "No registered modules found by " + groupId + ":" + artifactId + ":" +
-                    version );
-        }
-
-        Commit commit = null;
-        for( Commit c: commitDao.getByModule( module.getId() ) ) {
-            if( commitId.equals( c.getId() ) ) {
-                commit = c;
-                break;
-            }
-        }
-        if( commit == null ) {
-            return new SetupStackThread( "Commit with id " + commitId + " is not found" );
-        }
-
-        return new SetupStackThread( stack, chopUser, commit, module, runnerCount );
-    }
-
-
-    private class SetupStackThread implements Callable<CoordinatedStack> {
-
-        private Stack stack;
-        private User user;
-        private Commit commit;
-        private Module module;
-        private int runnerCount;
-        private String errorMessage;
-
-
-        public SetupStackThread( Stack stack, User user, Commit commit, Module module, int runnerCount ) {
-            this.stack = stack;
-            this.user = user;
-            this.commit = commit;
-            this.module = module;
-            this.runnerCount = runnerCount;
-        }
-
-
-        public SetupStackThread( String errorMessage ) {
-            this.errorMessage = errorMessage;
-        }
-
-
-        public Stack getStack() {
-            return stack;
-        }
-
-
-        public User getUser() {
-            return user;
-        }
-
-
-        public Commit getCommit() {
-            return commit;
-        }
-
-
-        public Module getModule() {
-            return module;
-        }
-
-
-        public int getRunnerCount() {
-            return runnerCount;
-        }
-
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-
-
-        @Override
-        public CoordinatedStack call() throws Exception {
-            // TODO put this in try catch and cascade errors
-            CoordinatedStack result = stackCoordinator.setupStack( stack, user, commit, module, runnerCount );
-            settingUpStackThreads.remove( this );
-            setUpStackThreads.add( this );
-            return result;
-        }
-
-
-        @Override
-        public int hashCode() {
-            if( errorMessage != null ) {
-                return new HashCodeBuilder( 97, 71 )
-                        .append( errorMessage )
-                        .toHashCode();
-            }
-            return new HashCodeBuilder( 97, 71 )
-                    .append( stack.getId().toString() )
-                    .append( user.getUsername() )
-                    .append( commit.getId() )
-                    .append( module.getId() )
-                    .toHashCode();
-        }
-
-
-        @Override
-        public boolean equals( final Object obj ) {
-            if( this == obj ) {
-                return true;
-            }
-            if( obj == null ) {
-                return false;
-            }
-            if ( ! ( obj instanceof SetupStackThread ) ) {
-                return false;
-            }
-            return obj.hashCode() == this.hashCode();
-        }
     }
 }

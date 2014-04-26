@@ -151,13 +151,13 @@ public class EC2InstanceManager implements InstanceManager {
 
 
     @Override
-    public LaunchResult launchRunners( ICoordinatedStack stack, InstanceSpec spec, int count, int timeout ) {
+    public LaunchResult launchRunners( ICoordinatedStack stack, InstanceSpec spec, int timeout ) {
         RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 
         runInstancesRequest.withImageId( spec.getImageId() )
                            .withInstanceType( spec.getType() )
-                           .withMinCount( count )
-                           .withMaxCount( count )
+                           .withMinCount( stack.getRunnerCount() )
+                           .withMaxCount( stack.getRunnerCount() )
                            .withKeyName( spec.getKeyName() )
                            .withSecurityGroups( stack.getIpRuleSet().getName() );
 
@@ -170,7 +170,7 @@ public class EC2InstanceManager implements InstanceManager {
 
         LOG.info( "Created instances, setting the names now..." );
 
-        List<String> instanceIds = new ArrayList<String>( count );
+        List<String> instanceIds = new ArrayList<String>( stack.getRunnerCount() );
         Collection<Instance> instances = toInstances( runInstancesResult.getReservation().getInstances() );
 
         String runnerNames = getRunnerName( stack );
@@ -244,11 +244,11 @@ public class EC2InstanceManager implements InstanceManager {
 
 
     /**
-     * @param name Causes the method to return instances with given Name tag, give null if you want to get
-     * instances with all names
+     * @param name  Causes the method to return instances with given Name tag, give null if you want to get
+     *              instances with all names
      * @param state Causes the method to return instances with given state, give null if you want to get instances in
-     * all states
-     * @return Returns all instances that satisfy given parameters
+     *              all states
+     * @return      all instances that satisfy given parameters
      */
     protected Collection<com.amazonaws.services.ec2.model.Instance> getEC2Instances( String name,
                                                                                InstanceStateName state ) {
@@ -325,10 +325,11 @@ public class EC2InstanceManager implements InstanceManager {
     /**
      * Checks the state of all given instances in SLEEP_LENGTH intervals, returns when all instances are in expected
      * state or state check times out
-     * @param instanceIds List of instance IDs whose states are going to be checked
-     * @param state Expected state to check
-     * @param timeout Timeout length in milliseconds
-     * @return Returns true if all instances are in given state, false if timeout occured
+     *
+     * @param instanceIds   List of instance IDs whose states are going to be checked
+     * @param state         Expected state to check
+     * @param timeout       Timeout length in milliseconds
+     * @return              true if all instances are in given state, false if timeout occured
      */
     public boolean waitUntil ( Collection<String> instanceIds, InstanceState state,  int timeout ) {
 

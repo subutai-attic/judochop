@@ -7,6 +7,7 @@ package org.apache.usergrid.chop.stack;
 public enum SetupStackState {
     SetUp,
     SettingUp,
+    SetupFailed,
     NotSetUp,
     NotFound
 }

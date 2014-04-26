@@ -20,44 +20,27 @@ package org.apache.usergrid.chop.webapp.coordinator;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.usergrid.chop.api.Commit;
-import org.apache.usergrid.chop.api.Constants;
 import org.apache.usergrid.chop.api.Module;
-import org.apache.usergrid.chop.api.ProviderParams;
-import org.apache.usergrid.chop.api.store.amazon.AmazonFig;
-import org.apache.usergrid.chop.api.store.amazon.InstanceValues;
-import org.apache.usergrid.chop.client.ssh.AsyncSsh;
-import org.apache.usergrid.chop.client.ssh.SSHCommands;
-import org.apache.usergrid.chop.spi.IpRuleManager;
-import org.apache.usergrid.chop.stack.BasicInstanceSpec;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
-import org.apache.usergrid.chop.stack.ICoordinatedCluster;
-import org.apache.usergrid.chop.stack.Instance;
-import org.apache.usergrid.chop.spi.InstanceManager;
-import org.apache.usergrid.chop.spi.LaunchResult;
+import org.apache.usergrid.chop.stack.SetupStackState;
 import org.apache.usergrid.chop.stack.Stack;
 import org.apache.usergrid.chop.stack.User;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
-import org.apache.usergrid.chop.webapp.ChopUiModule;
-import org.apache.usergrid.chop.webapp.coordinator.rest.UploadResource;
-import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
+import org.apache.usergrid.chop.webapp.dao.CommitDao;
+import org.apache.usergrid.chop.webapp.dao.ModuleDao;
+import org.apache.usergrid.chop.webapp.dao.UserDao;
+import org.apache.usergrid.chop.webapp.dao.model.BasicModule;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 
@@ -69,244 +52,231 @@ public class StackCoordinator {
 
     private static final Logger LOG = LoggerFactory.getLogger( StackCoordinator.class );
 
-    private Map<User, Set<CoordinatedStack>> activeStacksByUser = new HashMap<User, Set<CoordinatedStack>>();
-    private Map<Commit, Set<CoordinatedStack>> activeStacksByCommit = new HashMap<Commit, Set<CoordinatedStack>>();
-    private final Object lock = new Object();
-
     @Inject
     private ChopUiFig chopUiFig;
 
     @Inject
-    private ProviderParamsDao providerParamsDao;
+    private UserDao userDao;
+
+    @Inject
+    private CommitDao commitDao;
+
+    @Inject
+    private ModuleDao moduleDao;
+
+    private Map<CoordinatedStack, SetupStackThread> setupStackThreads =
+            new ConcurrentHashMap<CoordinatedStack, SetupStackThread>();
+
+    private Map<Integer, CoordinatedStack> registeredStacks = new ConcurrentHashMap<Integer, CoordinatedStack>();
+
+    private final Object lock = new Object();
 
 
     /**
      * Sets up all clusters and runner instances defined by given parameters
-     * @param stack Stack object to be set up
-     * @param user User who is doing the operation
-     * @param commit Commit to be chop tested
-     * @param module Module to be chop tested
-     * @param runnerCount Number of runner instances that will run the tests
-     * @return Returns the CoordinatedStack object if setup succeeds
+     * <p>
+     * Don't call this method without checking parameters first,
+     * this method assumes that a runner with given parameters is already deployed
+     * and its stack is ready to be set up
+     *
+     * @param commitId
+     * @param artifactId
+     * @param groupId
+     * @param version
+     * @param user
+     * @param runnerCount
+     * @return
+     */
+    public CoordinatedStack setupStack( String commitId, String artifactId, String groupId, String version,
+                                        String user, int runnerCount ) {
+
+        User chopUser = userDao.get( user );
+        File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), user, groupId, artifactId, version,
+                commitId );
+
+        Stack stack = CoordinatorUtils.getStackFromRunnerJar( runnerJar );
+        Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
+        Commit commit = null;
+        for( Commit c: commitDao.getByModule( module.getId() ) ) {
+            if( commitId.equals( c.getId() ) ) {
+                commit = c;
+                break;
+            }
+        }
+
+        return setupStack( stack, chopUser, commit, module, runnerCount );
+    }
+
+    /**
+     * Sets up all clusters and runner instances defined by given parameters
+     *
+     * @param stack         Stack object to be set up
+     * @param user          User who is doing the operation
+     * @param commit        Commit to be chop tested
+     * @param module        Module to be chop tested
+     * @param runnerCount   Number of runner instances that will run the tests
+     * @return              the CoordinatedStack object if setup succeeds
      * @throws Exception
      */
-    public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount )
-            throws Exception {
+    public CoordinatedStack setupStack( Stack stack, User user, Commit commit, Module module, int runnerCount ) {
 
         CoordinatedStack coordinatedStack;
 
-        synchronized ( lock ) {
+        coordinatedStack = getCoordinatedStack( stack, user, commit, module, runnerCount );
 
-            ProviderParams providerParams = providerParamsDao.getByUser( user.getUsername() );
-
-            /** TODO is this all right? */
-            Injector injector = Guice.createInjector( new ChopUiModule() );
-            AmazonFig amazonFig = injector.getInstance( AmazonFig.class );
-            amazonFig.bypass( AmazonFig.AWS_ACCESS_KEY, providerParams.getAccessKey() );
-            amazonFig.bypass( AmazonFig.AWS_SECRET_KEY, providerParams.getSecretKey() );
-
-            InstanceManager instanceManager = injector.getInstance( InstanceManager.class );
-            IpRuleManager ipRuleManager = injector.getInstance( IpRuleManager.class );
-
-            coordinatedStack = getMatching( user, commit, module );
-
-            if ( coordinatedStack != null ) {
-                return coordinatedStack;
-            }
-
-            String keyFile;
-            String message;
-            LinkedList<String> launchedInstances = new LinkedList<String>();
-            coordinatedStack = new CoordinatedStack( stack, user, commit, module );
-
-            /*
-             * File storage scheme:
-             *
-             * ${base_for_files}/${user}/${groupId}/${artifactId}/${version}/${commitId}/runner.jar
-             */
-            File runnerJar = new File( chopUiFig.getContextPath() );
-            runnerJar = new File( runnerJar, user.getUsername() );
-            runnerJar = new File( runnerJar, module.getGroupId() );
-            runnerJar = new File( runnerJar, module.getArtifactId() );
-            runnerJar = new File( runnerJar, module.getVersion() );
-            runnerJar = new File( runnerJar, commit.getId() );
-            runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
-
-            ipRuleManager.setDataCenter( stack.getDataCenter() );
-            ipRuleManager.applyIpRuleSet( stack.getIpRuleSet() );
-
-            for ( ICoordinatedCluster cluster : coordinatedStack.getClusters() ) {
-
-                keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
-                if( keyFile == null ) {
-                    message = "No key found with name " + cluster.getInstanceSpec().getKeyName() + " for cluster " +
-                            cluster.getName();
-                    LOG.warn( message + ", aborting and terminating launched instances..." );
-                    instanceManager.terminateInstances( launchedInstances );
-                    throw new RuntimeException( message );
-                }
-                if( ! ( new File( keyFile ) ).exists()  ) {
-                    message = "Key file " + keyFile + " for cluster " + cluster.getName() + " not found";
-                    LOG.warn( message + ", aborting and terminating launched instances..." );
-                    instanceManager.terminateInstances( launchedInstances );
-                    throw new FileNotFoundException( message );
-                }
-
-                LaunchResult result = instanceManager.launchCluster(
-                        coordinatedStack, cluster, chopUiFig.getLaunchClusterTimeout() );
-
-                for ( Instance instance : result.getInstances() ) {
-                    launchedInstances.add( instance.getId() );
-                    cluster.add( instance );
-                }
-
-                boolean success = executeSSHCommands( cluster, runnerJar, keyFile );
-                if( ! success ) {
-                    message = "SSH commands have failed, will not continue";
-                    instanceManager.terminateInstances( launchedInstances );
-                    throw new RuntimeException( message );
-                }
-            }
-
-            /** Setup runners */
-            keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
-            if( keyFile == null ) {
-                message = "No key found with name " + providerParams.getKeyName() + " for runners";
-                LOG.warn( message + ", aborting and terminating launched instances..." );
-                instanceManager.terminateInstances( launchedInstances );
-                throw new RuntimeException( message );
-            }
-            if( ! ( new File( keyFile ) ).exists() ) {
-                message = "Key file " + keyFile + " for runners not found";
-                LOG.warn( message + ", aborting and terminating launched instances..." );
-                instanceManager.terminateInstances( launchedInstances );
-                throw new FileNotFoundException( message );
-            }
-
-            BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
-            runnerSpec.setImageId( providerParams.getImageId() );
-            runnerSpec.setType( providerParams.getInstanceType() );
-            runnerSpec.setKeyName( keyFile );
-
-            LaunchResult result = instanceManager.launchRunners(
-                    coordinatedStack, runnerSpec, runnerCount, chopUiFig.getLaunchClusterTimeout() );
-
-            for( Instance instance: result.getInstances() ) {
-                coordinatedStack.addRunnerInstance( instance );
-            }
-
-            addStack( coordinatedStack );
-            lock.notifyAll();
+        if ( coordinatedStack != null ) {
+            LOG.debug( "Stack is already registered" );
+            return coordinatedStack;
         }
+
+        coordinatedStack = new CoordinatedStack( stack, user, commit, module, runnerCount );
+        coordinatedStack.setSetupState( SetupStackState.SettingUp );
+        registeredStacks.put( coordinatedStack.hashCode(), coordinatedStack );
+
+        SetupStackThread setupThread = new SetupStackThread( coordinatedStack, lock );
+        setupStackThreads.put( coordinatedStack, setupThread );
+
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        service.submit( setupThread );
 
         return coordinatedStack;
     }
 
 
-    private void addStack( CoordinatedStack stack ) {
-        Set<CoordinatedStack> stacks = activeStacksByCommit.get( stack.getCommit() );
-
-        if ( stacks == null ) {
-            stacks = new HashSet<CoordinatedStack>();
-            activeStacksByCommit.put( stack.getCommit(), stacks );
-        }
-        stacks.add( stack );
-
-        stacks = activeStacksByUser.get( stack.getUser() );
-        if ( stacks == null ) {
-            stacks = new HashSet<CoordinatedStack>();
-            activeStacksByUser.put( stack.getUser(), stacks );
-        }
-        stacks.add( stack );
+    public SetupStackThread getSetupStackThread( CoordinatedStack stack ) {
+        return setupStackThreads.get( stack );
     }
 
 
-    private CoordinatedStack getMatching( User user, Commit commit, Module module ) {
-        if ( activeStacksByCommit.get( commit ) != null ) {
-            Set<CoordinatedStack> stacks = activeStacksByCommit.get( commit );
-
-            for ( CoordinatedStack existing : stacks ) {
-                if ( existing.getUser().equals( user ) && existing.getModule().equals( module ) ) {
-                    return existing;
-                }
+    public CoordinatedStack getMatching( User user, Commit commit, Module module ) {
+        for( CoordinatedStack stack: registeredStacks.values() ) {
+            if( stack.getUser().equals( user ) && stack.getCommit().equals( commit ) &&
+                    stack.getModule().equals( module ) ) {
+                return stack;
             }
         }
-
         return null;
     }
 
 
     /**
-     * Extracts all scripts from given runner.jar, uploads them to the instances, and executes them asynchronously
-     * @param cluster Cluster object that the scripts will be executed on
-     * @param runnerJar runner.jar file's path that contains all script files
-     * @param keyFile SSH key file path to be used on ssh operations to instances
-     * @return returns true if operation fully succeeds
-     * @throws MalformedURLException
+     * Looks for a registered <code>CoordinatedStack</code> matching given parameters
+     *
+     * @param stack
+     * @param user
+     * @param commit
+     * @param module
+     * @param runnerCount
+     * @return
      */
-    private static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile )
-            throws MalformedURLException {
+    public CoordinatedStack getCoordinatedStack( Stack stack, User user, Commit commit, Module module,
+                                                  int runnerCount ) {
 
-        InstanceValues sshCommand;
-        StringBuilder sb = new StringBuilder();
-        Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
+        return registeredStacks.get( CoordinatedStack.calcHashCode( stack, user, commit, module, runnerCount ) );
+    }
 
-        for( Object obj: cluster.getInstanceSpec().getScriptEnvironment().keySet() ) {
 
-            String envVar = obj.toString();
-            String value = cluster.getInstanceSpec().getScriptEnvironment().getProperty( envVar );
+    /**
+     * Tries to find a registered <code>CoordinatedStack</code> object matching given parameters
+     * <p>
+     * Returns null if;
+     * <ul>
+     *     <li>no users, modules or commits exist by supplied parameters</li>
+     *     <li>or no runner jars have been deployed matching these parameters</li>
+     *     <li>or no matching stack has been registered to be set up yet</li>
+     * </ul>
+     * Returns the matching <code>CoordinatedStack<code/> object otherwise
+     *
+     * @param commitId
+     * @param artifactId
+     * @param groupId
+     * @param version
+     * @param user
+     * @param runnerCount
+     * @return  matching coordinated stack, or null
+     */
+    public CoordinatedStack findCoordinatedStack( String commitId, String artifactId, String groupId, String version,
+                                                     String user, int runnerCount ) {
 
-            sb.append( "export " )
-              .append( envVar )
-              .append( "=" )
-              .append( value )
-              .append( ";" );
-        }
-        String exportVars = sb.toString();
-
-        URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
-                Thread.currentThread().getContextClassLoader() );
-
-        for( URL scriptFile: cluster.getInstanceSpec().getSetupScripts() ) {
-            /** First save file beside runner.jar */
-            File file = new File( scriptFile.getPath() );
-            File fileToSave = new File( runnerJar, file.getName() );
-            UploadResource.writeToFile( classLoader.getResourceAsStream( file.getName() ), fileToSave.getPath() );
-
-            try {
-                /** SCP the script to instance **/
-                sb = new StringBuilder();
-                sb.append( "/home/" )
-                  .append( SSHCommands.DEFAULT_USER )
-                  .append( "/" )
-                  .append( fileToSave.getName() );
-
-                String destFile = sb.toString();
-                sshCommand = new InstanceValues( fileToSave.getPath(), destFile, keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
-
-                /** calling chmod first just in case **/
-                sb = new StringBuilder();
-                sb.append( "chmod 0755 " )
-                  .append( fileToSave.getPath() );
-                sshCommand = new InstanceValues( sb.toString(), keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
-
-                /** Run the script command */
-                sb = new StringBuilder();
-                sb.append( exportVars )
-                  .append( "sudo -E " )
-                  .append( destFile );
-
-                sshCommand = new InstanceValues( sb.toString(), keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
-            }
-            catch ( InterruptedException e ) {
-                LOG.error( "Interrupted while trying to execute SSH command", e );
-                return false;
-            }
+        User chopUser = userDao.get( user );
+        if( chopUser == null ) {
+            LOG.debug( "No such user: {}", user );
+            return null;
         }
 
-        return AsyncSsh.extractFailures( executed ).size() == 0;
+        File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), user, groupId, artifactId, version,
+                commitId );
+
+        if( ! runnerJar.exists() ) {
+            LOG.debug( "No runner jars have been found by these parameters, deploy first" );
+            return null;
+        }
+
+        Stack stack = CoordinatorUtils.getStackFromRunnerJar( runnerJar );
+
+        Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
+        if( module == null ) {
+            LOG.debug( "No registered modules found by {}" + groupId + ":" + artifactId + ":" + version );
+            return null;
+        }
+
+        Commit commit = null;
+        for( Commit c: commitDao.getByModule( module.getId() ) ) {
+            if( commitId.equals( c.getId() ) ) {
+                commit = c;
+                break;
+            }
+        }
+        if( commit == null ) {
+            LOG.debug( "Commit with id {} is not found", commitId );
+        }
+
+        return getCoordinatedStack( stack, chopUser, commit, module, runnerCount );
+    }
+
+
+    /**
+     * @param commitId
+     * @param artifactId
+     * @param groupId
+     * @param version
+     * @param user
+     * @param runnerCount
+     * @return Setup state of given parameters' stack
+     */
+    public SetupStackState stackStatus( String commitId, String artifactId, String groupId, String version,
+                                              String user, int runnerCount ) {
+
+        CoordinatedStack stack = findCoordinatedStack( commitId, artifactId, groupId, version, user, runnerCount );
+
+        /** Stack is not registered in StackCoordinator */
+        if( stack == null ) {
+            File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), user, groupId, artifactId,
+                    version, commitId );
+
+            if( ! runnerJar.exists() ) {
+                return SetupStackState.NotFound;
+            }
+
+            return SetupStackState.NotSetUp;
+        }
+
+        return stack.getSetupState();
+    }
+
+
+    /**
+     * Removes the given failed coordinated stack object from <code>setupStackThreads</code> and
+     * <code>registeredStacks</code> if indeed such a stack really exists and its setup failed
+     *
+     * @param stack CoordinatedStack object whose set up operation has failed
+     */
+    public void removeFailedStack( CoordinatedStack stack ) {
+        if( stack == null || stack.getSetupState() != SetupStackState.SetupFailed ) {
+            LOG.debug( "Setup didn't fail for given stack, so not removed" );
+            return;
+        }
+        registeredStacks.remove( stack.hashCode() );
+        setupStackThreads.remove( stack );
     }
 }

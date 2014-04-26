@@ -54,12 +54,12 @@ import static org.mockito.Mockito.when;
 
 /**
  * These tests require some AWS information in order to run.
- *
+ * <p>
  * If 'aws.access.key' and 'aws.secret.key' fields are provided in a profile in maven settings.xml file,
  * or if they are directly entered in the config.properties file, these tests are run in the given keys' account.
- *
+ * <p>
  * Otherwise, tests are automatically skipped!
- *
+ * <p>
  * Other than access and secret keys, your AWS settings has to be compatible with the fields in test-stack.json file;
  * keyName(Key Pair name), imageId (AMI id), ipRuleSet.name (Security Group name) and dataCenter (availability zone)
  * should all be compatible/existent with/in your AWS account.
@@ -67,6 +67,8 @@ import static org.mockito.Mockito.when;
 public class EC2InstanceManagerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger( EC2InstanceManagerTest.class );
+
+    private static final int RUNNER_COUNT = 2;
 
     private static AmazonFig amazonFig;
 
@@ -113,7 +115,7 @@ public class EC2InstanceManagerTest {
                 when( module.getTestPackageBase() ).thenReturn( "org.apache.usergrid.chop" );
                 when( module.getId() ).thenReturn( "778087981" );
 
-                stack = new CoordinatedStack( basicStack, new User( "user", "pass" ), commit, module );
+                stack = new CoordinatedStack( basicStack, new User( "user", "pass" ), commit, module, RUNNER_COUNT );
             }
             catch ( Exception e ) {
                 LOG.error( "Error while reading test stack json resource", e );
@@ -172,15 +174,15 @@ public class EC2InstanceManagerTest {
     @Test
     public void testRunners() {
 
-        int instanceCount = 2;
         InstanceSpec iSpec = stack.getClusters().get( 0 ).getInstanceSpec();
-        LaunchResult result = manager.launchRunners( stack, iSpec, instanceCount, 100000 );
+        LaunchResult result = manager.launchRunners( stack, iSpec, 100000 );
 
-        assertEquals( instanceCount, result.getCount() );
+        assertEquals( RUNNER_COUNT, result.getCount() );
 
         Collection<Instance> instances = manager.getRunnerInstances( stack );
 
-        assertEquals( "Number of launched instances is different than expected", instanceCount, instances.size() );
+        assertEquals( "Number of launched instances is different than expected", RUNNER_COUNT,
+                instances.size() );
 
         LOG.info( "Instances are successfully launched, now terminating..." );
 
