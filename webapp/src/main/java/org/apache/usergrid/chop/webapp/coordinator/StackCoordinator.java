@@ -122,7 +122,7 @@ public class StackCoordinator {
 
         CoordinatedStack coordinatedStack;
 
-        coordinatedStack = getCoordinatedStack( stack, user, commit, module, runnerCount );
+        coordinatedStack = getCoordinatedStack( stack, user, commit, module );
 
         if ( coordinatedStack != null ) {
             LOG.debug( "Stack is already registered" );
@@ -166,13 +166,11 @@ public class StackCoordinator {
      * @param user
      * @param commit
      * @param module
-     * @param runnerCount
      * @return
      */
-    public CoordinatedStack getCoordinatedStack( Stack stack, User user, Commit commit, Module module,
-                                                  int runnerCount ) {
+    public CoordinatedStack getCoordinatedStack( Stack stack, User user, Commit commit, Module module ) {
 
-        return registeredStacks.get( CoordinatedStack.calcHashCode( stack, user, commit, module, runnerCount ) );
+        return registeredStacks.get( CoordinatedStack.calcHashCode( stack, user, commit, module ) );
     }
 
 
@@ -192,11 +190,10 @@ public class StackCoordinator {
      * @param groupId
      * @param version
      * @param user
-     * @param runnerCount
      * @return  matching coordinated stack, or null
      */
     public CoordinatedStack findCoordinatedStack( String commitId, String artifactId, String groupId, String version,
-                                                     String user, int runnerCount ) {
+                                                     String user ) {
 
         User chopUser = userDao.get( user );
         if( chopUser == null ) {
@@ -231,7 +228,7 @@ public class StackCoordinator {
             LOG.debug( "Commit with id {} is not found", commitId );
         }
 
-        return getCoordinatedStack( stack, chopUser, commit, module, runnerCount );
+        return getCoordinatedStack( stack, chopUser, commit, module );
     }
 
 
@@ -241,13 +238,12 @@ public class StackCoordinator {
      * @param groupId
      * @param version
      * @param user
-     * @param runnerCount
      * @return Setup state of given parameters' stack
      */
     public SetupStackState stackStatus( String commitId, String artifactId, String groupId, String version,
-                                              String user, int runnerCount ) {
+                                              String user ) {
 
-        CoordinatedStack stack = findCoordinatedStack( commitId, artifactId, groupId, version, user, runnerCount );
+        CoordinatedStack stack = findCoordinatedStack( commitId, artifactId, groupId, version, user );
 
         /** Stack is not registered in StackCoordinator */
         if( stack == null ) {

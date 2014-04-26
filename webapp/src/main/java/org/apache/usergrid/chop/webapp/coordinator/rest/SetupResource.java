@@ -90,8 +90,7 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/stack" );
         }
 
-        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user,
-                runnerCount );
+        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user );
 
         if( inTestMode( testMode ) ) {
             return Response.status( Response.Status.CREATED )
@@ -109,7 +108,7 @@ public class SetupResource extends TestableResource implements RestParams {
         if( status.equals( SetupStackState.SetupFailed ) ) {
             String message = "";
             CoordinatedStack stack = stackCoordinator.findCoordinatedStack( commitId, artifactId, groupId, version,
-                    user, runnerCount );
+                    user );
             SetupStackThread setupStackThread = stackCoordinator.getSetupStackThread( stack );
             if( setupStackThread != null ) {
                 message = setupStackThread.getErrorMessage();
@@ -166,8 +165,7 @@ public class SetupResource extends TestableResource implements RestParams {
             LOG.info( "Calling /setup/status" );
         }
 
-        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user,
-                runnerCount );
+        SetupStackState status = stackCoordinator.stackStatus( commitId, artifactId, groupId, version, user );
 
         return Response.status( Response.Status.OK )
                        .entity( status )
