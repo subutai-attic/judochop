@@ -24,6 +24,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.State;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.apache.usergrid.chop.webapp.dao.RunnerDao;
 import org.apache.usergrid.chop.webapp.dao.model.RunnerGroup;
 import org.apache.usergrid.chop.webapp.service.InjectorFactory;
@@ -39,14 +40,10 @@ import java.util.Map;
 
 public class RunnersWindow extends Window {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RunnersWindow.class);
-
     private final RunnerDao runnerDao = InjectorFactory.getInstance(RunnerDao.class);
 
-    private final boolean mock = true;
-    private final RunnerService runnerService = mock
-            ? InjectorFactory.getInstance(RunnerServiceMock.class)
-            : InjectorFactory.getInstance(RunnerServiceImpl.class);
+    // Use RunnerServiceMock for testing
+    private final RunnerService runnerService = InjectorFactory.getInstance(RunnerServiceImpl.class);
 
     private TextArea textArea;
 
@@ -90,13 +87,14 @@ public class RunnersWindow extends Window {
         String s = "";
 
         for (RunnerGroup group : runnerGroups.keySet()) {
-            LOG.info("group: {}", group);
+            s += String.format("\n\n* %s\n", group);
 
             for (Runner runner : runnerGroups.get(group)) {
-                LOG.info("runner: {}", runner);
 
                 State state = runnerService.getState(runner);
-                LOG.info("state: {}", state);
+                StatsSnapshot stats = runnerService.getStats(runner);
+
+                s += String.format("%s / %s / %s\n", runner.getUrl(), state, stats);
             }
         }
 

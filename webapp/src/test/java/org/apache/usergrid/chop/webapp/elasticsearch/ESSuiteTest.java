@@ -43,8 +43,9 @@ import java.util.Date;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
         {
-                ModuleDaoTest.class, CommitDaoTest.class, NoteDaoTest.class, RunDaoTest.class, RunnerDaoTest.class, RunnerGroupTest.class,
-                RunResultDaoTest.class, UserDaoTest.class, ProviderParamsDaoTest.class, GroupedRunnersTest.class
+                ModuleDaoTest.class, CommitDaoTest.class, NoteDaoTest.class, RunDaoTest.class,
+                RunnerDaoTest.class, RunnerGroupTest.class, GroupedRunnersTest.class,
+                RunResultDaoTest.class, UserDaoTest.class, ProviderParamsDaoTest.class
         })
 public class ESSuiteTest {
 

@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.webapp.service.runner;
 import org.apache.usergrid.chop.api.Result;
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.State;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 import org.apache.usergrid.chop.client.rest.RestRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,6 @@ public class RunnerServiceImpl implements RunnerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RunnerServiceImpl.class);
 
-    /**
-     * {@inheritDoc}
-     */
     public State getState(Runner runner) {
         State state = null;
 
@@ -46,6 +44,18 @@ public class RunnerServiceImpl implements RunnerService {
         }
 
         return state;
+    }
+
+    public StatsSnapshot getStats(Runner runner) {
+        StatsSnapshot stats = null;
+
+        try {
+            stats = RestRequests.stats(runner);
+        } catch (Exception e) {
+            LOG.error("Error to get a runner stats: ", e);
+        }
+
+        return stats;
     }
 
 }

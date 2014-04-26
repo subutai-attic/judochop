@@ -20,17 +20,12 @@ package org.apache.usergrid.chop.webapp.service.runner;
 
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.State;
+import org.apache.usergrid.chop.api.StatsSnapshot;
 
-/**
- * Returns status and stats data of a runner.
- */
 public interface RunnerService {
 
-    /**
-     * Returns a state of a given runner.
-     *
-     * @return {@link org.apache.usergrid.chop.api.State}
-     */
     public State getState(Runner runner);
+
+    public StatsSnapshot getStats(Runner runner);
 
 }

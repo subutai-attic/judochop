@@ -20,21 +20,21 @@ package org.apache.usergrid.chop.webapp.service.runner;
 
 import org.apache.usergrid.chop.api.Runner;
 import org.apache.usergrid.chop.api.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.usergrid.chop.api.StatsSnapshot;
+
+import java.util.Date;
 
 /**
  * A mock implementation of RunnerService for testing.
  */
 public class RunnerServiceMock implements RunnerService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RunnerServiceMock.class);
-
-    /**
-     * {@inheritDoc}
-     */
     public State getState(Runner runner) {
         return State.INACTIVE;
     }
 
+    @Override
+    public StatsSnapshot getStats(Runner runner) {
+        return new StatsSnapshot( 5L, 333L, 111L, 222L, true, new Date().getTime(), 50 );
+    }
 }

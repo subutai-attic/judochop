@@ -143,6 +143,8 @@
             <exclude>**/OverviewCalcTest.java</exclude>
             <exclude>**/IterationsCalcTest.java</exclude>
             <exclude>**/DataServiceTest.java</exclude>
+            <exclude>**/RunnerGroupTest.java</exclude>
+            <exclude>**/GroupedRunnersTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>

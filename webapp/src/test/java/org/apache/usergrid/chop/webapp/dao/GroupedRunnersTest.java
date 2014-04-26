@@ -18,17 +18,11 @@
  */
 package org.apache.usergrid.chop.webapp.dao;
 
-import com.google.inject.Inject;
 import org.apache.usergrid.chop.api.Runner;
-import org.apache.usergrid.chop.webapp.ChopUiModule;
 import org.apache.usergrid.chop.webapp.dao.model.BasicRunner;
 import org.apache.usergrid.chop.webapp.dao.model.RunnerGroup;
-import org.jukito.JukitoRunner;
-import org.jukito.UseModules;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.apache.usergrid.chop.webapp.elasticsearch.ESSuiteTest;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +31,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(JukitoRunner.class)
-@UseModules(ChopUiModule.class)
-@Ignore( "Askhat this is really bad news man - please fix this and don't hard-code like this into master" )
 public class GroupedRunnersTest {
 
     private static Logger LOG = LoggerFactory.getLogger(GroupedRunnersTest.class);
@@ -62,21 +53,14 @@ public class GroupedRunnersTest {
             "/tmp"
     );
 
-    @Inject
-    private RunnerDao runnerDao;
-
-    @Before
-    public void before() throws Exception {
-        LOG.info("\n=== GroupedRunnersTest.before() ===\n");
-        runnerDao.save(RUNNER1, RUNNER_GROUP.getUser(), RUNNER_GROUP.getCommitId(), RUNNER_GROUP.getModuleId());
-        runnerDao.save(RUNNER2, RUNNER_GROUP.getUser(), RUNNER_GROUP.getCommitId(), RUNNER_GROUP.getModuleId());
-    }
-
     @Test
-    public void test() {
+    public void test() throws Exception {
         LOG.info("\n=== GroupedRunnersTest.test() ===\n");
 
-        Map<RunnerGroup, List<Runner>> runnerGroups = runnerDao.getRunnersGrouped();
+        ESSuiteTest.runnerDao.save( RUNNER1, RUNNER_GROUP.getUser(), RUNNER_GROUP.getCommitId(), RUNNER_GROUP.getModuleId() );
+        ESSuiteTest.runnerDao.save( RUNNER2, RUNNER_GROUP.getUser(), RUNNER_GROUP.getCommitId(), RUNNER_GROUP.getModuleId() );
+
+        Map<RunnerGroup, List<Runner>> runnerGroups = ESSuiteTest.runnerDao.getRunnersGrouped();
         List<Runner> runners = runnerGroups.get(RUNNER_GROUP);
 
         assertTrue(runners.size() == 2);
