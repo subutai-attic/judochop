@@ -197,7 +197,7 @@ public class StackCoordinator {
 
         User chopUser = userDao.get( user );
         if( chopUser == null ) {
-            LOG.debug( "No such user: {}", user );
+            LOG.warn( "No such user: {}", user );
             return null;
         }
 
@@ -205,15 +205,16 @@ public class StackCoordinator {
                 commitId );
 
         if( ! runnerJar.exists() ) {
-            LOG.debug( "No runner jars have been found by these parameters, deploy first" );
+            LOG.warn( "No runner jars have been found by these parameters, deploy first" );
             return null;
         }
 
         Stack stack = CoordinatorUtils.getStackFromRunnerJar( runnerJar );
+        LOG.info( "Is stack null? {}", ( stack == null ) );
 
         Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
         if( module == null ) {
-            LOG.debug( "No registered modules found by {}" + groupId + ":" + artifactId + ":" + version );
+            LOG.warn( "No registered modules found by {}" + groupId + ":" + artifactId + ":" + version );
             return null;
         }
 
@@ -225,7 +226,8 @@ public class StackCoordinator {
             }
         }
         if( commit == null ) {
-            LOG.debug( "Commit with id {} is not found", commitId );
+            LOG.warn( "Commit with id {} is not found", commitId );
+            return null;
         }
 
         return getCoordinatedStack( stack, chopUser, commit, module );

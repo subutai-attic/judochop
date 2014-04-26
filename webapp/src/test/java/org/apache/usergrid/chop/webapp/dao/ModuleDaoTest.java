@@ -31,21 +31,21 @@ import static org.junit.Assert.assertEquals;
 
 public class ModuleDaoTest {
 
-    private static Logger LOG = LoggerFactory.getLogger(ModuleDaoTest.class);
+    private static Logger LOG = LoggerFactory.getLogger( ModuleDaoTest.class );
 
 
     @Test
     public void getAll() throws Exception {
 
-        LOG.info("\n===ModuleDaoTest.getAll===\n");
+        LOG.info( "\n===ModuleDaoTest.getAll===\n" );
 
         List<Module> modules = ESSuiteTest.moduleDao.getAll();
 
-        for (Module m : modules) {
-            LOG.info(m.toString());
+        for ( Module m : modules ) {
+            LOG.info( m.toString() );
         }
 
-        assertEquals("Wrong number of modules in elasticsearch", 2, modules.size());
+        assertEquals( "Wrong number of modules in elasticsearch", 2, modules.size() );
     }
 
     @Test
@@ -53,9 +53,9 @@ public class ModuleDaoTest {
 
         LOG.info("\n===ModuleDaoTest.get===\n");
 
-        Module module = ESSuiteTest.moduleDao.get(ESSuiteTest.MODULE_ID_1);
-        LOG.info("Module by ID: {} is {}", ESSuiteTest.MODULE_ID_1, module.toString());
-        assertEquals(ESSuiteTest.MODULE_GROUPID, module.getGroupId());
+        Module module = ESSuiteTest.moduleDao.get( ESSuiteTest.MODULE_ID_1 );
+        LOG.info( "Module by ID: {} is {}", ESSuiteTest.MODULE_ID_1, module.toString() );
+        assertEquals( ESSuiteTest.MODULE_GROUPID, module.getGroupId() );
     }
 
 }

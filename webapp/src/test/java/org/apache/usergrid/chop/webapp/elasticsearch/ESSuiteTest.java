@@ -51,9 +51,10 @@ public class ESSuiteTest {
 
     private static Logger LOG = LoggerFactory.getLogger(ESSuiteTest.class);
 
-    public static final String MODULE_ID_1 = "436966979";
-    public static final String MODULE_ID_2 = "1414303914";
     public static final String MODULE_GROUPID = "org.apache.usergrid.chop";
+    public static final String MODULE_ARTIFACT_1 = "chop-runner";
+    public static final String MODULE_ARTIFACT_2 = "chop-client";
+    public static final String MODULE_VERSION = "1.0-SNAPSHOT";
     public static final String COMMIT_ID_1 = "cc471b502aca2791c3a068f93d15b79ff6b7b827";
     public static final String COMMIT_ID_2 = "7072b85746a980bc5dd9923ccdc9e0ed8e4eb19e";
     public static final String COMMIT_ID_3 = "e29074efad5e0e1c7c2b63128ff9284f9b47ceb3";
@@ -67,6 +68,8 @@ public class ESSuiteTest {
     public static final String RUNNER_IPV4_1 = "54.227.39.111";
     public static final String RUNNER_IPV4_2 = "23.20.162.112";
     public static final String RUNNER_HOSTNAME_3 = "ec2-84-197-213-113.compute-1.amazonaws.com";
+    public static final String MODULE_ID_1 = BasicModule.createId( MODULE_GROUPID, MODULE_ARTIFACT_1, MODULE_VERSION );
+    public static final String MODULE_ID_2 = BasicModule.createId( MODULE_GROUPID, MODULE_ARTIFACT_2, MODULE_VERSION );
 
 
     @ClassRule
@@ -169,25 +172,23 @@ public class ESSuiteTest {
 
         moduleDao = injector.getInstance(ModuleDao.class);
 
-        Module module = new BasicModule( // ID is 778087981
+        Module module = new BasicModule(
                 MODULE_GROUPID, // groupId
-                "chop-runner", // artifactId
-                "1.0-SNAPSHOT", // version
+                MODULE_ARTIFACT_1, // artifactId
+                MODULE_VERSION, // version
                 "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
                 MODULE_GROUPID // testPackageBase
         );
+        moduleDao.save( module );
 
-        moduleDao.save(module);
-
-        module = new BasicModule( // ID is -975269068
+        module = new BasicModule(
                 MODULE_GROUPID, // groupId
-                "chop-client", // artifactId
-                "1.0-SNAPSHOT", // version
+                MODULE_ARTIFACT_2, // artifactId
+                MODULE_VERSION, // version
                 "https://stash.safehaus.org/scm/chop/main.git", // vcsRepoUrl
                 MODULE_GROUPID // testPackageBase
         );
-
-        moduleDao.save(module);
+        moduleDao.save( module );
     }
 
     private static void setupCommits(Injector injector) throws Exception {

@@ -33,8 +33,8 @@ public class BasicModule implements Module {
     private String testPackageBase;
 
 
-    public BasicModule(String groupId, String artifactId, String version, String vcsRepoUrl, String testPackageBase) {
-        id = createId(groupId, artifactId, version);
+    public BasicModule( String groupId, String artifactId, String version, String vcsRepoUrl, String testPackageBase ) {
+        id = createId( groupId, artifactId, version );
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -50,11 +50,15 @@ public class BasicModule implements Module {
 
 
     public static String createId( String groupId, String artifactId, String version ) {
-        return "" + new HashCodeBuilder()
-                .append(groupId)
-                .append(artifactId)
-                .append(version)
+        int hash = new HashCodeBuilder( 97, 239 )
+                .append( groupId )
+                .append( artifactId )
+                .append( version )
                 .toHashCode();
+        if( hash < 0 ) {
+            hash += Integer.MAX_VALUE;
+        }
+        return "" + hash;
     }
 
 
@@ -90,13 +94,13 @@ public class BasicModule implements Module {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("id", id)
-                .append("groupId", groupId)
-                .append("artifactId", artifactId)
-                .append("version", version)
-                .append("vcsRepoUrl", vcsRepoUrl)
-                .append("testPackageBase", testPackageBase)
+        return new ToStringBuilder( this, ToStringStyle.SHORT_PREFIX_STYLE )
+                .append( "id", id )
+                .append( "groupId", groupId )
+                .append( "artifactId", artifactId )
+                .append( "version", version )
+                .append( "vcsRepoUrl", vcsRepoUrl )
+                .append( "testPackageBase", testPackageBase )
                 .toString();
     }
 

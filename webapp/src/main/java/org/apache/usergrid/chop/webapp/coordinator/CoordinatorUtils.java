@@ -74,10 +74,17 @@ public class CoordinatorUtils {
             URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
                     Thread.currentThread().getContextClassLoader() );
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue( classLoader.getResourceAsStream( Constants.STACK_JSON ), BasicStack.class );
+            InputStream stream = classLoader.getResourceAsStream( Constants.STACK_JSON );
+
+            /** Debug */
+            if( stream != null ) {
+                LOG.info( "stream.available: {}", stream.available() );
+            }
+
+            return mapper.readValue( stream, BasicStack.class );
         }
         catch ( Exception e ) {
-            LOG.debug( "Error while reading stack.json from runner.jar resources", e );
+            LOG.warn( "Error while reading stack.json from runner.jar resources", e );
             return null;
         }
     }

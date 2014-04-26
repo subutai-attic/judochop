@@ -101,6 +101,7 @@ public class RunnerMojo extends MainMojo {
             FileUtils.copyFileToDirectory( new File( projectTestOutputJar ), libPathFile );
 
             Utils.copyArtifactsTo( this.project, extractedRunnerPath );
+            Utils.copyResourcesTo( this.project, extractedRunnerPath );
 
             // Create project.properties file
             InputStream inputStream;

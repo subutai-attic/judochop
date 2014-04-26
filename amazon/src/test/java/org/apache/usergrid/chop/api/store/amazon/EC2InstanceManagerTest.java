@@ -103,7 +103,7 @@ public class EC2InstanceManagerTest {
                 /** Commit mock object get method values */
                 when( commit.getCreateTime() ).thenReturn( new Date() );
                 when( commit.getMd5() ).thenReturn( "742e2a76a6ba161f9efb87ce58a9187e" );
-                when( commit.getModuleId() ).thenReturn( "778087981" );
+                when( commit.getModuleId() ).thenReturn( "2000562494" );
                 when( commit.getRunnerPath() ).thenReturn( "/some/dummy/path" );
                 when( commit.getId() ).thenReturn( "cc471b502aca2791c3a068f93d15b79ff6b7b827" );
 
@@ -113,7 +113,7 @@ public class EC2InstanceManagerTest {
                 when( module.getVersion() ).thenReturn( "1.0-SNAPSHOT" );
                 when( module.getVcsRepoUrl() ).thenReturn( "https://stash.safehaus.org/scm/chop/main.git" );
                 when( module.getTestPackageBase() ).thenReturn( "org.apache.usergrid.chop" );
-                when( module.getId() ).thenReturn( "778087981" );
+                when( module.getId() ).thenReturn( "2000562494" );
 
                 stack = new CoordinatedStack( basicStack, new User( "user", "pass" ), commit, module, RUNNER_COUNT );
             }

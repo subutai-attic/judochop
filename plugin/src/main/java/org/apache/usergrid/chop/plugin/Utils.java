@@ -30,8 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
@@ -46,16 +44,19 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 
 public class Utils {
 
-    private final static Logger logger = Logger.getLogger( Utils.class.getName() );
+    private final static Logger LOG = LoggerFactory.getLogger( Utils.class );
 
 
     /**
@@ -109,7 +110,7 @@ public class Utils {
 
             File f = artifact.getFile();
 
-            logger.log( Level.INFO, "Artifact " + f.getAbsolutePath() + " found." );
+            LOG.info( "Artifact {} found.", f.getAbsolutePath() );
 
             if ( f == null ) {
                 throw new MojoExecutionException( "Cannot locate artifact file of " + artifact.getArtifactId() );
@@ -131,18 +132,58 @@ public class Utils {
                         FileUtils.forceDelete( targetFolder + existing.get( 0 ) );
                     }
                     else {
-                        logger.log( Level.INFO, "Artifact " + artifact.getArtifactId() + " with the same or higher " +
+                        LOG.info( "Artifact " + artifact.getArtifactId() + " with the same or higher " +
                                 "version already exists in lib folder, skipping copy" );
                         continue;
                     }
                 }
 
-                logger.log( Level.INFO, "Copying " + f.getName() + " to " + targetFolder );
+                LOG.info( "Copying {} to {}", f.getName(), targetFolder );
                 FileUtils.copyFileToDirectory( f.getAbsolutePath(), targetFolder );
             }
             catch ( IOException e ) {
                 throw new MojoExecutionException( "Error while copying artifact file of " + artifact.getArtifactId(),
                         e );
+            }
+        }
+    }
+
+
+    /**
+     * Copies all found resource files, including test resources to the <code>targetFolder</code>.
+     * <p>
+     * Resource files to be copied are filtered or included according to the configurations inside
+     * <code>project</code>'s pom.xml file.
+     *
+     * @param project       project whose resource files to be copied
+     * @param targetFolder  matching resource files are stored in this directory
+     */
+    public static void copyResourcesTo( MavenProject project, String targetFolder ) {
+        File targetFolderFile = new File( targetFolder );
+        String includes;
+        String excludes;
+        List allResources = project.getResources();
+        allResources.addAll( project.getTestResources() );
+        LOG.info( "Copying resource files to runner.jar" );
+
+        for( Object res: allResources ) {
+            if( ! ( res instanceof Resource ) ) {
+                continue;
+            }
+            try {
+                Resource resource = ( Resource ) res;
+                File baseDir = new File( resource.getDirectory() );
+                includes = resource.getIncludes().toString().replace( "[", "" ).replace( "]", "" ).replace( " ", "" );
+                excludes = resource.getExcludes().toString().replace( "[", "" ).replace( "]", "" ).replace( " ", "" );
+                List<String> resFiles = FileUtils.getFileNames( baseDir, includes, excludes, true, true );
+                for( String resFile: resFiles ) {
+                    File resourceFile = new File( resFile );
+                    LOG.info( "Copying {} to {}", resourceFile.getName(), targetFolder );
+                    FileUtils.copyFileToDirectory( resourceFile, targetFolderFile );
+                }
+            }
+            catch ( IOException e ) {
+                LOG.warn( "Error while trying to copy resource files", e );
             }
         }
     }

@@ -154,7 +154,6 @@ public class SetupResource extends TestableResource implements RestParams {
             @QueryParam( RestParams.MODULE_GROUPID ) String groupId,
             @QueryParam( RestParams.MODULE_VERSION ) String version,
             @QueryParam( RestParams.USERNAME ) String user,
-            @QueryParam( RestParams.RUNNER_COUNT ) int runnerCount,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
                          ) {
 
