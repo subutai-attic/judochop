@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeBodyPart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -39,6 +37,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
 
 
 /** Deploys the jar created by runner goal to coordinator using supplied configuration parameters */
@@ -100,58 +100,23 @@ public class DeployMojo extends MainMojo {
             throw new MojoExecutionException( e.getMessage() );
         }
 
-        MimeMultipart multipart = new MimeMultipart();
+        FormDataMultiPart multipart = new FormDataMultiPart();
 
         try {
+            multipart.field( RestParams.COMMIT_ID, props.getProperty( Project.GIT_UUID_KEY ) );
+            multipart.field( RestParams.MODULE_GROUPID, props.getProperty( Project.GROUP_ID_KEY ) );
+            multipart.field( RestParams.MODULE_ARTIFACTID, props.getProperty( Project.ARTIFACT_ID_KEY ) );
+            multipart.field( RestParams.MODULE_VERSION, props.getProperty( Project.PROJECT_VERSION_KEY ) );
+            multipart.field( RestParams.USERNAME, username );
+            multipart.field( RestParams.VCS_REPO_URL, props.getProperty( Project.GIT_URL_KEY ) );
+            multipart.field( RestParams.TEST_PACKAGE, props.getProperty( Project.TEST_PACKAGE_BASE ) );
+            multipart.field( RestParams.MD5, props.getProperty( Project.MD5_KEY ) );
 
-            MimeBodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.COMMIT_ID );
-            bodyPart.setText( props.getProperty( Project.GIT_UUID_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.MODULE_ARTIFACTID );
-            bodyPart.setText( props.getProperty( Project.ARTIFACT_ID_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.MODULE_GROUPID );
-            bodyPart.setText( props.getProperty( Project.GROUP_ID_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.MODULE_VERSION );
-            bodyPart.setText( props.getProperty( Project.PROJECT_VERSION_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.USERNAME );
-            bodyPart.setText( username );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.FILENAME );
-            bodyPart.setText( RUNNER_JAR );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.VCS_REPO_URL );
-            bodyPart.setText( props.getProperty( Project.GIT_URL_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.TEST_PACKAGE );
-            bodyPart.setText( props.getProperty( Project.TEST_PACKAGE_BASE ) ); // TODO replace with plugin parameter
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart();
-            bodyPart.setContentID( RestParams.MD5 );
-            bodyPart.setText( props.getProperty( Project.MD5_KEY ) );
-            multipart.addBodyPart( bodyPart );
-
-            bodyPart = new MimeBodyPart( new FileInputStream( source ) );
-            bodyPart.setContentID( RestParams.CONTENT );
-            multipart.addBodyPart( bodyPart );
+            LOG.info( "Source length is: {}", source.length() );
+            FileInputStream in = new FileInputStream( source );
+            FormDataBodyPart body = new FormDataBodyPart( RestParams.CONTENT, in,
+                    MediaType.APPLICATION_OCTET_STREAM_TYPE );
+            multipart.bodyPart( body );
         }
         catch ( Exception e ) {
             LOG.error( "Error while preparing upload data", e );

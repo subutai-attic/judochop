@@ -50,6 +50,7 @@ public class CoordinatorUtils {
             while ( ( read = in.read( bytes ) ) != -1 ) {
                 out.write( bytes, 0, read );
             }
+            in.close();
             out.flush();
         }
         catch ( IOException e ) {
@@ -73,13 +74,9 @@ public class CoordinatorUtils {
             // Access the jar file resources after adding it to a new ClassLoader
             URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
                     Thread.currentThread().getContextClassLoader() );
+
             ObjectMapper mapper = new ObjectMapper();
             InputStream stream = classLoader.getResourceAsStream( Constants.STACK_JSON );
-
-            /** Debug */
-            if( stream != null ) {
-                LOG.info( "stream.available: {}", stream.available() );
-            }
 
             return mapper.readValue( stream, BasicStack.class );
         }
@@ -105,7 +102,7 @@ public class CoordinatorUtils {
         runnerJar = new File( runnerJar, stack.getModule().getGroupId() );
         runnerJar = new File( runnerJar, stack.getModule().getArtifactId() );
         runnerJar = new File( runnerJar, stack.getModule().getVersion() );
-        runnerJar = new File( runnerJar, stack.getModule().getId() );
+        runnerJar = new File( runnerJar, stack.getCommit().getId() );
         runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
 
         return runnerJar;
@@ -132,6 +129,7 @@ public class CoordinatorUtils {
         runnerJar = new File( runnerJar, artifactId );
         runnerJar = new File( runnerJar, version );
         runnerJar = new File( runnerJar, commitId );
+        runnerJar = new File( runnerJar, Constants.RUNNER_JAR );
 
         return runnerJar;
     }

@@ -210,7 +210,10 @@ public class StackCoordinator {
         }
 
         Stack stack = CoordinatorUtils.getStackFromRunnerJar( runnerJar );
-        LOG.info( "Is stack null? {}", ( stack == null ) );
+        if( stack == null ) {
+            LOG.warn( "Could not read stack from runner.jar's resources" );
+            return null;
+        }
 
         Module module = moduleDao.get( BasicModule.createId( groupId, artifactId, version ) );
         if( module == null ) {

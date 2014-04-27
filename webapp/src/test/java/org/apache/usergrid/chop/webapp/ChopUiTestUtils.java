@@ -21,6 +21,9 @@ package org.apache.usergrid.chop.webapp;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.usergrid.chop.api.BaseResult;
 import org.apache.usergrid.chop.api.RestParams;
@@ -29,8 +32,6 @@ import org.apache.usergrid.chop.api.RunnerBuilder;
 import org.apache.usergrid.chop.webapp.coordinator.rest.*;
 import org.safehaus.jettyjam.utils.TestParams;
 
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
@@ -273,69 +274,33 @@ class ChopUiTestUtils {
 
     static void testUpload(TestParams testParams) throws Exception {
 
-        MimeMultipart multipart = new MimeMultipart();
+        FormDataMultiPart part = new FormDataMultiPart();
 
-        MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.COMMIT_ID);
-        bodyPart.setText("a0967e74d95c0df8527098ec4755a898ddba6fea");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.MODULE_ARTIFACTID);
-        bodyPart.setText("chop-example");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.MODULE_GROUPID);
-        bodyPart.setText("org.apache.usergrid.chop");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.MODULE_VERSION);
-        bodyPart.setText("2.0.0-SNAPSHOT");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.USERNAME);
-        bodyPart.setText("test-user");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.FILENAME);
-        bodyPart.setText("runner.jar");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.VCS_REPO_URL);
-        bodyPart.setText("ssh://git@stash.safehaus.org:7999/chop/main.git");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.TEST_PACKAGE);
-        bodyPart.setText("org.apache.usergrid.safehaus.chop.example");
-        multipart.addBodyPart(bodyPart);
-
-        bodyPart = new MimeBodyPart();
-        bodyPart.setContentID(RestParams.MD5);
-        bodyPart.setText("3010c538d1b582ee2d26c9aae7a73186");
-        multipart.addBodyPart(bodyPart);
+        part.field( RestParams.COMMIT_ID, QUERY_PARAMS.get( RestParams.COMMIT_ID ) );
+        part.field( RestParams.MODULE_GROUPID, QUERY_PARAMS.get( RestParams.MODULE_GROUPID ) );
+        part.field( RestParams.MODULE_ARTIFACTID, QUERY_PARAMS.get( RestParams.MODULE_ARTIFACTID ) );
+        part.field( RestParams.MODULE_VERSION, QUERY_PARAMS.get( RestParams.MODULE_VERSION ) );
+        part.field( RestParams.USERNAME, QUERY_PARAMS.get( RestParams.USERNAME ) );
+        part.field( RestParams.VCS_REPO_URL, "ssh://git@stash.safehaus.org:7999/chop/main.git" );
+        part.field( RestParams.TEST_PACKAGE, QUERY_PARAMS.get( RestParams.TEST_PACKAGE ) );
+        part.field( RestParams.MD5, "d7d4829506f6cb8c0ab2da9cb1daca02" );
 
         File tmpFile = File.createTempFile("runner", "jar");
-        bodyPart = new MimeBodyPart(new FileInputStream(tmpFile));
-        bodyPart.setContentID(RestParams.CONTENT);
-        multipart.addBodyPart(bodyPart);
+        FileInputStream in = new FileInputStream( tmpFile );
+        FormDataBodyPart body = new FormDataBodyPart( RestParams.CONTENT, in, MediaType.APPLICATION_OCTET_STREAM_TYPE );
+        part.bodyPart( body );
 
-        ClientResponse response = testParams.addQueryParameters(QUERY_PARAMS)
-                .setEndpoint(UploadResource.ENDPOINT)
+        ClientResponse response = testParams.addQueryParameters( QUERY_PARAMS )
+                .setEndpoint( UploadResource.ENDPOINT )
                 .newWebResource()
-                .path("/runner")
-                .type(MediaType.MULTIPART_FORM_DATA)
-                .accept(MediaType.TEXT_PLAIN)
-                .post(ClientResponse.class, multipart);
+                .path( "/runner" )
+                .type( MediaType.MULTIPART_FORM_DATA )
+                .accept( MediaType.TEXT_PLAIN )
+                .post( ClientResponse.class, part );
 
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        assertEquals( Response.Status.CREATED.getStatusCode(), response.getStatus() );
 
-        assertEquals("Test parameters are OK", response.getEntity(String.class));
+        assertEquals( UploadResource.SUCCESSFUL_TEST_MESSAGE, response.getEntity( String.class ) );
 
         tmpFile.delete();
     }

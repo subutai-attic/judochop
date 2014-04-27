@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.sun.jersey.multipart.FormDataParam;
 
 
 /**
@@ -71,6 +72,7 @@ import com.google.inject.Singleton;
 @Path( UploadResource.ENDPOINT )
 public class UploadResource extends TestableResource implements RestParams {
     public final static String ENDPOINT = "/upload";
+    public final static String SUCCESSFUL_TEST_MESSAGE = "Test parameters are OK";
     private final static Logger LOG = LoggerFactory.getLogger( UploadResource.class );
 
 
@@ -129,50 +131,38 @@ public class UploadResource extends TestableResource implements RestParams {
     @Produces( MediaType.TEXT_PLAIN )
     public Response uploadRunner(
 
-            MimeMultipart multipart,
+            @FormDataParam( COMMIT_ID ) String commitId,
+            @FormDataParam( MODULE_GROUPID ) String groupId,
+            @FormDataParam( MODULE_ARTIFACTID ) String artifactId,
+            @FormDataParam( MODULE_VERSION ) String version,
+            @FormDataParam( USERNAME ) String username,
+            @FormDataParam( VCS_REPO_URL ) String vcsRepoUrl,
+            @FormDataParam( TEST_PACKAGE ) String testPackage,
+            @FormDataParam( MD5 ) String md5,
+            @FormDataParam( CONTENT ) InputStream runnerJarStream,
             @Nullable @QueryParam( TestMode.TEST_MODE_PROPERTY ) String testMode
 
-                                ) throws Exception
-    {
+                                ) throws Exception {
+
         if( inTestMode( testMode ) ) {
             LOG.info( "Calling /upload/runner in test mode ..." );
         }
         else {
-            LOG.warn( "/upload/runner called ..." );
+            LOG.info( "/upload/runner called ..." );
         }
 
-        String commitId = multipart.getBodyPart( RestParams.COMMIT_ID ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.COMMIT_ID, commitId );
-
-        String artifactId = multipart.getBodyPart( RestParams.MODULE_ARTIFACTID ).getContent().toString();
-        LOG.debug( "extracted {} = {}", RestParams.MODULE_ARTIFACTID, artifactId );
-
-        String groupId = multipart.getBodyPart( RestParams.MODULE_GROUPID ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.MODULE_GROUPID, groupId );
-
-        String version = multipart.getBodyPart( RestParams.MODULE_VERSION ).getContent().toString();
+        LOG.debug( "extracted {} = {}", RestParams.MODULE_ARTIFACTID, artifactId );
         LOG.debug( "extracted {} = {}", RestParams.MODULE_VERSION, version );
-
-        String username = multipart.getBodyPart( RestParams.USERNAME ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.USERNAME, username );
-
-        String filename = multipart.getBodyPart( RestParams.FILENAME ).getContent().toString();
-        LOG.debug( "extracted {} = {}", RestParams.FILENAME, filename );
-
-        String vcsRepoUrl = multipart.getBodyPart( RestParams.VCS_REPO_URL ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.VCS_REPO_URL, vcsRepoUrl );
-
-        String testPackage = multipart.getBodyPart( RestParams.TEST_PACKAGE ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.TEST_PACKAGE, testPackage );
-
-        String md5 = multipart.getBodyPart( RestParams.MD5 ).getContent().toString();
         LOG.debug( "extracted {} = {}", RestParams.MD5, md5 );
-
-        InputStream in = multipart.getBodyPart( RestParams.CONTENT ).getInputStream();
 
         if( inTestMode( testMode ) ) {
             return Response.status( Response.Status.CREATED )
-                           .entity( "Test parameters are OK" )
+                           .entity( SUCCESSFUL_TEST_MESSAGE )
                            .type( MediaType.TEXT_PLAIN )
                            .build();
         }
@@ -180,7 +170,7 @@ public class UploadResource extends TestableResource implements RestParams {
         File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), username, groupId, artifactId,
                 version, commitId );
 
-        if ( ! runnerJar.exists() ) {
+        if ( ! runnerJar.getParentFile().exists() ) {
             if ( runnerJar.mkdirs() ) {
                 LOG.info( "Created parent directory {} for uploaded runner file", runnerJar.getAbsolutePath() );
             }
@@ -193,8 +183,7 @@ public class UploadResource extends TestableResource implements RestParams {
         }
 
         // Download and write the file to the proper position on disk & reference
-        File runnerFile = new File( runnerJar, filename );
-        CoordinatorUtils.writeToFile( in, runnerFile.getAbsolutePath() );
+        CoordinatorUtils.writeToFile( runnerJarStream, runnerJar.getAbsolutePath() );
 
         // - this is bad news because we will get commits of other users :(
         // - we also need to qualify the commit with username, groupId,
@@ -221,11 +210,11 @@ public class UploadResource extends TestableResource implements RestParams {
         }
 
         if ( commit == null ) {
-            commit = new BasicCommit( commitId, module.getId(), md5, new Date(), runnerFile.getAbsolutePath() );
+            commit = new BasicCommit( commitId, module.getId(), md5, new Date(), runnerJar.getAbsolutePath() );
             commitDao.save( commit );
         }
 
-        return Response.status( Response.Status.CREATED ).entity( runnerFile.getAbsolutePath() ).build();
+        return Response.status( Response.Status.CREATED ).entity( runnerJar.getAbsolutePath() ).build();
     }
 
 
