@@ -171,7 +171,7 @@ public class UploadResource extends TestableResource implements RestParams {
                 version, commitId );
 
         if ( ! runnerJar.getParentFile().exists() ) {
-            if ( runnerJar.mkdirs() ) {
+            if ( runnerJar.getParentFile().mkdirs() ) {
                 LOG.info( "Created parent directory {} for uploaded runner file", runnerJar.getAbsolutePath() );
             }
             else {

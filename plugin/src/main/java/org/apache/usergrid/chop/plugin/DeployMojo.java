@@ -112,7 +112,6 @@ public class DeployMojo extends MainMojo {
             multipart.field( RestParams.TEST_PACKAGE, props.getProperty( Project.TEST_PACKAGE_BASE ) );
             multipart.field( RestParams.MD5, props.getProperty( Project.MD5_KEY ) );
 
-            LOG.info( "Source length is: {}", source.length() );
             FileInputStream in = new FileInputStream( source );
             FormDataBodyPart body = new FormDataBodyPart( RestParams.CONTENT, in,
                     MediaType.APPLICATION_OCTET_STREAM_TYPE );
