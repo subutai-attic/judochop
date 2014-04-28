@@ -31,7 +31,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 
 import org.apache.usergrid.chop.api.Project;
 import org.apache.usergrid.chop.api.RestParams;
-import org.apache.usergrid.chop.stack.SetupStackState;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -97,24 +96,27 @@ public class SetupMojo extends MainMojo {
         LOG.info( "Version: {}", props.getProperty( Project.PROJECT_VERSION_KEY ) );
         LOG.info( "Username: {}", username );
 
-        ClientResponse resp = resource.path( "/status" )
+        ClientResponse resp = resource.path( "/stack" )
                 .queryParam( RestParams.COMMIT_ID, props.getProperty( Project.GIT_UUID_KEY ) )
                 .queryParam( RestParams.MODULE_ARTIFACTID, props.getProperty( Project.ARTIFACT_ID_KEY ) )
                 .queryParam( RestParams.MODULE_GROUPID, props.getProperty( Project.GROUP_ID_KEY ) )
                 .queryParam( RestParams.MODULE_VERSION, props.getProperty( Project.PROJECT_VERSION_KEY ) )
                 .queryParam( RestParams.USERNAME, username )
+                .queryParam( RestParams.RUNNER_COUNT, runnerCount.toString() )
                 .type( MediaType.APPLICATION_JSON )
                 .accept( MediaType.APPLICATION_JSON )
                 .post( ClientResponse.class );
 
-        if( resp.getStatus() != Response.Status.OK.getStatusCode() ) {
+        if( resp.getStatus() != Response.Status.OK.getStatusCode() &&
+                resp.getStatus() != Response.Status.CREATED.getStatusCode() ) {
             LOG.error( "Could not get the status from coordinator, HTTP status: {}", resp.getStatus() );
             LOG.error( "Error Message: {}", resp.getEntity( String.class ) );
 
-            throw new MojoExecutionException( "Upload failed" );
+            throw new MojoExecutionException( "Setup plugin goal has failed" );
         }
 
-        SetupStackState state = resp.getEntity( SetupStackState.class );
-        LOG.info( "Current state of the stack is: {}", state );
+        LOG.info( "====== Response from the coordinator ======" );
+        LOG.info( resp.getEntity( String.class ) );
+        LOG.info( "===========================================" );
     }
 }

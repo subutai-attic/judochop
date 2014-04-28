@@ -69,10 +69,14 @@ public class SetupStackThread implements Callable<CoordinatedStack> {
                 String keyFile;
                 LinkedList<String> launchedInstances = new LinkedList<String>();
 
+                /** Bypass the keys in AmazonFig so that it uses the ones belonging to the user */
+                Injector injector = Guice.createInjector( new ChopUiModule() );
+
+                providerParamsDao = injector.getInstance( ProviderParamsDao.class );
+                chopUiFig = injector.getInstance( ChopUiFig.class );
+
                 ProviderParams providerParams = providerParamsDao.getByUser( stack.getUser().getUsername() );
 
-                /** Bypass the keys in AmazonFig so that it uses the ones belonging to the user */
-                Injector injector = Guice.createInjector( new ChopUiModule() ); // TODO this might cause problems
                 AmazonFig amazonFig = injector.getInstance( AmazonFig.class );
                 amazonFig.bypass( AmazonFig.AWS_ACCESS_KEY, providerParams.getAccessKey() );
                 amazonFig.bypass( AmazonFig.AWS_SECRET_KEY, providerParams.getSecretKey() );
@@ -164,7 +168,6 @@ public class SetupStackThread implements Callable<CoordinatedStack> {
         finally {
             lock.notifyAll();
         }
-
 
         return stack;
     }
