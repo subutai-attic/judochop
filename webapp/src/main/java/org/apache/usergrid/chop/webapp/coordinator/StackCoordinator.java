@@ -125,9 +125,11 @@ public class StackCoordinator {
         coordinatedStack = getCoordinatedStack( stack, user, commit, module );
 
         if ( coordinatedStack != null ) {
-            LOG.debug( "Stack is already registered" );
+            LOG.info( "Stack is already registered" );
             return coordinatedStack;
         }
+
+        LOG.info( "Registering & Starting setup stack thread..." );
 
         coordinatedStack = new CoordinatedStack( stack, user, commit, module, runnerCount );
         coordinatedStack.setSetupState( SetupStackState.SettingUp );
@@ -136,8 +138,8 @@ public class StackCoordinator {
         SetupStackThread setupThread = new SetupStackThread( coordinatedStack, lock );
         setupStackThreads.put( coordinatedStack, setupThread );
 
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        service.submit( setupThread );
+        /** TODO Working on the same thread until the issues are resolved */
+        setupThread.call();
 
         return coordinatedStack;
     }

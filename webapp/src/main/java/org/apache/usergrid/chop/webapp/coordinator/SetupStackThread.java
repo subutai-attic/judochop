@@ -21,12 +21,10 @@ import org.apache.usergrid.chop.stack.ICoordinatedCluster;
 import org.apache.usergrid.chop.stack.Instance;
 import org.apache.usergrid.chop.stack.SetupStackState;
 import org.apache.usergrid.chop.webapp.ChopUiFig;
-import org.apache.usergrid.chop.webapp.ChopUiModule;
 import org.apache.usergrid.chop.webapp.dao.ProviderParamsDao;
+import org.apache.usergrid.chop.webapp.service.InjectorFactory;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
 
 /** Encapsulates a CoordinatedStack and sets it up asynchronously */
@@ -64,110 +62,101 @@ public class SetupStackThread implements Callable<CoordinatedStack> {
     @Override
     public CoordinatedStack call() {
 
-        try {
-            synchronized ( lock ) {
-                String keyFile;
-                LinkedList<String> launchedInstances = new LinkedList<String>();
+        String keyFile;
+        LinkedList<String> launchedInstances = new LinkedList<String>();
 
-                /** Bypass the keys in AmazonFig so that it uses the ones belonging to the user */
-                Injector injector = Guice.createInjector( new ChopUiModule() );
+        providerParamsDao = InjectorFactory.getInstance( ProviderParamsDao.class );
+        chopUiFig = InjectorFactory.getInstance( ChopUiFig.class );
 
-                providerParamsDao = injector.getInstance( ProviderParamsDao.class );
-                chopUiFig = injector.getInstance( ChopUiFig.class );
+        ProviderParams providerParams = providerParamsDao.getByUser( stack.getUser().getUsername() );
 
-                ProviderParams providerParams = providerParamsDao.getByUser( stack.getUser().getUsername() );
+        /** Bypass the keys in AmazonFig so that it uses the ones belonging to the user */
+        AmazonFig amazonFig = InjectorFactory.getInstance( AmazonFig.class );
+        amazonFig.bypass( AmazonFig.AWS_ACCESS_KEY, providerParams.getAccessKey() );
+        amazonFig.bypass( AmazonFig.AWS_SECRET_KEY, providerParams.getSecretKey() );
 
-                AmazonFig amazonFig = injector.getInstance( AmazonFig.class );
-                amazonFig.bypass( AmazonFig.AWS_ACCESS_KEY, providerParams.getAccessKey() );
-                amazonFig.bypass( AmazonFig.AWS_SECRET_KEY, providerParams.getSecretKey() );
+        InstanceManager instanceManager = InjectorFactory.getInstance( InstanceManager.class );
+        IpRuleManager ipRuleManager = InjectorFactory.getInstance( IpRuleManager.class );
 
-                InstanceManager instanceManager = injector.getInstance( InstanceManager.class );
-                IpRuleManager ipRuleManager = injector.getInstance( IpRuleManager.class );
+        File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), stack );
 
-                File runnerJar = CoordinatorUtils.getRunnerJar( chopUiFig.getContextPath(), stack );
+        ipRuleManager.setDataCenter( stack.getDataCenter() );
+        ipRuleManager.applyIpRuleSet( stack.getIpRuleSet() );
 
-                ipRuleManager.setDataCenter( stack.getDataCenter() );
-                ipRuleManager.applyIpRuleSet( stack.getIpRuleSet() );
+        /** Setup clusters */
+        for ( ICoordinatedCluster cluster : stack.getClusters() ) {
 
-                /** Setup clusters */
-                for ( ICoordinatedCluster cluster : stack.getClusters() ) {
+            keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
+            if ( keyFile == null ) {
+                errorMessage = "No key found with name " + cluster.getInstanceSpec().getKeyName() +
+                        " for cluster " + cluster.getName();
+                LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                stack.setSetupState( SetupStackState.SetupFailed );
+                return null;
+            }
+            if ( !( new File( keyFile ) ).exists() ) {
+                errorMessage = "Key file " + keyFile + " for cluster " + cluster.getName() + " not found";
+                LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
+                instanceManager.terminateInstances( launchedInstances );
+                stack.setSetupState( SetupStackState.SetupFailed );
+                return null;
+            }
 
-                    keyFile = providerParams.getKeys().get( cluster.getInstanceSpec().getKeyName() );
-                    if ( keyFile == null ) {
-                        errorMessage = "No key found with name " + cluster.getInstanceSpec().getKeyName() +
-                                " for cluster " + cluster.getName();
-                        LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
-                        instanceManager.terminateInstances( launchedInstances );
-                        stack.setSetupState( SetupStackState.SetupFailed );
-                        return null;
-                    }
-                    if ( !( new File( keyFile ) ).exists() ) {
-                        errorMessage = "Key file " + keyFile + " for cluster " + cluster.getName() + " not found";
-                        LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
-                        instanceManager.terminateInstances( launchedInstances );
-                        stack.setSetupState( SetupStackState.SetupFailed );
-                        return null;
-                    }
+            LaunchResult result = instanceManager.launchCluster( stack, cluster,
+                    chopUiFig.getLaunchClusterTimeout() );
 
-                    LaunchResult result = instanceManager.launchCluster( stack, cluster,
-                            chopUiFig.getLaunchClusterTimeout() );
+            for ( Instance instance : result.getInstances() ) {
+                launchedInstances.add( instance.getId() );
+                cluster.add( instance );
+            }
 
-                    for ( Instance instance : result.getInstances() ) {
-                        launchedInstances.add( instance.getId() );
-                        cluster.add( instance );
-                    }
-
-                    /** Setup system properties, deploy the scripts and execute them on cluster instances */
-                    boolean success = false;
-                    try {
-                        success = CoordinatorUtils.executeSSHCommands( cluster, runnerJar, keyFile );
-                    }
-                    catch ( Exception e ) {
-                        LOG.warn( "Error while executing SSH commands", e );
-                    }
-                    if ( !success ) {
-                        errorMessage = "SSH commands have failed, will not continue";
-                        instanceManager.terminateInstances( launchedInstances );
-                        stack.setSetupState( SetupStackState.SetupFailed );
-                        return null;
-                    }
-                }
-
-                /** Setup runners */
-                keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
-                if ( keyFile == null ) {
-                    errorMessage = "No key found with name " + providerParams.getKeyName() + " for runners";
-                    LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
-                    instanceManager.terminateInstances( launchedInstances );
-                    stack.setSetupState( SetupStackState.SetupFailed );
-                    return null;
-                }
-                if ( !( new File( keyFile ) ).exists() ) {
-                    errorMessage = "Key file " + keyFile + " for runners not found";
-                    LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
-                    instanceManager.terminateInstances( launchedInstances );
-                    stack.setSetupState( SetupStackState.SetupFailed );
-                    return null;
-                }
-
-                BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
-                runnerSpec.setImageId( providerParams.getImageId() );
-                runnerSpec.setType( providerParams.getInstanceType() );
-                runnerSpec.setKeyName( keyFile );
-
-                LaunchResult result = instanceManager.launchRunners( stack, runnerSpec,
-                        chopUiFig.getLaunchClusterTimeout() );
-
-                for ( Instance instance : result.getInstances() ) {
-                    stack.addRunnerInstance( instance );
-                }
-
-                stack.setSetupState( SetupStackState.SetUp );
+            /** Setup system properties, deploy the scripts and execute them on cluster instances */
+            boolean success = false;
+            try {
+                success = CoordinatorUtils.executeSSHCommands( cluster, runnerJar, keyFile );
+            }
+            catch ( Exception e ) {
+                LOG.warn( "Error while executing SSH commands", e );
+            }
+            if ( !success ) {
+                errorMessage = "SSH commands have failed, will not continue";
+                instanceManager.terminateInstances( launchedInstances );
+                stack.setSetupState( SetupStackState.SetupFailed );
+                return null;
             }
         }
-        finally {
-            lock.notifyAll();
+
+        /** Setup runners */
+        keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
+        if ( keyFile == null ) {
+            errorMessage = "No key found with name " + providerParams.getKeyName() + " for runners";
+            LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
+            instanceManager.terminateInstances( launchedInstances );
+            stack.setSetupState( SetupStackState.SetupFailed );
+            return null;
         }
+        if ( !( new File( keyFile ) ).exists() ) {
+            errorMessage = "Key file " + keyFile + " for runners not found";
+            LOG.warn( errorMessage + ", aborting and terminating launched instances..." );
+            instanceManager.terminateInstances( launchedInstances );
+            stack.setSetupState( SetupStackState.SetupFailed );
+            return null;
+        }
+
+        BasicInstanceSpec runnerSpec = new BasicInstanceSpec();
+        runnerSpec.setImageId( providerParams.getImageId() );
+        runnerSpec.setType( providerParams.getInstanceType() );
+        runnerSpec.setKeyName( keyFile );
+
+        LaunchResult result = instanceManager.launchRunners( stack, runnerSpec,
+                chopUiFig.getLaunchClusterTimeout() );
+
+        for ( Instance instance : result.getInstances() ) {
+            stack.addRunnerInstance( instance );
+        }
+
+        stack.setSetupState( SetupStackState.SetUp );
 
         return stack;
     }

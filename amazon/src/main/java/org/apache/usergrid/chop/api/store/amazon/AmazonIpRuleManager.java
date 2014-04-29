@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.api.store.amazon;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.usergrid.chop.stack.BasicIpRule;
@@ -142,7 +143,15 @@ public class AmazonIpRuleManager implements IpRuleManager {
 
     @Override
     public Collection<String> listRuleSets() {
-        DescribeSecurityGroupsResult result = client.describeSecurityGroups();
+        DescribeSecurityGroupsRequest request = new DescribeSecurityGroupsRequest();
+        DescribeSecurityGroupsResult result = null;
+        try {
+            result = client.describeSecurityGroups( request );
+        }
+        catch ( Exception e ) {
+            LOG.warn( "Error while getting security groups", e );
+            return new LinkedList<String>();
+        }
         Collection<String> groups = new ArrayList<String>();
         for( SecurityGroup group : result.getSecurityGroups() ) {
             groups.add( group.getGroupName() );
