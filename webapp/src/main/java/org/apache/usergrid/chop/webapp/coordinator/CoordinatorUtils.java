@@ -69,14 +69,25 @@ public class CoordinatorUtils {
     }
 
 
-    public static Stack getStackFromRunnerJar( File runnerJar ) {
+    public static InputStream getResourceAsStreamFromRunnerJar( File runnerJar, String resource ) {
         try {
             // Access the jar file resources after adding it to a new ClassLoader
             URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
                     Thread.currentThread().getContextClassLoader() );
 
+            return classLoader.getResourceAsStream( resource );
+        }
+        catch ( Exception e ) {
+            LOG.warn( "Error while reading {} from runner.jar resources", resource, e );
+            return null;
+        }
+    }
+
+
+    public static Stack getStackFromRunnerJar( File runnerJar ) {
+        try {
             ObjectMapper mapper = new ObjectMapper();
-            InputStream stream = classLoader.getResourceAsStream( Constants.STACK_JSON );
+            InputStream stream = getResourceAsStreamFromRunnerJar( runnerJar, Constants.STACK_JSON );
 
             return mapper.readValue( stream, BasicStack.class );
         }
@@ -158,20 +169,17 @@ public class CoordinatorUtils {
 
             sb.append( "export " )
               .append( envVar )
-              .append( "=" )
+              .append( "=\"" )
               .append( value )
-              .append( ";" );
+              .append( "\";" );
         }
         String exportVars = sb.toString();
-
-        URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
-                Thread.currentThread().getContextClassLoader() );
 
         for( URL scriptFile: cluster.getInstanceSpec().getSetupScripts() ) {
             /** First save file beside runner.jar */
             File file = new File( scriptFile.getPath() );
-            File fileToSave = new File( runnerJar, file.getName() );
-            writeToFile( classLoader.getResourceAsStream( file.getName() ), fileToSave.getPath() );
+            File fileToSave = new File( runnerJar.getParentFile(), file.getName() );
+            writeToFile( getResourceAsStreamFromRunnerJar( runnerJar, file.getName() ), fileToSave.getPath() );
 
             try {
                 /** SCP the script to instance **/
@@ -188,7 +196,10 @@ public class CoordinatorUtils {
                 /** calling chmod first just in case **/
                 sb = new StringBuilder();
                 sb.append( "chmod 0755 " )
-                  .append( fileToSave.getPath() );
+                  .append( "/home/" )
+                  .append( SSHCommands.DEFAULT_USER )
+                  .append( "/" )
+                  .append( fileToSave.getName() );
                 sshCommand = new InstanceValues( sb.toString(), keyFile );
                 executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
 
@@ -207,6 +218,7 @@ public class CoordinatorUtils {
             }
         }
 
-        return AsyncSsh.extractFailures( executed ).size() == 0;
+        Collection<AsyncSsh<Instance>> failures = AsyncSsh.extractFailures( executed );
+        return failures.size() == 0;
     }
 }

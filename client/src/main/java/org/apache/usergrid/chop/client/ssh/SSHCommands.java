@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Collection;
@@ -44,20 +47,23 @@ public class SSHCommands {
 
     private static final Logger LOG = LoggerFactory.getLogger( SSHCommands.class );
 
+    private static final int SESSION_CONNECT_TIMEOUT = 120000;
     public static final String DEFAULT_USER = "ubuntu";
 
 
     public static ResponseInfo sendCommandToInstance ( String command,  String keyFile, String hostURL ) {
         Collection<String> messages = new LinkedList<String>();
         Collection<String> errMessages = new LinkedList<String>();
-        try {
-            JSch ssh = new JSch();
-            ssh.addIdentity( keyFile );
-            Session session = ssh.getSession( DEFAULT_USER, hostURL );
-            session.setConfig( "StrictHostKeyChecking", "no" );
-            session.connect();
+        Session session = null;
+        Channel channel = null;
 
-            Channel channel = session.openChannel( "exec" );
+        try {
+            session = getSession( hostURL, keyFile );
+            if( session == null ) {
+                errMessages.add( "Could not get session to connect to " + hostURL );
+                return new ResponseInfo( hostURL, true, false, messages, errMessages );
+            }
+            channel = session.openChannel( "exec" );
             ( ( ChannelExec ) channel ).setCommand( command );
             channel.connect();
             BufferedReader reader = new BufferedReader( new InputStreamReader( channel.getInputStream() ) );
@@ -83,6 +89,20 @@ public class SSHCommands {
             LOG.warn( "Error while sending ssh command to " + hostURL, e );
             return new ResponseInfo( hostURL, false, false, messages, errMessages );
         }
+        finally {
+            try {
+                if ( channel != null ) {
+                    channel.disconnect();
+                }
+            }
+            catch ( Exception e ) { }
+            try {
+                if ( session != null ) {
+                    session.disconnect();
+                }
+            }
+            catch ( Exception e ) { }
+        }
     }
 
 
@@ -99,18 +119,19 @@ public class SSHCommands {
         Collection<String> messages = new LinkedList<String>();
         Collection<String> errMessages = new LinkedList<String>();
         FileInputStream fis = null;
+        Session session = null;
+        Channel channel = null;
         String output;
+
         try {
-
-            JSch ssh = new JSch();
-            ssh.addIdentity( keyFile );
-            Session session = ssh.getSession( DEFAULT_USER, hostURL );
-            session.setConfig( "StrictHostKeyChecking", "no" );
-            session.connect();
-
+            session = getSession( hostURL, keyFile );
+            if( session == null ) {
+                errMessages.add( "Could not get session to connect to " + hostURL );
+                return new ResponseInfo( hostURL, true, false, messages, errMessages );
+            }
             // exec 'scp -t destFile' remotely
-            String command = "scp -p -t " + destFilePath;
-            Channel channel = session.openChannel( "exec" );
+            String command = "scp -t " + destFilePath;
+            channel = session.openChannel( "exec" );
             ( ( ChannelExec ) channel ).setCommand( command );
 
             // get I/O streams for remote scp
@@ -126,25 +147,8 @@ public class SSHCommands {
 
             File srcFile = new File( srcfilePath );
 
-            StringBuilder sb = new StringBuilder();
-            command = sb.append( "T " )
-                        .append( srcFile.lastModified() / 1000 )
-                        .append( " 0" )
-                        .append( " " )
-                        .append( srcFile.lastModified() / 1000 )
-                        .append( " 0\n" )
-                        .toString();
-
-            out.write( command.getBytes() );
-            out.flush();
-
-            if( ( output = checkAck( in ) ) != null ) {
-                errMessages.add( output );
-                return new ResponseInfo( hostURL, true, false, messages, errMessages );
-            }
-
             // send "C0<filemode> filesize filename", where filename should not include '/'
-            sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             String fileMode = PosixFilePermissions.toString( Files.getPosixFilePermissions( srcFile.toPath() ) );
             long filesize = srcFile.length();
             command = sb.append( "C0" )
@@ -196,17 +200,92 @@ public class SSHCommands {
         }
         catch( Exception e ) {
             LOG.error( "Error while SCPing file to " + hostURL, e );
+            return new ResponseInfo( hostURL, true, false, messages, errMessages );
+        }
+        finally {
+            try {
+                if ( channel != null ) {
+                    channel.disconnect();
+                }
+            }
+            catch ( Exception e ) { }
+            try {
+                if ( session != null ) {
+                    session.disconnect();
+                }
+            }
+            catch ( Exception e ) { }
             try {
                 if( fis != null ) {
                     fis.close();
                 }
             }
-            catch( Exception ee ) {
-                LOG.debug( "Error while closing file stream", ee );
-            }
+            catch( Exception e ) { }
+        }
+    }
+
+
+    private static Session getSession( String hostURL, String keyFile ) {
+        JSch ssh;
+        Session session = null;
+
+        boolean successful = SSHCommands.waitActive( hostURL, 22, SESSION_CONNECT_TIMEOUT );
+        if( ! successful ) {
+            LOG.warn( "Can't reach ssh port of host {}", hostURL );
         }
 
-        return new ResponseInfo( hostURL, true, false, messages, errMessages );
+        // try to open ssh session
+        try {
+            ssh = new JSch();
+            ssh.addIdentity( keyFile );
+            session = ssh.getSession( DEFAULT_USER, hostURL );
+            session.setConfig( "StrictHostKeyChecking", "no" );
+            session.connect();
+
+            // should be successful, so we can continue
+            return session;
+        }
+        catch ( Exception e ) {
+            LOG.error( "Error while connecting to ssh session of " + hostURL, e );
+        }
+        finally {
+            try {
+                if( session != null ) {
+                    session.disconnect();
+                }
+            }
+            catch ( Exception ee ) { }
+        }
+        return null;
+    }
+
+
+    public static boolean waitActive( String hostURL, int port, int timeout ) {
+        LOG.info( "Waiting maximum {} msecs for SSH port of {} to get active", timeout, hostURL );
+        long startTime = System.currentTimeMillis();
+
+        while ( System.currentTimeMillis() - startTime < timeout ) {
+            Socket s = null;
+            try {
+                s = new Socket();
+                s.setReuseAddress( true );
+                SocketAddress sa = new InetSocketAddress( hostURL, port );
+                s.connect( sa, 2000 );
+                return true;
+            }
+            catch ( Exception e ) {
+            }
+            finally {
+                if ( s != null ) {
+                    try {
+                        s.close();
+                    }
+                    catch ( IOException e ) {
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 

@@ -189,11 +189,11 @@ public class AsyncSsh<A> implements Callable<ResponseInfo> {
         for ( A associate : associates ) {
             if( values.isScpCommand( associate ) ) {
                 command = new AsyncSsh<A>( values.getSourceFile( associate ), values.getDestinationFile( associate ),
-                        values.getSshKeyFile( associate ), values.getHostname( associate ) );
+                        values.getSshKeyFile( associate ), values.getPublicIpAddress( associate ) );
             }
             else {
-                command = new AsyncSsh<A>( values.getCommand( associate ), values.getSshKeyFile( associate ), values
-                                .getHostname( associate ) );
+                command = new AsyncSsh<A>( values.getCommand( associate ), values.getSshKeyFile( associate ),
+                        values.getPublicIpAddress( associate ) );
             }
             commands.add( command );
         }

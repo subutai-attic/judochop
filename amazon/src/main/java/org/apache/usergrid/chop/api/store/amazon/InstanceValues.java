@@ -67,6 +67,12 @@ public class InstanceValues implements SshValues<Instance> {
 
 
     @Override
+    public String getPublicIpAddress( final Instance associate ) {
+        return associate.getPublicIpAddress();
+    }
+
+
+    @Override
     public String getCommand( final Instance associate ) {
         return command;
     }
