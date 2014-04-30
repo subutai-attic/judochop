@@ -89,7 +89,7 @@
           <password>${chop.coordinator.password}</password>
           <endpoint>https://${chop.coordinator.url}:8443</endpoint>
           <testPackageBase>org.apache.usergrid.chop.example</testPackageBase>
-          <failIfCommitNecessary>false</failIfCommitNecessary>
+          <!--<failIfCommitNecessary>false</failIfCommitNecessary>-->
           <runnerCount>3</runnerCount>
         </configuration>
       </plugin>

@@ -7,7 +7,7 @@
       "imageId" : "ami-6ac2a85a",
       "type" : "m1.large",
       "keyName" : "TestKeyPair",
-      "setupScripts" : [ "file://./install_es.sh" ],
+      "setupScripts" : [ "file://./test_script.sh" ],
       "scriptEnvironment" : {
           "TEST_PARAM" : "Test Param Value"
       }
