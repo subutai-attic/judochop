@@ -69,7 +69,7 @@ public class CoordinatedCluster implements ICoordinatedCluster {
 
     @Override
     public boolean add( Instance instance ) {
-        Preconditions.checkState( instances.size() >= delegate.getSize(), "Cannot add instances to " +
+        Preconditions.checkState( instances.size() < delegate.getSize(), "Cannot add instances to " +
             delegate.getName() + " cluster: already at maximum size of " + delegate.getSize() );
 
         return instances.add( instance );
