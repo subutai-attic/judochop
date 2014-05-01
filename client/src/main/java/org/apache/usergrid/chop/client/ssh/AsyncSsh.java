@@ -19,196 +19,50 @@
 package org.apache.usergrid.chop.client.ssh;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.concurrent.Callable;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.usergrid.chop.api.SshValues;
 
 
 /**
- * A reusable Ssh command that can be asynchronously executed and can work with
- * both an ExecutorService and standalone. Will experiment with what works faster
- * for Maven Plugin.
+ * Executes the collection of ssh or scp commands, on a separate thread for each remote end
  */
-public class AsyncSsh<A> implements Callable<ResponseInfo> {
+public class AsyncSsh {
 
-    private String sshKeyFile;
+    private Collection<SshValues> sshValues;
 
-    private String server;
-
-    private String srcFile;
-
-    private String destFile;
-
-    private boolean isScpCommand;
-
-    protected ResponseInfo response;
-
-    private String command;
-
-    private A associate;
+    private Collection<Command> commands;
 
 
-    public AsyncSsh( String command, String sshKeyFile, String server ) {
-        this.command = command;
-        this.sshKeyFile = sshKeyFile;
-        this.server = server;
-        this.isScpCommand = false;
+    public AsyncSsh( Collection<SshValues> sshValues, Collection<Command> commands ) {
+        this.commands = commands;
+        this.sshValues = sshValues;
     }
 
 
-    public AsyncSsh( String srcFile, String destFile, String sshKeyFile, String server ) {
-        this.srcFile = srcFile;
-        this.destFile = destFile;
-        this.sshKeyFile = sshKeyFile;
-        this.server = server;
-        this.isScpCommand = true;
-    }
+    public Collection<ResponseInfo> executeAll() throws InterruptedException, ExecutionException {
 
-
-    @Override
-    public ResponseInfo call() throws Exception {
-        if( isScpCommand ) {
-            response = SSHCommands.scpFileToInstance( srcFile, destFile, sshKeyFile, server );
-        }
-        else {
-            response = SSHCommands.sendCommandToInstance( command, sshKeyFile, server );
-        }
-        return response;
-    }
-
-
-    public String getCommand() {
-        return command;
-    }
-
-
-    public String getSshKeyFile() {
-        return sshKeyFile;
-    }
-
-
-    public String getServer() {
-        return server;
-    }
-
-
-    public String getSrcFile() {
-        return srcFile;
-    }
-
-
-    public String getDestFile() {
-        return destFile;
-    }
-
-
-    public boolean isScpCommand() {
-        return isScpCommand;
-    }
-
-
-    public ResponseInfo getResponse() {
-        return response;
-    }
-
-
-    public boolean isSuccess() {
-        //noinspection SimplifiableIfStatement
-        if ( response == null ) {
-            return false;
+        Collection<Job> jobs = new HashSet<Job>( sshValues.size() );
+        for( SshValues sshValue: sshValues ) {
+            jobs.add( new Job( commands, sshValue ) );
         }
 
-        return response.isOperationSuccessful() && response.isRequestSuccessful();
-    }
-
-
-    @SuppressWarnings( "UnusedDeclaration" )
-    public A getAssociate() {
-        return associate;
-    }
-
-
-    public AsyncSsh<A> setAssociate( A associate ) {
-        this.associate = associate;
-        return this;
-    }
-
-
-    @Override
-    public int hashCode() {
-        return server.hashCode();
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if( isScpCommand ) {
-            sb.append( "scp -i " )
-              .append( sshKeyFile )
-              .append( " " )
-              .append( srcFile )
-              .append( " ubuntu@" )
-              .append( server )
-              .append( ":" )
-              .append( destFile );
-        }
-        else {
-            sb.append( "ssh -i " )
-              .append( sshKeyFile )
-              .append( " ubuntu@" )
-              .append( server )
-              .append( " " )
-              .append( command );
-        }
-        return sb.toString();
-    }
-
-
-    public static <A> Collection<AsyncSsh<A>> extractFailures( Collection<AsyncSsh<A>> commands ) {
-        Collection<AsyncSsh<A>> failures = new HashSet<AsyncSsh<A>>( commands.size() );
-
-        for ( AsyncSsh<A> command : commands ) {
-            if ( ! command.isSuccess() ) {
-                failures.add( command );
-            }
-        }
-
-        return failures;
-    }
-
-
-    public static <A> Collection<AsyncSsh<A>> getCommands( Collection<A> associates, SshValues<A> values ) {
-        Collection<AsyncSsh<A>> commands = new HashSet<AsyncSsh<A>>( associates.size() );
-        AsyncSsh<A> command;
-
-        for ( A associate : associates ) {
-            if( values.isScpCommand( associate ) ) {
-                command = new AsyncSsh<A>( values.getSourceFile( associate ), values.getDestinationFile( associate ),
-                        values.getSshKeyFile( associate ), values.getPublicIpAddress( associate ) );
-            }
-            else {
-                command = new AsyncSsh<A>( values.getCommand( associate ), values.getSshKeyFile( associate ),
-                        values.getPublicIpAddress( associate ) );
-            }
-            commands.add( command );
-        }
-
-        return commands;
-    }
-
-
-    public static <A> Collection<AsyncSsh<A>> execute( Collection<A> associates, SshValues<A> values )
-            throws InterruptedException {
-        Collection<AsyncSsh<A>> commands = getCommands( associates, values );
-        ExecutorService service = Executors.newFixedThreadPool( associates.size() + 1 );
-        service.invokeAll( commands );
+        ExecutorService service = Executors.newFixedThreadPool( sshValues.size() + 1 );
+        List<Future<ResponseInfo>> futureResponses = service.invokeAll( jobs );
         service.shutdown();
 
-        return commands;
+        Collection<ResponseInfo> responses = new ArrayList<ResponseInfo>( sshValues.size() );
+
+        for( Future<ResponseInfo> response: futureResponses ) {
+            responses.add( response.get() );
+        }
+        return responses;
     }
 }
