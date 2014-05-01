@@ -128,12 +128,6 @@ public class SetupStackThread implements Callable<CoordinatedStack> {
             }
         }
 
-        Map<String, String> keys = providerParams.getKeys();
-        String key = providerParams.getKeyName().trim();
-        keyFile = keys.get( key );
-
-        LOG.warn( "Key name: {}, key file: {}", key, keyFile );
-
         /** Setup runners */
         keyFile = providerParams.getKeys().get( providerParams.getKeyName() );
         if ( keyFile == null ) {

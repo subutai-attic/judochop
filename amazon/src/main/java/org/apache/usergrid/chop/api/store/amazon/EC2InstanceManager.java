@@ -170,7 +170,14 @@ public class EC2InstanceManager implements InstanceManager {
             client.setEndpoint( AmazonUtils.getEndpoint( stack.getDataCenter() ) );
         }
 
-        RunInstancesResult runInstancesResult = client.runInstances( runInstancesRequest) ;
+        RunInstancesResult runInstancesResult = null;
+        try {
+            runInstancesResult = client.runInstances( runInstancesRequest );
+        }
+        catch ( Exception e ) {
+            LOG.error( "Error while creating instances", e );
+            return new EC2LaunchResult( spec, new LinkedList<Instance>() );
+        }
 
         LOG.info( "Created instances, setting the names now..." );
 
