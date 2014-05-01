@@ -3,6 +3,7 @@ package org.apache.usergrid.chop.webapp.coordinator;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
@@ -119,13 +120,19 @@ public class SetupStackThread implements Callable<CoordinatedStack> {
             catch ( Exception e ) {
                 LOG.warn( "Error while executing SSH commands", e );
             }
-            if ( !success ) {
+            if ( ! success ) {
                 errorMessage = "SSH commands have failed, will not continue";
                 instanceManager.terminateInstances( launchedInstances );
                 stack.setSetupState( SetupStackState.SetupFailed );
                 return null;
             }
         }
+
+        Map<String, String> keys = providerParams.getKeys();
+        String key = providerParams.getKeyName().trim();
+        keyFile = keys.get( key );
+
+        LOG.warn( "Key name: {}, key file: {}", key, keyFile );
 
         /** Setup runners */
         keyFile = providerParams.getKeys().get( providerParams.getKeyName() );

@@ -27,72 +27,38 @@ import com.google.common.base.Preconditions;
 /**
  * A simple values holder for Amazon Instance based associations.
  */
-public class InstanceValues implements SshValues<Instance> {
+public class InstanceValues implements SshValues {
 
-    private boolean scpCommand;
-    private String command;
     private String sshKeyFile;
-    private String srcFilePath;
-    private String dstFilePath;
+    private Instance instance;
 
 
-    public InstanceValues( final String command, final String sshKeyFile ) {
-        Preconditions.checkNotNull( command, "The 'command' parameter cannot be null." );
+    public InstanceValues( Instance instance, String sshKeyFile ) {
         Preconditions.checkNotNull( sshKeyFile, "The 'sshKeyFile' parameter cannot be null." );
+        Preconditions.checkNotNull( instance, "The 'instance parameter cannot be null." );
+        Preconditions.checkState( instance.getPublicIpAddress() != null && ( ! instance.getPublicIpAddress().isEmpty() )
+                                , "Public IP address field of the 'instance' parameter cannot be empty" );
 
-        this.command = command;
         this.sshKeyFile = sshKeyFile;
-
-        scpCommand = false;
-    }
-
-
-    public InstanceValues( final String srcFilePath, final String dstFilePath, final String sshKeyFile ) {
-        Preconditions.checkNotNull( srcFilePath, "The 'srcFilePath' parameter cannot be null." );
-        Preconditions.checkNotNull( dstFilePath, "The 'dstFilePath' parameter cannot be null." );
-        Preconditions.checkNotNull( sshKeyFile, "The 'sshKeyFile' parameter cannot be null." );
-
-        this.srcFilePath = srcFilePath;
-        this.dstFilePath = dstFilePath;
-        this.sshKeyFile = sshKeyFile;
-
-        scpCommand = true;
+        this.instance = instance;
     }
 
 
     @Override
-    public String getHostname( final Instance associate ) {
-        return associate.getPublicDnsName();
+    public String getHostname() {
+        return instance.getPublicDnsName();
     }
 
 
     @Override
-    public String getCommand( final Instance associate ) {
-        return command;
+    public String getPublicIpAddress() {
+        return instance.getPublicIpAddress();
     }
 
 
     @Override
-    public String getSshKeyFile( final Instance associate ) {
+    public String getSshKeyFile() {
         return sshKeyFile;
-    }
-
-
-    @Override
-    public String getSourceFile( final Instance associate ) {
-        return srcFilePath;
-    }
-
-
-    @Override
-    public String getDestinationFile( final Instance associate ) {
-        return dstFilePath;
-    }
-
-
-    @Override
-    public boolean isScpCommand( final Instance associate ) {
-        return scpCommand;
     }
 }
 

@@ -6,19 +6,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.usergrid.chop.api.Constants;
+import org.apache.usergrid.chop.api.SshValues;
 import org.apache.usergrid.chop.api.store.amazon.InstanceValues;
 import org.apache.usergrid.chop.client.ssh.AsyncSsh;
-import org.apache.usergrid.chop.client.ssh.SSHCommands;
+import org.apache.usergrid.chop.client.ssh.Command;
+import org.apache.usergrid.chop.client.ssh.ResponseInfo;
+import org.apache.usergrid.chop.client.ssh.SCPCommand;
+import org.apache.usergrid.chop.client.ssh.SSHCommand;
+import org.apache.usergrid.chop.client.ssh.Utils;
 import org.apache.usergrid.chop.stack.BasicStack;
 import org.apache.usergrid.chop.stack.CoordinatedStack;
 import org.apache.usergrid.chop.stack.ICoordinatedCluster;
@@ -69,14 +75,25 @@ public class CoordinatorUtils {
     }
 
 
-    public static Stack getStackFromRunnerJar( File runnerJar ) {
+    public static InputStream getResourceAsStreamFromRunnerJar( File runnerJar, String resource ) {
         try {
             // Access the jar file resources after adding it to a new ClassLoader
             URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
                     Thread.currentThread().getContextClassLoader() );
 
+            return classLoader.getResourceAsStream( resource );
+        }
+        catch ( Exception e ) {
+            LOG.warn( "Error while reading {} from runner.jar resources", resource, e );
+            return null;
+        }
+    }
+
+
+    public static Stack getStackFromRunnerJar( File runnerJar ) {
+        try {
             ObjectMapper mapper = new ObjectMapper();
-            InputStream stream = classLoader.getResourceAsStream( Constants.STACK_JSON );
+            InputStream stream = getResourceAsStreamFromRunnerJar( runnerJar, Constants.STACK_JSON );
 
             return mapper.readValue( stream, BasicStack.class );
         }
@@ -136,21 +153,24 @@ public class CoordinatorUtils {
 
 
     /**
-     * Extracts all scripts from given runner.jar, uploads them to the instances, and executes them asynchronously
+     * Extracts all scripts from given runner.jar, uploads them to the instances, and executes them in parallel
      *
      * @param cluster   Cluster object that the scripts will be executed on
      * @param runnerJar runner.jar file's path that contains all script files
      * @param keyFile   SSH key file path to be used on ssh operations to instances
      * @return          true if operation fully succeeds
-     * @throws java.net.MalformedURLException
      */
-    public static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile )
-            throws MalformedURLException {
-
-        InstanceValues sshCommand;
+    public static boolean executeSSHCommands( ICoordinatedCluster cluster, File runnerJar, String keyFile ) {
+        Collection<SshValues> sshValues = new HashSet<SshValues>( cluster.getSize() );
         StringBuilder sb = new StringBuilder();
-        Collection<AsyncSsh<Instance>> executed = new LinkedList<AsyncSsh<Instance>>();
+        Collection<Command> commands = new ArrayList<Command>();
 
+        // Prepare instance values
+        for( Instance instance: cluster.getInstances() ) {
+            sshValues.add( new InstanceValues( instance, keyFile ) );
+        }
+
+        // Prepare setup environment variables
         for( Object obj: cluster.getInstanceSpec().getScriptEnvironment().keySet() ) {
 
             String envVar = obj.toString();
@@ -158,55 +178,66 @@ public class CoordinatorUtils {
 
             sb.append( "export " )
               .append( envVar )
-              .append( "=" )
+              .append( "=\"" )
               .append( value )
-              .append( ";" );
+              .append( "\";" );
         }
         String exportVars = sb.toString();
 
-        URLClassLoader classLoader = new URLClassLoader( new URL[] { runnerJar.toURL() },
-                Thread.currentThread().getContextClassLoader() );
-
+        // Prepare SSH and SCP commands
         for( URL scriptFile: cluster.getInstanceSpec().getSetupScripts() ) {
             /** First save file beside runner.jar */
             File file = new File( scriptFile.getPath() );
-            File fileToSave = new File( runnerJar, file.getName() );
-            writeToFile( classLoader.getResourceAsStream( file.getName() ), fileToSave.getPath() );
+            File fileToSave = new File( runnerJar.getParentFile(), file.getName() );
+            writeToFile( getResourceAsStreamFromRunnerJar( runnerJar, file.getName() ), fileToSave.getPath() );
 
-            try {
                 /** SCP the script to instance **/
                 sb = new StringBuilder();
                 sb.append( "/home/" )
-                  .append( SSHCommands.DEFAULT_USER )
+                  .append( Utils.DEFAULT_USER )
                   .append( "/" )
                   .append( fileToSave.getName() );
 
                 String destFile = sb.toString();
-                sshCommand = new InstanceValues( fileToSave.getPath(), destFile, keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
+                commands.add( new SCPCommand( fileToSave.getAbsolutePath(), destFile ) );
 
                 /** calling chmod first just in case **/
                 sb = new StringBuilder();
                 sb.append( "chmod 0755 " )
-                  .append( fileToSave.getPath() );
-                sshCommand = new InstanceValues( sb.toString(), keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
+                  .append( "/home/" )
+                  .append( Utils.DEFAULT_USER )
+                  .append( "/" )
+                  .append( fileToSave.getName() )
+                  .append( ";" );
 
                 /** Run the script command */
-                sb = new StringBuilder();
                 sb.append( exportVars )
                   .append( "sudo -E " )
                   .append( destFile );
 
-                sshCommand = new InstanceValues( sb.toString(), keyFile );
-                executed.addAll( AsyncSsh.execute( cluster.getInstances(), sshCommand ) );
-            }
-            catch ( InterruptedException e ) {
-                LOG.error( "Interrupted while trying to execute SSH command", e );
+                commands.add( new SSHCommand( sb.toString() ) );
+        }
+
+        // Execute commands
+        Collection<ResponseInfo> responses = null;
+        try {
+            AsyncSsh asyncSsh = new AsyncSsh( sshValues, commands );
+            responses = asyncSsh.executeAll();
+        }
+        catch ( InterruptedException e ) {
+            LOG.error( "Interrupted while trying to execute SSH command", e );
+            return false;
+        }
+        catch ( ExecutionException e ) {
+            LOG.error( "Error while executing ssh commands", e );
+            return false;
+        }
+
+        for( ResponseInfo response: responses ) {
+            if( ! response.isSuccessful() ) {
                 return false;
             }
         }
-
-        return AsyncSsh.extractFailures( executed ).size() == 0;
+        return true;
     }
 }
