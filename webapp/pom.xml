@@ -184,7 +184,6 @@
                   <include>org.apache.usergrid.chop:chop-webapp</include>
                   <include>org.safehaus.jettyjam:jettyjam-utils</include>
                 </includes>
-
               </artifactSet>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
@@ -266,13 +265,6 @@
       <artifactId>jersey-json</artifactId>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.jvnet</groupId>
-      <artifactId>mimepull</artifactId>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
@@ -311,11 +303,6 @@
     <dependency>
       <groupId>com.netflix.blitz4j</groupId>
       <artifactId>blitz4j</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-aws</artifactId>
     </dependency>
 
     <dependency>

@@ -99,6 +99,11 @@ public class ChopUiConfig extends GuiceServletContextListener {
             if (ChopUiJettyRunner.getCommandLine() != null) {
                 CommandLine cl = ChopUiJettyRunner.getCommandLine();
 
+                if( cl.hasOption( 'd' ) ) {
+                    String dataDir = cl.getOptionValue( 'd' );
+                    LOG.info( "The -d option is given, replacing data directory with {}", dataDir );
+                    elasticSearchFig.bypass( ElasticSearchFig.DATA_DIR_KEY, dataDir );
+                }
                 if (cl.hasOption('e')) {
                     startEmbeddedES(elasticSearchFig);
                 }
@@ -148,7 +153,7 @@ public class ChopUiConfig extends GuiceServletContextListener {
         EsEmbedded es = new EsEmbedded(elasticSearchFig);
         es.start();
 
-        long pause = 5000;
+        long pause = 1000;
         LOG.info("Pausing for {} ms so embedded elasticsearch can complete initialization.", pause);
 
         TimeUtil.sleep(pause);

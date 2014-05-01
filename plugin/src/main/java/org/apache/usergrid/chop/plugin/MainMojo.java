@@ -67,10 +67,10 @@ public class MainMojo extends AbstractMojo implements Constants {
 
 
     /**
-     * Leaving this parameter with the default 'true' value causes the plugin goal to fail when there are modified
+     * If this parameter is 'true', it causes the plugin goal to fail when there are uncommitted modified
      * sources in the local git repository.
      */
-    @Parameter( property = "failIfCommitNecessary", defaultValue = "true" )
+    @Parameter( property = "failIfCommitNecessary", defaultValue = "false" )
     protected boolean failIfCommitNecessary;
 
 

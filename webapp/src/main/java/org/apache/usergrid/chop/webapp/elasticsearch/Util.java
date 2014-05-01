@@ -80,8 +80,8 @@ public class Util {
 
         for (String s : values) {
             map.put(
-                    StringUtils.substringBefore(s, "="),
-                    StringUtils.substringAfter(s, "=")
+                    StringUtils.substringBefore(s, "=").trim(),
+                    StringUtils.substringAfter(s, "=").trim()
             );
         }
 

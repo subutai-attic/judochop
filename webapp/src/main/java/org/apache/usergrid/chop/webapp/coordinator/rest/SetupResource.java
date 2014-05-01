@@ -100,7 +100,7 @@ public class SetupResource extends TestableResource implements RestParams {
         }
 
         if( status.equals( SetupStackState.NotFound ) ) {
-            return Response.status( Response.Status.BAD_REQUEST )
+            return Response.status( Response.Status.OK )
                            .entity( "No runner jars found with given parameters, deploy first" )
                            .type( MediaType.APPLICATION_JSON )
                            .build();

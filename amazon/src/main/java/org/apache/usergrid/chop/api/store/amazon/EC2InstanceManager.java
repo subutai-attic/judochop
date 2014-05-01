@@ -79,6 +79,9 @@ public class EC2InstanceManager implements InstanceManager {
 
     @Override
     public void terminateInstances( final Collection<String> instanceIds ) {
+        if( instanceIds == null || instanceIds.size() == 0 ) {
+            return;
+        }
         TerminateInstancesRequest request = ( new TerminateInstancesRequest() ).withInstanceIds( instanceIds );
         client.terminateInstances( request );
     }
@@ -106,7 +109,6 @@ public class EC2InstanceManager implements InstanceManager {
         LOG.info( "Created instances, setting the names now..." );
 
         List<String> instanceIds = new ArrayList<String>( cluster.getSize() );
-        Collection<Instance> instances = toInstances( runInstancesResult.getReservation().getInstances() );
 
         String instanceNames = getInstanceName( stack, cluster );
 
@@ -146,6 +148,8 @@ public class EC2InstanceManager implements InstanceManager {
             }
         }
 
+        Collection<Instance> instances = toInstances( getEC2Instances( instanceIds ) );
+
         return new EC2LaunchResult( cluster.getInstanceSpec(), instances );
     }
 
@@ -171,8 +175,6 @@ public class EC2InstanceManager implements InstanceManager {
         LOG.info( "Created instances, setting the names now..." );
 
         List<String> instanceIds = new ArrayList<String>( stack.getRunnerCount() );
-        Collection<Instance> instances = toInstances( runInstancesResult.getReservation().getInstances() );
-
         String runnerNames = getRunnerName( stack );
 
         int i = 0;
@@ -210,6 +212,8 @@ public class EC2InstanceManager implements InstanceManager {
                 LOG.warn( "Waiting for instances to get into Running state has timed out" );
             }
         }
+
+        Collection<Instance> instances = toInstances( getEC2Instances( instanceIds ) );
 
         return new EC2LaunchResult( spec, instances );
     }
@@ -275,6 +279,34 @@ public class EC2InstanceManager implements InstanceManager {
             request = request.withFilters( filter );
 
         }
+
+        DescribeInstancesResult result = client.describeInstances( request );
+
+        for ( Reservation reservation : result.getReservations() ) {
+            for ( com.amazonaws.services.ec2.model.Instance in : reservation.getInstances() ) {
+                instances.add( in );
+            }
+        }
+
+        return instances;
+    }
+
+
+    /**
+     *
+     * @param instanceIds   List of instance IDs
+     * @return
+     */
+    protected Collection<com.amazonaws.services.ec2.model.Instance> getEC2Instances( Collection<String> instanceIds ) {
+        if( instanceIds == null || instanceIds.size() == 0 ) {
+            return new ArrayList<com.amazonaws.services.ec2.model.Instance>();
+        }
+
+        Collection<com.amazonaws.services.ec2.model.Instance> instances =
+                new LinkedList<com.amazonaws.services.ec2.model.Instance>();
+
+        DescribeInstancesRequest request = new DescribeInstancesRequest();
+        request = request.withInstanceIds( instanceIds );
 
         DescribeInstancesResult result = client.describeInstances( request );
 

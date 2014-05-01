@@ -4,25 +4,25 @@
   "clusters" : [ {
     "name" : "ElasticSearch",
     "instanceSpec" : {
-      "imageId" : "ami-6ac2a85a",
+      "imageId" : "ami-56a0463e",
       "type" : "m1.large",
       "keyName" : "TestKeyPair",
-      "setupScripts" : [ "file://./install_es.sh" ],
+      "setupScripts" : [ "file://./test_script.sh" ],
       "scriptEnvironment" : {
           "TEST_PARAM" : "Test Param Value"
       }
     },
     "size" : 2
   } ],
-  "dataCenter" : "us-west-2a",
+  "dataCenter" : "us-east-1a",
   "ipRuleSet" : {
     "name" : "ChopTestSecurityGroup",
     "id" : "40a543f3-9cfc-44bc-b896-77574cae1772",
     "inboundRules" : [ {
       "ipProtocol" : "tcp",
-      "toPort" : -1,
-      "fromPort" : -1,
-      "ipRanges" : [ "0.0.0.0/32" ]
+      "toPort" : 10000,
+      "fromPort" : 22,
+      "ipRanges" : [ "0.0.0.0/0" ]
     } ],
     "outboundRules" : [ ]
   }

@@ -21,6 +21,7 @@ package org.apache.usergrid.chop.api.store.amazon;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.usergrid.chop.stack.BasicIpRule;
@@ -142,7 +143,15 @@ public class AmazonIpRuleManager implements IpRuleManager {
 
     @Override
     public Collection<String> listRuleSets() {
-        DescribeSecurityGroupsResult result = client.describeSecurityGroups();
+        DescribeSecurityGroupsRequest request = new DescribeSecurityGroupsRequest();
+        DescribeSecurityGroupsResult result = null;
+        try {
+            result = client.describeSecurityGroups( request );
+        }
+        catch ( Exception e ) {
+            LOG.warn( "Error while getting security groups", e );
+            return new LinkedList<String>();
+        }
         Collection<String> groups = new ArrayList<String>();
         for( SecurityGroup group : result.getSecurityGroups() ) {
             groups.add( group.getGroupName() );
@@ -192,6 +201,9 @@ public class AmazonIpRuleManager implements IpRuleManager {
 
     @Override
     public void deleteRules( final String name, final IpRule... ipRules ) {
+        if( ipRules.length == 0 ) {
+            return;
+        }
         Collection<IpRule> rules = new ArrayList<IpRule>( ipRules.length );
         for( IpRule rule: ipRules ) {
             rules.add( rule );
@@ -202,6 +214,9 @@ public class AmazonIpRuleManager implements IpRuleManager {
 
     @Override
     public void deleteRules( final String name, final Collection<IpRule> ipRules ) {
+        if( ipRules == null || ipRules.size() == 0 ) {
+            return;
+        }
         Collection<IpPermission> permissions = new ArrayList<IpPermission>( ipRules.size() );
         for( IpRule rule : ipRules ) {
             permissions.add( toIpPermission( rule ) );
@@ -247,9 +262,14 @@ public class AmazonIpRuleManager implements IpRuleManager {
                     .withFromPort( fromPort )
                     .withToPort( toPort );
 
-        AuthorizeSecurityGroupIngressRequest request = new AuthorizeSecurityGroupIngressRequest();
-        request = request.withGroupName( name ).withIpPermissions( ipPermission );
-        client.authorizeSecurityGroupIngress( request );
+        try {
+            AuthorizeSecurityGroupIngressRequest request = new AuthorizeSecurityGroupIngressRequest();
+            request = request.withGroupName( name ).withIpPermissions( ipPermission );
+            client.authorizeSecurityGroupIngress( request );
+        }
+        catch ( Exception e ) {
+            LOG.error( "Error whilt adding rule to security group: {}", name, e );
+        }
     }
 
 
