@@ -1,4 +1,4 @@
-![Judo Chop](http://stash.safehaus.org/projects/CHOP/repos/main/browse/judo-chop.jpeg?at=321c1def8f09eb0f0d488a3ea2d874d1b2ef7c94&raw)
+![Judo Chop](http://stash.subutai.io/projects/CHOP/repos/main/browse/judo-chop.jpeg?at=321c1def8f09eb0f0d488a3ea2d874d1b2ef7c94&raw)
 
 # What is it?
 
@@ -72,9 +72,9 @@ sources in your code repository.
 # How do I use it?
 
 The best way is to look at an 
-[example](http://stash.safehaus.org/projects/CHOP/repos/main/browse/example/pom.xml) 
+[example](http://stash.subutai.io/projects/CHOP/repos/main/browse/example/pom.xml) 
 project where it has been used. More info on how to use the plugin is also available 
-[here](http://stash.safehaus.org/projects/CHOP/repos/main/browse/plugin).
+[here](http://stash.subutai.io/projects/CHOP/repos/main/browse/plugin).
 
 -------
 
@@ -112,7 +112,7 @@ First add the Judo Chop maven plugin to your project like so:
 Give yourself a chop on the back if you guessed that Judo Chop works in the Amazon EC2 
 environment. Eventually we would like to make sure it works independent of any specific
 environment however we had to start somewhere. Everything here is pretty self explanatory 
-and if it is not then ping us about it on judo-chop AT safehaus.org. 
+and if it is not then ping us about it on judo-chop AT subutai.io. 
 
 Please note that it's much better for you to use properties and variable substitution 
 for these values. In your settings.xml you can create profiles that are active by default.
@@ -307,17 +307,17 @@ go through while issuing REST operations to the end points above:
 
 # Project Resources
 
-* Mailing List: [ALL Traffic](mailto:judo-chop@safehaus.org)
-* Version Control Repository: [Git via Stash](http://stash.safehaus.org/projects/CHOP/repos/main/browse)
-* Wiki and Home Page: [Confluence Wiki](http://confluence.safehaus.org/display/CHOP/Home)
-* Issue Tracker: [JIRA Issues](http://jira.safehaus.org/browse/CHOP)
-* Jenkins CI: [Jenkins Job](http://jenkins.safehaus.org/job/JudoChop/)
-* Sonar Quality: [Sonar Project](http://sonar.safehaus.org/dashboard/index/1082)
+* Mailing List: [ALL Traffic](mailto:judo-chop@subutai.io)
+* Version Control Repository: [Git via Stash](http://stash.subutai.io/projects/CHOP/repos/main/browse)
+* Wiki and Home Page: [Confluence Wiki](http://confluence.subutai.io/display/CHOP/Home)
+* Issue Tracker: [JIRA Issues](http://jira.subutai.io/browse/CHOP)
+* Jenkins CI: [Jenkins Job](http://jenkins.subutai.io/job/JudoChop/)
+* Sonar Quality: [Sonar Project](http://sonar.subutai.io/dashboard/index/1082)
 
 # Special Thanks
 
 * Apache Usergrid Peeps - Todd, Dave, Rod
-* Safehaus Peeps - Jimmy Rybacki (plugin), Askhat Asanaliev (web-ui), Yigit Sapli (infrastructure)
+* Subutai Peeps - Jimmy Rybacki (plugin), Askhat Asanaliev (web-ui), Yigit Sapli (infrastructure)
 * Atlassian
 * Jetbrains
 
